@@ -1,0 +1,788 @@
+1
+00:00:00,199 --> 00:00:15,160
+Wie ihr inzwischen vermutlich erkennst, liegt der Fokus dieser Serie auf dem Verstehen von Matrix-
+
+2
+00:00:15,160 --> 00:00:16,470
+und Vektor-Operationen
+
+3
+00:00:16,470 --> 00:00:20,040
+mithilfe des visuelleren Blickwinkels linearer Abbildungen
+
+4
+00:00:20,040 --> 00:00:24,020
+Dieses Video ist keine Ausnahme, denn es beschreibt Konzepte von Inversen,
+
+5
+00:00:24,020 --> 00:00:28,100
+Lösungsraum ("Spaltenraum"), Rang und Kern anhand dieses Blickwinkels.
+
+6
+00:00:28,100 --> 00:00:31,520
+Vorwarnung: Ich werde nicht über die eigentlichen Berechnungsmethoden
+
+7
+00:00:31,600 --> 00:00:32,860
+für diese Dinger reden
+
+8
+00:00:32,860 --> 00:00:34,900
+und manche würden sagen, dass das recht wichtig sei.
+
+9
+00:00:34,910 --> 00:00:38,940
+Es gibt viele andere sehr gute Quellen, um diese Methoden abseits dieser Reihe zu lernen.
+
+10
+00:00:38,940 --> 00:00:42,290
+Stichwörter: "Gauss'sches Eliminationsverfahren" und "Stufenform".
+
+11
+00:00:42,290 --> 00:00:46,630
+Ich denke, der meiste Mehrwert, den ich vermitteln kann, liegt auf der intuitiven Seite.
+
+12
+00:00:46,630 --> 00:00:50,940
+Außerdem berechnet das in der Realität sowieso meistens ein Programm für uns.
+
+13
+00:00:50,940 --> 00:00:54,460
+Zunächst ein paar Worte über die Nützlichkeit von linearer Algebra.
+
+14
+00:00:54,460 --> 00:00:57,989
+Mittlerweile haben Sie bereits eine Vermutung, dass es für die Beschreibung von Raummanipulationen
+
+15
+00:00:57,989 --> 00:00:58,989
+benutzt wird,
+
+16
+00:00:58,989 --> 00:01:01,559
+was praktisch ist für Dinge wie Computergrafik und Robotik,
+
+17
+00:01:01,559 --> 00:01:05,210
+aber einer der Hauptgründe, dass Lineare Algebra breiter anwendbar ist
+
+18
+00:01:05,210 --> 00:01:07,829
+und für nahezu jede technische Disziplin benötigt wird,
+
+19
+00:01:07,829 --> 00:01:11,490
+ist, dass sie uns bestimmte Systeme von Gleichungen lösen lasst.
+
+20
+00:01:11,490 --> 00:01:15,509
+Wenn ich Gleichungssysteme sagen, meine ich, dass ihr eine Liste von Variablen habt, Sachen,
+
+21
+00:01:15,509 --> 00:01:16,509
+die ihr nicht kennt,
+
+22
+00:01:16,509 --> 00:01:18,000
+und Gleichungen, die diese verwenden.
+
+23
+00:01:18,000 --> 00:01:21,939
+In vielen Situationen können diese Gleichungen sehr kompliziert werden,
+
+24
+00:01:21,939 --> 00:01:26,520
+aber mit etwas Glück nehmen sie eine bestimmte besondere Form an.
+
+25
+00:01:26,520 --> 00:01:31,880
+In jeder Gleichung ist jede Variable nur  um irgendeine
+
+26
+00:01:31,880 --> 00:01:32,880
+Konstante skaliert,
+
+27
+00:01:32,880 --> 00:01:36,159
+und das Einzige, was mit den skalierten Variablen gemacht wird, ist dass sie aufeinander
+
+28
+00:01:36,159 --> 00:01:37,209
+aufaddiert werden.
+
+29
+00:01:37,209 --> 00:01:43,560
+Also, keine Exponenten oder besondere Funktionen, oder Multiplikation zweier Variablen, oder derartiges.
+
+30
+00:01:43,560 --> 00:01:46,649
+Der typische Weg, um dieses spezielle Gleichungssystem zu organisieren,
+
+31
+00:01:46,649 --> 00:01:50,009
+ist, alle Variablen nach links zu packen,
+
+32
+00:01:50,009 --> 00:01:52,930
+und alle übrigen Konstanten nach rechts.
+
+33
+00:01:52,930 --> 00:01:56,859
+Es ist auch schön, die gemeinsamen Variablen untereinanderzuschreiben,
+
+34
+00:01:56,859 --> 00:02:00,249
+und dafür muss man eventuell ein paar Null-Koeffizienten einbauen, sobald die Variable
+
+35
+00:02:00,249 --> 00:02:04,950
+in einer der Gleichungen nicht auftaucht.
+
+36
+00:02:04,950 --> 00:02:08,170
+Das nennt man ein "Lineares Gleichungssystem".
+
+37
+00:02:08,170 --> 00:02:11,370
+Euch fällt vielleicht auf, dass das sehr nach einer Matrix-Vektor-Multiplikation aussieht.
+
+38
+00:02:11,370 --> 00:02:17,190
+Tatsächlich kann man all die Gleichungen in eine einzige Vektorgleichung verpacken,
+
+39
+00:02:17,190 --> 00:02:21,459
+in der die Matrix alle Koeffizienten enthält, und ein Vektor
+
+40
+00:02:21,459 --> 00:02:23,040
+alle Variablen,
+
+41
+00:02:23,040 --> 00:02:29,020
+und das Matrix-Vektor-Produkt gleich einem anderen konstanten Vektor ist.
+
+42
+00:02:29,020 --> 00:02:31,319
+Nennen wir die Konstanten-Matrix A,
+
+43
+00:02:31,320 --> 00:02:34,880
+bezeichen den Variablen-Vektor mit einem fettgeschriebenen x,
+
+44
+00:02:34,880 --> 00:02:39,040
+und nennen den Konstantenvektor rechts v.
+
+45
+00:02:39,060 --> 00:02:42,370
+Das ist mehr als nur ein Notationstrick, um unser Gleichungssystem in einer
+
+46
+00:02:42,370 --> 00:02:43,549
+einzigen Zeile schreiben zu können.
+
+47
+00:02:43,549 --> 00:02:47,629
+Es gibt Aufschluss über eine ziemlich coole geometrische Interpretation dieses Problems.
+
+48
+00:02:47,629 --> 00:02:52,900
+Die Matrix A korrespondiert mit irgendeiner linearen Abbildung, also bedeutet das Lösen von Ax=v,
+
+49
+00:02:52,900 --> 00:02:57,100
+dass wir einen Vektor x suchen, der nach Anwendung der Abbildung
+
+50
+00:02:57,100 --> 00:02:58,460
+auf v landet.
+
+51
+00:02:58,470 --> 00:03:02,000
+Denkt einen Moment lang darüber nach, was hier passiert.
+
+52
+00:03:02,000 --> 00:03:07,129
+Folgende wirklich komplexe Vorstellung ist greifbar:  Eine Vielzahl von Variablen, die
+
+53
+00:03:07,129 --> 00:03:08,120
+sich alle miteinander vermischen,
+
+54
+00:03:08,120 --> 00:03:11,300
+einfach, indem man über das Quetschen und Verformen eines Raumes nachdenkt und probiert herauszufinden,
+
+55
+00:03:11,360 --> 00:03:13,140
+welcher Vektor auf welchem landet.
+
+56
+00:03:13,140 --> 00:03:14,849
+Cool, oder?
+
+57
+00:03:14,849 --> 00:03:19,079
+Um simpel anzufangen; sagen wir, wir haben ein System mit zwei Gleichungen und zwei Unbekannten.
+
+58
+00:03:19,079 --> 00:03:21,909
+Das heißt, dass die Matrix A eine 2x2-Matrix ist,
+
+59
+00:03:21,909 --> 00:03:24,819
+und v und x sind beides zweidimensionale Vektoren.
+
+60
+00:03:24,819 --> 00:03:28,489
+Wie wir jetzt über die Lösungen dieser Gleichung nachdenken,
+
+61
+00:03:28,489 --> 00:03:33,879
+hängt davon ab, ob die Abbildung, die zu A gehört, den Raum in eine niedrigere
+
+62
+00:03:33,879 --> 00:03:34,879
+Dimension quetscht,
+
+63
+00:03:34,879 --> 00:03:35,879
+z.B. eine Gerade oder ein Punkt,
+
+64
+00:03:35,879 --> 00:03:40,780
+oder ob sie die ganzen beiden Anfangsdimensionen beibehält.
+
+65
+00:03:40,780 --> 00:03:45,650
+Mithilfe den Begriffen des letzten Videos, unterscheiden wir den Fall, in dem die Determinante von A 0 ist,
+
+66
+00:03:45,650 --> 00:03:51,689
+und den Fall, in dem die Determinante von A ungleich 0 ist.
+
+67
+00:03:51,689 --> 00:03:55,109
+Lasst uns mit dem wahrscheinlicheren Fall starten, in dem die Determinante ungleich 0 ist,
+
+68
+00:03:55,109 --> 00:03:58,650
+was heißt, dass der Raum nicht in eine Region mit Fläche 0 gequetscht wird.
+
+69
+00:03:58,650 --> 00:04:03,409
+In diesem Fall wird es immer genau einen Vektor geben, der auf v landet,
+
+70
+00:04:03,409 --> 00:04:07,420
+und man kann ihn finden, indem man die Abbildung rückwärts ablaufen lässt.
+
+71
+00:04:07,420 --> 00:04:10,219
+Wenn man den Verlauf von v während dieses Rückwärtsspulens nachvollzieht,
+
+72
+00:04:10,219 --> 00:04:15,900
+kommt man auf den Vektor x, bei dem A mal x gleich v ist.
+
+73
+00:04:15,900 --> 00:04:20,500
+Das Rückwärtsspulen entspricht übrigens einer anderen linearen
+
+74
+00:04:20,500 --> 00:04:21,500
+Abbildung,
+
+75
+00:04:21,500 --> 00:04:23,380
+die meist "Inverses von A" genannt wird,
+
+76
+00:04:23,380 --> 00:04:25,440
+geschrieben als A hoch minus 1.
+
+77
+00:04:25,440 --> 00:04:28,640
+Zum Beispiel, wenn A einer Drehung gegen den Uhrzeigersinn um 90° entspricht,
+
+78
+00:04:28,640 --> 00:04:34,780
+dann wäre das Inverse von A eine Drehung im Uhrzeigersinn um 90°.
+
+79
+00:04:34,780 --> 00:04:38,380
+Wenn A eine Rechtsscherung wäre, das j-hat eine Einheit nach rechts verschiebt,
+
+80
+00:04:38,380 --> 00:04:43,090
+dann wäre das Inverse von a eine Linksscherung, die j-hat eine Einheit nach links verschiebt.
+
+81
+00:04:43,090 --> 00:04:48,970
+Allgemein ist das Inverse von A die eindeutige Abbildung mit der Eigenschaft, dass wenn man zuerst
+
+82
+00:04:48,970 --> 00:04:49,970
+A anwendet,
+
+83
+00:04:49,970 --> 00:04:52,370
+und danach die Abbildung Inverses von A,
+
+84
+00:04:52,370 --> 00:04:54,760
+landet man dort, wo man angefangen hat.
+
+85
+00:04:54,760 --> 00:04:59,640
+Eine Abbildung nach der anderen anzuwenden, kann man algebraisch mit Matrixmultiplikation darstellen,
+
+86
+00:04:59,640 --> 00:05:05,160
+also ist die Kerneigenschaft dieser Abbildung "Inverses von A", dass "Inverses von A" mal A
+
+87
+00:05:05,160 --> 00:05:08,190
+die Matrix ergibt, die dem Nichtstun entspricht.
+
+88
+00:05:08,190 --> 00:05:11,850
+Diese Abbildung, die nichts tut, heißt Identitätsabbildung.
+
+89
+00:05:11,850 --> 00:05:15,060
+Sie lässt i-hat und j-hat beide dort, wo sie sind, unbewegt,
+
+90
+00:05:15,060 --> 00:05:20,170
+also sind ihre Spalten 1,0 und 0,1.
+
+91
+00:05:20,170 --> 00:05:23,600
+Sobald man dieses Inverse findet, was in der Praxis mit einem Computer gemacht wird,
+
+92
+00:05:23,600 --> 00:05:30,100
+kann man die Gleichung lösen, indem man die inverse Matrix mit v multipliziert.
+
+93
+00:05:30,100 --> 00:05:34,610
+Nochmal, was das geometrisch heißt, ist dass man diese Abbildung rückwärts
+
+94
+00:05:34,610 --> 00:05:40,550
+abspielt, und v beobachtet.
+
+95
+00:05:40,550 --> 00:05:44,650
+Der Nicht-Null-Determinanten Fall, der für eine zufällig gewählte Matrix mit Abstand der
+
+96
+00:05:44,650 --> 00:05:46,080
+wahrscheinlichste ist,
+
+97
+00:05:46,080 --> 00:05:49,690
+korrespondiert mit der Idee, dass wenn man zwei Unbekannte und zwei Gleichungen hat,
+
+98
+00:05:49,690 --> 00:05:54,160
+es fast immer der Fall sein wird, dass es eine einzige, einzigartige Lösung gibt.
+
+99
+00:05:54,160 --> 00:05:56,190
+Diese Idee ergibt auch in höheren Dimensionen Sinn,
+
+100
+00:05:56,190 --> 00:05:59,020
+wenn die Anzahl der Gleichungen der Anzahl der Unbekannten entspricht.
+
+101
+00:05:59,020 --> 00:06:04,130
+Nochmal, das Gleichungssystem kann in die geometrische Interpretation übersetzt werden,
+
+102
+00:06:04,130 --> 00:06:08,470
+in der man irgendeine Abbildung A hat,
+
+103
+00:06:08,470 --> 00:06:09,680
+und irgendeinen Vektor v,
+
+104
+00:06:09,680 --> 00:06:16,080
+und man sucht den Vektor x, der auf v landet.
+
+105
+00:06:16,080 --> 00:06:20,480
+Solange diese Abbildung A den Raum nicht in einer kleinere Dimension quetscht,
+
+106
+00:06:20,480 --> 00:06:22,900
+also wenn ihre Determinante nicht-null ist,
+
+107
+00:06:22,900 --> 00:06:26,060
+wird es eine Inverse Abbildung, A^-1 geben,
+
+108
+00:06:26,060 --> 00:06:28,360
+mit der Eigenschaft, dass wenn man erst A anwendet,
+
+109
+00:06:28,360 --> 00:06:30,020
+und dann A^-1 anwendet,
+
+110
+00:06:30,020 --> 00:06:33,750
+das das Gleiche ist wie Nichtstun.
+
+111
+00:06:33,750 --> 00:06:38,270
+Und um die Gleichung zu lösen, muss man nur diese Umkehr-Abbildungs-Matrix mit
+
+112
+00:06:38,270 --> 00:06:43,660
+dem Vektor v multiplizieren.
+
+113
+00:06:43,660 --> 00:06:47,610
+Aber wenn die Determinante 0 ist, und die Abbildung, die dem
+
+114
+00:06:47,610 --> 00:06:48,610
+Gleichungssystem entspricht,
+
+115
+00:06:48,610 --> 00:06:52,500
+den Raum in eine kleinere Dimension quetscht, dann gibt es kein Inverses.
+
+116
+00:06:52,500 --> 00:06:55,630
+Man kann keine Gerade zu einer Ebene ent-quetschen.
+
+117
+00:06:55,630 --> 00:06:58,490
+Zumindest eine Funktion kann das nicht.
+
+118
+00:06:58,490 --> 00:07:01,060
+Das würde bedeuten, einen einzelnen Vektor
+
+119
+00:07:01,060 --> 00:07:03,860
+auf eine ganze Gerade voller Vektoren abzubilden.
+
+120
+00:07:03,860 --> 00:07:07,860
+Aber Funktionen können aus einer einzigen Eingabe nur eine einzige Ausgabe machen.
+
+121
+00:07:07,860 --> 00:07:11,160
+Analog, wird es für drei Gleichungen mit drei Unbekannten
+
+122
+00:07:11,160 --> 00:07:14,360
+kein Inverses geben, wenn die entsprechende Abbildung
+
+123
+00:07:14,360 --> 00:07:17,030
+3D-Raum in eine Ebene quetscht,
+
+124
+00:07:17,030 --> 00:07:20,140
+oder sogar in eine Gerade, oder einen Punkt.
+
+125
+00:07:20,140 --> 00:07:22,420
+All diese entsprechen einer Determinante von 0,
+
+126
+00:07:22,420 --> 00:07:27,120
+da jede Region in etwas mit Volumen 0 gequetscht wird.
+
+127
+00:07:27,120 --> 00:07:31,150
+Es ist immer noch möglich, dass es auch ohne Inverses eine Lösung gibt,
+
+128
+00:07:31,150 --> 00:07:35,070
+es ist nur so, dass wenn die Abbildung den Raum auf, sagen wir eine Gerade quetscht,
+
+129
+00:07:35,070 --> 00:07:43,490
+muss man sehr viel Glück haben, wenn der Vektor v irgendwo auf dieser Geraden leben soll.
+
+130
+00:07:43,490 --> 00:07:48,870
+Euch fällt vielleicht auf, dass manche der Null-Determinanten-Fälle sich viel restriktiver anfühlen als andere.
+
+131
+00:07:48,870 --> 00:07:53,400
+Gegeben eine 3x3-Matrix ist es z.B. viel unwahrscheinlicher, dass eine Lösung existiert
+
+132
+00:07:53,400 --> 00:07:58,190
+wenn sie den Raum auf eine Gerade anstatt auf eine Ebene zusammenquetscht.
+
+133
+00:07:58,190 --> 00:08:02,750
+obwohl beide Determinante 0 haben.
+
+134
+00:08:02,750 --> 00:08:06,630
+Es gibt eine Ausdrucksweise, die spezifischer ist, als einfach "Determinante 0" zu sagen.
+
+135
+00:08:06,630 --> 00:08:10,990
+Wenn die Ausgabe einer Abbildung eine Gerade ist, also eindimensional,
+
+136
+00:08:10,990 --> 00:08:15,300
+sagen wir, dass die Abbildung einen "Rang" von 1 hat.
+
+137
+00:08:15,300 --> 00:08:18,170
+Wenn all die Vektoren auf einer zwei-dimensionalen Ebene landen,
+
+138
+00:08:18,170 --> 00:08:23,060
+sagen wir, dass die Abbildung einen "Rang" von 2 hat.
+
+139
+00:08:23,060 --> 00:08:28,470
+Also steht das Wort "Rang" für die Anzahl der Dimensionen in der Ausgabe einer Abbildung.
+
+140
+00:08:28,470 --> 00:08:33,170
+Zum Beispiel ist im Fall von 2x2-Matrizen Rang 2 das Beste, das passieren kann.
+
+141
+00:08:33,170 --> 00:08:37,820
+Er bedeutet, dass die Basisvektoren immer noch die vollen zwei Raumdimensionen aufspannen, und dass die
+
+142
+00:08:37,820 --> 00:08:39,640
+Determinante ungleich 0 ist.
+
+143
+00:08:39,640 --> 00:08:43,560
+Aber für 3x3-Matrizen, heißt Rang 2, dass wir zusammengefallen sind,
+
+144
+00:08:43,560 --> 00:08:47,290
+wenn auch nicht soviel wie wenn wir in einer Rang-1-Situation zusammengefallen wären.
+
+145
+00:08:47,290 --> 00:08:52,500
+Wenn eine 3D-Abbildung eine Determinante ungleich 0 hat, und ihre Ausgabe den gesamten 3D-Raum ausfüllt,
+
+146
+00:08:52,500 --> 00:08:54,650
+hat sie einen Rang von 3.
+
+147
+00:08:54,650 --> 00:08:57,210
+Diese Menge aller möglichen Ausgaben Ihrer Matrix,
+
+148
+00:08:57,210 --> 00:09:00,180
+ob Gerade, Ebene, 3D-Raum, was auch immer,
+
+149
+00:09:00,180 --> 00:09:04,450
+heißt der "Lösungsraum" (hier "Zeilenraum") Ihrer Matrix.
+
+150
+00:09:04,450 --> 00:09:06,760
+Ihr können euch vermutlich denken, wo der Name herkommt.
+
+151
+00:09:06,760 --> 00:09:11,190
+Die Spalten eurer Matrix sagen euch, wo die Basisvektoren landen,
+
+152
+00:09:11,190 --> 00:09:15,780
+und die lineare Hülle der Abbildungen dieser Basisvektoren enthält alle möglichen Ausgaben.
+
+153
+00:09:15,780 --> 00:09:22,260
+Mit anderen Worten, der Spaltenraum ist die lineare Hülle der Spalten der Matrix.
+
+154
+00:09:22,260 --> 00:09:26,070
+Also wäre eine präzisere Definition des Rangs, dass
+
+155
+00:09:26,070 --> 00:09:30,200
+er die Anzahl der Dimensionen im Spaltenraum/Lösungsraum bezeichnet.
+
+156
+00:09:30,200 --> 00:09:32,360
+Wenn dieser Rang maximal hoch ist,
+
+157
+00:09:32,360 --> 00:09:38,090
+also der Anzahl an Spalten entspricht, hat die Matrix "vollen Rang".
+
+158
+00:09:38,090 --> 00:09:42,740
+Merke: Der Nullvektor wird immer im Lösungsraum enthalten sein,
+
+159
+00:09:42,740 --> 00:09:47,040
+da lineare Transformationen den Ursprung nicht verschieben dürfen.
+
+160
+00:09:47,040 --> 00:09:51,680
+Für eine Abbildung mit vollem Rang ist der einzige Vektor, der auf dem Ursprung landet, der Nullvektor
+
+161
+00:09:51,680 --> 00:09:52,680
+selbst,
+
+162
+00:09:52,680 --> 00:09:56,430
+aber für Matrizen, die nicht vollen Rang haben, also auf eine kleinere Dimension quetschen,
+
+163
+00:09:56,430 --> 00:10:02,150
+kann es ganz viele Vektoren geben, die auf 0 landen.
+
+164
+00:10:02,150 --> 00:10:05,090
+Wenn eine 2D-Transformation den Raum z.B. auf eine Gerade quetscht,
+
+165
+00:10:05,090 --> 00:10:08,300
+dann gibt es eine separate Gerade in eine andere Richtung,
+
+166
+00:10:08,300 --> 00:10:11,930
+voller Vektoren, die auf den Ursprung abgebildet werden.
+
+167
+00:10:11,930 --> 00:10:14,680
+Wenn eine 3D-Abbildung den Raum auf eine Ebene quetscht,
+
+168
+00:10:14,680 --> 00:10:20,800
+gibt es auch eine ganze Gerade voller Vektoren, die auf dem Ursprung landen.
+
+169
+00:10:20,800 --> 00:10:24,270
+Wenn eine 3D-Abbildung den gesamten Raum auf eine Ebene abbildet,
+
+170
+00:10:24,270 --> 00:10:33,390
+gibt es eine ganze Ebene voller Vektoren, die auf dem Ursprung landen.
+
+171
+00:10:33,390 --> 00:10:37,960
+Diese Vektor-Menge, die auf dem Ursprung landet, nennt man  "Nullraum" oder "Kern"
+
+172
+00:10:37,960 --> 00:10:39,370
+dieser Matrix.
+
+173
+00:10:39,370 --> 00:10:42,250
+Es ist der Raum aller Vektoren, die zu Null werden,
+
+174
+00:10:42,250 --> 00:10:45,750
+was heißt, dass sie auf dem Nullvektor landen.
+
+175
+00:10:45,750 --> 00:10:50,310
+Was das lineare Gleichungssystem angeht, sollte  v der Nullvektor sein,
+
+176
+00:10:50,310 --> 00:10:56,910
+gibt der Nullraum aller möglichen Lösungen dieser Gleichung an.
+
+177
+00:10:56,910 --> 00:10:58,470
+Das war ein recht hochsprachlicher Überblick,
+
+178
+00:10:58,470 --> 00:11:02,400
+wie man sich lineare Gleichungssysteme geometrisch vorstellen kann.
+
+179
+00:11:02,400 --> 00:11:06,040
+Jedes System besitzt irgendeine lineare Abbildung
+
+180
+00:11:06,160 --> 00:11:08,150
+und wenn diese Abbildung ein Inverses hat,
+
+181
+00:11:08,150 --> 00:11:11,740
+kann man dieses Inverse nutzen, um das System zu lösen.
+
+182
+00:11:11,740 --> 00:11:18,200
+Andererseits lässt uns die Idee eines Lösungsraums verstehen, wann es eine Lösung überhaupt gibt,
+
+183
+00:11:18,200 --> 00:11:21,370
+und die Idee des Nullraums hilft uns zu verstehen, wie die Menge
+
+184
+00:11:21,370 --> 00:11:25,110
+aller möglichen Lösungen  aussehen kann.
+
+185
+00:11:25,110 --> 00:11:27,620
+Nochmal, es gibt vieles, das ich hier nicht behandelt habe,
+
+186
+00:11:27,620 --> 00:11:29,560
+vor allem, wie man diese Dinger berechnet.
+
+187
+00:11:29,560 --> 00:11:32,870
+Ich musste mich auch auf Beispiele beschränken, in denen die Anzahl der Gleichungen
+
+188
+00:11:32,870 --> 00:11:35,170
+der Anzahl der Unbekannten entsprach.
+
+189
+00:11:35,170 --> 00:11:37,480
+Aber das Ziel ist nicht, alles zu behandeln;
+
+190
+00:11:37,480 --> 00:11:41,361
+sondern dass ihr ein starkes Gefühl dafür bekommt, was Inverse Matrizen, Lösungsraum
+
+191
+00:11:41,361 --> 00:11:43,300
+und Nullraum sind,
+
+192
+00:11:43,300 --> 00:11:47,800
+und dass dieses Gefühl euch euer weiteres Lernen erleichtert.
+
+193
+00:11:47,800 --> 00:11:51,980
+Das nächste Video wird aufgrund der großen Nachfrage eine kurze Fußnote zu nichtquadratischen Matrizen sein.
+
+194
+00:11:51,980 --> 00:11:55,130
+Dann, danach, werde ich meinen Versuch mit Kreuzprodukten liefern.
+
+195
+00:11:55,130 --> 00:11:56,990
+und etwas ziemlich cooles, das passiert, wenn man sie
+
+196
+00:11:56,990 --> 00:11:59,240
+aus dem Blickwinkel linearer Abbildungen sieht.
+
+197
+00:11:59,240 --> 00:12:05,560
+Bis dann!
+

@@ -1,0 +1,899 @@
+1
+00:00:04,020 --> 00:00:10,680
+To je trojka. Ledabyle napsaná a uložená v nízkém rozlišení 28 × 28 pixelů.
+
+2
+00:00:10,680 --> 00:00:15,660
+Ale váš mozek nemá potíže rozpoznat ji jako trojku a měli bychom na tomto místě ocenit,
+
+3
+00:00:15,900 --> 00:00:18,949
+jak překvapivé je, že mozky toto dokážou bez problému
+
+4
+00:00:18,949 --> 00:00:23,160
+Uvažme, že toto, toto a toto je také rozpoznatelné jako trojka,
+
+5
+00:00:23,160 --> 00:00:28,060
+i když hodnoty každého pixelu jsou v jednotlivých obrazech velmi odlišné.
+
+6
+00:00:28,080 --> 00:00:33,780
+Světločivné buňky ve vašem oku, které se aktivují, když vidíte tuto trojku
+
+7
+00:00:33,780 --> 00:00:36,800
+jsou zcela jiné, než ty, které aktivuje tato trojka.
+
+8
+00:00:37,140 --> 00:00:40,610
+A něco v té šíleně geniální vizuální mozkové kůře
+
+9
+00:00:41,129 --> 00:00:48,139
+vyhodnotí, že představují stejnou myšlenku, ale zároveň rozpozná jiné obrazy jako odlišné myšlenky
+
+10
+00:00:48,840 --> 00:00:55,039
+Ale kdybych vám řekl: Tak se posaďte a napište program, který má na vstupu obraz 28 krát 28
+
+11
+00:00:55,379 --> 00:01:01,759
+pixelů, jako tento, a jako výstup dá jediné číslo mezi 0 a 9 podle toho, jaká je číslice na obrázku,
+
+12
+00:01:02,250 --> 00:01:06,139
+co vypadá jednoduše, bude složitý a časově náročný úkol.
+
+13
+00:01:06,750 --> 00:01:08,270
+Asi už víte, kde se strojové učení
+
+14
+00:01:08,270 --> 00:01:14,599
+a neuronové sítě v dnešní době využívají a nemusím  povídat o významu  pro současnost a budoucnost
+
+15
+00:01:14,640 --> 00:01:18,410
+Ale co chci udělat, je ukázat vám, co vlastně je neuronová síť
+
+16
+00:01:18,660 --> 00:01:24,229
+a pomoci znázornit, co dělá. (Předchozí znalosti nejsou potřeba.) Bez nesrozumitelné terminologie, ale matematicky.
+
+17
+00:01:24,570 --> 00:01:28,310
+Chci, abyste odcházeli s porozuměním, že tato struktura má nějaký smysl
+
+18
+00:01:28,380 --> 00:01:34,399
+a abyste měli nějakou představu, co to znamená, když někde čtete nebo slyšíte, že neuronová síť se „učí“
+
+19
+00:01:34,950 --> 00:01:40,249
+Toto video je věnováno jen struktuře sítí, a v dalším videu si probereme učení
+
+20
+00:01:40,530 --> 00:01:45,950
+Naším cílem bude vytvořit neuronovou síť, která se dokáže naučit rozpoznávat ručně psané číslice
+
+21
+00:01:49,270 --> 00:01:51,329
+To je víceméně klasický příklad
+
+22
+00:01:51,520 --> 00:01:56,759
+jak neuronové sítě představit, a já to nebudu dělat jinak, protože na konci obou videí vás odkážu na
+
+23
+00:01:56,760 --> 00:02:02,099
+další zdroje, kde se dozvíte více a kde si můžete stáhnout program, který to umí, a dále si s ním hrát
+
+24
+00:02:02,100 --> 00:02:04,100
+na vašem počítači
+
+25
+00:02:04,750 --> 00:02:08,970
+Existuje mnoho různých variant neuronových sítí a
+v posledních letech
+
+26
+00:02:08,970 --> 00:02:11,970
+došlo k prudkému rozvoji výzkumu směrem k těmto variantám
+
+27
+00:02:12,130 --> 00:02:19,019
+Ale v těchto dvou úvodních videích se společně podíváme na nejjednodušší formu bez nějakých specialit
+
+28
+00:02:19,300 --> 00:02:21,040
+Je to nezbytný základ,
+
+29
+00:02:21,040 --> 00:02:24,510
+pokud chcete později porozumět některým ze silnějších moderních variant
+
+30
+00:02:24,760 --> 00:02:28,199
+a věřte mi, že i tak budeme mít dost materiálu na přemýšlení
+
+31
+00:02:28,690 --> 00:02:32,820
+Ale i v této nejjednodušší formě se síť dokáže naučit rozpoznávat ručně psané číslice
+
+32
+00:02:32,820 --> 00:02:36,180
+A je úspěch, že na počítači něco takového dokážeme
+
+33
+00:02:37,120 --> 00:02:41,960
+Ale také uvidíme, že nás síť v některých ohledech zklame
+
+34
+00:02:43,090 --> 00:02:48,179
+Jak název naznačuje, neuronové sítě jsou inspirovány mozkem, ale vezměme to slovo po slovu
+
+35
+00:02:48,520 --> 00:02:51,389
+Co jsou neurony a v jakém smyslu jsou propojeny?
+
+36
+00:02:52,090 --> 00:02:57,750
+Když teď říkám neuron, chci, abyste si ho představili jako věc, která obsahuje číslo
+
+37
+00:02:58,209 --> 00:03:02,129
+Konkrétně číslo mezi 0 a 1, nic víc, než to
+
+38
+00:03:03,430 --> 00:03:11,130
+Například tato síť začíná skupinou neuronů odpovídajících každému ze 28 krát 28 pixelů vstupního obrazu,
+
+39
+00:03:11,400 --> 00:03:12,460
+což je
+
+40
+00:03:12,460 --> 00:03:20,240
+celkem 784 neuronů. Každý z nich udržuje číslo, které představuje hodnotu stupně šedi pixelu,
+
+41
+00:03:20,769 --> 00:03:24,299
+v rozsahu od nuly pro černé pixely až do jedné pro bílé pixely
+
+42
+00:03:24,910 --> 00:03:30,419
+Toto číslo uvnitř neuronu se nazývá jeho aktivace a představte si to, jako že
+
+43
+00:03:30,420 --> 00:03:33,959
+neuron je rozsvícený, když je jeho aktivace vysoká
+
+44
+00:03:36,260 --> 00:03:41,559
+Takže všech těchto 784 neuronů tvoří první vrstvu naší sítě
+
+45
+00:03:45,990 --> 00:03:51,289
+Nyní přeskočíme k poslední vrstvě, která má deset neuronů, každý reprezentuje jednu z číslic
+
+46
+00:03:51,570 --> 00:03:56,239
+Aktivace těchto neuronů (znovu nějaké číslo mezi nulou a jedničkou)
+
+47
+00:03:56,880 --> 00:04:00,049
+určuje, jak moc si systém myslí, že daný obrázek
+
+48
+00:04:00,720 --> 00:04:05,990
+odpovídá dané číslici. Mezi nimi jsou ještě dvě vrstvy nazývané skryté vrstvy,
+
+49
+00:04:06,180 --> 00:04:07,770
+které prozatím
+
+50
+00:04:07,770 --> 00:04:13,549
+budou jen obrovským otazníkem pro to, jak se tento proces rozpoznávání číslic provádí
+
+51
+00:04:13,740 --> 00:04:20,209
+Pro tuto síť jsem si vybral dvě skryté vrstvy, z nichž každá má 16 neuronů a samozřejmě jsou možné i jiné volby
+
+52
+00:04:20,609 --> 00:04:24,889
+Abych se přiznal, vybral jsem si dvě vrstvy kvůli tomu, jakou chci za chvilku pro tuto strukturu uvést motivaci
+
+53
+00:04:25,350 --> 00:04:29,179
+a 16 , to je pěkné číslo, aby se vše vešlo na obrazovku. Když na to přijde,
+
+54
+00:04:29,180 --> 00:04:32,209
+je tu spousta možností k experimentování s touto konkrétní strukturou
+
+55
+00:04:32,730 --> 00:04:38,329
+Způsob, jakým síť pracuje: aktivace v jedné vrstvě určuje aktivaci další vrstvy
+
+56
+00:04:38,760 --> 00:04:45,349
+Samozřejmě, možnost využití sítě jako mechanismu zpracování informací spočívá v tom, jakým konkrétním způsobem
+
+57
+00:04:45,570 --> 00:04:48,409
+aktivace z jedné vrstvy způsobí aktivaci v další vrstvě
+
+58
+00:04:48,900 --> 00:04:54,859
+Má to být přibližná nápodoba toho, jak v různých biologických sítích neuronů aktivace jedné skupiny neuronů
+
+59
+00:04:55,410 --> 00:04:57,410
+vede k aktivaci jiné skupiny
+
+60
+00:04:57,570 --> 00:04:58,340
+Síť,
+
+61
+00:04:58,340 --> 00:05:03,019
+kterou ukazuji, jsem již naučil, aby poznala číslice – dovolte mi, abych vám ukázal, co tím myslím
+
+62
+00:05:03,140 --> 00:05:06,580
+To znamená, že když vložíte obrázek tak, aby světlost každého
+
+63
+00:05:06,640 --> 00:05:11,780
+z 784 neuronů vstupní vrstvy odpovídala jasu každého pixelu v obraze,
+
+64
+00:05:12,330 --> 00:05:17,029
+tento soubor aktivací vytvoří v další vrstvě velmi specifický vzor,
+
+65
+00:05:17,190 --> 00:05:19,309
+a ten vytvoří nějaký vzor zase v další vrstvě,
+
+66
+00:05:19,440 --> 00:05:22,190
+který nakonec vytvoří nějaký vzor ve výstupní vrstvě
+
+67
+00:05:22,350 --> 00:05:29,359
+Jeden neuron této výstupní vrstvy bude nejjasnější, a tím síť říká, že si myslí, že to je ta číslice na obrázku
+
+68
+00:05:32,070 --> 00:05:36,859
+A než přejdeme k matematice o tom, jak jedna vrstva ovlivňuje další nebo jak funguje učení,
+
+69
+00:05:37,140 --> 00:05:43,069
+pohovořme o tom, proč je vůbec rozumné očekávat, že se takováto vrstvená struktura bude chovat inteligentně
+
+70
+00:05:43,800 --> 00:05:48,260
+Co od toho čekáme? Co bychom chtěli, aby dělaly tyto střední vrstvy?
+
+71
+00:05:48,860 --> 00:05:56,720
+No, když vy nebo já rozpoznáváme číslice, sestavujeme různé komponenty – devítka má smyčku nahoře a linku vpravo
+
+72
+00:05:57,260 --> 00:06:01,280
+a osmička má také smyčku nahoře, ale je spojena
+s jinou smyčkou dole
+
+73
+00:06:02,020 --> 00:06:06,599
+A 4 se v podstatě rozpadá na tři konkrétní linie, a tak podobně
+
+74
+00:06:07,180 --> 00:06:11,970
+Pokud všechno půjde ideálně, doufáme, že každý neuron v předposlední vrstvě
+
+75
+00:06:12,640 --> 00:06:14,729
+bude odpovídat jedné z těchto dílčích komponent
+
+76
+00:06:14,890 --> 00:06:19,740
+A kdykoli vložíte obrázek, třeba se smyčkou nahoře, jako u 9 nebo 8
+
+77
+00:06:19,870 --> 00:06:21,220
+budou tu určité
+
+78
+00:06:21,220 --> 00:06:27,749
+neurony, jejichž aktivace bude blízko k jedné. A nebude to jen pro jednu konkrétní smyčku pixelů, spíše
+
+79
+00:06:28,090 --> 00:06:35,039
+obecně pro smyčkový tvar v horní části se tento neuron aktivuje. Potom přechod od třetí vrstvy k poslední
+
+80
+00:06:35,380 --> 00:06:39,960
+bude vyžadovat pouze naučení, která kombinace dílčích komponent odpovídá jaké číslici
+
+81
+00:06:40,510 --> 00:06:42,810
+Samozřejmě, že to problém pouze posouvá jinam,
+
+82
+00:06:42,910 --> 00:06:49,019
+neboť, jak poznat tyto dílčí součásti? A také, co vůbec jsou správné dílčí součásti? A ještě budu muset vysvětlit,
+
+83
+00:06:49,020 --> 00:06:52,829
+jak jedna vrstva ovlivňuje další, ale na chvíli ještě zůstaňme u tohoto
+
+84
+00:06:53,650 --> 00:06:56,340
+Rozpoznání smyčky můžeme také rozložit na podproblémy
+
+85
+00:06:56,860 --> 00:07:02,550
+Jedním z možných způsobů, jak to udělat, je nejprve rozpoznat různé malé čárky, které ji tvoří
+
+86
+00:07:03,520 --> 00:07:08,910
+Také můžeme rozpoznat dlouhou čáru, jako je na číslicích 1, 4 nebo 7
+
+87
+00:07:08,910 --> 00:07:14,279
+To je vlastně jen delší čárka, nebo to můžeme považovat za sled několika malých čárek
+
+88
+00:07:14,740 --> 00:07:19,379
+Doufáme tedy, že každý neuron v druhé vrstvě sítě
+
+89
+00:07:20,290 --> 00:07:22,650
+bude odpovídat různým relevantním malým čárkám
+
+90
+00:07:23,230 --> 00:07:28,259
+Možná, že když přijde takovýto obrázek, rozsvítí se všechny neurony
+
+91
+00:07:28,720 --> 00:07:31,649
+odpovídající přibližně osmi až deseti specifickým malým čárkám,
+
+92
+00:07:31,930 --> 00:07:36,930
+díky čemuž se zapnou neurony spojené se smyčkou nahoře a dlouhou svislou linií, a
+
+93
+00:07:37,300 --> 00:07:39,599
+ty rozsvítí neuron znamenající devítku
+
+94
+00:07:40,300 --> 00:07:41,100
+Otázka je, jestli výsledná
+
+95
+00:07:41,100 --> 00:07:47,070
+síť se doopravdy tak chová. Ale to prověříme až potom, co si ukážeme, jak probíhá učení sítě
+
+96
+00:07:47,350 --> 00:07:52,170
+Ale zatím doufáme, že to tak bude, proto jsme síť takto složili z několika vrstev
+
+97
+00:07:53,020 --> 00:07:59,340
+Jak si dokážete představit, schopnost rozpoznat hrany a vzory v obraze bude užitečná i pro další úlohy rozpoznávání obrazu
+
+98
+00:07:59,740 --> 00:08:06,749
+A dokonce i mimo rozpoznávání obrazu existují nejrůznější věci, které bychom mohli dělat, které se skládají z vrstev abstrakce
+
+99
+00:08:07,690 --> 00:08:14,670
+Při rozpoznávání řeči například vezmeme zvukový záznam a vybíráme z něj dílčí zvuky, které kombinujeme, abychom vytvořili určité slabiky
+
+100
+00:08:15,070 --> 00:08:19,829
+ty se dále spojují a vytvářejí slova, jejich kombinace tvoří fráze a abstraktnější myšlenky, atd.
+
+101
+00:08:20,770 --> 00:08:25,710
+A jak cokoliv z toho vlastně funguje? Představte si, že vy jste ten, kdo má navrhnout
+
+102
+00:08:25,710 --> 00:08:30,449
+jak přesně mají aktivace jedné vrstvy ovlivnit aktivace v další vrstvě
+
+103
+00:08:30,670 --> 00:08:35,879
+Cílem je mít nějaký mechanismus, který by v principu dokázal kombinovat pixely do čárek,
+
+104
+00:08:35,880 --> 00:08:41,430
+nebo čárky do vzoru nebo vzory do číslic. Přibližme si to na konkrétním přikladu:
+
+105
+00:08:41,950 --> 00:08:44,189
+Chceme, aby jeden konkrétní neuron
+
+106
+00:08:44,380 --> 00:08:50,430
+ve druhé vrstvě detekoval, že má obrázek v této oblasti čárku
+
+107
+00:08:50,950 --> 00:08:54,960
+Řekněme si, jaké parametry sítě bychom měli být schopni zvolit,
+
+108
+00:08:55,270 --> 00:09:02,490
+co by mělo být možné měnit a ladit, aby byla šance přivést síť do stavu, kdy rozpozná tento vzor?
+
+109
+00:09:02,590 --> 00:09:07,290
+Nebo třeba jiný vzor, nebo to, že několik čárek tvoří smyčku, a podobné věci
+
+110
+00:09:08,290 --> 00:09:15,389
+Nechť je to tak, že  každému spoji mezi naším neuronem a neurony v první vrstvě je přiřazená váha
+
+111
+00:09:15,850 --> 00:09:17,850
+Váhy jsou jen čísla
+
+112
+00:09:18,190 --> 00:09:25,590
+Potom vezmeme všechny aktivace první vrstvy a vypočteme jejich vážený součet, s těmito vahami
+
+113
+00:09:27,370 --> 00:09:31,680
+Přijde mi užitečné znázornit tyto váhy pomocí malého obrázku,
+
+114
+00:09:31,680 --> 00:09:37,079
+kde použiji zelené pixely pro znázornění kladných vah a červené pixely pro znázornění záporných vah
+
+115
+00:09:37,240 --> 00:09:41,670
+a jas pixelu bude zhruba odpovídat velikosti váhy
+
+116
+00:09:42,400 --> 00:09:45,840
+Když nastavíme váhy téměř všech pixelů na nulu,
+
+117
+00:09:46,150 --> 00:09:49,079
+kromě několika kladných vah ve vybrané oblasti, která nás zajímá
+
+118
+00:09:49,480 --> 00:09:51,310
+a pak vypočteme vážený součet
+
+119
+00:09:51,310 --> 00:09:57,690
+všech hodnot pixelů, tak je to stejné jako bychom sečetli pouze hodnoty pixelů z vybrané oblasti
+
+120
+00:09:58,870 --> 00:10:04,440
+A pokud chceme detekovat, že je v tomto místě čárka, můžeme ještě přidat záporné váhy
+
+121
+00:10:04,900 --> 00:10:06,900
+pro okolní pixely
+
+122
+00:10:07,030 --> 00:10:12,660
+Pak je součet největší, když jsou středové pixely jasné, a okolní pixely tmavší
+
+123
+00:10:14,279 --> 00:10:18,169
+Když vypočítáte takovýto vážený součet, může vyjít libovolné číslo
+
+124
+00:10:18,240 --> 00:10:23,180
+Ale pro tuto síť chceme, aby aktivace byla nějaká hodnota mezi 0 a 1
+
+125
+00:10:23,730 --> 00:10:26,599
+Takže obecně se dělá, že tento vážený součet
+
+126
+00:10:26,910 --> 00:10:32,000
+se vloží do nějaké funkce, která reálnou přímku smrskne do intervalu mezi 0 a 1
+
+127
+00:10:32,190 --> 00:10:37,249
+Typická funkce, která toto dělá, se nazývá sigmoida (patří do skupiny logistických křivek)
+
+128
+00:10:37,980 --> 00:10:43,339
+Velmi záporné hodnoty pak skončí blízko nule, velmi kladné hodnoty skončí blízko jedné
+
+129
+00:10:43,339 --> 00:10:46,398
+a kolem hodnoty 0 je funkce rostoucí
+
+130
+00:10:49,080 --> 00:10:56,029
+Aktivace neuronu je v podstatě mírou toho, jak velký je příslušný vážený součet
+
+131
+00:10:57,450 --> 00:11:01,819
+Ale možná, že nechcete, aby se neuron rozsvítil, kdykoli je vážený součet větší než 0
+
+132
+00:11:02,100 --> 00:11:06,260
+Místo toho chcete, aby byl aktivní pouze tehdy, když je součet větší než, řekněme 10
+
+133
+00:11:06,630 --> 00:11:10,279
+Chcete mít možnost omezit jeho aktivitu
+
+134
+00:11:10,860 --> 00:11:16,099
+Zařídíme to tak, že k váženému součtu přičteme další číslo, třeba −10,
+
+135
+00:11:16,529 --> 00:11:19,669
+ještě než hodnotu ztransformujeme pomocí sigmoidy
+
+136
+00:11:20,220 --> 00:11:22,730
+Toto dodatečné číslo se nazývá práh
+
+137
+00:11:23,310 --> 00:11:29,060
+Takže váhy určují, jaký vzor pixelů neuron druhé vrstvy detekuje, a práh
+
+138
+00:11:29,220 --> 00:11:35,450
+určuje, jak vysoká musí být hodnota váženého součtu, aby se neuron stal aktivním
+
+139
+00:11:35,910 --> 00:11:37,910
+Prozatím jsme zkoumali jeden neuron
+
+140
+00:11:38,120 --> 00:11:41,940
+Každý další neuron v této vrstvě bude spojen se všemi
+
+141
+00:11:42,320 --> 00:11:50,620
+784 neurony pixelů z první vrstvy a každé z těchto 784 spojení má svou vlastní váhu
+
+142
+00:11:51,330 --> 00:11:57,739
+Každý neuron má také svůj práh, jedno číslo, které je třeba přičíst k váženému součtu, než vše transformujeme sigmoidou
+
+143
+00:11:58,020 --> 00:12:01,909
+Je to hodně dat pro tuto skrytou vrstvu 16 neuronů,
+
+144
+00:12:02,010 --> 00:12:08,270
+celkem 784 krát 16 vah a k tomu 16 prahů
+
+145
+00:12:08,490 --> 00:12:14,029
+A to byla jen spojení od první vrstvy k druhé, spojení mezi dalšími vrstvami mají
+
+146
+00:12:14,029 --> 00:12:17,208
+svoje váhy a prahy
+
+147
+00:12:17,760 --> 00:12:20,680
+Spočteme-li vše dohromady, má tato síť celkem
+
+148
+00:12:21,280 --> 00:12:23,920
+téměř 13 000 vah a prahů
+
+149
+00:12:24,280 --> 00:12:29,540
+13 000 voleb, pomocí kterých je možné ladit chování sítě
+
+150
+00:12:30,520 --> 00:12:32,520
+Takže, když mluvíme o učení,
+
+151
+00:12:32,530 --> 00:12:40,199
+myslí se tím, že počítač hledá nastavení všech těchto čísílek tak, aby výsledná síť zvládla
+
+152
+00:12:40,200 --> 00:12:42,190
+vyřešit zadaný problém
+
+153
+00:12:42,190 --> 00:12:43,000
+Proveďme si
+
+154
+00:12:43,000 --> 00:12:49,979
+myšlenkový experiment, který bude jak zábavný, tak děsuplný. ​​Představte si, že sedíte a nastavujete všechny tyto váhy a prahy ručně
+
+155
+00:12:50,380 --> 00:12:56,159
+a snažíte se docílit toho, že druhá vrstva rozpoznává čárky, třetí vrstva vzory, atd.
+
+156
+00:12:56,350 --> 00:13:01,440
+Já osobně jsem radši, když mám nějakou představu o fungování sítě, než síť brát jen jako černou skříňku,
+
+157
+00:13:01,870 --> 00:13:04,349
+protože, když se síť nechová tak, jak jste předpokládali,
+
+158
+00:13:04,600 --> 00:13:11,370
+můžete vyjít ze svých představ o tom, jak síť má pracovat, a zkoušet
+
+159
+00:13:11,680 --> 00:13:16,289
+měnit její strukturu. Nebo pokud síť sice funguje,
+
+160
+00:13:16,290 --> 00:13:18,290
+ale ne tím způsobem, jak jste čekali
+
+161
+00:13:18,310 --> 00:13:25,169
+pak prozkoumávat, co váhy a prahy doopravdy dělají, je způsob, jak ještě lépe pochopit, co se vlastně uvnitř sítě odehrává a jaké jsou její
+
+162
+00:13:25,180 --> 00:13:26,350
+schopnosti řešení
+
+163
+00:13:26,350 --> 00:13:30,600
+Mimochodem, zápis celé funkce je docela zdlouhavý, nemyslíte?
+
+164
+00:13:32,350 --> 00:13:38,460
+Ukáži vám úspornější formu zápisu. S tou se ještě setkáte, pokud budete číst
+
+165
+00:13:38,460 --> 00:13:40,460
+další knihy o neuronových sítích
+
+166
+00:13:41,110 --> 00:13:45,810
+Uspořádejme všechny aktivace jedné vrstvy do sloupcového vektoru
+
+167
+00:13:47,470 --> 00:13:52,320
+Pak uspořádejme všechny váhy do matice, kde každý řádek matice
+
+168
+00:13:52,900 --> 00:13:57,659
+odpovídá spojení mezi jednou vrstvou a určitým neuronem v další vrstvě
+
+169
+00:13:58,060 --> 00:14:03,599
+Potom vážený součet aktivací první vrstvy s těmito vahami
+
+170
+00:14:04,000 --> 00:14:09,330
+odpovídá jedné hodnotě výsledku maticového součinu
+
+171
+00:14:13,540 --> 00:14:18,380
+Mimochodem, v mnoha ohledech je pro strojové učení nutná dobrá znalost lineární algebry,
+
+172
+00:14:18,380 --> 00:14:26,940
+takže pro každého z vás, kdo by rád viděl vysvětlení vizuální formou, co znamená násobení matice vektorem, podívejte se na mou sérii o lineární algebře,
+
+173
+00:14:27,250 --> 00:14:28,839
+zejména třetí kapitolu
+
+174
+00:14:28,839 --> 00:14:35,759
+Zpět k našemu zápisu – místo, abychom přidávali práh ke každé z těchto hodnot zvlášť, spojíme
+
+175
+00:14:36,010 --> 00:14:42,209
+všechny prahy do vektoru a přičteme tento vektor
+ k předchozímu součinu matice s vektorem
+
+176
+00:14:42,910 --> 00:14:44,040
+Pak v posledním kroku
+
+177
+00:14:44,040 --> 00:14:47,250
+napíšu sigmu kolem toho všeho,
+
+178
+00:14:47,250 --> 00:14:51,899
+což bude znamenat, že aplikujeme sigmoidu na každou položku
+
+179
+00:14:52,420 --> 00:14:54,570
+výsledného vektoru uvnitř
+
+180
+00:14:55,510 --> 00:15:00,749
+Takže, jakmile nahradíme matici vah a tyto vektory jejich symboly,
+
+181
+00:15:01,000 --> 00:15:07,589
+můžeme převod aktivací z jedné vrstvy do druhé vyjádřit velmi úsporným zápisem
+
+182
+00:15:07,930 --> 00:15:15,000
+Tím také získáme mnohem jednodušší a rychlejší zdrojový kód, protože existuje mnoho optimalizovaných knihoven pro násobení matic
+
+183
+00:15:17,560 --> 00:15:21,359
+Pamatujete, že jsem dříve řekl, že tyto neurony jsou prostě věci, které obsahují číslo?
+
+184
+00:15:21,790 --> 00:15:26,250
+Samozřejmě, že konkrétní čísla, která obsahují, závisí na obrazu, který přivedete na vstup
+
+185
+00:15:27,790 --> 00:15:32,940
+Je tedy přesnější považovat každý neuron za funkci, jejímž vstupem jsou
+
+186
+00:15:33,070 --> 00:15:38,070
+výstupy všech neuronů v předchozí vrstvě a výsledkem číslo mezi nulou a jedničkou
+
+187
+00:15:38,800 --> 00:15:42,270
+Ve skutečnosti je celá síť jen jedna funkce, která přijímá
+
+188
+00:15:42,760 --> 00:15:47,010
+784 čísel jako vstup a vydává deset čísel jako výstup
+
+189
+00:15:47,470 --> 00:15:48,700
+Funkce je to
+
+190
+00:15:48,700 --> 00:15:56,249
+absurdně komplikovaná, protože zahrnuje 13 000 parametrů ve formě vah a prahů, které detekují určité vzorce, a k jejímu výpočtu
+
+191
+00:15:56,250 --> 00:16:00,270
+je potřeba provést mnoho maticových násobení a aplikací sigmoidy
+
+192
+00:16:00,610 --> 00:16:06,390
+Pořád ale je to jen funkce. A to, že vypadá komplikovaně, je dobře,
+
+193
+00:16:06,390 --> 00:16:12,239
+protože, kdyby byla jednodušší, asi těžko by ještě dokázala rozpoznávat číslice
+
+194
+00:16:12,960 --> 00:16:19,559
+A jak tady tento úkol zvládne? Jak se síť naučí správné váhy a prahy ze vstupních dat?
+
+195
+00:16:20,080 --> 00:16:26,039
+Tak to ukážu v příštím videu, a také podrobněji odhalím, co se vlastně děje uvnitř sítě, kterou tu vidíme
+
+196
+00:16:27,130 --> 00:16:32,640
+Nyní je čas říct: přihlaste se k odběru, abyste dostali oznámení o nových videích,
+
+197
+00:16:32,760 --> 00:16:37,560
+ale ve skutečnosti většina z vás nedostává upozornění od YouTube, že?
+
+198
+00:16:37,560 --> 00:16:42,260
+Možná bych měl říci upřímně: odebírejte, aby neuronové sítě, které jsou základem YouTube
+
+199
+00:16:42,459 --> 00:16:47,639
+algoritmu doporučení věřily, že chcete vidět obsah
+z tohoto kanálu
+
+200
+00:16:48,250 --> 00:16:50,250
+tak jak tak, přijďte zas pro další videa
+
+201
+00:16:50,410 --> 00:16:53,550
+Děkuji všem, kteří podporují tato videa na Patreon
+
+202
+00:16:53,589 --> 00:16:56,759
+Během letošního léta jsem jen málo pokročil v seriálu o pravděpodobnosti
+
+203
+00:16:56,760 --> 00:17:01,379
+Ale po tomto projektu se na to zas vrhnu, takže patroni, můžete čekat aktualizace
+
+204
+00:17:03,310 --> 00:17:05,550
+Abychom dnešní díl uzavřeli, je tu se mnou Lisha Li,
+
+205
+00:17:05,550 --> 00:17:12,029
+jejíž doktorská práce se věnovala teoretickým otázkám hlubokého učení a která v současné době pracuje ve firmě investující do rozvojového kapitálu, s názvem Amplify partners
+
+206
+00:17:12,030 --> 00:17:16,530
+a která laskavě poskytla část prostředků na financování tohoto videa. Takže Lisho, myslím,
+
+207
+00:17:16,530 --> 00:17:19,109
+že bychom se měli podívat na tuto sigmoidní funkci
+
+208
+00:17:19,180 --> 00:17:24,780
+Jestli se nepletu, jedny z prvních sítí ji používaly pro smrsknutí váženého součtu do intervalu mezi nulou a jednou
+
+209
+00:17:24,980 --> 00:17:30,340
+Tak nějak jako v biologii, kde je neuron buď aktivní nebo neaktivní. (Lisha) – Správně
+
+210
+00:17:30,360 --> 00:17:36,320
+(3B1B) – Ale relativně málo moderních sítí ještě používá sigmoidu. To už je přežité, že?
+(Lisha) – Ano, nebo spíš
+
+211
+00:17:36,370 --> 00:17:42,780
+se ukazuje, že s ReLU je učení mnohem snazší
+(3B1B) – A ReLU je zkratka pro oříznutou lineární funkci?
+
+212
+00:17:42,780 --> 00:17:48,839
+(Lisha) – Ano, je to taková funkce, ve které berete maximum z 0 a „a“, kde a je hodnota
+
+213
+00:17:49,120 --> 00:17:53,670
+váženého součtu. Myslím, že to je motivováno částečně
+
+214
+00:17:54,610 --> 00:17:56,610
+analogií s biologií
+
+215
+00:17:56,620 --> 00:17:58,179
+v tom, jak
+
+216
+00:17:58,179 --> 00:18:03,089
+neurony jsou buď aktivovány, nebo ne, a pokud aktivace překročí určitou prahovou hodnotou
+
+217
+00:18:03,250 --> 00:18:05,250
+chová se to jako funkce identita,
+
+218
+00:18:05,290 --> 00:18:10,439
+pokud ale nepřekročí, neuron nebude aktivován, takže funkce bude nulová, což je určité zjednodušení
+
+219
+00:18:10,720 --> 00:18:14,429
+Použití sigmoid nepomáhalo v učení, nebo dokonce bylo velmi obtížné sítě trénovat,
+
+220
+00:18:14,429 --> 00:18:19,589
+a tak v jednu dobu lidé zkoušeli ReLU a náhodou to fungovalo
+
+221
+00:18:20,110 --> 00:18:22,140
+Obzvláště dobře pro
+
+222
+00:18:22,690 --> 00:18:25,090
+extra hluboké neuronové sítě.
+(3B1B) – Výborně
+
+223
+00:18:25,090 --> 00:18:26,060
+Děkuji ti, Lisho
+

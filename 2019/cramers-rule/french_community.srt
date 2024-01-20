@@ -1,0 +1,632 @@
+1
+00:00:11,590 --> 00:00:15,800
+Dans une vidéo antérieure, j'ai évoqué les systèmes linéaires d'équations, et j'ai laissé de côté
+
+2
+00:00:15,800 --> 00:00:19,690
+la question du calcul en soi des solutions de ces systèmes.
+
+3
+00:00:19,690 --> 00:00:23,600
+Et même si ces calculs éprouvants sont laissés aux ordinateurs en règle générale,
+
+4
+00:00:23,600 --> 00:00:27,000
+s'intéresser aux méthodes mises en oeuvre pour ces calculs est une bonne façon d'estimer
+
+5
+00:00:27,000 --> 00:00:32,080
+si vous comprenez bien le fond du sujet, puisque c'est ici que ça compte vraiment.
+
+6
+00:00:32,080 --> 00:00:37,120
+Dans cette vidéo, je décris la géométrie derrière une méthode particulière pour les calculs de ces solutions,
+
+7
+00:00:37,120 --> 00:00:39,760
+qu'on appelle règle (ou méthode) de Cramer.
+
+8
+00:00:39,760 --> 00:00:44,140
+Pour tout bien comprendre ici, il faudra avoir une bonne compréhension du déterminant, du produit matriciel,
+
+9
+00:00:44,140 --> 00:00:48,140
+et bien sûr des systèmes linéaires d'équations, donc je vous recommande de regarder les vidéos qui parlent
+
+10
+00:00:48,140 --> 00:00:50,600
+de ces sujets si vous ne les maîtrisez pas encore, ou que vous êtes un peu rouillés.
+
+11
+00:00:50,600 --> 00:00:51,480
+Mais d'abord,
+
+12
+00:00:51,480 --> 00:00:56,379
+je dois mentionner que la règle de Cramer n'est pas la méthode optimale pour calculer les solutions
+
+13
+00:00:56,379 --> 00:00:58,010
+des systèmes linéaires d'équations.
+
+14
+00:00:58,010 --> 00:01:01,950
+Le pivot de Gauss, par exemple, sera toujours plus rapide.
+
+15
+00:01:01,950 --> 00:01:03,950
+Donc, pourquoi apprendre cette méthode?
+
+16
+00:01:03,950 --> 00:01:07,950
+Eh bien, voyez ça comme une sorte de sortie culturelle; c'est un exercice qui vous aidera à approfondir
+
+17
+00:01:07,950 --> 00:01:10,660
+votre connaissance de la théorie derrière de ces systèmes.
+
+18
+00:01:10,660 --> 00:01:15,580
+Bien se mettre en tête ces idées vous aidera à consolider les concepts de l'algèbre linéaire,
+
+19
+00:01:15,580 --> 00:01:19,960
+comme le déterminant et les systèmes linéaires, en voyant comment ils se rapportent l'un à l'autre.
+
+20
+00:01:19,960 --> 00:01:24,920
+Aussi, d'un point de vue purement artistique, le résultat final est très joli à concevoir,
+
+21
+00:01:24,920 --> 00:01:28,340
+bien plus que le pivot de Gauss.
+
+22
+00:01:28,340 --> 00:01:33,660
+Donc, ici on manipulera un système quelconque d'équations, avec disons, deux inconnues,
+
+23
+00:01:33,660 --> 00:01:35,980
+x et y, et deux équations.
+
+24
+00:01:35,980 --> 00:01:40,220
+En principe, tout ce qu'on évoquera ici s'applique aussi aux systèmes avec un plus grand nombre
+
+25
+00:01:40,220 --> 00:01:42,160
+d'inconnues, et autant d'équations supplémentaires.
+
+26
+00:01:42,160 --> 00:01:46,340
+Mais pour simplifier, un exemple plus petit est plus facile à modéliser dans nos têtes.
+
+27
+00:01:46,349 --> 00:01:50,599
+Donc comme je l'ai évoqué dans une autre vidéo, ce système peut être visualisé géométriquement,
+
+28
+00:01:50,600 --> 00:01:55,600
+comme une certaine matrice que l'on connait, qui transforme un vecteur inconnu (x,y),
+
+29
+00:01:55,600 --> 00:02:00,420
+dont on connait le résultat, dans notre cas le vecteur (-4,-2).
+
+30
+00:02:00,420 --> 00:02:06,140
+Rappelez vous, les colonnes de la matrice nous disent comment elle agit en tant qu'application,
+
+31
+00:02:06,140 --> 00:02:10,899
+chacune nous disant où les vecteurs de base de l'espace de départ arrivent.
+
+32
+00:02:10,900 --> 00:02:19,840
+Donc nous avons une sorte de puzzle. Quel vecteur (x,y) va arriver sur le vecteur (-4,-2)?
+
+33
+00:02:19,840 --> 00:02:21,780
+Une façon de voir les choses dans notre petit puzzle ici,
+
+34
+00:02:21,780 --> 00:02:25,400
+est que nous savons que le vecteur d'arrivée est une certaine combinaison linéaire
+
+35
+00:02:25,400 --> 00:02:29,420
+des colonnes de la matrice, donc x fois le vecteur d'arrivée de i,
+
+36
+00:02:29,420 --> 00:02:32,180
+plus y fois le vecteur d'arrivée de j.
+
+37
+00:02:32,180 --> 00:02:37,000
+Mais ce que nous voulons, c'est trouver quelle est la combinaison linéaire qui donne ce résultat là.
+
+38
+00:02:37,000 --> 00:02:39,700
+Rappelez vous, le type de réponse que l'on obtient peut varier
+
+39
+00:02:39,700 --> 00:02:44,240
+si jamais la transformation contracte tout l'espace dans une dimension inférieure.
+
+40
+00:02:44,240 --> 00:02:46,420
+C'est le cas si son déterminant est nul.
+
+41
+00:02:46,420 --> 00:02:51,840
+Dans ce cas, soit aucun vecteur ne peut arriver où il faut, soit il y en a une infinité
+
+42
+00:02:51,840 --> 00:02:57,480
+qui peuvent arriver sur le vecteur que l'on vise.
+
+43
+00:02:57,480 --> 00:03:01,460
+Mais pour cette vidéo, nous nous limiterons au cas où le déterminant est non nul,
+
+44
+00:03:01,460 --> 00:03:07,420
+impliquant que l'image de cette transformation s'étale toujours sur l'espace complet d'origine,
+
+45
+00:03:07,420 --> 00:03:14,540
+chaque antécédent arrive sur une unique image, et chaque image a un unique antécédent.
+
+46
+00:03:14,540 --> 00:03:18,820
+D'abord, laissez moi vous montrer une idée qui est fausse, mais qui mène dans la bonne direction.
+
+47
+00:03:18,829 --> 00:03:23,340
+la coordonnée x de cet antécédent mystère est ce que l'on obtient en faisant son produit matriciel
+
+48
+00:03:23,340 --> 00:03:25,939
+avec le premier vecteur de base, (1,0).
+
+49
+00:03:25,939 --> 00:03:30,830
+De même, la coordonnée y est ce que l'on obtient après le produit matriciel avec le deuxième vecteur de la base,
+
+50
+00:03:30,830 --> 00:03:31,980
+(0,1).
+
+51
+00:03:31,980 --> 00:03:37,439
+Donc peut-être on s'attend à ce qu'après la transformation, les produits matriciels de la version transformée
+
+52
+00:03:37,439 --> 00:03:41,939
+du vecteur mystère avec les versions transformées des vecteurs de base donnera aussi
+
+53
+00:03:41,939 --> 00:03:43,590
+ces coordonnées x et y
+
+54
+00:03:43,590 --> 00:03:51,340
+Ca serait fantastique, parce que l'on connait déjà les versions transformées de ces vecteurs.
+
+55
+00:03:51,340 --> 00:03:54,739
+Il y a juste un problème avec ça, c'est que c'est entièrement faux!
+
+56
+00:03:54,740 --> 00:03:59,260
+Pour la plupart des applications linéaires, le produit matriciel avant et après la transformation
+
+57
+00:03:59,260 --> 00:04:00,840
+n'aura rien à voir.
+
+58
+00:04:00,840 --> 00:04:04,220
+Par exemple, on peut prendre deux vecteurs ayant plus ou moins la même direction,
+
+59
+00:04:04,220 --> 00:04:05,800
+avec un produit positif,
+
+60
+00:04:05,800 --> 00:04:09,270
+qui s'écartent l'un de l'autre par la transformation, de telle façon
+
+61
+00:04:09,270 --> 00:04:11,909
+qu'ils finissent par avoir un produit négatif.
+
+62
+00:04:11,909 --> 00:04:15,660
+De même, si les vecteurs sont au départ perpendiculaires, donc avec un produit nul,
+
+63
+00:04:15,660 --> 00:04:21,160
+comme les vecteurs de base, ne finissent souvent pas perpendiculaires après la transformation,
+
+64
+00:04:21,160 --> 00:04:24,040
+et ne conservent pas ce produit nul.
+
+65
+00:04:24,040 --> 00:04:27,400
+Et dans l'exemple que je viens de montrer, le produit matriciel n'est certainement pas conservé,
+
+66
+00:04:27,400 --> 00:04:30,950
+il s'accroît puisque les vecteurs sont dilatés.
+
+67
+00:04:30,950 --> 00:04:36,680
+En fait, les applications qui conservent le produit matriciel sont assez spéciales pour avoir
+
+68
+00:04:36,680 --> 00:04:39,780
+leur propre nom: les applications orthogonales.
+
+69
+00:04:39,780 --> 00:04:45,640
+Ce sont celles qui conservent la perpendicularité des vecteurs de base et leur longueur.
+
+70
+00:04:45,640 --> 00:04:48,320
+Vous les reconnaîtrez en tant que matrices de rotation.
+
+71
+00:04:48,320 --> 00:04:53,000
+Elles correspondent à un mouvement rigide, sans aucune dilatation, contraction, ou plasticité.
+
+72
+00:04:53,000 --> 00:04:58,920
+Résoudre un système linéaire avec une matrice orthogonale est facile: puisque le produit matriciel est
+
+73
+00:04:58,920 --> 00:05:03,680
+conservé, faire le produit entre le vecteur d'arrivée et les colonnes de la matrice
+
+74
+00:05:03,680 --> 00:05:09,540
+sera identique à faire le produit entre le vecteur mystère et tous les vecteur de base,
+
+75
+00:05:09,540 --> 00:05:13,599
+ce qui revient à trouver les coordonnées du vecteur mystère.
+
+76
+00:05:13,600 --> 00:05:19,820
+Donc, dans ce cas particulier, x serait le produit de la première colonne avec le vecteur d'arrivée,
+
+77
+00:05:19,820 --> 00:05:24,580
+et y serait le produit de la seconde colonne avec le vecteur d'arrivée.
+
+78
+00:05:27,100 --> 00:05:31,380
+Pourquoi est-ce que je parle de ce cas alors que le concept échoue pour presque tous les systèmes?
+
+79
+00:05:31,380 --> 00:05:34,400
+Eh bien, elle nous indique une autre question:
+
+80
+00:05:34,400 --> 00:05:39,060
+Y a-t-il une autre façon de concevoir les coordonnées d'un vecteur géométriquement,
+
+81
+00:05:39,060 --> 00:05:42,600
+qui ne soit pas modifiée par la transformation?
+
+82
+00:05:42,600 --> 00:05:47,440
+Si l'idée de déterminant vous est passée par l'esprit, vous avez peut-être pensé à cette idée astrucieuse:
+
+83
+00:05:47,440 --> 00:05:54,480
+Prenez le parallélogramme défini par le vecteur de base i, et le vecteur mystère (x,y).
+
+84
+00:05:54,480 --> 00:06:00,420
+L'aire de ce parallélogramme est sa base, 1, multipliée par sa hauteur perpendiculairement à cette base,
+
+85
+00:06:00,420 --> 00:06:03,460
+qui correspond à la coordonnée y du vecteur mystère.
+
+86
+00:06:03,460 --> 00:06:10,380
+Ainsi, l'aire du parallélogramme est une façon détournée de décrire la coordonnée y du vecteur;
+
+87
+00:06:10,380 --> 00:06:13,590
+c'est une façon assez farfelue de parler de coordonnées, mais restez avec moi.
+
+88
+00:06:13,590 --> 00:06:19,540
+Et, pour être plus précis, vous devriez voir ça comme l'aire signée du parallélogramme,
+
+89
+00:06:19,540 --> 00:06:22,440
+comme je l'ai décrit dans la vidéo sur le déterminant.
+
+90
+00:06:22,440 --> 00:06:28,880
+Comme ça, un vecteur avec une coordonnée y négative aurait une aire négative pour le parallélogramme.
+
+91
+00:06:28,880 --> 00:06:34,900
+Cela marche bien si le vecteur i est considéré comme la base du parallélogramme.
+
+92
+00:06:34,900 --> 00:06:39,260
+Symétriquement, si on prend le parallélogramme engendré par le vecteur mystère
+
+93
+00:06:39,260 --> 00:06:45,660
+et le vecteur de base j, son aire sera la coordonnée x du vecteur mystère.
+
+94
+00:06:45,660 --> 00:06:48,400
+Encore une fois, c'est une façon saugrenue de représenter la coordonnée x,
+
+95
+00:06:48,400 --> 00:06:50,440
+mais vous verrez ce qu'elle apporte dans un moment.
+
+96
+00:06:50,440 --> 00:06:54,160
+Et pour montrer clairement comment l'idée se généralise, regardons en trois dimensions:
+
+97
+00:06:54,160 --> 00:06:57,300
+D'habitude, la façon de voir les coordonnées d'un vecteur,
+
+98
+00:06:57,300 --> 00:07:04,260
+disons la coordonnée z, serait de faire le produit du vecteur avec le troisième vecteur de base, k.
+
+99
+00:07:04,260 --> 00:07:09,060
+Mais une interprétation géométrique différente serait de considérer le parallélépipède
+
+100
+00:07:09,060 --> 00:07:13,400
+engendré par les deux autres vecteurs de base, i et j.
+
+101
+00:07:13,400 --> 00:07:20,020
+Si vous prenez ce carré d'aire 1 comme sa base,
+
+102
+00:07:20,030 --> 00:07:24,259
+son volume est sa hauteur, qui est la troisième coordonnée de notre vecteur.
+
+103
+00:07:24,260 --> 00:07:28,140
+De même, la façon loufoque de penser aux autres coordonnées du vecteur
+
+104
+00:07:28,140 --> 00:07:34,780
+serait de former le parallélépipède généré par ce vecteur et les vecteurs de base autres que celui
+
+105
+00:07:34,780 --> 00:07:38,320
+de la coordonnée recherchée, et de prendre son volume.
+
+106
+00:07:38,320 --> 00:07:42,490
+Enfin, on devrait considérer le volume signé de ces parallélépipèdes, comme c'est décrit
+
+107
+00:07:42,490 --> 00:07:45,320
+la vidéo sur le déterminant, en utilisant la règle de la main droite.
+
+108
+00:07:45,320 --> 00:07:48,640
+Donc l'ordre dans lequel les vecteurs sont considérés est important.
+
+109
+00:07:48,640 --> 00:07:51,900
+Comme ça, les coordonnées négatives ont toujours du sens.
+
+110
+00:07:51,900 --> 00:07:55,640
+Bon, et quel est l'intérêt de voir les coordonnées comme des aires et volumes comme ça?
+
+111
+00:07:55,640 --> 00:08:02,400
+lorsque vous appliquez une transformation matricielle, les aires des parallélogrammes sont modifiées,
+
+112
+00:08:02,400 --> 00:08:04,129
+elles peuvent être augmentées ou diminuées.
+
+113
+00:08:04,129 --> 00:08:09,940
+Mais, et c'est l'idée phare des déterminants, toutes les aires sont dilatées par le même facteur.
+
+114
+00:08:09,940 --> 00:08:13,560
+En particulier, le déterminant de notre matrice.
+
+115
+00:08:13,560 --> 00:08:18,300
+Par exemple, si vous prenez le parallélogramme engendré par le vecteur où le premier vecteur de base
+
+116
+00:08:18,300 --> 00:08:23,660
+arrive, donc la première colonne de la matrice, et la version transformée de (x,y),
+
+117
+00:08:23,660 --> 00:08:25,440
+quelle est son aire?
+
+118
+00:08:25,440 --> 00:08:29,860
+Eh bien, c'est la version transformée du parallélogramme de tout à l'heure,
+
+119
+00:08:29,860 --> 00:08:33,840
+dont l'aire était la coordonnée y du vecteur mystère.
+
+120
+00:08:33,840 --> 00:08:40,040
+Donc, son aire sera le déterminant de la transformation multiplié par cette valeur.
+
+121
+00:08:40,040 --> 00:08:46,600
+Donc, on peut trouver y en prenant l'aire de ce nouveau parallélogramme dans l'espace d'arrivée,
+
+122
+00:08:46,600 --> 00:08:50,860
+divisée par le déterminant de la transformation totale.
+
+123
+00:08:50,860 --> 00:08:53,080
+Et comment obtient on cette aire?
+
+124
+00:08:53,080 --> 00:08:56,800
+Eh bien, on connait les coordonnées d'arrivée du vecteur mystère,
+
+125
+00:08:56,800 --> 00:08:59,660
+c'est tout le principe d'un système linéaire d'équations.
+
+126
+00:08:59,660 --> 00:09:05,300
+Donc, on peut créer une nouvelle matrice dont le premier vecteur est le même que la matrice originale,
+
+127
+00:09:05,300 --> 00:09:11,160
+mais dont la deuxième colonne est le vecteur d'arrivée, et on prend son déterminant à elle.
+
+128
+00:09:11,160 --> 00:09:15,560
+Regardez ça: en prenant simplement les données du résultat de la transformation,
+
+129
+00:09:15,560 --> 00:09:19,220
+en particulier les colonnes de la matrice et les coordonnées du vecteur d'arrivée,
+
+130
+00:09:19,220 --> 00:09:25,000
+on peut récupérer la coordonnée y du vecteur mystère, ce qui résout le système à moitié!
+
+131
+00:09:25,000 --> 00:09:27,960
+La même idée peut donner la coordonnée x.
+
+132
+00:09:27,960 --> 00:09:33,620
+Considérons le parallélogramme défini plus tôt qui encode la coordonnée x du vecteur mystère,
+
+133
+00:09:33,620 --> 00:09:36,240
+engendrée par le vecteur mystère et le vecteur j.
+
+134
+00:09:36,240 --> 00:09:43,300
+Sa version transformée est engendrée par le vecteur d'arrivée et la deuxième colonne de la matrice,
+
+135
+00:09:43,300 --> 00:09:47,560
+et son aire aura été multipliée par le déterminant de la matrice.
+
+136
+00:09:47,560 --> 00:09:53,660
+Donc pour trouver x, on fait le rapport de cette nouvelle aire divisée par le déterminant de la matrice du système.
+
+137
+00:09:53,660 --> 00:09:58,320
+Et comme on a fait plus tôt, on peut calculer l'aire de ce nouveau parallélogramme
+
+138
+00:09:58,320 --> 00:10:02,620
+en créant une nouvelle matrice dont la première colonne est le vecteur d'arrivée,
+
+139
+00:10:02,620 --> 00:10:06,140
+et qui a la même 2ème colonne que la matrice de départ.
+
+140
+00:10:06,140 --> 00:10:11,060
+A nouveau, à partir d'informations de l'espace d'arrivée uniquement, les nombres dans le système linéaire,
+
+141
+00:10:11,060 --> 00:10:13,400
+on peut retrouver la valeur de x.
+
+142
+00:10:13,400 --> 00:10:19,020
+Cette formule pour retrouver les solutions d'un système d'équations s'appelle "Règle de Cramer".
+
+143
+00:10:19,020 --> 00:10:22,400
+Juste pour vérifier notre santé mentale, faisons le calcul:
+
+144
+00:10:22,400 --> 00:10:31,220
+le déterminant de la matrice du haut est 4+2, donc 6, et celui de la matrice du dessous est 2, donc x=3.
+
+145
+00:10:31,220 --> 00:10:36,180
+et en effet, on retrouve bien x=3 sur le vecteur de départ.
+
+146
+00:10:36,180 --> 00:10:42,340
+Idem, la règle de Cramer nous dit que y doit valoir 4/2,donc 2,
+
+147
+00:10:42,340 --> 00:10:47,540
+et c'est bien la valeur de départ pour y.
+
+148
+00:10:47,540 --> 00:10:54,040
+Le cas avec trois dimensions est similaire et je vous recommande vivement de faire pause pour y refléchir.
+
+149
+00:10:54,040 --> 00:10:56,600
+Prenez un peu d'élan.
+
+150
+00:10:56,600 --> 00:11:02,780
+On a une transformation connue décrite par cette matrice 3x3, et un vecteur d'arrivé donné par
+
+151
+00:11:02,780 --> 00:11:08,940
+la partie droite de notre système d'équations, et on veut savoir quel antécédent donne cette image.
+
+152
+00:11:08,940 --> 00:11:16,460
+Et si vous considérez la coordonnée z du vecteur mystère, en tant que le volume décrit plus haut,
+
+153
+00:11:16,460 --> 00:11:24,620
+engendré par i, j, et le vecteur mystère, qu'est ce qui arrive à son volume après transformation??
+
+154
+00:11:24,620 --> 00:11:28,180
+Et comment serait-il possible de calculer le nouveau volume?
+
+155
+00:11:28,180 --> 00:11:33,020
+Vraiment, faites pause et prenez un moment pour considérer tous les détails pour généraliser à d'autres dimensions,
+
+156
+00:11:33,020 --> 00:11:37,920
+en trouvant une expression pour chaque coordonnée de la solution du système élargi.
+
+157
+00:11:37,920 --> 00:11:43,100
+Penser à des cas plus généraux, et se convaincre que ça fonctionne, et pourquoi,
+
+158
+00:11:43,100 --> 00:11:49,400
+est où tout est vraiment appris, bien plus qu'en écoutant un gars sur youtube refaire tout le raisonnement.
+

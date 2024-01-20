@@ -1,0 +1,548 @@
+1
+00:00:04,230 --> 00:00:07,120
+Je suppose ici que vous ayez regardé la partie 3,
+
+2
+00:00:07,120 --> 00:00:10,230
+vous donnant l'intuition du fonctionnement de l'algorithme de rétropropagation.
+
+3
+00:00:11,040 --> 00:00:14,770
+Ici, nous allons être un peu plus formel et plonger dans le calcul sous-jacent.
+
+4
+00:00:14,770 --> 00:00:17,040
+Il est normal que cela soit un peu déroutant,
+
+5
+00:00:17,040 --> 00:00:21,480
+donc n'hésitez pas à faire pause régulièrement pour prendre le temps de réfléchir
+
+6
+00:00:21,920 --> 00:00:25,180
+Notre objectif principal est de montrer comment les gens en apprentissage automatique
+
+7
+00:00:25,180 --> 00:00:29,440
+se conçoivent la règle de la chaîne (théorème de dérivation des fonctions composées) dans le contexte des réseaux,
+
+8
+00:00:29,440 --> 00:00:33,820
+qui diffère de la façon dont la plupart des cours introductifs en analyse présentent le sujet.
+
+9
+00:00:34,500 --> 00:00:36,890
+Pour ceux d'entre vous qui sont mal à l'aise avec l'analyse,
+
+10
+00:00:36,890 --> 00:00:39,040
+j'ai fait toute une série sur le sujet.
+
+11
+00:00:40,340 --> 00:00:43,150
+Commençons par un réseau extrêmement simple,
+
+12
+00:00:43,150 --> 00:00:45,730
+celui où chaque couche est composé d'un seul neurone.
+
+13
+00:00:46,270 --> 00:00:50,680
+Donc ce réseau particulier est déterminé par 3 poids et 3 biais,
+
+14
+00:00:50,680 --> 00:00:55,070
+et notre objectif est de comprendre à quel point la fonction de coût est sensible à ces variables.
+
+15
+00:00:55,550 --> 00:00:57,830
+De cette façon, nous savons quelles modifications de ces termes
+
+16
+00:00:57,830 --> 00:01:00,940
+va entraîner la baisse la plus efficace de la fonction de coût.
+
+17
+00:01:01,920 --> 00:01:05,170
+Et nous nous concentrons sur la connexion entre les deux derniers neurones.
+
+18
+00:01:05,880 --> 00:01:11,370
+Notons l'activation de ce dernier neurone avec un exposant L, indiquant dans quelle couche il se trouve,
+
+19
+00:01:11,690 --> 00:01:15,720
+donc l'activation du neurone précédent est L-1.
+
+20
+00:01:16,430 --> 00:01:20,030
+Ce ne sont pas des exposants, c'est juste un indiçage,
+
+21
+00:01:20,030 --> 00:01:22,970
+et je souhaite utiliser l'indiçage inférieur plus tard pour une autre dénotation.
+
+22
+00:01:23,740 --> 00:01:29,710
+Disons que la valeur que nous voulons que cette dernière activation soit pour un exemple d'entraînement donné est y.
+
+23
+00:01:30,170 --> 00:01:32,360
+Par exemple, y pourrait être 0 ou 1.
+
+24
+00:01:32,940 --> 00:01:39,470
+Ainsi, le coût de ce réseau simple pour un seul exemple d'apprentissage est (a^(L) - y)^2.
+
+25
+00:01:40,250 --> 00:01:44,650
+Nous noterons le coût de cet exemple d'entraînement C_0.
+
+26
+00:01:46,030 --> 00:01:51,520
+On se rappelle que cette dernière activation est déterminée par un poids, que je vais appeler w^L
+
+27
+00:01:51,980 --> 00:01:54,220
+multiplié par l'activation du neurone précédent,
+
+28
+00:01:54,530 --> 00:01:56,940
+plus un certain biais, que j'appellerai b^L,
+
+29
+00:01:57,480 --> 00:01:59,900
+puis on injecte cela dans une fonction non linéaire spécifique
+
+30
+00:01:59,900 --> 00:02:01,520
+comme un sigmoïde ou un ReLU.
+
+31
+00:02:01,850 --> 00:02:06,980
+Cela nous facilitera la tâche si nous donnons un nom spécial à cette somme pondérée, comme z,
+
+32
+00:02:06,980 --> 00:02:09,550
+avec le même exposant que l'activation correspondante.
+
+33
+00:02:10,390 --> 00:02:11,480
+Il y a donc beaucoup de termes.
+
+34
+00:02:11,480 --> 00:02:16,960
+Et une façon de conceptualiser cela est que le poids, l'activation précédente, et le biais
+
+35
+00:02:16,960 --> 00:02:21,400
+sont combinés pour calculer z, qui à son tour nous permet de calculer a,
+
+36
+00:02:21,740 --> 00:02:25,610
+qui, avec la constante y, nous permet de calculer le coût.
+
+37
+00:02:27,260 --> 00:02:31,660
+Et bien sûr, un a^(L-1) est influencé par son propre poids et son propre biais, et autres.
+
+38
+00:02:32,810 --> 00:02:34,840
+Mais nous n'allons pas nous concentrer là-dessus maintenant.
+
+39
+00:02:35,680 --> 00:02:38,040
+Tous ces termes ne ne sont que des chiffres, n'est-ce pas?
+
+40
+00:02:38,040 --> 00:02:41,230
+Et ça peut être utile de penser que chacun a sa propre petite ligne de valeurs possibles.
+
+41
+00:02:41,900 --> 00:02:43,990
+Notre premier objectif est de comprendre
+
+42
+00:02:43,990 --> 00:02:48,940
+à quel point la fonction de coût est sensible aux petits changements de notre poids w^(L).
+
+43
+00:02:49,640 --> 00:02:54,880
+En d'autres termes, quelle est la dérivée partielle de C par rapport à w^(L).
+
+44
+00:02:55,620 --> 00:02:58,060
+Quand vous voyez ce terme "∂w",
+
+45
+00:02:58,060 --> 00:03:02,740
+pensez-y comme un tout petit décalage dans la valeur de w, par exemple de 0.01.
+
+46
+00:03:03,140 --> 00:03:08,200
+Et pensez à ce terme "∂C" comme le décalage provoqué sur la valeur du coût C.
+
+47
+00:03:08,710 --> 00:03:10,420
+Ce que nous voulons, c'est le ratio des deux.
+
+48
+00:03:11,210 --> 00:03:16,520
+Conceptuellement, ce minuscule décalage de w^(L) provoque un certain décalage de z^(L)
+
+49
+00:03:16,520 --> 00:03:21,380
+ce qui provoque à son tour un décalage de a^(L), ce qui influence directement le coût.
+
+50
+00:03:23,100 --> 00:03:28,930
+Nous décomposons donc ceci en examinant d'abord le ratio d'un minuscule changement de z^(L) sur un minuscule changement de w ^ (L).
+
+51
+00:03:29,290 --> 00:03:33,030
+C'est-à-dire, la dérivée partielle de z^(L) par rapport à w^(L).
+
+52
+00:03:33,760 --> 00:03:39,410
+De même, vous considérez alors le quotient d'un changement de a^(L) sur un minuscule changement de z^(L) qui l'a causé,
+
+53
+00:03:39,850 --> 00:03:44,880
+ainsi que le quotient entre le décalage final de C et le décalage intermédiaire de a^(L).
+
+54
+00:03:45,670 --> 00:03:47,850
+Ceci est la règle de la chaîne (FR = théorème de dérivation des fonctions composées),
+
+55
+00:03:47,850 --> 00:03:54,950
+qui nous permet, en multipliant ces trois fractions, d'obtenir la sensibilité de C aux petits changements de w^L.
+
+56
+00:03:57,190 --> 00:04:00,040
+A l'écran en ce moment, il y a un tas de symboles,
+
+57
+00:04:00,040 --> 00:04:03,000
+alors prenez un moment pour vous assurer d'avoir compris ce que chacun représente,
+
+58
+00:04:03,600 --> 00:04:06,560
+parce que maintenant nous allons calculer chacune des dérivées partielles.
+
+59
+00:04:07,400 --> 00:04:13,230
+La dérivée partielle de C par rapport à a^(L) est 2*(a^(L) - y).
+
+60
+00:04:13,960 --> 00:04:16,880
+Notez que cela signifie que sa taille est proportionnelle à
+
+61
+00:04:16,880 --> 00:04:20,880
+la différence entre la sortie du réseau et la valeur que nous voulons qu'elle soit.
+
+62
+00:04:21,360 --> 00:04:23,340
+Donc, si cette sortie était très différente,
+
+63
+00:04:23,340 --> 00:04:27,150
+même de légères modifications peuvent avoir un impact important sur la fonction de coût.
+
+64
+00:04:28,300 --> 00:04:33,880
+La dérivée partielle de a^(L) par rapport à z^(L) n'est que la dérivée de notre fonction sigmoïde,
+
+65
+00:04:33,880 --> 00:04:36,370
+ou quelle que soit la fonction d'activation que vous choisissez d'utiliser.
+
+66
+00:04:37,310 --> 00:04:40,370
+Et la dérivée partielle de z^(L) par rapport à w^(L),
+
+67
+00:04:41,470 --> 00:04:44,530
+est tout simplement a^(L-1).
+
+68
+00:04:46,070 --> 00:04:49,570
+Maintenant, je ne sais pas pour vous, mais je pense qu'il est facile de ne plus rien y voir là-dedans
+
+69
+00:04:49,570 --> 00:04:53,690
+sans prendre un moment pour s'asseoir et se rappeler de ce que chaque terme représente.
+
+70
+00:04:54,120 --> 00:04:56,040
+Dans le cas de cette dernière dérivée partielle,
+
+71
+00:04:56,040 --> 00:05:00,060
+l'influence sur la dernière couche d'un petit décalage dans la valeur de ce poids
+
+72
+00:05:00,060 --> 00:05:02,850
+dépend de la force du neurone précédent.
+
+73
+00:05:03,310 --> 00:05:07,520
+Rappelez-vous, c'est ici qu'intervient l'idée « Les neurones qui s'excitent ensemble se lient entre eux. » (D.Hebb, 1949).
+
+74
+00:05:09,210 --> 00:05:15,940
+Et tout cela est la dérivée partielle par rapport à w^(L) du coût pour un seul exemple d'entraînement spécifique.
+
+75
+00:05:16,410 --> 00:05:22,150
+Puisque la fonction de coût complète implique de moyenniser tous ces coûts pour de nombreux exemples d'entraînement,
+
+76
+00:05:22,150 --> 00:05:27,610
+sa dérivée partielle nécessite de moyenniser l'expression que nous avons trouvée sur tous les exemples d'entraînement.
+
+77
+00:05:28,430 --> 00:05:31,930
+Et bien sûr, ce n'est qu'une composante du vecteur de gradient,
+
+78
+00:05:31,930 --> 00:05:33,890
+qui est lui-même construit à partir des
+
+79
+00:05:33,890 --> 00:05:38,480
+dérivées partielles de la fonction de coût par rapport à tous ces poids et biais.
+
+80
+00:05:40,710 --> 00:05:43,550
+Mais même si ce n'était que d'une de ces dérivés partielles dont nous avons besoin,
+
+81
+00:05:43,550 --> 00:05:45,390
+c'est plus de 50% du travail.
+
+82
+00:05:46,420 --> 00:05:49,940
+La sensibilité au biais, par exemple, est presque identique.
+
+83
+00:05:50,250 --> 00:05:55,120
+Nous avons juste besoin de changer ce terme ∂z/∂w pour un ∂z/∂b,
+
+84
+00:05:58,760 --> 00:06:02,590
+Et si vous regardez cette formule, on voit que la dérivée est égale à 1.
+
+85
+00:06:06,210 --> 00:06:09,880
+Par ailleurs, et c'est maintenant que l'idée de rétro-propagation entre en jeu,
+
+86
+00:06:10,230 --> 00:06:15,670
+vous pouvez voir à quel point cette fonction de coût est sensible à l'activation de la couche précédente;
+
+87
+00:06:16,250 --> 00:06:19,650
+à savoir, cette dérivée initiale dans le développement de la règle de la chaîne,
+
+88
+00:06:19,650 --> 00:06:23,100
+la sensibilité de z à l'activation précédente
+
+89
+00:06:23,480 --> 00:06:25,670
+est le poids w^(L).
+
+90
+00:06:26,580 --> 00:06:31,500
+Encore une fois, même si nous ne serons pas en mesure d'influencer directement cette activation,
+
+91
+00:06:31,500 --> 00:06:33,080
+il est utile d'en garder une trace
+
+92
+00:06:33,080 --> 00:06:38,200
+parce que maintenant nous pouvons continuer à répéter cette idée de règle de chaîne, à rebours,
+
+93
+00:06:38,200 --> 00:06:42,750
+pour voir à quel point la fonction de coût est sensible aux poids précédents et aux biais antérieurs.
+
+94
+00:06:43,630 --> 00:06:45,980
+Et vous pourriez penser que c'est un exemple trop simple,
+
+95
+00:06:45,980 --> 00:06:47,880
+puisque toutes les couches n'ont qu'un neurone,
+
+96
+00:06:47,880 --> 00:06:51,220
+et les choses vont devenir exponentiellement plus compliquées dans le vrai réseau.
+
+97
+00:06:51,680 --> 00:06:56,270
+Mais honnêtement, il n'y a pas tellement de changements lorsque nous mettons plusieurs neurones dans chaque couche.
+
+98
+00:06:56,270 --> 00:06:58,710
+C'est juste l'histoire de quelques indices en plus.
+
+99
+00:06:59,340 --> 00:07:02,880
+Au lieu que l'activation d'une couche donnée soit simplement a^(L),
+
+100
+00:07:02,880 --> 00:07:07,210
+il va aussi y avoir un indice sur l'emplacement du neurone dans la couche.
+
+101
+00:07:07,780 --> 00:07:14,470
+Allons-y, utilisons la lettre k pour indexer la couche (L-1), et j pour indexer la couche (L).
+
+102
+00:07:15,290 --> 00:07:18,910
+Pour le coût, encore une fois nous regardons ce que la sortie désirée est.
+
+103
+00:07:18,910 --> 00:07:19,380
+Mais cette fois
+
+104
+00:07:19,380 --> 00:07:25,260
+nous additionnons les carrés des différences entre ces activations de la dernière couche et la sortie désirée.
+
+105
+00:07:26,060 --> 00:07:31,070
+Autrement dit, vous prenez une somme sur (a_j^(L) - y_j)^2
+
+106
+00:07:33,110 --> 00:07:34,520
+Comme il y a beaucoup plus de poids,
+
+107
+00:07:34,520 --> 00:07:37,650
+chacun doit avoir des indices supplémentaires pour savoir où il se trouve.
+
+108
+00:07:38,010 --> 00:07:44,990
+Alors appelons le poids de l'arête reliant ce k-ème neurone au j-ème neurone w_ {jk}^(L).
+
+109
+00:07:45,660 --> 00:07:48,260
+Ces indices pourraient donner l'impression d'être dans la mauvais sens,
+
+110
+00:07:48,260 --> 00:07:52,940
+mais cela correspond à la façon dont vous indexeriez la matrice des poids dont j'ai parlé dans la vidéo de la partie 1.
+
+111
+00:07:53,680 --> 00:07:58,350
+Comme auparavant, il est toujours agréable de donner un nom à la somme pondérée, comme z,
+
+112
+00:07:58,350 --> 00:08:04,310
+de sorte que l'activation de la dernière couche est juste votre fonction d'activation, comme le sigmoïde, appliquée à z.
+
+113
+00:08:05,040 --> 00:08:06,230
+Vous pouvez voir ce que je veux dire, non?
+
+114
+00:08:06,230 --> 00:08:11,680
+Ce sont fondamentalement les mêmes équations que celles que nous avions auparavant dans le cas d'un neurone par couche.
+
+115
+00:08:11,680 --> 00:08:13,870
+Ca a juste l'air un peu plus compliqué.
+
+116
+00:08:15,370 --> 00:08:18,220
+Et en effet, le développement de la dérivée par la règle de la chaîne
+
+117
+00:08:18,220 --> 00:08:21,980
+décrivant la sensibilité du coût à un poids spécifique
+
+118
+00:08:21,980 --> 00:08:23,890
+a fondamentalement la même tête.
+
+119
+00:08:23,890 --> 00:08:26,880
+Je vais vous laisser faire une pause et réfléchir à chacun de ces termes si vous le souhaitez.
+
+120
+00:08:29,310 --> 00:08:31,320
+Ce qui change ici, cependant,
+
+121
+00:08:31,320 --> 00:08:36,830
+est la dérivée du coût par rapport à l'une des activations dans la couche (L-1).
+
+122
+00:08:37,760 --> 00:08:43,120
+Dans ce cas, la différence est que le neurone influence la fonction de coût sur plusieurs chemins.
+
+123
+00:08:44,660 --> 00:08:50,540
+C'est-à-dire, d'une part, il influence a_0^(L), qui joue un rôle dans la fonction de coût,
+
+124
+00:08:51,010 --> 00:08:56,320
+mais il a aussi une influence sur a_1^(L), qui joue aussi un rôle dans la fonction de coût.
+
+125
+00:08:56,320 --> 00:08:57,410
+Et vous devez les ajouter.
+
+126
+00:09:00,170 --> 00:09:02,980
+Et ça ... et bien c'est à peu près tout.
+
+127
+00:09:03,560 --> 00:09:08,520
+Une fois que vous savez à quel point la fonction de coût est sensible aux activations de la deuxième à la dernière couche,
+
+128
+00:09:08,840 --> 00:09:12,940
+vous pouvez simplement répéter le processus pour tous les poids et les biais alimentant cette couche.
+
+129
+00:09:13,850 --> 00:09:15,360
+Alors réjouissez-vous !
+
+130
+00:09:15,360 --> 00:09:16,950
+Si tout cela a du sens à vos yeux,
+
+131
+00:09:16,950 --> 00:09:20,440
+et bien vous avez regardé en détail le mécanisme interne de la rétro-propagation,
+
+132
+00:09:20,440 --> 00:09:22,830
+l'appareillage qui permet aux réseaux de neurones d'apprendre.
+
+133
+00:09:23,590 --> 00:09:29,300
+Ces développements par la règle de la chaîne vous fournissent les dérivées qui déterminent chaque composante dans le gradient
+
+134
+00:09:29,300 --> 00:09:33,550
+qui permet de minimiser le coût du réseau en descendant d'un cran de manière répétée.
+
+135
+00:09:34,280 --> 00:09:36,850
+Pfiouuu. Si vous vous asseyez et pensez à tout cela,
+
+136
+00:09:36,850 --> 00:09:40,090
+C'est beaucoup de niveaux de complexité auxquels s'habituer.
+
+137
+00:09:40,090 --> 00:09:43,090
+Donc, ne vous inquiétez pas s'il vous faut du temps pour digérer tout cela.
+

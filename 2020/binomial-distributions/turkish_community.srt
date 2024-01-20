@@ -1,0 +1,756 @@
+1
+00:00:00,000 --> 00:00:02,000
+İnternetten bir ürün alıyorsunuz,
+
+2
+00:00:02,000 --> 00:00:06,425
+ve aynı ürünü, aşağı yukarı aynı fiyata satan üç farklı satıcı görüyorsunuz
+
+3
+00:00:06,425 --> 00:00:11,400
+Birisi %100 olumlu değerlendirme almış ama sadece 10 yorum var.
+
+4
+00:00:11,600 --> 00:00:15,205
+Diğeri, 50 yorumda %96 olumlu değerlendirilmiş.
+
+5
+00:00:15,205 --> 00:00:20,000
+Bir diğeri ise 100 yorumda %93 olumlu değerlendirme almış.
+
+6
+00:00:20,115 --> 00:00:21,175
+Hangi satıcıdan almalısınız?
+
+7
+00:00:28,295 --> 00:00:31,435
+Sanıyorum ki, bir değerlendirmede daha çok veri gördüğümüzde
+
+8
+00:00:31,435 --> 00:00:34,375
+daha güvenilir olduğuna içgüdüsel olarak kanaat getiriyoruz.
+
+9
+00:00:34,375 --> 00:00:37,215
+Genelde %100 değerlendirme gördüğümüzde şüpheci yaklaşıyoruz
+
+10
+00:00:37,215 --> 00:00:39,875
+çünkü çoğunlukla az sayıda yorumdan oluşuyorlar,
+
+11
+00:00:39,875 --> 00:00:42,965
+mantıken tam tersi şekilde daha düşük değerlendirme alabileceğini de düşündürüyorlar.
+
+12
+00:00:42,965 --> 00:00:46,115
+Peki bu sezgiyi nasıl nicel hale getirebiliriz?
+
+13
+00:00:46,115 --> 00:00:53,600
+Daha fazla veriden gelen güvenle, daha düşük değerlendirme arasındaki seçimin rasyonel olarak açıklaması ne?
+
+14
+00:00:54,145 --> 00:00:59,000
+Bu örnek, John Cook'un "Amazon Satıcılarına Bayes Teoremi Açısından Bakış" adlı blogunda
+
+15
+00:00:59,000 --> 00:01:03,215
+yayımlanan örneğin bir miktar değiştirilmiş hâli.
+
+16
+00:01:03,215 --> 00:01:06,175
+Bu, hem sizin hem de benim için, Olasılık ve İstatistiğin birkaç temel konusuna göz atmak için
+
+17
+00:01:06,175 --> 00:01:08,655
+mükemmel bir gerekçe.
+
+18
+00:01:08,655 --> 00:01:11,615
+Bu konuları doğru dürüst anlatmak, tabii ki vakit alacak,
+
+19
+00:01:11,615 --> 00:01:14,595
+bunun için ben de 3 ayrı videoda yapacağım.
+
+20
+00:01:14,595 --> 00:01:17,500
+Bu ilkinde, durumun bir modellemesini yapacağız
+
+21
+00:01:17,600 --> 00:01:20,900
+ve Binom Dağılımı'nı konuşarak işe başlayacağız.
+
+22
+00:01:20,900 --> 00:01:27,000
+İkincisi, Bayes Çıkarımı'nın temel fikirleri ve sürekli değişkenlerin olasılığı üzerine olacak
+
+23
+00:01:27,100 --> 00:01:30,500
+Üçüncüsünde ise Beta Dağılımı olarak bilinen şeye bakacağız,
+
+24
+00:01:30,695 --> 00:01:33,925
+ve elimizdeki veriyi analiz etmek için Python'dan yardım alacağız
+
+25
+00:01:33,925 --> 00:01:36,865
+ve neyi optimize etmek istediğimize bağlı olarak farklı sonuçlar elde edeceğiz.
+
+26
+00:01:38,900 --> 00:01:42,300
+Bütün bu matematiğe girmeden önce, sizi şevklendirmek için
+
+27
+00:01:42,405 --> 00:01:45,375
+Cevaplardan birinin nasıl işlediğini göstereyim
+
+28
+00:01:45,375 --> 00:01:46,375
+Çünkü, gerçekten çok basit.
+
+29
+00:01:46,875 --> 00:01:50,500
+Eğer online bir sitede 10 üzerinden 10 gibi bir değerlendirme görürseniz
+
+30
+00:01:50,600 --> 00:01:53,200
+aslında 2 tane daha yorum varmış gibi davranıyorsunuz.
+
+31
+00:01:53,200 --> 00:01:55,525
+Biri olumlu bir olumsuz olacak şekilde.
+
+32
+00:01:55,525 --> 00:01:58,535
+Yani, 12 üzerinden 11 almış gibi davranıyorsunuz
+
+33
+00:01:58,535 --> 00:02:00,945
+yüzde olarak 91.7 yapar.
+
+34
+00:02:01,725 --> 00:02:06,700
+Bu sayı sizin bu satıcıdan iyi bir deneyim alma olasılığınızı veriyor.
+
+35
+00:02:07,745 --> 00:02:12,400
+48 olumlu, 2 olumsuz değerlendirme bulunan 50 yorum durumunda ise
+
+36
+00:02:12,500 --> 00:02:15,895
+Aslında 49 olumlu ve 3 olumsuz yorum varmış gibi düşünüyorsunuz.
+
+37
+00:02:15,895 --> 00:02:18,765
+Yani 52 üzerinde 49
+
+38
+00:02:18,765 --> 00:02:19,825
+eşit olarak yüzde 94.2.
+
+39
+00:02:20,635 --> 00:02:23,685
+Bu ise sizin ikinci satıcıdan iyi bir deneyim alma olasılığınızı veriyor.
+
+40
+00:02:25,855 --> 00:02:28,795
+Aynı oyunu 200 yorumu olan üçüncü satıcıyla oynarsak
+
+41
+00:02:28,795 --> 00:02:31,895
+202'de 187 elde ediyoruz
+
+42
+00:02:31,895 --> 00:02:33,995
+ya da yüzde 92.6.
+
+43
+00:02:34,705 --> 00:02:38,800
+Bu kurala göre en iyi seçenek ikinci satıcıyla devam etmek olurdu
+
+44
+00:02:39,235 --> 00:02:42,265
+Bu Laplace'ın Ardıllık Kuralı olarak bilinen şeydir,
+
+45
+00:02:42,265 --> 00:02:44,300
+18. yüzyıla kadar dayanıyor
+
+46
+00:02:44,300 --> 00:02:46,300
+Bunun altında yatan ön kabulleri,
+
+47
+00:02:46,300 --> 00:02:51,325
+ve değişen ön kabuller yahut da altta yatan amaca göre yaptığınız seçimin nasıl değişebileceğini
+
+48
+00:02:51,325 --> 00:02:54,085
+anlamak için matematikten yardım almamız gerekecek.
+
+49
+00:02:54,335 --> 00:02:56,495
+Daha fazla konuşmadan, haydi başlayalım!
+
+50
+00:02:57,400 --> 00:02:59,900
+OLASILIKLARIN OLASILIĞI- BÖLÜM 1
+
+51
+00:03:00,595 --> 00:03:03,825
+Birinci adım, durumu nasıl modelliyoruz
+
+52
+00:03:03,825 --> 00:03:06,565
+ve optimize etmeye çalıştığımız şey ne?
+
+53
+00:03:06,905 --> 00:03:10,500
+Bir yöntem, her satıcıyı rasgele deneyimler üretiyormuş gibi düşünmek.
+
+54
+00:03:10,500 --> 00:03:13,085
+Ya olumlu ya da olumsuz,
+
+55
+00:03:13,085 --> 00:03:18,200
+ve de her bir satıcı sabit bir olasılıkta iyi bir deneyim sağlıyormuş gibi.
+
+56
+00:03:18,200 --> 00:03:21,925
+Bunları, başarı oranı ya da kısaca "s" olarak adlandıracağız.
+
+57
+00:03:21,925 --> 00:03:24,425
+Bütün zorluk "s"yi bilmemeziden kaynaklanıyor.
+
+58
+00:03:25,375 --> 00:03:28,545
+10 yorumda %100 olumlu ilk değerlendirmeyi gördüğünüzde
+
+59
+00:03:28,545 --> 00:03:31,815
+Bu gerçek başarı oranının yüzde 100 olduğu anlamına gelmiyor
+
+60
+00:03:31,815 --> 00:03:34,995
+Kolayca, yüzde 95 de olabilirdi.
+
+61
+00:03:34,995 --> 00:03:37,685
+Göstermek için, küçük bir simulasyon yapalım.
+
+62
+00:03:37,685 --> 00:03:40,695
+Bu simulasyonda, 0 ve 1 arasında rasgele bir sayı seçiyorum
+
+63
+00:03:40,695 --> 00:03:44,400
+eğer bu sayı 0.95'ten küçükse, olumlu yorum olarak işaretliyorum.
+
+64
+00:03:44,500 --> 00:03:47,575
+Aksi taktirde, olumsuz yorum olarak işaretliyorum.
+
+65
+00:03:48,675 --> 00:03:50,785
+Bunu 10 defa yapın
+
+66
+00:03:51,805 --> 00:03:53,625
+ve ardından 10 tane daha
+
+67
+00:03:54,005 --> 00:03:55,465
+10 tane daha...
+
+68
+00:03:56,025 --> 00:03:59,075
+ve 10 tane daha, böyle gidiyor. Bunu 0.95 başarı oranı olan bir satıcının,
+
+69
+00:03:59,075 --> 00:04:04,900
+10'luk serilerinin nasıl görüneceğini anlamak için yapıyoruz.
+
+70
+00:04:05,555 --> 00:04:09,300
+Birçoğu, aslında yaklaşık olarak yüzde 60'ı, 10 üzerinden 10 olarak karşımıza çıkıyor.
+
+71
+00:04:09,800 --> 00:04:15,300
+Eğer satıcının gerçek başarı oranı yüzde 95 olsaydı, gördüğümüz veri gerçekten makul olurdu.
+
+72
+00:04:15,635 --> 00:04:18,665
+Belki de gerçekten yüzde 90'dır ya da yüzde 99.
+
+73
+00:04:18,665 --> 00:04:20,805
+Buradaki zorluk, gerçekten hangisi olduğunu bilmiyoruz.
+
+74
+00:04:21,445 --> 00:04:27,000
+Diyelim ki, olumlu deneyim elde etme olasılığınızı maksimize etmek istiyorsunuz.
+
+75
+00:04:27,000 --> 00:04:29,135
+Ama başarı oranından emin değilsiniz.
+
+76
+00:04:29,945 --> 00:04:34,200
+Bir dakika düşünün, her satıcı için bir çok farklı başarı oranı mevcut,
+
+77
+00:04:34,200 --> 00:04:36,165
+0'dan 1'e kadar herhangi bir sayı olabilir.
+
+78
+00:04:36,165 --> 00:04:41,000
+Ve her bir başarı oranının ne kadar olası olduğuyla ilgili bir şey söylememiz gerekiyor.
+
+79
+00:04:41,000 --> 00:04:43,700
+Bir çeşit "olasılıkların olasılığı".
+
+80
+00:04:44,815 --> 00:04:46,800
+Oyunlaştırılmış örneklerin tersine,
+
+81
+00:04:47,000 --> 00:04:50,755
+Bozuk para veya zar atma gibi Olasılığa Giriş dersinde gördüğünüz örneklerde
+
+82
+00:04:50,755 --> 00:04:53,815
+uzun süreçli bir frekansı ön kabulde bulundunuz.
+
+83
+00:04:53,815 --> 00:04:55,800
+1/2 ya da 1/6 gibi
+
+84
+00:04:55,800 --> 00:04:59,935
+Burada olan şey ise uzun süreçteki frekansın kendisindeki belirsizlik.
+
+85
+00:04:59,935 --> 00:05:02,185
+Bu çok daha kuvvetli bir belirsizlik.
+
+86
+00:05:02,835 --> 00:05:05,485
+Bu arada belirtmem gerekiyor ki, bu çeşit bir kurgu,
+
+87
+00:05:05,485 --> 00:05:08,215
+rasgele bir süreçle ilgili sınırlı bir veriden çıkarım yapmanız gerektiği
+
+88
+00:05:08,215 --> 00:05:11,265
+birçok farklı gerçek hayat durumuyla da ilişkilendirilebilir.
+
+89
+00:05:12,545 --> 00:05:15,685
+Örneğin, diyelim ki araba üreten bir fabrika kuruyorsunuz
+
+90
+00:05:15,685 --> 00:05:18,635
+ve 100 arabayı içeren bir başlangıç testinde
+
+91
+00:05:18,635 --> 00:05:20,885
+2 arabanın bir çeşit sorunu olduğu belirleniyor.
+
+92
+00:05:21,235 --> 00:05:24,335
+Eğer 1 milyon araba üretmeye karar verdiyseniz
+
+93
+00:05:24,335 --> 00:05:30,500
+bu arabaların kaç tanesinin çözülmesi gereken problemlerle üretimden çıkacağı hakkında ne söyleyebilirsiniz?
+
+94
+00:05:31,015 --> 00:05:34,800
+Bu testin gerçek hata oranını yüzde 2 olarak garanti ettiği anlamına gelmiyor,
+
+95
+00:05:34,800 --> 00:05:36,705
+Aslında tam olarak ne anlama geliyor?
+
+96
+00:05:38,655 --> 00:05:41,285
+İlk zorlu işiniz olarak, size sorayım:
+
+97
+00:05:41,285 --> 00:05:46,200
+Eğer ki, sihirli bir şekilde, bir satıcının gerçek başarı oranını bilseydiniz, diyelim ki %95 olsun
+
+98
+00:05:46,300 --> 00:05:52,500
+10 olumlu ve 0 olumsuz değerlendirme ile karşılaşma olasılığınızı nasıl hesaplardınız?
+
+99
+00:05:52,605 --> 00:05:54,600
+Ya da 48 olumlu, 2 olumsuz,
+
+100
+00:05:54,700 --> 00:05:56,635
+Veya 186 olumlu, 14 olumsuz.
+
+101
+00:05:56,895 --> 00:06:02,800
+Diğer bir deyişle, varsayılan bir başarı oranı biliniyorken herhangi bir veriyle karşılaşma olasılığı nedir?
+
+102
+00:06:02,995 --> 00:06:06,115
+Bir dakika önce simülasyonda size şuna benzer bir şey gösterdim:
+
+103
+00:06:06,115 --> 00:06:09,125
+10 rasgele değerlendirme oluşturmak
+
+104
+00:06:09,125 --> 00:06:11,600
+Ufak bir programlama ile de bunu bir çok defa tekrarlayabilirsiniz
+
+105
+00:06:11,700 --> 00:06:14,855
+ve dağılımın nasıl göründüğü hakkında bilgi edinmek için bir histogram oluşturabilirsiniz.
+
+106
+00:06:21,505 --> 00:06:24,565
+Aynı şekilde, 50 değerlendirmelik bir simülasyon da yapabilirsiniz
+
+107
+00:06:24,565 --> 00:06:29,600
+Böylece 48 olumlu, 2 olumsuz değerlendirmenin ne kadar olası olduğunu görmüş olursunuz.
+
+108
+00:06:29,700 --> 00:06:31,900
+Görüyorsunuz, bu olasılığın güzel yanı.
+
+109
+00:06:32,100 --> 00:06:34,400
+Birazcık programlama, neredeyse her durumda hile yapabilmenize
+
+110
+00:06:34,400 --> 00:06:37,400
+ve simülasyon aracılığıyla cevabı önceden elde etmenize olanak tanır.
+
+111
+00:06:37,515 --> 00:06:40,900
+Mesela, birkaç yüz bin adet 50 değerlendirmelik bir örnekte
+
+112
+00:06:41,000 --> 00:06:43,500
+başarı oranını %95 varsayarsak
+
+113
+00:06:43,800 --> 00:06:48,400
+Yaklaşık yüzde 26.1'i bize 50'de 48'i veriyor gibi görünüyor.
+
+114
+00:06:48,925 --> 00:06:52,800
+Şanslıyız ki, bu durumda formül o kadar da kötü değil.
+
+115
+00:06:53,000 --> 00:06:57,000
+50'de 48'in gözlemlenme olasılığı şöyle görünüyor.
+
+116
+00:06:57,495 --> 00:07:00,905
+Bu ilk terim "50'nin 48'li kombinasyonu" olarak okunur,
+
+117
+00:07:00,905 --> 00:07:07,400
+ve 50 boşluğun 48'ini toplamda kaç farklı şekilde doldurabileceğimizin bir temsilidir.
+
+118
+00:07:09,185 --> 00:07:13,900
+Örneğin, belki önce 48 iyi değerlendirmeyle başlarsınız ve 2 kötü değerlendirmeyle bitirirsiniz.
+
+119
+00:07:14,000 --> 00:07:19,000
+Ya da belki önce 47 iyi değerlendirme ardından kötü-iyi-kötü, gibi gibi.
+
+120
+00:07:19,100 --> 00:07:25,000
+Prensipte, eğer bütün olası 50 boşluktan 48'ini doldurma yollarını numaralandırmak isterseniz
+
+121
+00:07:25,000 --> 00:07:28,500
+Bu şekillerin toplam sayısı 50'nin 48'li kombinasyonu olurdu.
+
+122
+00:07:28,700 --> 00:07:32,095
+Bu durum için 1225 oluyor
+
+123
+00:07:32,375 --> 00:07:34,000
+Peki, bu sayıyı neyle çarpıyoruz
+
+124
+00:07:34,000 --> 00:07:38,000
+Çarptığımız şey bu şekillerin herhangi birinin olasılığı.
+
+125
+00:07:38,000 --> 00:07:41,605
+Yani, bir adet olumlu değerlendirmenin olasılığı üssü 48,
+
+126
+00:07:41,605 --> 00:07:44,575
+çarpı bir adet olumsuz değerlendirmenin olasılığının karesi.
+
+127
+00:07:45,535 --> 00:07:48,900
+Her bir değerlendirmenin bir öncekinden bağımsız olduğunu varsaymamız çok önemli
+
+128
+00:07:49,000 --> 00:07:52,300
+Böylece, bütün olasıkları böyle beraber çarpabiliriz.
+
+129
+00:07:52,500 --> 00:07:57,635
+Bütün bu sayıları hesapladığımızda, sonuç 0.261 çıkıyor.
+
+130
+00:07:57,635 --> 00:08:00,485
+Bu simülasyonda deneysel olarak yaptığımız çıkarımla eşleşiyor.
+
+131
+00:08:01,815 --> 00:08:04,775
+48'i herhangi başka bir değerle değiştirebilir
+
+132
+00:08:04,775 --> 00:08:08,700
+ve farklı bir sayıda olumlu değerlendirmenin olasılığını bulabilrdiniz,
+
+133
+00:08:09,000 --> 00:08:11,500
+yine, önceden belirli bir başarı oranını kabul ederek.
+
+134
+00:08:14,725 --> 00:08:20,000
+Ekranda gördüğünüz aslında olasılıkta "Binom Dağılımı" olarak bilinen şey.
+
+135
+00:08:20,200 --> 00:08:23,495
+Olasılıktaki en temel dağılımlardan birisi
+
+136
+00:08:23,525 --> 00:08:28,900
+Ne zaman ki bozuk para atma gibi 2 olasılıklı ve tekrar edilen
+
+137
+00:08:28,955 --> 00:08:32,185
+bir rasgele olay söz konusu olduğunda "Binom Dağılımı" ortaya çıkar.
+
+138
+00:08:32,185 --> 00:08:35,300
+Bilmek istediğiniz şey ise çeşitli toplamlar elde etmenin olasılığı.
+
+139
+00:08:36,460 --> 00:08:43,000
+Bizim için, bu formül bize varsayılan bir başarı oranı biliniyorken, verinin gözlemlenme olasılığını veriyor.
+
+140
+00:08:43,300 --> 00:08:48,395
+En sonunda bunu, bir şekilde tersi yani sabit bir veri biliniyorken, başarı oranının olasılığı
+
+141
+00:08:48,395 --> 00:08:50,985
+hakkında çıkarımlar yapmak için kullanacağız.
+
+142
+00:08:51,265 --> 00:08:53,775
+Bu ikisi birbiriyle bağlantılı ancak mutlak suretle birbirinden ayrı şeyler.
+
+143
+00:08:54,435 --> 00:08:57,725
+Bu doğrultuda ilerlemek için, bu s değeriyle biraz oynayalım
+
+144
+00:08:57,725 --> 00:09:02,400
+ve 0 ile 1 arasında farklı sayılar olmak üzere s değerini değiştirelim.
+
+145
+00:09:04,225 --> 00:09:11,200
+Üretilen Binom Dağılımı, s çarpı 50 merkezinde kümelenen bir yığın gibi gözüküyor.
+
+146
+00:09:11,300 --> 00:09:13,155
+Bizim önemsediğimiz değer,
+
+147
+00:09:13,155 --> 00:09:19,000
+yani 50 üzerinden 48 değerlendirme görme olasılığı, bu vurgulanmış 48 çubuğu ile temsil ediliyor.
+
+148
+00:09:19,265 --> 00:09:22,585
+Aşağıya bu değerin s'ye olan bağımlılığını gösteren
+
+149
+00:09:22,685 --> 00:09:25,825
+ikinci bir grafik çizelim.
+
+150
+00:09:25,835 --> 00:09:30,800
+S=0.96 olduğunda, bu değer olabileceği en yüksek noktaya ulaşıyor.
+
+151
+00:09:30,900 --> 00:09:35,215
+Aslında bu mantıklı gelmeli, çünkü %96'lık değerlendirmeye baktığımızda,
+
+152
+00:09:35,215 --> 00:09:39,700
+en yüksek olasılık, eğer ki gerçek başarı oranı %96 ise olmalı.
+
+153
+00:09:40,955 --> 00:09:43,895
+S arttıkça, vurgulanmış çubuk gittikçe güçten düşüyor
+
+154
+00:09:43,895 --> 00:09:46,595
+ve S 1'e yaklaştıkça, o da 0'a gidiyor.
+
+155
+00:09:46,595 --> 00:09:51,500
+Çünkü, mükemmel bir başarı oranı olan biri, 2 olumsuz değerlendimeye de sahip olmamalıdır.
+
+156
+00:09:51,500 --> 00:09:54,665
+Ayrıca, sola doğru gittikçe, 0'a doğru oldukça hızlı yaklaşıyor.
+
+157
+00:09:56,795 --> 00:10:03,100
+S'yi 0.8 olarak aldığınız zaman, 50'de 48 değerlendirme elde etmek son derece nadir,
+
+158
+00:10:03,300 --> 00:10:05,525
+Binde bir olasılıkla gerçekleşiyor.
+
+159
+00:10:06,075 --> 00:10:10,500
+Ekranın aşağısındaki grafik, s'nin hangi değerlerinin daha makul geldiğiyle ilgli
+
+160
+00:10:10,800 --> 00:10:13,900
+daha nicel bir tanımlama yapabilmemiz için iyi bir başlangıç.
+
+161
+00:10:14,255 --> 00:10:17,400
+Formül olarak da yazılı olan, hatırlamanızı istediğim şey,
+
+162
+00:10:17,400 --> 00:10:20,400
+başarı oranı s'nin bir fonksiyonu olarak
+
+163
+00:10:20,400 --> 00:10:28,100
+eğri, bir sabit çarpı s üssü olumlu değerlendirmelerin sayısı çarpı (1-s) üssü olumsuz değerlendirmelerin sayısı.
+
+164
+00:10:28,765 --> 00:10:31,625
+Prensip olarak, eğer daha fazla verimiz olsaydı
+
+165
+00:10:31,625 --> 00:10:34,755
+480 olumlu değerlendirme ve 20 olumsuz değerlendirme gibi
+
+166
+00:10:34,755 --> 00:10:40,000
+sonuç grafiği yine merkezi 9.6'da olacak şekilde daha küçük ve yoğun olurdu.
+
+167
+00:10:40,000 --> 00:10:44,000
+Şimdilik iyi bir alıştırma, bunun neden böyle olduğunu açıklamaya çalışmak olurdu.
+
+168
+00:10:45,215 --> 00:10:50,400
+Kalıcı bir soru ise bu eğrilerle ne yapacağımız.
+
+169
+00:10:50,400 --> 00:10:54,600
+Amacımız, bu satıcıdan iyi bir deneyim elde etmenin olasılığını hesaplamak
+
+170
+00:10:54,600 --> 00:10:55,965
+Yani, ne yapacaksınız?
+
+171
+00:10:56,605 --> 00:11:00,500
+Basitçe, bu olasılığın %96 olduğunu düşünebilirsiniz.
+
+172
+00:11:00,600 --> 00:11:02,405
+Çünkü bu grafiğin zirve yaptığı yer.
+
+173
+00:11:02,405 --> 00:11:05,495
+Bir bağlamda, en olası başarı oranı
+
+174
+00:11:05,495 --> 00:11:08,345
+Ama, 10'da 10 örneğini düşünün
+
+175
+00:11:08,515 --> 00:11:13,400
+Bu durumda, tüm binom formülü s üzeri 10 olarak sadeleşiyor.
+
+176
+00:11:14,875 --> 00:11:17,615
+10 ardışık olumlu değerlendirme görmenin olasılığı,
+
+177
+00:11:17,615 --> 00:11:20,825
+bir tane görme olasılığının 10. kuvveti.
+
+178
+00:11:21,175 --> 00:11:23,695
+Gerçek başarı oranı 1'e yaklaştıkça,
+
+179
+00:11:23,695 --> 00:11:26,905
+10'da 10 görme olasılığı artıyor.
+
+180
+00:11:27,085 --> 00:11:31,500
+Aşağıdaki grafiğimiz sadece s 1'e yaklaştığında yükseliyor.
+
+181
+00:11:32,195 --> 00:11:36,500
+But s'nin 1'e eşit olduğu durum olasılığı maksimize eden değer olsa bile
+
+182
+00:11:36,500 --> 00:11:42,800
+Eminim ki, satıcıdan iyi bir deneyim elde etme olasılığınızın %100 oldunu rahatça söyleyemezsiniz.
+
+183
+00:11:43,225 --> 00:11:48,000
+Belki de, bunun yerine grafiğin bir çeşit kütle merkezini aramamız gerektiğini düşünüyorsunuz.
+
+184
+00:11:48,200 --> 00:11:50,325
+Ve bu tamamıyla doğru yolda bir adım olurdu.
+
+185
+00:11:51,305 --> 00:11:57,000
+Ama öncelikle, s değeri biliniyorken verinin gözlemlenme olasılığı ifadesinden,
+
+186
+00:11:57,000 --> 00:12:00,100
+veri (ki gerçekte bildiğimiz bir şey) biliniyorken,
+
+187
+00:12:00,385 --> 00:12:05,000
+bir s değeri (gerçekte bilmediğimiz bir şey) için olasılığa geçişi açıklamamız gerekiyor.
+
+188
+00:12:05,545 --> 00:12:11,300
+Ve bu Bayes Kuralı ve Olasılık Yoğunluk Fonksiyonu hakkında konuşmamızı gerektiriyor.
+
+189
+00:12:11,455 --> 00:12:12,595
+Bunlar için, Bölüm 2'de görüşelim.
+

@@ -1,0 +1,892 @@
+1
+00:00:04,020 --> 00:00:10,680
+Ceci est un trois. Il est mal écrit et rendu en très basse résolution, 28 x 28 pixels.
+
+2
+00:00:10,680 --> 00:00:15,660
+Mais votre cerveau n'a aucun mal à reconnaître que c'est un trois. Et je voudrais que vous preniez un moment pour apprécier
+
+3
+00:00:15,900 --> 00:00:18,949
+à quel point c'est fou qu'un cerveau puisse faire ceci presque sans effort.
+
+4
+00:00:18,949 --> 00:00:23,160
+Ça, ça et ça sont aussi reconnaissables à des trois,
+
+5
+00:00:23,160 --> 00:00:28,060
+même si les valeurs spécifiques de chaque pixel sont très différentes d'une image à l'autre.
+
+6
+00:00:28,080 --> 00:00:33,780
+Les cellules photosensibles dans vos yeux qui sont activées lorsque vous voyez ce trois
+
+7
+00:00:33,780 --> 00:00:36,800
+sont très différentes de celles qui sont activées lorsque vous voyez celui-ci.
+
+8
+00:00:37,140 --> 00:00:40,610
+Mais quelque chose, dans ce fabuleux cortex visuel qu'est le vôtre,
+
+9
+00:00:41,129 --> 00:00:48,139
+reconnaît ces trois comme des représentations de la même idée, tout en reconnaissant d'autres images en tant que des idées distinctes.
+
+10
+00:00:48,840 --> 00:00:55,039
+Mais si je vous disais : "Hey, asseyez-vous et écrivez-moi un programme qui prend une grille de 28 par 28
+
+11
+00:00:55,379 --> 00:01:01,759
+pixels comme celle-ci et qui vous rend un seul chiffre entre 0 et 10, vous disant quel chiffre il pense que c'est.
+
+12
+00:01:02,250 --> 00:01:06,139
+Cette tâche passe de "Comiquement triviale" à "Beaucoup trop difficile".
+
+13
+00:01:06,750 --> 00:01:08,270
+À part si vous avez vécu sous un rocher,
+
+14
+00:01:08,270 --> 00:01:14,599
+je pense que je n'ai pas tant besoin de vous montrer l'importance du machine learning et des réseaux de neurones pour le présent et le futur,
+
+15
+00:01:14,640 --> 00:01:18,410
+mais ce que je veux faire ici est vous montrer ce qu'est vraiment un réseau de neurones,
+
+16
+00:01:18,660 --> 00:01:24,229
+en repartant de zéro et en vous aidant à visualiser ce qu'il fait en tant qu'élément mathématique.
+
+17
+00:01:24,570 --> 00:01:28,310
+Mon espoir est juste que vous quittiez cette vidéo en sentant que cette structure est
+
+18
+00:01:28,380 --> 00:01:34,399
+motivée, et que vous sentiez que vous savez ce que vous lisez ou entendez sur l'"apprentissage" des réseaux de neurones.
+
+19
+00:01:34,950 --> 00:01:40,249
+Cette vidéo ciblera uniquement la structure de ces réseaux, et la prochaine s'intéressera à leur apprentissage.
+
+20
+00:01:40,530 --> 00:01:45,950
+Nous allons construire un réseau de neurones qui pourra reconnaître des chiffres écrits à la main.
+
+21
+00:01:49,270 --> 00:01:51,329
+C'est un exemple classique pour
+
+22
+00:01:51,520 --> 00:01:56,759
+introduire ce sujet et je reste sur ce status quo, car à la fin de ces deux vidéo je vous
+
+23
+00:01:56,760 --> 00:02:02,099
+montrerai quelques ressources où vous pourrez en apprendre plus, télécharger le code et jouer avec
+
+24
+00:02:02,100 --> 00:02:04,100
+sur votre propre ordinateur.
+
+25
+00:02:04,750 --> 00:02:08,970
+Il y a beaucoup de variantes des réseaux de neurones et ces dernières années,
+
+26
+00:02:08,970 --> 00:02:11,970
+il y a eu une sorte de "boom" dans la recherche de ces variantes.
+
+27
+00:02:12,130 --> 00:02:19,019
+Mais dans ces deux vidéos introductives, nous ne regarderons que les formes les plus simples sans fioritures.
+
+28
+00:02:19,300 --> 00:02:21,040
+C'est un prérequis nécessaire
+
+29
+00:02:21,040 --> 00:02:24,510
+pour comprendre ne serait-ce qu'une seule de ces variantes modernes plus efficaces, et
+
+30
+00:02:24,760 --> 00:02:28,199
+croyez-moi, il y a déjà bien assez de complexité ici pour que nous y réfléchissions.
+
+31
+00:02:28,690 --> 00:02:32,820
+Mais même dans cette plus simple forme, il peut reconnaître des chiffres écrits à la main,
+
+32
+00:02:32,820 --> 00:02:36,180
+ce qui est quelque chose de plutôt cool pour un ordinateur.
+
+33
+00:02:37,120 --> 00:02:41,960
+Aussi, vous verrez qu'il néglige certains espoirs qu'on aurait pu avoir.
+
+34
+00:02:43,090 --> 00:02:48,179
+Comme leur nom l'indique, les réseaux de neurones sont inspirés par notre cerveau, mais simplifions.
+
+35
+00:02:48,520 --> 00:02:51,389
+Que sont les neurones, et en quoi sont-ils reliés entre eux ?
+
+36
+00:02:52,090 --> 00:02:57,750
+Maintenant, quand je dirais "neurone", je voudrai que vous pensiez à quelque chose qui contient un nombre.
+
+37
+00:02:58,209 --> 00:03:02,129
+Plus particulièrement un nombre entre 0 et 1. Ce n'est rien de plus que ça.
+
+38
+00:03:03,430 --> 00:03:11,130
+Par exemple, le réseau démarre avec un paquet de neurones correspondant chacun à un pixel de l'image entrée
+
+39
+00:03:11,400 --> 00:03:12,460
+ce qui fait
+
+40
+00:03:12,460 --> 00:03:20,240
+784 neurones au total. Chacun d'eux contient un nombre qui représente le niveau de gris du pixel correspondant
+
+41
+00:03:20,769 --> 00:03:24,299
+allant de 0 pour un pixel noir à 1 pour un pixel blanc.
+
+42
+00:03:24,910 --> 00:03:30,419
+Ce nombre dans le neurone est appelé son "activation", et l'image que vous devez avoir ici
+
+43
+00:03:30,420 --> 00:03:33,959
+est que chaque neurone est "allumé" quand son activation est haute.
+
+44
+00:03:36,260 --> 00:03:41,559
+Donc tous ces 784 neurones constitue la première couche de notre réseau.
+
+45
+00:03:45,990 --> 00:03:51,289
+Cependant, en s'intéressant à la dernière couche, celle ci a 10 neurones, chacun représentant un chiffre.
+
+46
+00:03:51,570 --> 00:03:56,239
+L'activation de ces neurones (encore un nombre entre 0 et 1)
+
+47
+00:03:56,880 --> 00:04:00,049
+représente à quel point le système pense que l'image
+
+48
+00:04:00,720 --> 00:04:05,990
+correspond à un chiffre donné. Il y a aussi quelques couches entre, appelées les "couches cachées",
+
+49
+00:04:06,180 --> 00:04:07,770
+qui, pour l'instant,
+
+50
+00:04:07,770 --> 00:04:13,549
+devraient encore être un grand point d'interrogation quant à comment ce processus de reconnaissance sera géré.
+
+51
+00:04:13,740 --> 00:04:20,209
+Dans ce réseau, j'ai choisi deux couches cachées avec 16 neurones chacune, et qu'on se le dise c'est en quelque sorte un choix arbitraire.
+
+52
+00:04:20,609 --> 00:04:24,889
+Honnêtement, j'ai choisi deux couches parce que je veux que le système soit rapide.
+
+53
+00:04:25,350 --> 00:04:29,179
+Et 16 ? Eh bien c'était juste un nombre qui rendait bien sur l'écran. En pratique,
+
+54
+00:04:29,180 --> 00:04:32,209
+il y a de la marge pour expérimenter avec cette structure ici.
+
+55
+00:04:32,730 --> 00:04:38,329
+La façon dont le réseau opère est que l'activation d'une couche détermine l'activation de la couche suivante.
+
+56
+00:04:38,760 --> 00:04:45,349
+Et bien sûr, le cœur du réseau en tant que mécanisme de gestion d'informations revient à "Comment
+
+57
+00:04:45,570 --> 00:04:48,409
+l'activation d'une couche entraîne l'activation de la couche suivante".
+
+58
+00:04:48,900 --> 00:04:54,859
+C'est censé être vaguement analogue au fait que dans les réseaux de neurones biologiques, certains groupes de neurones activés
+
+59
+00:04:55,410 --> 00:04:57,410
+causent l'activation d'autres neurones.
+
+60
+00:04:57,570 --> 00:04:58,340
+Le réseau
+
+61
+00:04:58,340 --> 00:05:03,019
+que je vous montre ici a déjà été entraîné à reconnaître des chiffres. Laissez-moi vous montrer ce que je veux dire par là.
+
+62
+00:05:03,140 --> 00:05:06,580
+Ça veut dire que si vous lui donnez une image, activant
+
+63
+00:05:06,640 --> 00:05:11,780
+tous les 784 neurones de la première couche, selon la luminosité de chaque pixel dans l'image,
+
+64
+00:05:12,330 --> 00:05:17,029
+ce motif d'activations entraîne un autre motif spécifique dans la couche suivante,
+
+65
+00:05:17,190 --> 00:05:19,309
+qui entraîne un autre motif dans celle juste après,
+
+66
+00:05:19,440 --> 00:05:22,190
+qui au final donne un dernier motif dans la dernière couche, et
+
+67
+00:05:22,350 --> 00:05:29,359
+le neurone le plus activé correspond au choix du réseau quant au chiffre représenté dans l'image.
+
+68
+00:05:32,070 --> 00:05:36,859
+Et avant de foncer dans les mathématiques de "Comment une couche influence la suivante" ou "Comment l'entraînement marche",
+
+69
+00:05:37,140 --> 00:05:43,069
+parlons simplement de "Pourquoi une structure comme celle-ci peut agir intelligemment".
+
+70
+00:05:43,800 --> 00:05:48,260
+Qu'espérons-nous ici ? Quel est le meilleur espoir pour ce que feront ces couches intermédiaires ?
+
+71
+00:05:48,860 --> 00:05:56,720
+Eh bien, lorsque vous ou moi reconnaissez des chiffres, nous assemblons différentes formes simples. Un 9 a une boucle en haut, et une ligne à droite.
+
+72
+00:05:57,260 --> 00:06:01,280
+Un 9 a aussi une boucle en haut, mais il y a une autre boucle plus bas.
+
+73
+00:06:02,020 --> 00:06:06,599
+Un 4 est simplement séparé en trois lignes spécifiques, etc.
+
+74
+00:06:07,180 --> 00:06:11,970
+Dans un monde idéal, on pourrait espérer que chaque neurone de la troisième couche
+
+75
+00:06:12,640 --> 00:06:14,729
+corresponde avec une de ces formes simples.
+
+76
+00:06:14,890 --> 00:06:19,740
+Et que chaque fois que vous lui donnez une image, disons une boucle en haut comme dans un 8 ou un 9,
+
+77
+00:06:19,870 --> 00:06:21,220
+Il y a certains
+
+78
+00:06:21,220 --> 00:06:27,749
+neurones spécifiques dont l'activation sera proche de 1. Et je ne parle pas de cette boucle spécifique, mais que
+
+79
+00:06:28,090 --> 00:06:35,039
+n'importe quel motif de boucle vers le haut de l'image active ce neurone. De cette façon, passer de la troisième à la dernière couche
+
+80
+00:06:35,380 --> 00:06:39,960
+ne requiert qu'un apprentissage de "Quelle combinaison de formes correspond à quel chiffre".
+
+81
+00:06:40,510 --> 00:06:42,810
+Bien sûr, cela ne fait que reporter le problème autre part, puisque
+
+82
+00:06:42,910 --> 00:06:49,019
+comment pourrions-nous reconnaître ces formes ou même apprendre quelles formes sont censées êtres les bonnes. Et je n'ai même pas parlé
+
+83
+00:06:49,020 --> 00:06:52,829
+de "Comment une couche influence la suivante". Mais faites-moi confiance pour le moment.
+
+84
+00:06:53,650 --> 00:06:56,340
+Reconnaître une boucle peut aussi être simplifié en sous-problèmes.
+
+85
+00:06:56,860 --> 00:07:02,550
+Une manière raisonnable de faire ça serait de d'abord reconnaître les différentes petites bordures qui la composent
+
+86
+00:07:03,520 --> 00:07:08,910
+De la même façon qu'une longue ligne comme dans les chiffres 1, 4 ou 7.
+
+87
+00:07:08,910 --> 00:07:14,279
+C'est simplement une longue bordure. Ou bien on peut le voir comme une association de petits traits.
+
+88
+00:07:14,740 --> 00:07:19,379
+Donc peut-être que notre espoir est que chaque neurone de la deuxième couche du réseau
+
+89
+00:07:20,290 --> 00:07:22,650
+corresponde à ces différents petits traits.
+
+90
+00:07:23,230 --> 00:07:28,259
+Peut-être que lorsqu'une image comme celle-ci arrive, elle active tous les neurones
+
+91
+00:07:28,720 --> 00:07:31,649
+associés avec à peu près 8 à 10 petits traits spécifiques
+
+92
+00:07:31,930 --> 00:07:36,930
+qui en retour activent les neurones associés avec la boucle d'en haut et la longue ligne verticale,
+
+93
+00:07:37,300 --> 00:07:39,599
+et ceux-ci activent le neurone associé au 9 !
+
+94
+00:07:40,300 --> 00:07:41,100
+Que ceci soit
+
+95
+00:07:41,100 --> 00:07:47,070
+ou non ce que notre réseau fera est une autre question, que je traiterai une fois que nous aurons vu comment entraîner le réseau.
+
+96
+00:07:47,350 --> 00:07:52,170
+Mais c'est un espoir qu'on peut avoir, une sorte de but avec cette structure en couches.
+
+97
+00:07:53,020 --> 00:07:59,340
+De plus, vous pouvez imaginer qu'être capable de reconnaître des petits traits comme ceci, serait très utile pour la reconnaissance d'autres images.
+
+98
+00:07:59,740 --> 00:08:06,749
+Et au-delà de la reconnaissance d'images, il y a des millions de choses que vous pouvez réduire en couches abstraites.
+
+99
+00:08:07,690 --> 00:08:14,670
+L'analyse de la parole par exemple implique de prendre un audio brut et de le décomposer en sons distincts qui se combinent en syllabes,
+
+100
+00:08:15,070 --> 00:08:19,829
+qui se combinent pour faire des mots, puis des phrases, des idées plus abstraites etc.
+
+101
+00:08:20,770 --> 00:08:25,710
+Mais pour en revenir à comment tout ceci marche, imaginez-vous décider
+
+102
+00:08:25,710 --> 00:08:30,449
+comment les activations d'une couche pourraient déterminer les activations de la suivante.
+
+103
+00:08:30,670 --> 00:08:35,879
+Le but est d'avoir un mécanisme qui pourrait combiner les pixels en traits
+
+104
+00:08:35,880 --> 00:08:41,430
+ou des traits en motifs, ou des motifs en chiffres. Et pour prendre un exemple très spécifique,
+
+105
+00:08:41,950 --> 00:08:44,189
+disons que l'espoir est pour un neurone
+
+106
+00:08:44,380 --> 00:08:50,430
+particulier de la deuxième couche de savoir si l'image a ou non un trait dans cette région ici.
+
+107
+00:08:50,950 --> 00:08:54,960
+La question est "Quels paramètres devrait avoir le réseau".
+
+108
+00:08:55,270 --> 00:09:02,490
+Quels boutons pourrions-nous tourner pour que ce soit capable de capturer ce motif
+
+109
+00:09:02,590 --> 00:09:07,290
+ou n'importe quel autre motif de pixel. Ou le motif que quelques traits peuvent faire une boucle etc.
+
+110
+00:09:08,290 --> 00:09:15,389
+Nous allons donc assigner un poids à chacune des connections entre nos neurones et les neurones de la première couche.
+
+111
+00:09:15,850 --> 00:09:17,850
+Ces poids sont juste des nombres.
+
+112
+00:09:18,190 --> 00:09:25,590
+Ensuite, prenez chacune des activations, et calculez leur somme pondérée, en accord avec ces poids.
+
+113
+00:09:27,370 --> 00:09:31,680
+Je trouve cela utile d'imaginer ces poids organisés dans une grille à eux seuls,
+
+114
+00:09:31,680 --> 00:09:37,079
+et j'utiliserai des pixels verts pour indiquer des poids positifs et des pixels rouges pour indiquer des poids négatifs.
+
+115
+00:09:37,240 --> 00:09:41,670
+Où la luminosité de ce pixel est une vague description de la valeur de ce poids.
+
+116
+00:09:42,400 --> 00:09:45,840
+Maintenant, si on donne un poids de 0 à tous les pixels
+
+117
+00:09:46,150 --> 00:09:49,079
+sauf dans cette région qui nous intéresse, où nous mettrons des poids positifs,
+
+118
+00:09:49,480 --> 00:09:51,310
+eh bien calculer la somme pondérée de
+
+119
+00:09:51,310 --> 00:09:57,690
+toutes les valeurs des pixels correspondra simplement à additionner les valeurs des pixels de cette région qui nous intéresse.
+
+120
+00:09:58,870 --> 00:10:04,440
+Et si vous voulez vraiment reconnaître un trait ici, vous devriez aussi choisir des poids négatifs
+
+121
+00:10:04,900 --> 00:10:06,900
+associés aux pixels environnants.
+
+122
+00:10:07,030 --> 00:10:12,660
+Ainsi, la somme sera plus élevée lorsque ces pixels intermédiaires sont lumineux, et que les pixels autours sont sombres.
+
+123
+00:10:14,279 --> 00:10:18,169
+Lorsque vous calculez une somme pondérée comme celle-ci, vous pouvez trouver n'importe quel nombre.
+
+124
+00:10:18,240 --> 00:10:23,180
+Mais pour ce réseau, on ne veut que des activations entre 0 et 1.
+
+125
+00:10:23,730 --> 00:10:26,599
+Donc il est d'usage de donner cette somme pondérée à
+
+126
+00:10:26,910 --> 00:10:32,000
+une certaine fonction qui ramène la droite des réels au segment [0;1]
+
+127
+00:10:32,190 --> 00:10:37,249
+Et une fonction commune qui fait ceci est appelée la fonction sigmoïde, aussi connue sous le nom de courbe logistique.
+
+128
+00:10:37,980 --> 00:10:43,339
+Basiquement, des antécédents très négatifs donneront des images proches de 0, et inversement,
+
+129
+00:10:43,339 --> 00:10:46,398
+et elle augmente simplement autour de 0 de façon régulière.
+
+130
+00:10:49,080 --> 00:10:56,029
+Donc l'activation d'un neurone est simplement la mesure de "à quel point la somme pondérée est positive".
+
+131
+00:10:57,450 --> 00:11:01,819
+Mais peut-être qu'on ne veut pas que le neurone s'active quand la somme est supérieure à 0.
+
+132
+00:11:02,100 --> 00:11:06,260
+Peut-être qu'on veut qu'il s'active lorsque la somme est supérieure à disons 10.
+
+133
+00:11:06,630 --> 00:11:10,279
+En gros, vous voulez un biais pour qu'il soit inactif.
+
+134
+00:11:10,860 --> 00:11:16,099
+Ainsi, on va simplement ajouter un autre nombre tel que -10 à cette somme pondérée
+
+135
+00:11:16,529 --> 00:11:19,669
+avant de la donner à la fonction sigmoïde qui la ramène entre 0 et 1.
+
+136
+00:11:20,220 --> 00:11:22,730
+Ce nombre additionnel est appelé le biais.
+
+137
+00:11:23,310 --> 00:11:29,060
+Donc les poids nous disent quel motif de pixels ce neurone de la deuxième couche reconnaît,
+
+138
+00:11:29,220 --> 00:11:35,450
+et le biais nous disent à quel point la somme doit être haute afin que le neurone ne soit vraiment actif.
+
+139
+00:11:35,910 --> 00:11:37,910
+Et ça, ce n'est que pour un neurone !
+
+140
+00:11:38,120 --> 00:11:41,940
+Chacun des autres neurones de cette couche sera connecté à tous
+
+141
+00:11:42,320 --> 00:11:50,620
+les 784 neurones-pixels de la première couche, et chacune de ces 784 connections a son propre poids associé.
+
+142
+00:11:51,330 --> 00:11:57,739
+Aussi, chacun a un biais, un autre nombre qu'on ajoute à la somme pondérée avant de la ramener entre 0 et 1 avec la fonction sigmoïde.
+
+143
+00:11:58,020 --> 00:12:01,909
+Et c'est beaucoup ! Pour cette couche cachée de 16 neurones,
+
+144
+00:12:02,010 --> 00:12:08,270
+c'est un total de 784 * 16 poids plus les 16 biais.
+
+145
+00:12:08,490 --> 00:12:14,029
+Et ça, ce n'est que les connections de la première à la deuxième couche. Les connections entre les autres couches
+
+146
+00:12:14,029 --> 00:12:17,208
+ont aussi beaucoup de poids et de biais associés.
+
+147
+00:12:17,760 --> 00:12:20,680
+Tout cela réuni, ce réseau a presque exactement
+
+148
+00:12:21,280 --> 00:12:23,920
+13 000 mille poids et biais au total.
+
+149
+00:12:24,280 --> 00:12:29,540
+13 000 boutons à tourner pour que ce réseau agisse de façons différentes.
+
+150
+00:12:30,520 --> 00:12:32,520
+Alors, quand on parle d'apprentissage,
+
+151
+00:12:32,530 --> 00:12:40,199
+cela correspond à faire en sorte que l'ordinateur trouve un paramétrage valide pour chacun de ces nombres pour qu'il résolve
+
+152
+00:12:40,200 --> 00:12:42,190
+le problème.
+
+153
+00:12:42,190 --> 00:12:43,000
+Une
+
+154
+00:12:43,000 --> 00:12:49,979
+expérience de pensée à la fois fun et horrifiante est de s'imaginer essayer de paramétrer tous ces poids et biais à la main.
+
+155
+00:12:50,380 --> 00:12:56,159
+Changer les nombres pour que la deuxième couche reconnaisse les traits, la troisième les motifs etc.
+
+156
+00:12:56,350 --> 00:13:01,440
+Je trouve cela satisfaisant, plutôt que de voir le réseau comme une boîte noire,
+
+157
+00:13:01,870 --> 00:13:04,349
+car lorsque le réseau n'agit pas de la façon à laquelle on s'attendait,
+
+158
+00:13:04,600 --> 00:13:11,370
+si vous avez construit une certaine relation avec la signification de ces poids et biais, vous avez déjà un point de départ
+
+159
+00:13:11,680 --> 00:13:16,289
+pour expérimenter et changer la structure pour améliorer le réseau. Ou bien, lorsque le réseau marche,
+
+160
+00:13:16,290 --> 00:13:18,290
+mais pas pour les raisons auxquelles vous vous attendiez,
+
+161
+00:13:18,310 --> 00:13:25,169
+s'intéresser au fonctionnement de ces poids et biais est une très bonne manière de remettre en cause vos hypothèses, et voir en entier
+
+162
+00:13:25,180 --> 00:13:26,350
+l'ensemble des solutions possibles.
+
+163
+00:13:26,350 --> 00:13:30,600
+D'ailleurs, la fonction ici est un peu lourde à écrire, vous ne trouvez pas ?
+
+164
+00:13:32,350 --> 00:13:38,460
+Laissez-moi vous montrer une notation plus compacte pour représenter ces connections. Ça serait ce que vous verriez
+
+165
+00:13:38,460 --> 00:13:40,460
+si vous choisissiez d'en lire plus sur les réseaux de neurones.
+
+166
+00:13:41,110 --> 00:13:45,810
+Organisez toutes les activations d'une couche en une colonne, comme un vecteur.
+
+167
+00:13:47,470 --> 00:13:52,320
+Ensuite, organisez tous les poids comme une matrice, où chaque ligne
+
+168
+00:13:52,900 --> 00:13:57,659
+correspond aux connections entre une couche et un neurone particulier dans la couche suivante.
+
+169
+00:13:58,060 --> 00:14:03,599
+Cela veut dire que prendre la somme pondérée des activations de la première couche en accord avec ces poids,
+
+170
+00:14:04,000 --> 00:14:09,330
+correspond à un des coefficients de la matrice produit de tout ce qu'on a à gauche ici.
+
+171
+00:14:13,540 --> 00:14:18,380
+D'ailleurs, une grande partie du machine learning revient à avoir une bonne notion de l'algèbre linéaire,
+
+172
+00:14:18,380 --> 00:14:26,940
+donc si vous voulez une bonne visualisation des matrices et du produit matriciel, regardez la série que j'ai réalisée sur l'algèbre linéaire.
+
+173
+00:14:27,250 --> 00:14:28,839
+Surtout le chapitre 3.
+
+174
+00:14:28,839 --> 00:14:35,759
+Pour en revenir à notre expression, au lieu d'ajouter le biais indépendamment  à chacune de ces valeurs, nous le représentons par
+
+175
+00:14:36,010 --> 00:14:42,209
+ces biais organisés dans un vecteur, et ajoutons ce vecteur au produit matriciel précédent.
+
+176
+00:14:42,910 --> 00:14:44,040
+Puis, dernière étape,
+
+177
+00:14:44,040 --> 00:14:47,250
+nous ajoutons la fonction sigmoïde autour,
+
+178
+00:14:47,250 --> 00:14:51,899
+et ce que c'est censé représenter est que nous appliquons la fonction à chaque
+
+179
+00:14:52,420 --> 00:14:54,570
+coefficient spécifique du vecteur résultat.
+
+180
+00:14:55,510 --> 00:15:00,749
+Ainsi, une fois que vous avez réécrits cette matrice des poids et ces vecteurs en symboles, vous pouvez
+
+181
+00:15:01,000 --> 00:15:07,589
+communiquer la transition de l'activation d'une couche à la suivante en une expression très courte et propre.
+
+182
+00:15:07,930 --> 00:15:15,000
+Et cela rend le code beaucoup plus simple et plus rapide, puisque beaucoup de bibliothèques optimisent énormément le produit matriciel.
+
+183
+00:15:17,560 --> 00:15:21,359
+Vous vous souvenez quand j'ai dit plus tôt que ces neurones sont simplement des objets qui contiennent des nombres ?
+
+184
+00:15:21,790 --> 00:15:26,250
+Eh bien les nombres spécifiques qu'ils contiennent dépend de l'image que vous lui donnez.
+
+185
+00:15:27,790 --> 00:15:32,940
+Donc c'est plus juste de voir chaque neurone comme une fonction qui prend
+
+186
+00:15:33,070 --> 00:15:38,070
+la sortie de chaque neurone dans la couche précédente et donne un nombre entre 0 et 1.
+
+187
+00:15:38,800 --> 00:15:42,270
+En fait, tout le réseau est juste une fonction, qui prend
+
+188
+00:15:42,760 --> 00:15:47,010
+784 nombres en entrées et donne 10 nombres en sortie.
+
+189
+00:15:47,470 --> 00:15:48,700
+C'est une fonction ridiculement compliquée
+
+190
+00:15:48,700 --> 00:15:56,249
+qui implique 13000 paramètres comme ces poids et ces biais qui reconnaissent certains motifs, qui
+
+191
+00:15:56,250 --> 00:16:00,270
+implique d'itérer plein de produits matriciels dans la fonction sigmoïde.
+
+192
+00:16:00,610 --> 00:16:06,390
+Néanmoins cela reste une fonction, et dans un sens c'est plutôt rassurant qu'elle soit compliquée.
+
+193
+00:16:06,390 --> 00:16:12,239
+Si elle était plus simple, comment pourrions-nous espérer qu'elle puisse reconnaître des chiffres ?
+
+194
+00:16:12,960 --> 00:16:19,559
+Et comment relève-t-elle le challenge ? Comment ce réseau apprend-il les bons poids et biais simplement en regardant des données ?
+
+195
+00:16:20,080 --> 00:16:26,039
+Eh bien, c'est ce que je vous montrerai dans la prochaine vidéo. Je creuserai aussi un peu plus sur ce que fait vraiment ce réseau en particulier
+
+196
+00:16:27,130 --> 00:16:32,640
+C'est maintenant que je devrais dire "Abonnez-vous pour rester notifié quand je sors une nouvelle vidéo"
+
+197
+00:16:32,760 --> 00:16:37,560
+Mais aucun de vous ne reçoit vraiment de notifications de YouTube, si ?
+
+198
+00:16:37,560 --> 00:16:42,260
+Je devrais plutôt dire "Abonnez-vous pour que le réseau de neurones qui gère l'algorithme
+
+199
+00:16:42,459 --> 00:16:47,639
+de recommandations de YouTube soit amené à croire que vous voulez voir le contenu de cette chaîne vous être recommandé".
+
+200
+00:16:48,250 --> 00:16:50,250
+Bref, restés à l'affût pour plus de contenu.
+
+201
+00:16:50,410 --> 00:16:53,550
+Merci beaucoup à tous ceux qui ont soutenu ces vidéos sur Patreon.
+
+202
+00:16:53,589 --> 00:16:56,759
+J'ai été assez lent pour avancer dans la série sur les probabilités cet été,
+
+203
+00:16:56,760 --> 00:17:01,379
+mais j'y retourne après ce projet. Donc les patrons, attendez-vous à des nouvelles de ce côté-là.
+
+204
+00:17:03,310 --> 00:17:05,550
+Pour finir, j'ai avec moi Lisha Li,
+
+205
+00:17:05,550 --> 00:17:12,029
+qui a réalisé sa thèse sur le côté théorique du deep learning et qui travaille actuellement dans une société appelées "Amplify partners"
+
+206
+00:17:12,030 --> 00:17:16,530
+qui a gentiment aidé au financement de cette vidéo. Alors, Lisha, une chose
+
+207
+00:17:16,530 --> 00:17:19,109
+que j'aimerais rapidement traiter, est cette fonction sigmoïde.
+
+208
+00:17:19,180 --> 00:17:24,780
+De ce que j'ai compris, les premiers réseaux de neurones l'utilisaient pour ramener la somme pondérée entre 0 et 1,
+
+209
+00:17:24,980 --> 00:17:30,340
+motivée par l'analogie des neurones biologiques qui sont chacun actifs ou inactifs. (Lisha) - Exactement.
+
+210
+00:17:30,360 --> 00:17:36,320
+(3B1B) - Mais les réseaux modernes n'utilisent plus cette fonction. C'est dépassé ? (Lisha) - Oui, ou plutôt
+
+211
+00:17:36,370 --> 00:17:42,780
+ReLU est plus simple à entraîner. (3B1B) - Et ReLU veut dire "Unité de Rectification Linéaire".
+
+212
+00:17:42,780 --> 00:17:48,839
+(Lisha) - Oui, c'est ce genre de fonction où vous prenez juste le maximum entre 0 et a où a est donné par
+
+213
+00:17:49,120 --> 00:17:53,670
+ce que vous expliquiez dans la vidéo, et c'était motivé par je pense...
+
+214
+00:17:54,610 --> 00:17:56,610
+... partiellement par une analogie
+
+215
+00:17:56,620 --> 00:17:58,179
+biologique avec comment
+
+216
+00:17:58,179 --> 00:18:03,089
+les neurones sont ou activés ou non, et si oui, s'ils passent un certain seuil
+
+217
+00:18:03,250 --> 00:18:05,250
+ce serait la fonction identité
+
+218
+00:18:05,290 --> 00:18:10,439
+mais sinon, il ne serait tout simplement pas activé, c'est une sorte de simplification.
+
+219
+00:18:10,720 --> 00:18:14,429
+L'utilisation de la fonction sigmoïde n'a pas aidé pour l'entraînement, ou c'était vraiment difficile à entraîner
+
+220
+00:18:14,429 --> 00:18:19,589
+à un certain point, et des gens ont simplement essayé ReLU et ça a marché
+
+221
+00:18:20,110 --> 00:18:22,140
+vraiment bien pour ces réseaux
+
+222
+00:18:22,690 --> 00:18:25,090
+incroyablement profonds. (3B1B) Ok !
+
+223
+00:18:25,090 --> 00:18:26,060
+Merci Lisha.
+

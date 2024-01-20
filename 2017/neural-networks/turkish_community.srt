@@ -1,0 +1,896 @@
+1
+00:00:04,020 --> 00:00:10,680
+Bu bir üç. 28x28 gibi düşük bir çözünürlükte yarım yamalak çizilmiş
+
+2
+00:00:10,680 --> 00:00:15,660
+Fakat beyniniz bunu bir üç olarak algılamakta sıkıntı çekmiyor ve
+
+3
+00:00:15,900 --> 00:00:18,949
+Beyninizin bunu hiç efor harcamadan
+
+4
+00:00:18,949 --> 00:00:23,160
+Demek istediğim bu, bu ve bu da üç olarak algılanabiliyor
+
+5
+00:00:23,160 --> 00:00:28,060
+Bir görselden diğerine piksellerin belirli değerleri çok farklı olsa bile
+
+6
+00:00:28,080 --> 00:00:33,780
+Gözlerinize has ışığa duyarlı hücreler bu üçü gördüğünüzde
+
+7
+00:00:33,780 --> 00:00:36,800
+bu üçü gördüğünüz zamankinden daha  farklı olarak ateşleniyor
+
+8
+00:00:37,140 --> 00:00:40,610
+Fakat bir şekilde zeki görsel korteksiniz
+
+9
+00:00:41,129 --> 00:00:48,139
+bunları aynı fikri temsil eden biri olarak değerlendirirken aynı zamanda diğer görüntüleri kendi ayırt edici fikirleri olarak kabul eder
+
+10
+00:00:48,840 --> 00:00:55,039
+Fakat ben size oturup 28'den 28'e kadar bir grid alan bir programı yazacağımı söylersem
+
+11
+00:00:55,379 --> 00:01:01,759
+piksel sayısına eşittir ve 0 ile 10 arasında, rakamın ne düşündüğünü söyleyen tek bir sayı verir
+
+12
+00:01:02,250 --> 00:01:06,139
+Peki görev komik önemsiz zor zor zor
+
+13
+00:01:06,750 --> 00:01:08,270
+Bir kayanın altında yaşadıkça
+
+14
+00:01:08,270 --> 00:01:14,599
+Bence, makine öğrenimi ve sinir ağlarının şimdiye kadar geleceğe olan ilgisini ve önemini motive etmeye ihtiyacım yok.
+
+15
+00:01:14,640 --> 00:01:18,410
+Ancak burada yapmak istediğim, sinir ağının gerçekte ne olduğunu size göstermek
+
+16
+00:01:18,660 --> 00:01:24,229
+Hiçbir geçmişi varsayarak ve ne yaptığını, bir analitik olarak değil, matematik parçası olarak görselleştirmeye yardımcı olmak
+
+17
+00:01:24,570 --> 00:01:28,310
+Benim umudum, sadece bu yapının kendisi gibi hissediyormuşsun
+
+18
+00:01:28,380 --> 00:01:34,399
+Motivasyonlu ve duyduğunuzda ne hissettiğinizi hissettiğinizde, okuduğunuzda veya bir sinir ağı hakkında bilgi alırsanız, alıntı yaparsınız.
+
+19
+00:01:34,950 --> 00:01:40,249
+Bu video sadece yapının bileşenine ayrılmış olacak ve aşağıdaki öğrenme ile başa çıkacak
+
+20
+00:01:40,530 --> 00:01:45,950
+Elle yazılmış rakamları tanımayı öğrenebilen bir sinir ağını bir araya getirmek için yapacağımız şey
+
+21
+00:01:49,270 --> 00:01:51,329
+Bu biraz klasik bir örnek:
+
+22
+00:01:51,520 --> 00:01:56,759
+Konuyu tanıtıyorum ve burada statüko yapmaya mutluluk duyuyorum, çünkü şunu belirtmek istediğim iki videonun sonunda şunu belirtmek istiyorum:
+
+23
+00:01:56,760 --> 00:02:02,099
+Daha fazla bilgi edinebileceğiniz ve bunları yapan ve oynayacak olan kodu nereden indirebileceğiniz birkaç iyi kaynağa sahipsiniz?
+
+24
+00:02:02,100 --> 00:02:04,100
+kendi bilgisayarınızda
+
+25
+00:02:04,750 --> 00:02:08,970
+Sinir ağlarının pek çok çeşitleri vardır ve son yıllarda
+
+26
+00:02:08,970 --> 00:02:11,970
+Bu varyantlara yönelik araştırmalarda bir sürü patlama oldu
+
+27
+00:02:12,130 --> 00:02:19,019
+Ancak, bu iki tanıtıcı videoda siz ve ben sadece en basit sade-vanilyalı forma hiçbir şey eklemeden bakacağız
+
+28
+00:02:19,300 --> 00:02:21,040
+Bu biraz gerekli
+
+29
+00:02:21,040 --> 00:02:24,510
+daha güçlü modern varyantların herhangi birini anlamak için ön şarttır ve
+
+30
+00:02:24,760 --> 00:02:28,199
+İnanın bana hala zihinleri saracak pek çok karmaşıklığımız var.
+
+31
+00:02:28,690 --> 00:02:32,820
+Ancak en basit haliyle el yazısı rakamları tanımayı öğrenebilir
+
+32
+00:02:32,820 --> 00:02:36,180
+Bir bilgisayarın yapabileceği çok hoş bir şey.
+
+33
+00:02:37,120 --> 00:02:41,960
+Ve aynı zamanda, bunun için sahip olabileceğimiz birkaç umuttan kısa nasıl düştüğünü göreceksiniz
+
+34
+00:02:43,090 --> 00:02:48,179
+Adından da anlaşılacağı gibi, sinir ağları beyinden esinlenerek etkileniyor, ancak bunu aşağılayalım
+
+35
+00:02:48,520 --> 00:02:51,389
+Nöronlar nedir ve hangi anlamda birbirine bağlılar?
+
+36
+00:02:52,090 --> 00:02:57,750
+Şu anda nöron söylesem, düşünmen gereken tek şey bir sayı tutan bir şey
+
+37
+00:02:58,209 --> 00:03:02,129
+Özellikle 0 ile 1 arasındaki bir sayı gerçekten de o değil.
+
+38
+00:03:03,430 --> 00:03:11,130
+Örneğin, ağ, giriş görüntüsünün 28 kat 28 pikselinin her birine karşılık gelen bir grup nöron ile başlar
+
+39
+00:03:11,400 --> 00:03:12,460
+hangisi
+
+40
+00:03:12,460 --> 00:03:20,240
+Toplam 784 nöron bunlardan her biri, ilgili pikselin gri tonlama değerini temsil eden bir sayı tutar
+
+41
+00:03:20,769 --> 00:03:24,299
+siyah pikseller için 0'dan beyaz pikseller için 1'e kadar değişen
+
+42
+00:03:24,910 --> 00:03:30,419
+Nöronun içindeki bu numaraya onun aktivasyonu ve burada aklınızda tutabileceğiniz görüntü denir
+
+43
+00:03:30,420 --> 00:03:33,959
+Etkinleştirilmesi yüksek sayı olduğunda her bir nöron aydınlatılmış mı?
+
+44
+00:03:36,260 --> 00:03:41,559
+Bu 784 nöronun tamamı ağımızın ilk katmanını oluşturuyor
+
+45
+00:03:45,990 --> 00:03:51,289
+Şimdi son katın üzerine atlamaya başladım, bunun her biri on basamaktan birini temsil eden on nöron var
+
+46
+00:03:51,570 --> 00:03:56,239
+bu nöronların aktivasyonu yine sıfır ile bir arasında olan bir sayı
+
+47
+00:03:56,880 --> 00:04:00,049
+Sistemin verilen bir görüntünün ne kadarını düşündüğünü gösterir?
+
+48
+00:04:00,720 --> 00:04:05,990
+Verilen bir rakamla karşılık gelir. Arasında gizli katmanlar adı verilen birkaç kat var.
+
+49
+00:04:06,180 --> 00:04:07,770
+Hangisi şimdilik?
+
+50
+00:04:07,770 --> 00:04:13,549
+Rakamların tanınması sürecinin yeryüzünde nasıl işleneceği konusunda sadece dev bir soru işareti olmalı mıdır?
+
+51
+00:04:13,740 --> 00:04:20,209
+Bu ağda her biri 16 nöronlu iki gizli katman seçtim ve kuşkusuz bu keyifli bir seçim
+
+52
+00:04:20,609 --> 00:04:24,889
+Dürüst olmak gerekirse, yapıyı bir an motive etmek istediklerime dayanarak iki kat seçtim ve
+
+53
+00:04:25,350 --> 00:04:29,179
+16 iyi uygulama için ekrana sığacak güzel bir sayıydı
+
+54
+00:04:29,180 --> 00:04:32,209
+Burada belirli bir yapıya sahip deney için çok yer var
+
+55
+00:04:32,730 --> 00:04:38,329
+Ağın bir katmandaki etkinleştirmeleri çalıştırma şekli, bir sonraki katmanın etkinleştirilmesini belirler
+
+56
+00:04:38,760 --> 00:04:45,349
+Ve tabii ki bir bilgi işleme mekanizması olarak ağın kalbi tam olarak
+
+57
+00:04:45,570 --> 00:04:48,409
+Bir katmandaki aktivasyonlar bir sonraki katmanda aktivasyonlar meydana getirir
+
+58
+00:04:48,900 --> 00:04:54,859
+Bu, nöronların bazı biyolojik ağlarındaki nöronların ateşlemesine nazaran gevşek şekilde benzer olması gerektiği anlamına gelir
+
+59
+00:04:55,410 --> 00:04:57,410
+başkalarının ateş etmesine neden ol
+
+60
+00:04:57,570 --> 00:04:58,340
+Şimdi şebeke
+
+61
+00:04:58,340 --> 00:05:03,019
+Burada gösterim, zaten rakamları tanımak için eğitildi ve ne demek istediğimi göstereyim.
+
+62
+00:05:03,140 --> 00:05:06,580
+Bu, bir görüntüyü aydınlatırsanız, hepsini aydınlatırsınız demektir
+
+63
+00:05:06,640 --> 00:05:11,780
+Görüntüdeki her pikseldeki parlaklığa göre giriş katmanının 784 nöronu
+
+64
+00:05:12,330 --> 00:05:17,029
+Bu harekete geçirme modeli bir sonraki katta çok özel desene neden olur
+
+65
+00:05:17,190 --> 00:05:19,309
+Peşinden birinde bazı desenlere neden olur?
+
+66
+00:05:19,440 --> 00:05:22,190
+Sonunda çıktı katmanında bazı desenler var ve?
+
+67
+00:05:22,350 --> 00:05:29,359
+Çıktı tabakasının en parlak nuronu, bu görüntünün temsil ettiği rakam için konuşmak için ağın seçimidir?
+
+68
+00:05:32,070 --> 00:05:36,859
+Ve bir katmanın bir sonraki etkisini ve eğitimin nasıl yürüdüğünü hesaplamadan önce matematiğe atlamadan önce?
+
+69
+00:05:37,140 --> 00:05:43,069
+Bunun gibi katmanlı bir yapının akıllıca davranıp beklenmesinin neden makul olduğunu konuşalım
+
+70
+00:05:43,800 --> 00:05:48,260
+Burada ne bekliyoruz Bu orta katmanların yapabilecekleri şey için en iyi umut nedir?
+
+71
+00:05:48,860 --> 00:05:56,720
+Siz veya ben, çeşitli bileşenleri bir araya getirdiğimiz rakamları tanıdığımızda, bir dokuzun üst kısmı yukarı dönük ve sağdaki bir çizgi var.
+
+72
+00:05:57,260 --> 00:06:01,280
+bir 8 ayrıca üstten bir ilmek içerir, ancak düşük bir başka ilmekle eşleştirilir
+
+73
+00:06:02,020 --> 00:06:06,599
+A 4 temel olarak üç özel çizgiye ayrılır ve böyle şeyler
+
+74
+00:06:07,180 --> 00:06:11,970
+Şimdi kusursuz bir dünyada, ikinci ila son kattaki her nöronun
+
+75
+00:06:12,640 --> 00:06:14,729
+bu alt bileşenlerden birine karşılık gelir
+
+76
+00:06:14,890 --> 00:06:19,740
+Bir görüntüyü beslediğinizde, 9 ya da 8 gibi bir döngü yukarı baktığınızı söylerseniz
+
+77
+00:06:19,870 --> 00:06:21,220
+Bazı özel bilgiler var.
+
+78
+00:06:21,220 --> 00:06:27,749
+Aktivasyonu birine çok yakın olacak olan nöron ve piksellerin bu belirli döngüsü anlamına gelmiyor umudun
+
+79
+00:06:28,090 --> 00:06:35,039
+Genellikle tepeye doğru döngüsel desen, bu nöronu üçüncü katmandan sonuncere geçecek şekilde ayarlar
+
+80
+00:06:35,380 --> 00:06:39,960
+sadece alt bileşenlerin hangi kombinasyonun hangi rakamlara karşılık geldiğini öğrenmek gerekir
+
+81
+00:06:40,510 --> 00:06:42,810
+Tabii ki bu sadece problemi yola koyuyor
+
+82
+00:06:42,910 --> 00:06:49,019
+Çünkü bu alt bileşenleri nasıl tanırdınız ya da doğru alt bileşenler hangisinin olması gerektiğini nasıl öğrendiniz ve hala hakkında konuşmadım.
+
+83
+00:06:49,020 --> 00:06:52,829
+Bir katmanın diğerini nasıl etkilediği ama bir an için benimle birlikte çalıştıracağım
+
+84
+00:06:53,650 --> 00:06:56,340
+Bir döngüyü tanımak da altproblemlere bölünebilir
+
+85
+00:06:56,860 --> 00:07:02,550
+Bunu yapmanın makul bir yolu, ilk önce onu oluşturan çeşitli küçük kenarları tanımaktır
+
+86
+00:07:03,520 --> 00:07:08,910
+Benzer şekilde, 1 veya 4 veya 7 rakamlarında görebileceğiniz türde uzun bir çizgi
+
+87
+00:07:08,910 --> 00:07:14,279
+Bu gerçekten çok uzun bir kenardır ya da belki biraz daha küçük kenarların belirli bir deseni olarak düşünebilirsiniz
+
+88
+00:07:14,740 --> 00:07:19,379
+Belki de umudumuz şebekenin ikinci katındaki her nöronun
+
+89
+00:07:20,290 --> 00:07:22,650
+ilgili çeşitli küçük kenarlarla karşılık gelir
+
+90
+00:07:23,230 --> 00:07:28,259
+Belki böyle bir görüntü geldiğinde tüm nöronları aydınlatır
+
+91
+00:07:28,720 --> 00:07:31,649
+yaklaşık sekiz ila on özel küçük kenarlar
+
+92
+00:07:31,930 --> 00:07:36,930
+sırayla üst halkayla ilişkili nöronları ve uzun dikey bir hattı aydınlatır ve
+
+93
+00:07:37,300 --> 00:07:39,599
+Dokuz kişiyle ilişkili nöronu aydınlatıyorlar.
+
+94
+00:07:40,300 --> 00:07:41,100
+öyle ya da böyle
+
+95
+00:07:41,100 --> 00:07:47,070
+Nihai ağımızın yaptığı budur, başka bir soru, bir tanesini ağın eğitimini nasıl öğrendiğimize göre tekrar geleceğiz
+
+96
+00:07:47,350 --> 00:07:52,170
+Ancak bu umudumuz olabilir. Böyle katmanlı bir yapıya sahip bir çeşit gol
+
+97
+00:07:53,020 --> 00:07:59,340
+Üstelik bunun gibi kenarları ve desenleri algılayabilmenin diğer resim tanıma görevleri için gerçekten yararlı olacağını hayal edebiliyorsunuz
+
+98
+00:07:59,740 --> 00:08:06,749
+Görüntü tanımanın ötesinde, soyutlama katmanlarına ayrılmak isteyebileceğiniz her türlü akıllı şeyler vardır
+
+99
+00:08:07,690 --> 00:08:14,670
+Örneğin konuşmayı analiz etmek ham ses alma ve belirli heceleri birleştirmek için bir araya gelen farklı sesleri seçmeyi içerir
+
+100
+00:08:15,070 --> 00:08:19,829
+İfadeleri ve daha soyut düşünceleri oluşturmak için bir araya gelen kelimeler oluşturan kelimeler
+
+101
+00:08:20,770 --> 00:08:25,710
+Ancak bunlardan herhangi birinin resmin kendisinin şu anda tasarımında nasıl çalıştığını öğrenmek.
+
+102
+00:08:25,710 --> 00:08:30,449
+Bir katmandaki aktivasyonların sonraki etkinlikleri nasıl belirleyeceği?
+
+103
+00:08:30,670 --> 00:08:35,879
+Hedef, pikselleri kenarlara birleştirmeyi düşünen bazı mekanizmalara sahip olmaktır.
+
+104
+00:08:35,880 --> 00:08:41,430
+Veya kalıpları veya kalıpları rakamlara kenarlar ve çok özel bir örneği büyütmek için
+
+105
+00:08:41,950 --> 00:08:44,189
+Diyelim ki umut bir başkası için
+
+106
+00:08:44,380 --> 00:08:50,430
+Neuronda ikinci katta görüntülerin bu bölgede bir köşesine sahip olup olmadığına bakmak için buraya gelin.
+
+107
+00:08:50,950 --> 00:08:54,960
+Eldeki soru, ağın hangi parametreleri olması gerektiğidir
+
+108
+00:08:55,270 --> 00:09:02,490
+ne arar ve topuzlar, bu örüntü potansiyel olarak yakalayacak kadar etkileyici şekilde çimdikleyebilmelisiniz
+
+109
+00:09:02,590 --> 00:09:07,290
+Başka herhangi bir piksel deseni veya birkaç kenarlı bir döngü oluşturan desen ve benzeri şeyler?
+
+110
+00:09:08,290 --> 00:09:15,389
+Peki, yapacağımız, nöron ve ilk kattaki nöronlar arasındaki bağlantıların her birine bir ağırlık vermektir
+
+111
+00:09:15,850 --> 00:09:17,850
+Bu ağırlıklar sadece sayılardır
+
+112
+00:09:18,190 --> 00:09:25,590
+daha sonra tüm bu aktivasyonları birinci kattan alın ve ağırlıklarına göre ağırlıklı toplamını hesaplayın I
+
+113
+00:09:27,370 --> 00:09:31,680
+Bu ağırlıkları kendi küçük ızgaralarına göre organize edilmiş olarak düşünmek faydalı buluyorum
+
+114
+00:09:31,680 --> 00:09:37,079
+Ve negatif ağırlıkları belirtmek için pozitif ağırlıkları ve kırmızı pikselleri belirtmek için yeşil pikseller kullanacağım
+
+115
+00:09:37,240 --> 00:09:41,670
+O pikselin parlaklığı, ağırlık değerinin gevşek bir şekilde tasvir edildiği yerde?
+
+116
+00:09:42,400 --> 00:09:45,840
+Hemen hemen tüm piksellerle ilişkili ağırlıkları sıfır yapmış olsaydık
+
+117
+00:09:46,150 --> 00:09:49,079
+Bu bölgede önem verdiğimiz bazı pozitif ağırlıklar hariç
+
+118
+00:09:49,480 --> 00:09:51,310
+sonra ağırlıklı toplamını alarak
+
+119
+00:09:51,310 --> 00:09:57,690
+tüm piksel değerleri gerçekten yalnızca önem verdiğimiz bölgedeki piksel değerlerini toplamaya muktedir
+
+120
+00:09:58,870 --> 00:10:04,440
+Ve, eğer burada bir kenar olup olmadığını anlamak isterseniz, yapabileceğiniz şeylerin bazı negatif ağırlıkları vardır.
+
+121
+00:10:04,900 --> 00:10:06,900
+çevresindeki piksellerle ilişkili
+
+122
+00:10:07,030 --> 00:10:12,660
+Daha sonra toplam, bu orta piksel parlak olduğunda büyük, ancak çevresindeki piksel daha koyu
+
+123
+00:10:14,279 --> 00:10:18,169
+Böyle ağırlıklandırılmış bir hesapladığınızda, herhangi bir sayı ile çıkabilir
+
+124
+00:10:18,240 --> 00:10:23,180
+ancak bu ağ için istediğimiz şey, aktivasyonların 0 & 1 arasında bazı değerler olmasıdır
+
+125
+00:10:23,730 --> 00:10:26,599
+bu yüzden ortak bir şey yapmak bu ağırlıklı toplamı pompalamaktır
+
+126
+00:10:26,910 --> 00:10:32,000
+Gerçek sayı satırını 0 & 1 ve
+
+127
+00:10:32,190 --> 00:10:37,249
+Bunu yapan ortak bir fonksiyona, lojistik eğrisi olarak da bilinen sigmoid fonksiyonu denir.
+
+128
+00:10:37,980 --> 00:10:43,339
+temelde çok negatif girişler sıfıra yakın sonlar Çok pozitif girişler 1'e yaklaşır
+
+129
+00:10:43,339 --> 00:10:46,398
+ve 0 girişi etrafında sürekli artar
+
+130
+00:10:49,080 --> 00:10:56,029
+Buradaki nöronun aktivasyonu temelde ilgili ağırlıklandırılmış toplamın ne kadar pozitif olduğunun bir ölçüsüdür
+
+131
+00:10:57,450 --> 00:11:01,819
+Ancak belki de ağırlıklandırılmış toplam 0'dan büyük olduğunda nöronun yanmasını istemezsiniz
+
+132
+00:11:02,100 --> 00:11:06,260
+Belki yalnızca toplamın 10'dan büyük olduğu zaman etkin olmasını istiyorsun
+
+133
+00:11:06,630 --> 00:11:10,279
+Bunun için bazı önyargıların aktif olmamasını istiyorsun
+
+134
+00:11:10,860 --> 00:11:16,099
+O halde ne yapacağız sadece bu ağırlıklı toplamın negatif 10 gibi başka bir sayı ekleyin
+
+135
+00:11:16,529 --> 00:11:19,669
+Sigmoid püskürtme fonksiyonuyla takmadan önce
+
+136
+00:11:20,220 --> 00:11:22,730
+Bu ek numaraya önyargı denir.
+
+137
+00:11:23,310 --> 00:11:29,060
+Ağırlıklar, ikinci katmandaki bu nöronun hangi piksel desenini aldığını ve önyargı
+
+138
+00:11:29,220 --> 00:11:35,450
+nöron anlamlı olarak aktif olmaya başlamadan önce ağırlıklı toplamın ne kadar yüksek olması gerektiğini söyler
+
+139
+00:11:35,910 --> 00:11:37,910
+Ve bu sadece bir nöron
+
+140
+00:11:38,120 --> 00:11:41,940
+Bu katmandaki diğer her nöron, herkesin
+
+141
+00:11:42,320 --> 00:11:50,620
+İlk katmandan 784 piksel nöron ve bu 784 bağlantıdan her biri kendi ağırlığı ile ilişkilidir
+
+142
+00:11:51,330 --> 00:11:57,739
+Ayrıca her birinin, sigmoid ile karıştırmadan önce ağırlıklı bir miktara eklediğiniz başka bir önyargı vardır.
+
+143
+00:11:58,020 --> 00:12:01,909
+Bu, 16 nöron gizli tabakayla düşünülmesi gereken çok şey var
+
+144
+00:12:02,010 --> 00:12:08,270
+toplamda 784 kat 16 ağırlık ve 16 önyargı
+
+145
+00:12:08,490 --> 00:12:14,029
+Ve hepsi sadece ilk kattan ikinci katlara bağlantıları diğer katmanlar arasındaki bağlantıları
+
+146
+00:12:14,029 --> 00:12:17,208
+Ayrıca, onlarla ilişkili ağırlıklar ve önyargılardan bir demet var
+
+147
+00:12:17,760 --> 00:12:20,680
+Hepsi bu ağın neredeyse tam olduğunu söyledi ve yaptı.
+
+148
+00:12:21,280 --> 00:12:23,920
+Toplam ağırlık ve önyargı 13.000
+
+149
+00:12:24,280 --> 00:12:29,540
+Bu ağı farklı şekillerde davrandıklarında ayarlanabilen ve döndürülebilen 13.000 düğme ve kadran
+
+150
+00:12:30,520 --> 00:12:32,520
+Öyleyse öğrenme hakkında konuşurken?
+
+151
+00:12:32,530 --> 00:12:40,199
+Bahsedilen şey, bilgisayarın bu birçok çok sayının tümü için geçerli bir ayar bulmasını sağlamak ve böylece gerçekten çözeceksin
+
+152
+00:12:40,200 --> 00:12:42,190
+eldeki sorun
+
+153
+00:12:42,190 --> 00:12:43,000
+bir düşünce
+
+154
+00:12:43,000 --> 00:12:49,979
+Bir anda eğlenceli ve korkutucu olan deneme, oturmanın ve bu ağırlıkların ve önyargıların hepsinin elle ayarlanmasını hayal etmektir
+
+155
+00:12:50,380 --> 00:12:56,159
+Numaraları, ikinci katın kenarlarından almasını sağlayacak şekilde değiştirerek, üçüncü katmanın desenleri vb. Almasını sağlayın.
+
+156
+00:12:56,350 --> 00:13:01,440
+Şahsen, bunu şahsi olarak, şebekeyi toplam kara kutu olarak okumaktan ziyade tatmin edici buluyorum.
+
+157
+00:13:01,870 --> 00:13:04,349
+Çünkü şebeke bu şekilde çalışmazsa
+
+158
+00:13:04,600 --> 00:13:11,370
+bu ağırlıklar ve önyargılar arasında aslında sizin için bir başlangıç ​​noktası olduğunuz anlamına gelen biraz bir ilişki kurduysanız, tahmin edin
+
+159
+00:13:11,680 --> 00:13:16,289
+Yapının iyileştirilmesi için nasıl değiştirileceği veya ağın işleyişi ile ilgili deneme?
+
+160
+00:13:16,290 --> 00:13:18,290
+Ancak bekleyeceğiniz sebeplerden ötürü değil
+
+161
+00:13:18,310 --> 00:13:25,169
+Ağırlıkların ve önyargıların ne yaptığına göz atmak, varsayımlarınıza meydan okumak ve olası tüm alanı açığa çıkarmak için iyi bir yoldur
+
+162
+00:13:25,180 --> 00:13:26,350
+çözeltiler
+
+163
+00:13:26,350 --> 00:13:30,600
+Bu arada burada gerçek işlev yazmak biraz hantaldır. Sizce de öyle değil mi?
+
+164
+00:13:32,350 --> 00:13:38,460
+Öyleyse size bu bağlantıların temsil edildiği daha görsel açıdan kompakt bir yol göstereceğim. Bunu nasıl göreceksin
+
+165
+00:13:38,460 --> 00:13:40,460
+Sinir ağları hakkında daha fazla bilgi okumayı seçerseniz
+
+166
+00:13:41,110 --> 00:13:45,810
+Bir katmandan tüm aktivasyonları bir vektör olarak bir sütuna düzenleyin
+
+167
+00:13:47,470 --> 00:13:52,320
+Daha sonra tüm ağırlıkları bir matris olarak düzenleyin, bu matrisin her satırı
+
+168
+00:13:52,900 --> 00:13:57,659
+bir katman ve bir sonraki katmandaki belirli bir nöron arasındaki bağlantılara karşılık gelir
+
+169
+00:13:58,060 --> 00:14:03,599
+Bunun anlamı, birinci katmandaki aktivasyonların ağırlıklı toplamını bu ağırlıklara göre almak mı?
+
+170
+00:14:04,000 --> 00:14:09,330
+Sol taraftaki her şeyin matris vektörü çarpımındaki terimlerin birine karşılık gelir burada
+
+171
+00:14:13,540 --> 00:14:18,380
+Bu arada, makine öğreniminin o kadar çok kısmı, lineer cebirden
+
+172
+00:14:18,380 --> 00:14:26,940
+Dolayısıyla, matrisler için güzel bir görsel anlayış isteyen ve matris vektör çarpımının ne anlama geldiğini öğrenen sizler için, lineer cebir üzerinde yaptığım diziye bir göz atın
+
+173
+00:14:27,250 --> 00:14:28,839
+özellikle üçüncü bölüm
+
+174
+00:14:28,839 --> 00:14:35,759
+Bu değerlerin her birine önyargı ekleme konusundan ziyade ifademize geri dönüp bağımsız olarak onu temsil ediyoruz.
+
+175
+00:14:36,010 --> 00:14:42,209
+Tüm bu önyargıları bir vektöre düzenlemek ve tüm vektörü önceki matris vektör ürününe eklemek
+
+176
+00:14:42,910 --> 00:14:44,040
+Sonra son bir adım olarak
+
+177
+00:14:44,040 --> 00:14:47,250
+Dışarıda bir sigmoid vuracağım
+
+178
+00:14:47,250 --> 00:14:51,899
+Ve bunun temsil etmesi gerekenler, sigmoid işlevini her spesifik
+
+179
+00:14:52,420 --> 00:14:54,570
+içindeki vektörün bileşeni
+
+180
+00:14:55,510 --> 00:15:00,749
+Dolayısıyla, bu ağırlık matrisini ve bu vektörleri kendi sembolleri olarak yazdıktan sonra
+
+181
+00:15:01,000 --> 00:15:07,589
+son derece sıkı ve düzgün bir şekilde küçük bir ifadeyle, bir katmandan diğerine aktarımların tüm geçişini iletin ve
+
+182
+00:15:07,930 --> 00:15:15,000
+Bu, birçok kütüphanenin matris çarpımından heck'i optimize ettiği için, ilgili kodu hem çok daha basit hem de çok daha hızlı hale getirir
+
+183
+00:15:17,560 --> 00:15:21,359
+Daha önce ne söylediğimi hatırlayın, bu nöronlar basitçe sayıları barındıran şeylerdir
+
+184
+00:15:21,790 --> 00:15:26,250
+Elbette tuttukları sayılar, beslediğiniz resme göre değişir
+
+185
+00:15:27,790 --> 00:15:32,940
+Bu nedenle, her bir nöronun bir işlev olarak düşünülmesi aslında daha doğrudur;
+
+186
+00:15:33,070 --> 00:15:38,070
+Önceki katmandaki tüm nöronların çıkışlarını ve sıfır ile bir arasında bir sayı yayar
+
+187
+00:15:38,800 --> 00:15:42,270
+Gerçekten de tüm ağ sadece bir işlevi alır
+
+188
+00:15:42,760 --> 00:15:47,010
+784 sayıları girdi olarak ve çıkış olarak on rakamı tükürür
+
+189
+00:15:47,470 --> 00:15:48,700
+Saçmalık
+
+190
+00:15:48,700 --> 00:15:56,249
+Bu ağırlıkların biçiminde onbeş bin parametreyi ve belirli modelleri alıp bunları içeren önyargılar içeren karmaşık bir işlev
+
+191
+00:15:56,250 --> 00:16:00,270
+Birçok matris vektör ürününü ve sigmoid squish çağırma fonksiyonunu tekrarlar
+
+192
+00:16:00,610 --> 00:16:06,390
+Ancak yine de sadece bir işlevdir ve bir bakıma karmaşık görünmesi bir tür rahatlatıcıdır.
+
+193
+00:16:06,390 --> 00:16:12,239
+Demek istediğim, daha basit olsaydı, rakamları tanımak zor olabilirdi umudumuz ne olurdu?
+
+194
+00:16:12,960 --> 00:16:19,559
+Ve bu zorluğu nasıl alıyor? Bu ağ, yalnızca verilere bakarak uygun ağırlığı ve önyargıları nasıl öğrenir? Ah?
+
+195
+00:16:20,080 --> 00:16:26,039
+Bir sonraki videoda bunu göstereceğim ve ayrıca, gördüğüm bu özel ağın gerçekten ne yaptığına biraz daha kazanıyorum
+
+196
+00:16:27,130 --> 00:16:32,640
+Şimdi şunu söylemeliyim ki, o video veya yeni videolar ortaya çıktığında haberdar olmak için abone olmam gerektiğini düşünüyorum
+
+197
+00:16:32,760 --> 00:16:37,560
+Ancak gerçekçi olarak çoğunuz aslında YouTube'dan bildirim almıyor değil mi?
+
+198
+00:16:37,560 --> 00:16:42,260
+Belki daha dürüstçe abone olmam gerektiğini söylemeliyim, böylece YouTube'un altındaki sinir ağları
+
+199
+00:16:42,459 --> 00:16:47,639
+Tavsiye algoritması, bu kanalın içeriğinin size tavsiye edilmesini görmek istediğinize inanıyor
+
+200
+00:16:48,250 --> 00:16:50,250
+yine de daha fazla bilgi için gönderildi
+
+201
+00:16:50,410 --> 00:16:53,550
+Bu videoları patreon'da destekleyen herkese çok teşekkür ederim
+
+202
+00:16:53,589 --> 00:16:56,759
+Bu yaz olasılık serisinde ilerleme kaydetmek için biraz yavaştım
+
+203
+00:16:56,760 --> 00:17:01,379
+Ancak, bu projeden sonra müşterilere geri dönüyorum, müşterilerin orada güncellemeleri gözlemleyebileceksiniz
+
+204
+00:17:03,310 --> 00:17:05,550
+Burada işleri kapatmak için yanımda Lisha Li var.
+
+205
+00:17:05,550 --> 00:17:12,029
+Doktora programını derin öğrenimin teorik yönüyle yapmış olan ve şu anda bir ortak girişim sermayesi firmasında çalışan,
+
+206
+00:17:12,030 --> 00:17:16,530
+Bu video için bir miktar kaynak sağladı, bu yüzden Lisha bir şey
+
+207
+00:17:16,530 --> 00:17:19,109
+Bence bu sigmoid fonksiyonu hızla ortaya koymalıyız.
+
+208
+00:17:19,180 --> 00:17:24,780
+Anladığım kadarıyla, erken ağlar, bunu ilgili ağırlıklandırılmış toplamı sıfır ve bir arasındaki aralığa silmek için kullandı.
+
+209
+00:17:24,980 --> 00:17:30,340
+Nöronların biyolojik analojisiyle ya aktif olmayan ya da aktif olanların motivasyonunu biliyorsunuzdur.
+(Lisha) - Kesinlikle
+
+210
+00:17:30,360 --> 00:17:36,320
+(3B1B) - Ancak nispeten az modern ağlar aslında artık sigmoid kullanıyor. Bu bir tür eski okul, değil mi?
+(Lisha) - Evet ya da daha doğrusu
+
+211
+00:17:36,370 --> 00:17:42,780
+ReLU'nun eğitilmesi çok daha kolay görünüyor
+(3B1B) - ve ReLU gerçekten doğrusal doğrusal birimi temsil ediyor
+
+212
+00:17:42,780 --> 00:17:48,839
+(Lisha) - Evet, yalnızca maksimum 0 ve a'ya sahip olduğunuzda bu tür bir işlev var.
+
+213
+00:17:49,120 --> 00:17:53,670
+videoda ne anlattıklarını ve bunun bir motivasyon kaynağı olduğunu düşünüyorum
+
+214
+00:17:54,610 --> 00:17:56,610
+kısmen biyolojik olarak
+
+215
+00:17:56,620 --> 00:17:58,179
+Nasıl analojisi
+
+216
+00:17:58,179 --> 00:18:03,089
+Nöronlar ya etkinleştirilir ya da etkinleştirilmez ve eğer belirli bir eşik
+
+217
+00:18:03,250 --> 00:18:05,250
+Kimlik işlevi olurdu
+
+218
+00:18:05,290 --> 00:18:10,439
+Ancak yapmadıysa, etkinleşmeyebilir, bu yüzden sıfır olur, bu bir basitleştirme türüdür
+
+219
+00:18:10,720 --> 00:18:14,429
+Sigmoidleri kullanmak eğitim sağlamazdı ya da eğitmek çok zordu.
+
+220
+00:18:14,429 --> 00:18:19,589
+Bir noktada ve insanlar sadece relu denedim ve iş başına geldi
+
+221
+00:18:20,110 --> 00:18:22,140
+Bu inanılmaz derecede
+
+222
+00:18:22,690 --> 00:18:25,090
+Derin sinir ağları.
+(3B1B) - Tamam
+
+223
+00:18:25,090 --> 00:18:26,060
+Teşekkür ederim Lisha
+

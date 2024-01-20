@@ -1,0 +1,780 @@
+1
+00:00:04,350 --> 00:00:06,410
+Burada geri yayılımla mücadele ediyoruz.
+
+2
+00:00:06,410 --> 00:00:09,400
+sinir ağlarının nasıl öğrendiğinin arkasındaki temel algoritma.
+
+3
+00:00:09,400 --> 00:00:11,210
+Bulunduğumuz yerin kısa bir özetinden sonra,
+
+4
+00:00:11,210 --> 00:00:15,470
+Yapacağım ilk şey, algoritmanın gerçekte ne yaptığını anlatan sezgisel bir adım
+
+5
+00:00:15,470 --> 00:00:17,270
+formüllere referans olmadan,
+
+6
+00:00:17,640 --> 00:00:20,310
+O zaman matematiğe dalmak isteyenler için,
+
+7
+00:00:20,310 --> 00:00:23,140
+Bir sonraki video tüm bunların altında yatan hesabın içine giriyor.
+
+8
+00:00:23,940 --> 00:00:25,550
+Son iki videoyu izlediyseniz
+
+9
+00:00:25,550 --> 00:00:27,920
+ya da sadece uygun arka plana atlıyorsanız,
+
+10
+00:00:27,920 --> 00:00:31,290
+Bir sinir ağının ne olduğunu ve bilgiyi nasıl beslediğini biliyorsunuz.
+
+11
+00:00:31,660 --> 00:00:35,100
+Burada el yazısı rakamları tanımanın klasik örneğini yapıyoruz,
+
+12
+00:00:35,100 --> 00:00:39,930
+piksel değerleri 784 nöronla ağın ilk katmanına beslenir.
+
+13
+00:00:39,930 --> 00:00:44,000
+Ve her biri sadece 16 nörondan oluşan iki gizli katmanı olan bir ağ gösteriyorum.
+
+14
+00:00:44,000 --> 00:00:49,250
+ve 10 nörondan oluşan bir çıkış katmanı olup, ağın cevabı olarak hangi haneyi seçtiğini gösterir.
+
+15
+00:00:50,020 --> 00:00:54,340
+Son videoda anlatıldığı gibi, gradyan inişini anlamanızı da bekliyorum.
+
+16
+00:00:54,340 --> 00:00:56,890
+ve öğrenerek ne demek istediğimizi
+
+17
+00:00:56,890 --> 00:01:01,450
+Hangi ağırlıkların ve önyargıların belirli bir maliyet fonksiyonunu en aza indirdiğini bulmak istiyoruz.
+
+18
+00:01:02,010 --> 00:01:05,470
+Hızlı bir hatırlatma olarak, tek bir eğitim örneğinin maliyeti için,
+
+19
+00:01:05,470 --> 00:01:08,400
+Yaptığınız şey ağın verdiği çıktıyı almak.
+
+20
+00:01:08,400 --> 00:01:10,850
+vermesini istediğiniz çıktıyla birlikte,
+
+21
+00:01:11,200 --> 00:01:14,820
+ve her bileşen arasındaki farkların karelerini toplarsınız.
+
+22
+00:01:15,370 --> 00:01:20,020
+On binlerce eğitim örneğiniz için bunu yaparak ve sonuçların ortalamasını alarak,
+
+23
+00:01:20,020 --> 00:01:22,410
+bu size ağın toplam maliyetini verir.
+
+24
+00:01:22,910 --> 00:01:26,010
+Ve sanki düşünmek için yeterli değil, son videoda açıklandığı gibi,
+
+25
+00:01:26,010 --> 00:01:30,870
+aradığımız şey, bu maliyet fonksiyonunun negatif gradyanı,
+
+26
+00:01:30,870 --> 00:01:35,720
+Bu, tüm bu bağlantıları, bütün ağırlıkları ve önyargıları nasıl değiştirmeniz gerektiğini söyler.
+
+27
+00:01:35,720 --> 00:01:38,270
+Böylece maliyeti en verimli şekilde düşürürsünüz.
+
+28
+00:01:42,950 --> 00:01:45,210
+Geri yayılım, bu videonun konusu,
+
+29
+00:01:45,210 --> 00:01:48,800
+Bu çılgın karmaşık gradyanı hesaplamak için kullanılan bir algoritma.
+
+30
+00:01:49,490 --> 00:01:54,010
+Ve son videodan aldığım fikir, şu anda zihninizde sıkıca tutmanızı istiyorum.
+
+31
+00:01:54,010 --> 00:01:58,910
+çünkü gradyan vektörünün 13000 boyutunda bir yön olarak düşünülmesi,
+
+32
+00:01:58,910 --> 00:02:02,090
+hayal gücümüzün kapsamı dışına hafifçe koymak,
+
+33
+00:02:02,090 --> 00:02:03,510
+düşünebileceğiniz başka bir yol var:
+
+34
+00:02:04,580 --> 00:02:07,710
+Buradaki her bir bileşenin büyüklüğü size söylüyor
+
+35
+00:02:07,710 --> 00:02:11,140
+Maliyet fonksiyonunun her ağırlık ve önyargı için ne kadar hassas olduğu.
+
+36
+00:02:11,810 --> 00:02:14,580
+Örneğin, anlatacağım süreçten geçtiğinizi varsayalım.
+
+37
+00:02:14,580 --> 00:02:16,370
+ve negatif degradeyi hesaplarsınız
+
+38
+00:02:16,370 --> 00:02:21,470
+ve bu kenardaki ağırlıkla ilişkili bileşen 3.2 olarak ortaya çıkıyor,
+
+39
+00:02:21,870 --> 00:02:26,370
+bu kenar ile ilişkili bileşen burada 0.1 olarak ortaya çıkar.
+
+40
+00:02:26,910 --> 00:02:28,420
+Bunu yorumlama şekliniz bu
+
+41
+00:02:28,420 --> 00:02:33,080
+işlevin maliyeti, bu ilk ağırlıktaki değişikliklere karşı 32 kat daha hassastır.
+
+42
+00:02:33,640 --> 00:02:35,930
+Öyleyse, bu değeri biraz kıpırdatmak isteseydiniz,
+
+43
+00:02:35,930 --> 00:02:38,190
+maliyetinde bir miktar değişikliğe neden olacak,
+
+44
+00:02:38,190 --> 00:02:43,200
+ve bu değişim, aynı ikinci kelebeğin aynı kıvrımının verdiğinden 32 kat daha fazladır.
+
+45
+00:02:48,520 --> 00:02:51,440
+Şahsen, geri yayılmayı ilk öğrendiğimde,
+
+46
+00:02:51,440 --> 00:02:55,740
+En kafa karıştırıcı yön, sadece gösterimde ve hepsini takip eden endeks olduğunu düşünüyorum.
+
+47
+00:02:56,180 --> 00:02:59,450
+Fakat bu algoritmanın her bir parçasının gerçekte ne yaptığını çözdüğünüzde,
+
+48
+00:02:59,450 --> 00:03:02,870
+Sahip olduğu her bireysel etki aslında oldukça sezgiseldir.
+
+49
+00:03:03,180 --> 00:03:06,740
+Sadece üst üste dizilmiş birçok küçük ayar var.
+
+50
+00:03:07,660 --> 00:03:11,290
+Bu yüzden burada gösterime tam bir ihmalle başlayacağım.
+
+51
+00:03:11,290 --> 00:03:13,370
+ve sadece o etkileri
+
+52
+00:03:13,370 --> 00:03:16,350
+Her eğitim örneğinde ağırlıklar ve önyargılar var.
+
+53
+00:03:17,090 --> 00:03:18,590
+Çünkü maliyet fonksiyonu
+
+54
+00:03:18,590 --> 00:03:23,640
+onbinlerce eğitim örneğinin tamamında belirli bir maliyetin ortalama olarak alınması,
+
+55
+00:03:23,970 --> 00:03:28,640
+Tek bir degrade iniş adımı için ağırlıkları ve önyargıları ayarlama şeklimiz
+
+56
+00:03:28,640 --> 00:03:31,140
+ayrıca her örneğe bağlı
+
+57
+00:03:31,680 --> 00:03:33,200
+veya daha doğrusu prensipte olması gereken,
+
+58
+00:03:33,200 --> 00:03:35,930
+Fakat hesaplama verimliliği için daha sonra küçük bir numara yapacağız.
+
+59
+00:03:35,930 --> 00:03:39,370
+Her adım için her bir örneğe ulaşmanıza gerek kalmaması için.
+
+60
+00:03:39,790 --> 00:03:41,330
+Şu anda başka bir dava,
+
+61
+00:03:41,330 --> 00:03:46,160
+Yapacağımız tek şey dikkatimizi tek bir örnek üzerinde yoğunlaştırmak: Bu 2'nin görüntüsü.
+
+62
+00:03:46,670 --> 00:03:51,650
+Bu eğitim örneğinin, ağırlıkların ve önyargıların nasıl düzeltildiği üzerinde ne gibi bir etkisi olmalı?
+
+63
+00:03:52,680 --> 00:03:55,240
+Ağın henüz iyi eğitilmediği bir noktada olduğumuzu varsayalım,
+
+64
+00:03:55,240 --> 00:03:57,970
+bu yüzden çıktıdaki aktivasyonlar oldukça rastgele görünecek.
+
+65
+00:03:57,970 --> 00:04:02,040
+belki 0,5, 0,8, 0,2, gibi ve üstünde bir şey.
+
+66
+00:04:02,640 --> 00:04:07,450
+Şimdi bu aktivasyonları doğrudan değiştiremiyoruz, sadece ağırlıklar ve önyargılar üzerinde etkimiz var,
+
+67
+00:04:07,790 --> 00:04:12,670
+ancak bu çıktı katmanında hangi ayarlamalar yapılması gerektiğini takip etmek faydalı olacaktır,
+
+68
+00:04:13,270 --> 00:04:15,710
+ve görüntüyü 2 olarak sınıflandırmasını istediğimizden,
+
+69
+00:04:16,040 --> 00:04:21,360
+üçüncü değerin dürtülmesini, diğerlerinin dürtülmesini istiyoruz.
+
+70
+00:04:22,040 --> 00:04:26,020
+Ayrıca, bu dürtüklerin büyüklükleri ile orantılı olmalıdır
+
+71
+00:04:26,020 --> 00:04:29,630
+Her bir mevcut değerin hedef değerinden ne kadar uzakta olduğu.
+
+72
+00:04:30,220 --> 00:04:34,350
+Örneğin, bu 2 numaralı nöron aktivasyonundaki artış,
+
+73
+00:04:34,350 --> 00:04:38,490
+Bir anlamda, 8 numaralı nöronun azalmasından daha önemli,
+
+74
+00:04:38,490 --> 00:04:40,630
+olması gereken yere zaten oldukça yakın.
+
+75
+00:04:41,990 --> 00:04:45,250
+Bu yüzden daha fazla yakınlaştırıp, sadece bu nörona odaklanalım,
+
+76
+00:04:45,250 --> 00:04:47,530
+aktivasyonunu artırmak istediğimiz kişi.
+
+77
+00:04:48,160 --> 00:04:50,550
+Unutmayın, bu aktivasyon olarak tanımlanır.
+
+78
+00:04:50,550 --> 00:04:56,430
+önceki katmandaki tüm aktivasyonların belirli bir ağırlıklı toplamı, artı bir önyargı,
+
+79
+00:04:56,430 --> 00:05:01,290
+bunların hepsi sigmoid cisimleşme işlevi veya bir ReLU gibi bir şeye bağlanmış,
+
+80
+00:05:01,810 --> 00:05:07,360
+Dolayısıyla, bu aktivasyonu arttırmaya yardımcı olmak için bir araya getirilebilecek üç farklı yol var:
+
+81
+00:05:07,680 --> 00:05:10,970
+önyargıyı artırabilir, ağırlıkları artırabilirsin,
+
+82
+00:05:10,970 --> 00:05:14,030
+ve aktivasyonları önceki katmandan değiştirebilirsiniz.
+
+83
+00:05:14,950 --> 00:05:17,770
+Sadece ağırlıkların nasıl ayarlanması gerektiğine odaklanarak,
+
+84
+00:05:17,770 --> 00:05:21,410
+ağırlıkların gerçekte farklı etki seviyelerine sahip olduğunu görün:
+
+85
+00:05:21,410 --> 00:05:25,750
+önceki katmandaki en parlak nöronlarla olan bağlantıların en büyük etkiye sahip olması,
+
+86
+00:05:25,750 --> 00:05:29,240
+çünkü bu ağırlıklar daha büyük aktivasyon değerleri ile çarpılır.
+
+87
+00:05:31,330 --> 00:05:33,480
+Yani eğer bu ağırlıklardan birini arttırırsanız,
+
+88
+00:05:33,480 --> 00:05:37,370
+Aslında nihai maliyet fonksiyonu üzerinde daha güçlü bir etkiye sahiptir
+
+89
+00:05:37,370 --> 00:05:40,820
+dimmer nöronlarla bağlantı ağırlıklarını artırmaktan,
+
+90
+00:05:40,820 --> 00:05:43,650
+en azından bu eğitim örneğine gelince.
+
+91
+00:05:44,380 --> 00:05:46,890
+Degrade inişinden bahsettiğimizi hatırla.
+
+92
+00:05:46,890 --> 00:05:50,620
+Biz sadece her bir parçanın aşağı yukarı dürtülüp kalkmamasını önemsemiyoruz,
+
+93
+00:05:50,620 --> 00:05:53,370
+hangilerinin paranın karşılığını en çok verdiğini umursuyoruz.
+
+94
+00:05:55,270 --> 00:05:59,310
+Bu, bu arada, en azından sinirbilim alanındaki bir teoriyi andırıyor.
+
+95
+00:05:59,310 --> 00:06:01,870
+nöronların biyolojik ağlarının nasıl öğrendiği için
+
+96
+00:06:01,870 --> 00:06:06,820
+Hebbian teorisi - genellikle “bir araya ateş eden nöronlar” ifadesinde özetlendi.
+
+97
+00:06:07,260 --> 00:06:12,200
+Burada, ağırlıklarda en büyük artışlar, bağlantılarda en büyük güçlenme,
+
+98
+00:06:12,200 --> 00:06:14,840
+en aktif olan nöronlar arasında gerçekleşir,
+
+99
+00:06:14,840 --> 00:06:17,590
+ve daha aktif olmak istediklerimiz.
+
+100
+00:06:18,020 --> 00:06:21,060
+Bir anlamda, 2'yi görürken ateşleyen nöronlar,
+
+101
+00:06:21,060 --> 00:06:24,680
+2 hakkında düşünürken ateş edenlerle daha güçlü bağlantı kurun.
+
+102
+00:06:25,420 --> 00:06:28,780
+Açık olmak gerekirse, ifadeleri bir şekilde veya başka bir şekilde yapacak bir konumda değilim.
+
+103
+00:06:28,780 --> 00:06:33,080
+Yapay nöron ağlarının biyolojik beyin gibi bir şey yapıp yapmadığı hakkında,
+
+104
+00:06:33,080 --> 00:06:37,250
+ve bu birlikte-beraber-beraberce beraberce bir fikir, birkaç anlamlı yıldızla birlikte gelir.
+
+105
+00:06:37,250 --> 00:06:41,260
+Ama çok gevşek bir benzetme olarak alındığında, not etmeyi ilginç buluyorum.
+
+106
+00:06:41,890 --> 00:06:46,020
+Her neyse, bu nöronun aktivasyonunu arttırmaya yardımcı olmamızın üçüncü yolu
+
+107
+00:06:46,020 --> 00:06:49,060
+önceki katmandaki tüm aktivasyonları değiştirerek,
+
+108
+00:06:49,560 --> 00:06:54,970
+yani, bu basamak 2 nöronuna pozitif ağırlığı olan her şey daha parlak hale gelirse,
+
+109
+00:06:54,970 --> 00:06:57,960
+ve negatif bir ağırlığa bağlı olan her şey kararırsa,
+
+110
+00:06:58,340 --> 00:07:00,890
+o zaman bu 2. basamak nöron daha aktif hale gelirdi.
+
+111
+00:07:02,450 --> 00:07:06,130
+Ve ağırlık değişimlerine benzer şekilde paranın karşılığını en iyi şekilde alacaksın
+
+112
+00:07:06,130 --> 00:07:10,550
+karşılık gelen ağırlıkların büyüklüğü ile orantılı olan değişiklikler arayarak.
+
+113
+00:07:12,120 --> 00:07:15,360
+Şimdi, elbette, bu aktivasyonları doğrudan etkileyemiyoruz.
+
+114
+00:07:15,360 --> 00:07:17,780
+sadece ağırlıklar ve önyargılar üzerinde kontrolümüz var.
+
+115
+00:07:18,220 --> 00:07:23,610
+Ancak, son katmanda olduğu gibi, istenen değişikliklerin neler olduğuna dair bir not tutmanız yararlı olacaktır.
+
+116
+00:07:24,450 --> 00:07:29,720
+Fakat burada bir adımı uzaklaştırırken, bu sadece 2. basamak nöronun istediği şey budur.
+
+117
+00:07:29,720 --> 00:07:34,840
+Unutma, son katmandaki tüm diğer nöronların daha az aktif olmasını istiyoruz.
+
+118
+00:07:34,840 --> 00:07:36,500
+ve diğer çıkış nöronlarının her biri
+
+119
+00:07:36,500 --> 00:07:39,840
+bu ikinci-son katmana ne olması gerektiği hakkında kendi düşünceleri vardır.
+
+120
+00:07:43,110 --> 00:07:46,140
+Yani, bu rakam 2 nöronun arzusu
+
+121
+00:07:46,140 --> 00:07:50,520
+diğer tüm çıkış nöronlarının arzularıyla birlikte eklenir
+
+122
+00:07:50,520 --> 00:07:53,240
+Çünkü bu ikinci-son katmana ne olmalı.
+
+123
+00:07:53,580 --> 00:07:56,400
+Yine, karşılık gelen ağırlıklarla orantılı olarak,
+
+124
+00:07:56,400 --> 00:08:00,910
+ve bu nöronların her birinin ne kadar değişmesi gerektiği ile orantılı olarak.
+
+125
+00:08:01,480 --> 00:08:05,510
+Buradaki, geriye doğru yayılma fikrinin geldiği yerdir.
+
+126
+00:08:05,960 --> 00:08:08,730
+İstenilen tüm bu efektleri bir araya getirerek,
+
+127
+00:08:08,730 --> 00:08:13,560
+Temelde, ikinci-son katmanın başına gelmek istediğiniz dürtmelerin bir listesini alırsınız.
+
+128
+00:08:14,180 --> 00:08:15,390
+Ve bunlara sahip olduktan sonra,
+
+129
+00:08:15,390 --> 00:08:17,850
+aynı işlemi tekrarlı olarak uygulayabilirsiniz
+
+130
+00:08:17,850 --> 00:08:21,180
+bu değerleri belirleyen ilgili ağırlık ve önyargılara,
+
+131
+00:08:21,180 --> 00:08:25,140
+aynı işlemi tekrarlayarak sadece ağ üzerinden yürüdüm ve geriye doğru yürüdüm.
+
+132
+00:08:29,030 --> 00:08:30,370
+Ve biraz daha uzaklaştırarak,
+
+133
+00:08:30,370 --> 00:08:31,920
+bunların sadece adil olduğunu hatırla
+
+134
+00:08:31,920 --> 00:08:37,400
+Tek bir eğitim örneğinin, bu ağırlıkların ve önyargıların her birini dürtmek istemesi.
+
+135
+00:08:37,400 --> 00:08:39,700
+Sadece 2'nin ne istediğini dinlersek,
+
+136
+00:08:39,700 --> 00:08:43,400
+Ağ, sonuçta sadece tüm görüntüleri 2 olarak sınıflandırmak için teşvik edilecektir.
+
+137
+00:08:44,030 --> 00:08:49,420
+Öyleyse, yaptığınız diğer her eğitim örneği için aynı backprop rutini geçiyorsunuz.
+
+138
+00:08:49,420 --> 00:08:53,200
+her birinin ağırlıkları ve önyargıları nasıl değiştirmek istediklerini kaydetmek,
+
+139
+00:08:53,650 --> 00:08:56,220
+ve birlikte bu istenen değişikliklerin ortalamasını aldınız.
+
+140
+00:09:02,050 --> 00:09:06,940
+Bu toplama burada her ağırlık ve önyargı için ortalama dürtmeler,
+
+141
+00:09:06,940 --> 00:09:11,910
+gevşekçe konuşursak, son videoda belirtilen maliyet işlevinin negatif gradyanı,
+
+142
+00:09:11,910 --> 00:09:13,740
+veya en azından bununla orantılı bir şey.
+
+143
+00:09:14,360 --> 00:09:19,570
+“Gevşek konuşuyorum” diyorum, çünkü henüz bu dürtüler hakkında niceliksel olarak kesinleşemedim.
+
+144
+00:09:19,570 --> 00:09:22,190
+Ama az önce başvuruda bulunduğum her değişikliği anladıysanız,
+
+145
+00:09:22,190 --> 00:09:24,770
+neden bazılarının orantılı olarak diğerlerinden daha büyük olduğu,
+
+146
+00:09:24,770 --> 00:09:27,160
+ve hepsinin nasıl bir araya getirilmesi gerektiğine,
+
+147
+00:09:27,160 --> 00:09:31,170
+geri yayılımın gerçekte ne yaptığının mekaniğini anlıyorsun.
+
+148
+00:09:34,050 --> 00:09:37,400
+Bu arada, pratikte bilgisayarları çok uzun zaman alıyor
+
+149
+00:09:37,400 --> 00:09:42,490
+Her bir eğitim örneğinin, her bir degrade iniş adımının etkisini eklemek.
+
+150
+00:09:43,010 --> 00:09:44,960
+Yani burada yaygın olarak ne yapılır:
+
+151
+00:09:45,440 --> 00:09:50,280
+Antrenman verilerinizi rastgele karıştırırsınız ve daha sonra bunları bir dizi küçük gruba bölersiniz,
+
+152
+00:09:50,280 --> 00:09:52,680
+Diyelim ki her biri 100 eğitim örneğine sahip.
+
+153
+00:09:53,240 --> 00:09:56,430
+Sonra mini partiye göre bir adım hesaplarsınız.
+
+154
+00:09:56,850 --> 00:09:59,390
+Maliyet fonksiyonunun gerçek degradesi olmayacak,
+
+155
+00:09:59,390 --> 00:10:02,630
+Bu, bu küçük altküme değil, tüm eğitim verilerine bağlı.
+
+156
+00:10:03,100 --> 00:10:05,640
+Bu yüzden yokuş aşağı en etkili adım değil.
+
+157
+00:10:06,080 --> 00:10:08,970
+Ancak her mini parti size oldukça iyi bir yaklaşım sunuyor.
+
+158
+00:10:08,970 --> 00:10:12,250
+ve daha da önemlisi, size önemli bir hesaplama hızı verir.
+
+159
+00:10:12,820 --> 00:10:16,810
+Ağınızın yörüngesini ilgili maliyet yüzeyinin altına yerleştirecekseniz,
+
+160
+00:10:16,810 --> 00:10:22,030
+biraz daha tepeden aşağı tökezleyen, ancak hızlı adımlar atan sarhoş bir adam gibi olurdu;
+
+161
+00:10:22,030 --> 00:10:27,180
+Her adımın tam yokuş aşağı yönünü belirleyen dikkatli bir şekilde hesaplanan bir adam yerine
+
+162
+00:10:27,180 --> 00:10:30,350
+bu yönde çok yavaş ve dikkatli bir adım atmadan önce.
+
+163
+00:10:31,460 --> 00:10:34,940
+Bu teknik “stokastik gradyan iniş” olarak adlandırılır.
+
+164
+00:10:36,000 --> 00:10:39,800
+Burada bir sürü şey oluyor, o yüzden hadi kendimiz için özetleyelim mi?
+
+165
+00:10:40,240 --> 00:10:42,270
+Geri yayılım algoritması
+
+166
+00:10:42,270 --> 00:10:47,370
+Tek bir eğitim örneğinin ağırlıkları ve önyargıları nasıl dürtmek istediğini belirlemek için,
+
+167
+00:10:47,370 --> 00:10:49,930
+Sadece aşağı mı yukarı mı çıkmaları gerektiği konusunda değil,
+
+168
+00:10:49,930 --> 00:10:55,700
+ancak bu değişikliklere göreceli oranların ne kadar olması maliyette en hızlı düşüşe neden olur.
+
+169
+00:10:56,240 --> 00:10:58,270
+Gerçek bir degrade iniş adımı
+
+170
+00:10:58,270 --> 00:11:01,820
+bunu onlarca ve binlerce eğitim örneğiniz için yapmayı içerir.
+
+171
+00:11:01,820 --> 00:11:04,260
+ve aldığınız istenen değişikliklerin ortalamasının alınması.
+
+172
+00:11:04,830 --> 00:11:06,340
+Ancak bu hesaplama yavaş.
+
+173
+00:11:06,690 --> 00:11:10,480
+Bunun yerine verileri rastgele olarak bu mini gruplara bölersiniz
+
+174
+00:11:10,480 --> 00:11:13,460
+ve her adımı bir mini partiye göre hesaplayın.
+
+175
+00:11:13,900 --> 00:11:17,690
+Mini partilerin hepsinden tekrar tekrar geçerek bu ayarlamaları yapmak,
+
+176
+00:11:17,690 --> 00:11:21,050
+Maliyet fonksiyonunun yerel bir minimumuna yakınlaşacaksınız,
+
+177
+00:11:21,430 --> 00:11:25,740
+Yani, ağınız eğitim örneklerinde gerçekten iyi bir iş çıkarmaya başlayacak.
+
+178
+00:11:27,450 --> 00:11:32,290
+Tüm bunlarla birlikte, backprop uygulamasına girecek olan her kod satırı
+
+179
+00:11:32,290 --> 00:11:36,970
+Aslında şimdiye kadar gördüğünüz bir şeye karşılık gelir, en azından gayrı resmi terimlerle.
+
+180
+00:11:37,570 --> 00:11:40,960
+Ama bazen matematiğin ne yaptığını bilmek savaşın sadece yarısıdır.
+
+181
+00:11:40,960 --> 00:11:44,460
+ve sadece kahrolası şeyi temsil etmek, her şeyin karışıp karıştığı yerdir.
+
+182
+00:11:44,930 --> 00:11:47,620
+Yani daha derine gitmek isteyenler için,
+
+183
+00:11:47,620 --> 00:11:50,670
+Bir sonraki video, burada sunulan fikirlerin aynısını anlatıyor
+
+184
+00:11:50,670 --> 00:11:52,750
+fakat temel hesap açısından,
+
+185
+00:11:52,750 --> 00:11:56,760
+umarım konuyu diğer kaynaklarda gördüğünüz gibi biraz daha aşina yapmalısınız.
+
+186
+00:11:57,210 --> 00:11:59,440
+Ondan önce, vurgulamaya değer bir şey
+
+187
+00:11:59,440 --> 00:12:04,320
+Bu algoritmanın çalışması için ve bu sadece sinir ağlarının ötesinde her türlü makine öğrenmesi için geçerlidir.
+
+188
+00:12:04,320 --> 00:12:06,120
+Çok fazla eğitim verilerine ihtiyacınız var.
+
+189
+00:12:06,430 --> 00:12:09,860
+Bizim durumumuzda, el yazısı rakamları böyle güzel bir örnek yapan bir şey
+
+190
+00:12:09,860 --> 00:12:12,110
+MNIST veritabanının var olduğu
+
+191
+00:12:12,110 --> 00:12:15,290
+insanlar tarafından etiketlenmiş pek çok örnekle.
+
+192
+00:12:15,290 --> 00:12:19,000
+Makine öğreniminde çalışanlarınızın aşina olacağı ortak bir zorluk
+
+193
+00:12:19,000 --> 00:12:21,930
+Sadece ihtiyacınız olan etiketli eğitim verilerini alıyorsanız,
+
+194
+00:12:22,240 --> 00:12:25,080
+İnsanlara on binlerce görüntüyü etiketleyip etiketlemediği
+
+195
+00:12:25,080 --> 00:12:27,550
+ya da ne tür başka bir veri türü ile uğraşıyorsanız.
+

@@ -1,0 +1,548 @@
+1
+00:00:04,230 --> 00:00:07,120
+Aqui la suposición dificil es que tu has mirado la parte 3,
+
+2
+00:00:07,120 --> 00:00:10,230
+dando una demostración intuitiva del algoritmo de la retropropagación.
+
+3
+00:00:11,040 --> 00:00:14,770
+Aquí,  obtenermos algo un pocomo mas formal y profundo en lo relavanta al cálculo.
+
+4
+00:00:14,770 --> 00:00:17,040
+Es normal estar un poco confundido para esto,
+
+5
+00:00:17,040 --> 00:00:21,480
+asi que el mantra,  pausa y piensa regularmente, ciertamente se aplica mucho aquí como en ningun otro lugar.
+
+6
+00:00:21,920 --> 00:00:25,180
+Nuestra meta principal es enseñarle a la gente el aprendizaje de máquinas,
+
+7
+00:00:25,180 --> 00:00:29,440
+comummente se piensa en la regla de la cadena del cálculo
+
+8
+00:00:29,440 --> 00:00:33,820
+tiene una diferente sensación por cuanto los cursos introductorios de calculo tratan el tema .
+
+9
+00:00:34,500 --> 00:00:36,890
+para los que se sientas incomodos con la relación del cálculo,
+
+10
+00:00:36,890 --> 00:00:39,040
+tengo una serie completa sobre el tema.
+
+11
+00:00:40,340 --> 00:00:43,150
+Digamos que inicias con una red extremadamente simple,
+
+12
+00:00:43,150 --> 00:00:45,730
+una en la cual cada capa tiene una sola  neurona dentro.
+
+13
+00:00:46,270 --> 00:00:50,680
+Entonces esta red en particular es determinada por 3 pesos y 3 biases,
+
+14
+00:00:50,680 --> 00:00:55,070
+y nuestra meta es entender que tan sensitiva es la función de coste para estas variables
+
+15
+00:00:55,550 --> 00:00:57,830
+de esa manera sabemos qué ajustes a estos términos
+
+16
+00:00:57,830 --> 00:01:00,940
+van a causar el decresimiento mas eficiente a la función de coste.
+
+17
+00:01:01,920 --> 00:01:05,170
+Y solo nos estamos enfocando en la conecxión entre las dos neuronas.
+
+18
+00:01:05,880 --> 00:01:11,370
+Etiquetemos la activación de la última neurona  a con un superscript L, indicando en que capas esta (a^(L)),
+
+19
+00:01:11,690 --> 00:01:15,720
+asi que la activación de esta neurona previa es a^(L-1)
+
+20
+00:01:16,430 --> 00:01:20,030
+NO hay exponente, solo es una manera de indexar lo que estamos hablando,
+
+21
+00:01:20,030 --> 00:01:22,970
+ya que quiero guardar los subscripts para diferentes indices  para después,
+
+22
+00:01:23,740 --> 00:01:29,710
+Digamos que el valor que queremos, esta última activación sea para un ejemplo de entrenamiento dado es   y.
+
+23
+00:01:30,170 --> 00:01:32,360
+Por ejemplo,  y podría ser 0 o 1.
+
+24
+00:01:32,940 --> 00:01:39,470
+Así que el coste de esta red simple para un ejemplo de entrenamiento en particular es (a^(L) - y)^2.
+
+25
+00:01:40,250 --> 00:01:44,650
+Denotaremos el coste de este ejemplo de entrenamiento como C_0.
+
+26
+00:01:46,030 --> 00:01:51,520
+Como un recordatorio, esta última activación es determinada por el peso, el cual voy a llamar w^(L)
+
+27
+00:01:51,980 --> 00:01:54,220
+multiplicado por la activación previa de la neurona,
+
+28
+00:01:54,530 --> 00:01:56,940
+mas algún bias, el cual llamaré b^(L),
+
+29
+00:01:57,480 --> 00:01:59,900
+luego bombeas eso a travez de algúna función especial no linear
+
+30
+00:01:59,900 --> 00:02:01,520
+como  una sigmoid o una ReLU.
+
+31
+00:02:01,850 --> 00:02:06,980
+Eso de echo va a hacer las cosas mas fáciles para nosotros si nostros le damos  un nombre especial a esta suma ponderada, algo como Z,
+
+32
+00:02:06,980 --> 00:02:09,550
+con el mismo superscript como las activaciones relevantes,
+
+33
+00:02:10,390 --> 00:02:11,480
+Asi que hay un mont{on de términos.
+
+34
+00:02:11,480 --> 00:02:16,960
+Y una manera en la que podrías conceptualizar esto es que el peso, la activación previa, y el bias.
+
+35
+00:02:16,960 --> 00:02:21,400
+en conjunto son usadas para calcular z, que luego nos permite calcular a,
+
+36
+00:02:21,740 --> 00:02:25,610
+que finalmente, junto con la constante y, nos permite calcular el coste.
+
+37
+00:02:27,260 --> 00:02:31,660
+Y por su puesto, a^(L-1)  es influenciado por su propio peso y bias, y asi como los demás.
+
+38
+00:02:32,810 --> 00:02:34,840
+Pero nosotros no nos vamos a enfocar eso justo ahora.
+
+39
+00:02:35,680 --> 00:02:38,040
+Todos estos son solo números, verdad?
+
+40
+00:02:38,040 --> 00:02:41,230
+y puede ser bueno pensar en cada uno como que si tubiesen su priopia línea de números pequeña.
+
+41
+00:02:41,900 --> 00:02:43,990
+Nuesta primera meta es entender
+
+42
+00:02:43,990 --> 00:02:48,940
+cuan sensitiva es la función de coste para un cambio pequeño cambio en nuestro peso w^(L).
+
+43
+00:02:49,640 --> 00:02:54,880
+O parafraseado diferentemente, cuál es la derivada de C respecto de w^(L).
+
+44
+00:02:55,630 --> 00:02:58,070
+Cuando veas este término “∂w”,
+
+45
+00:02:58,070 --> 00:03:02,750
+piensa que significa "Algún pequeño empujon para w", uno como de 0.01.
+
+46
+00:03:03,150 --> 00:03:08,210
+Y piensa que este  término “∂C”  esta diciendo "cualsea  el empujon resultante  al coste
+
+47
+00:03:08,710 --> 00:03:10,420
+nosotros queremos su proporción.
+
+48
+00:03:11,210 --> 00:03:16,520
+Conceptualmente, este pequeño empujón a w“∂C”  causa algun empujón a  z^(L)
+
+49
+00:03:16,520 --> 00:03:21,380
+que luego causa algún cambio a a^(L), que directamente influye el costo.
+
+50
+00:03:23,100 --> 00:03:28,930
+Asi que descomponemos ,primero mirando la proporción entre el cambio pequeño a z^(L) y el cambio pequeño en w^(L).
+
+51
+00:03:29,290 --> 00:03:33,030
+Eso es, la derivada de  z^(L)  con respecto de w^(L).
+
+52
+00:03:33,760 --> 00:03:39,410
+De la misma manera, luego consideras la proporción entre un cambio para a^(L)  y el cambio pequeño en z^(L)  que lo causo,
+
+53
+00:03:39,850 --> 00:03:44,880
+también como la proporción entre el empujón final para C y este empujón intermedio para a^(L).
+
+54
+00:03:45,670 --> 00:03:47,850
+Esto aquí es exactamente la regla de la cadena,
+
+55
+00:03:47,850 --> 00:03:54,950
+donde multiplicando juntos estas tres proporcionas nos da la sensibilidad de C para un pequeño cambio en w^(L).
+
+56
+00:03:57,190 --> 00:04:00,040
+Asi que en la pantalla ahora mismo, hay un monton de símbolos
+
+57
+00:04:00,040 --> 00:04:03,000
+asi que tomate un tiempo para asegurarte de que esta en claro todo lo que ellos son,
+
+58
+00:04:03,600 --> 00:04:06,560
+porque ahora vamos a calcular las derivadas relevantes.
+
+59
+00:04:07,400 --> 00:04:13,230
+La derivada de C con respecto de a^(L)  se transforma para ser 2(a^(L) - y).
+
+60
+00:04:13,960 --> 00:04:16,880
+Nota, esto significa que su tamaño es proporcional a
+
+61
+00:04:16,880 --> 00:04:20,880
+a la diferencia entre la salida de la red, y la cosa que queremos que sea.
+
+62
+00:04:21,360 --> 00:04:23,340
+Asi que si esa salida fue muy diferente,
+
+63
+00:04:23,340 --> 00:04:27,150
+incluso ligeros cambios, tienden a tener un gran impacto en función de coste.
+
+64
+00:04:28,300 --> 00:04:33,880
+La derivada de a^(L)  con respecto de z^(L) es solo la derivada de nuestra función sigmoid.
+
+65
+00:04:33,880 --> 00:04:36,370
+o cualquier cosa no lineal que escojas usar.
+
+66
+00:04:37,310 --> 00:04:40,370
+Y la derivada de  z^(L)  con respecto de w^(L),
+
+67
+00:04:41,470 --> 00:04:44,530
+en este caso viene solo a  ser a^(L-1).
+
+68
+00:04:46,070 --> 00:04:49,570
+Ahora no se tu, pero pienso que es facil simentar estar formulas en tu cabeza.
+
+69
+00:04:49,570 --> 00:04:53,690
+sin tomar un momento para sentarte y recordad tu mismo lo que significan realmente.
+
+70
+00:04:54,120 --> 00:04:56,040
+En el caso de esta última derivada,
+
+71
+00:04:56,040 --> 00:05:00,060
+la medida de un empujon pequeño para este peso que influye la última capa
+
+72
+00:05:00,060 --> 00:05:02,850
+depende en cuan fuerte la neurona previa es.
+
+73
+00:05:03,310 --> 00:05:07,520
+Recuerda,  esto es donde  la idea de "neuronas que se  prenden juntas se enlazan juntas".
+
+74
+00:05:09,210 --> 00:05:15,940
+Y todo esto es la derivda con respecto de w^(L)  solo para el costo, para un ejemplo de entrenamiento en concreto.
+
+75
+00:05:16,410 --> 00:05:22,150
+Ya que la función de coste completa involucra promediar juntos todos estos costes a través de muchos ejemplos de entrenamiento,
+
+76
+00:05:22,150 --> 00:05:27,610
+su derivada requiere promediar esta expresión que encontramos en todos los ejemplos de entrenamiento.
+
+77
+00:05:28,430 --> 00:05:31,930
+Y por su puesto eso es solo una componente de vector gradiente,
+
+78
+00:05:31,930 --> 00:05:33,890
+que en si mismo esta contruido
+
+79
+00:05:33,890 --> 00:05:38,480
+desde  las derivada parciales de la función coste con respecto a todos los peso y biases.
+
+80
+00:05:40,710 --> 00:05:43,550
+Pero a pesar de que esto fue solo una de esas derivadas parcias que necesitamos,
+
+81
+00:05:43,550 --> 00:05:45,390
+es mas del 50%  del trabajo.
+
+82
+00:05:46,420 --> 00:05:49,940
+La sensibilidad del bias, por ejemplo, es casi idéntica.
+
+83
+00:05:50,250 --> 00:05:55,120
+Solo necesitamos reemplezar este término  ∂z/∂w  por  ∂z/∂b,
+
+84
+00:05:58,760 --> 00:06:02,590
+y  si  ves en la fórmula pertinente, esa derivada viene siendo 1
+
+85
+00:06:06,210 --> 00:06:09,880
+también, aquí es donde la idea de propagación hacia atras viene,
+
+86
+00:06:10,230 --> 00:06:15,670
+puedes ver cuan sensible es la función de coste para la activación de la capa previa,
+
+87
+00:06:16,250 --> 00:06:19,650
+es decir, esta derivada inicial en la expansión de la regla de la cadena,
+
+88
+00:06:19,650 --> 00:06:23,100
+la sensibilidad de z a la activación previa,
+
+89
+00:06:23,480 --> 00:06:25,670
+viene siendo el peso w^(L).
+
+90
+00:06:26,580 --> 00:06:31,500
+Y de nuevo, incluso si no seremos capaces de influenciar directamente esa activación,
+
+91
+00:06:31,500 --> 00:06:33,080
+Es de ayuda  mantenerle el rastro,
+
+92
+00:06:33,080 --> 00:06:38,200
+porque ahora solo podemos manterner iterando esta regla de la cadena hacia atras
+
+93
+00:06:38,200 --> 00:06:42,750
+para ver cuan sensible es la función de costo para los pesos y biases previos.
+
+94
+00:06:43,630 --> 00:06:45,980
+Y tu podrías pensar que esto es  un ejemplo demasiado simple
+
+95
+00:06:45,980 --> 00:06:47,880
+ya que todas las capas solo tienen 1 neurona,
+
+96
+00:06:47,880 --> 00:06:51,220
+y las cosas solo se van a poner exponencialmente más complicadas en la red verdadera.
+
+97
+00:06:51,680 --> 00:06:56,270
+Pero honestamente, no cambia mucho cuando damos múltiples neuronas a las capas.
+
+98
+00:06:56,270 --> 00:06:58,710
+Realmente solo es unos índices mas para mantenerles el rastro.
+
+99
+00:06:59,340 --> 00:07:02,880
+Mas bien, la activación de una capa dada viene siendo  a^(L),
+
+100
+00:07:02,880 --> 00:07:07,210
+También va a tener un subscript indicando cuál neurona de la capa es.
+
+101
+00:07:07,780 --> 00:07:14,470
+Vamos a adelantarnos y usar la letra K para el índice en la capa (L-1), y j para el indice de la capa (L).
+
+102
+00:07:15,290 --> 00:07:18,910
+Para el coste, de nuevo miramos cuál es el resultado deseado.
+
+103
+00:07:18,910 --> 00:07:19,380
+Pero esta vez
+
+104
+00:07:19,380 --> 00:07:25,260
+sumamos los cuadrados de las diferencias entre esta capa de activaciones y el resultado deseado.
+
+105
+00:07:26,060 --> 00:07:31,070
+Eso es,  tomas la suma de (a_j^(L) - y_j)^2
+
+106
+00:07:33,110 --> 00:07:34,520
+Ya que hay un montón de pesos más,
+
+107
+00:07:34,520 --> 00:07:37,650
+cada uno tiene que tener un par más indices para mantenerles rastro de donde está.
+
+108
+00:07:38,010 --> 00:07:44,990
+Así que llamemos al peso del borde  conectando esta neurona k-th a la neurona  j-th
+
+109
+00:07:45,660 --> 00:07:48,260
+Esos índices podrían persivir  un  pequeño retroceso al principio,
+
+110
+00:07:48,260 --> 00:07:52,940
+pero se alínea con cuanto tu indexaste  , la  Matriz ponderada de la que hable en el video 1.
+
+111
+00:07:53,680 --> 00:07:58,350
+justo  como antes,  todavía es bueno darle un nombre a la suma ponderada,   como z,
+
+112
+00:07:58,350 --> 00:08:04,310
+asi que la activación de la última capa es solo tu función especial, como la sigmoid, aplicada a z.
+
+113
+00:08:05,040 --> 00:08:06,230
+Puedes ver lo que quiero decir ,verdad
+
+114
+00:08:06,230 --> 00:08:11,680
+Todos estos son esencialmente la misma ecuación que tuvimos antes en el caso de la capa uno a uno;
+
+115
+00:08:11,680 --> 00:08:13,870
+Solo que se ve un poco mas complicada.
+
+116
+00:08:15,370 --> 00:08:18,220
+y en efecto, la expresión regla de la cadena de la derivada
+
+117
+00:08:18,220 --> 00:08:21,980
+describiendo cuan sensible es el coste para un peso en específico
+
+118
+00:08:21,980 --> 00:08:23,890
+se ve esencialmente lo mismo.
+
+119
+00:08:23,890 --> 00:08:26,880
+Lo dejaré para que pauses y piense cada uno de estos términos si quieres.
+
+120
+00:08:29,310 --> 00:08:31,320
+Qué es lo que cambia aquí,  reflexionando,
+
+121
+00:08:31,320 --> 00:08:36,830
+es la derivada del coste con respecto de una de las activaciones en la capa (L-1).
+
+122
+00:08:37,760 --> 00:08:43,120
+en este caso, la diferencia en la neurona influye la función de costo a través de múltiples caminos.
+
+123
+00:08:44,660 --> 00:08:50,540
+Eso es,  por un lado, esto influye a_0^(L),  que juega un role en la función de coste,
+
+124
+00:08:51,010 --> 00:08:56,320
+Pero también influye a a_1^(L), que también juega un role en la función de coste.
+
+125
+00:08:56,320 --> 00:08:57,410
+Y tu tienes que hacerles sentido.
+
+126
+00:09:00,170 --> 00:09:02,980
+y eso.... bueno eso mucho.
+
+127
+00:09:03,560 --> 00:09:08,520
+Una vez sepas cuan sensible  es la función de coste en las activaciones de esta segunda capa,
+
+128
+00:09:08,840 --> 00:09:12,940
+tu puedes solo repetir el proceso para todos los pesos y bias
+
+129
+00:09:13,850 --> 00:09:15,360
+Asi que date una palmada tu mismo en la espalda!
+
+130
+00:09:15,360 --> 00:09:16,950
+Si todo esto tiene sentido,
+
+131
+00:09:16,950 --> 00:09:20,440
+Tu has ahora visto a profundida en el corazón de la retropropagación,
+
+132
+00:09:20,440 --> 00:09:22,830
+EL caballo de trabajo detrás de cómo las rede aprenden.
+
+133
+00:09:23,590 --> 00:09:29,300
+Estas expresiones de la regla de la cadena te dan las derivadas que determinan cada componente en la gradiente
+
+134
+00:09:29,300 --> 00:09:33,550
+que ayudan a minimizar el costo de la red al n
+
+135
+00:09:34,280 --> 00:09:36,850
+Si regresas y piensas en todo eso,
+
+136
+00:09:36,850 --> 00:09:40,090
+es un montón capas de capas de complejidad para envolver alrededor de tu mente.
+
+137
+00:09:40,090 --> 00:09:43,090
+Asi que no te preocupes si le toma tiempo a tu mente digerirlo todo.
+

@@ -1,0 +1,948 @@
+1
+00:00:00,000 --> 00:00:03,085
+Du kaufst ein Produkt online, und siehst drei verschiedene Verkäufer
+
+2
+00:00:03,085 --> 00:00:06,420
+Sie bieten alle das gleiche Produkt zum selben Preis an
+
+3
+00:00:06,420 --> 00:00:09,440
+Der Erste hat zu 100% positive Bewertungen,
+
+4
+00:00:09,540 --> 00:00:12,340
+jedoch nur 10 Rezensionen insgesamt. Der Zweite hat zu 96%
+
+5
+00:00:12,440 --> 00:00:15,100
+positive Bewertungen aus insgesamt 50 Rezensionen
+
+6
+00:00:15,200 --> 00:00:17,555
+Und der Dritte hat zu 93% positive Bewertungen
+
+7
+00:00:17,555 --> 00:00:20,115
+aus insgesamt 200 Bewertungen
+
+8
+00:00:20,120 --> 00:00:22,300
+Bei wem sollte man das Produkt kaufen?
+
+9
+00:00:28,300 --> 00:00:31,435
+Wir haben wohl alle den Instinkt dass je mehr Daten wir haben
+
+10
+00:00:31,440 --> 00:00:34,200
+je mehr vertrauen wir der gegebenen Erfolgsrate
+
+11
+00:00:34,200 --> 00:00:37,215
+Wir sind ein bisschen misstrauisch was die 100% Erfolgsrate angeht
+
+12
+00:00:37,215 --> 00:00:39,875
+weil sich diese auf nur wenige Rezensionen beschränkt
+
+13
+00:00:39,875 --> 00:00:42,965
+Es erscheint plausibel dass andere Rezensionen durchaus zu
+
+14
+00:00:42,965 --> 00:00:46,115
+einer niedrigeren Erfolgsrate geführt hätten. Aber wie lässt sich diese Intuition quantitativ beschreiben?
+
+15
+00:00:46,115 --> 00:00:49,185
+Wie interpretiert man die Beziehung
+
+16
+00:00:49,185 --> 00:00:51,660
+zwischen größerem Vetrauen in mehr Daten,
+
+17
+00:00:51,880 --> 00:00:53,840
+und der niedrigeren Erfolgsrate richtig
+
+18
+00:00:54,140 --> 00:00:57,135
+Dieses bestimme Beispiel ist eine leichte Abänderung
+
+19
+00:00:57,135 --> 00:01:00,285
+eines Problems von John Cook aus dessen exzellentem Blog-Post
+
+20
+00:01:00,285 --> 00:01:03,215
+"A Bayesian view of Amazon Resellers"
+
+21
+00:01:03,215 --> 00:01:06,175
+Für dich und mich ist dies ein sehr guter Anlass sich mit ein paar zentralen Themen
+
+22
+00:01:06,175 --> 00:01:08,655
+der Wahrscheinlichkeit und der Statistik zu beschäftigen
+
+23
+00:01:08,655 --> 00:01:11,615
+Um diese Themen wirklich gründlich zu  untersuchen erfordert es Zeit
+
+24
+00:01:11,615 --> 00:01:14,595
+Deswegen werde ich das ganze in 3 Videos unterteilen
+
+25
+00:01:14,595 --> 00:01:15,745
+In diesem ersten Video
+
+26
+00:01:16,125 --> 00:01:18,945
+werden wir ein Modell für das Problem konstruieren und anfangen über die
+
+27
+00:01:18,945 --> 00:01:21,965
+Binomialverteilung zu reden. Das zweite wird Themen zu
+
+28
+00:01:22,045 --> 00:01:24,825
+Bayesschem Updating behandeln, und wie man mit Wahrscheinlichkeiten
+
+29
+00:01:24,825 --> 00:01:27,705
+über kontinuierlichen Werten umgeht und im dritten Video
+
+30
+00:01:27,705 --> 00:01:30,695
+werden wir uns mit etwas beschäftigen was als Beta-Verteilung bekannt ist
+
+31
+00:01:30,695 --> 00:01:33,925
+und ein bisschen Python miteinbeziehen um unsere Daten zu analysieren
+
+32
+00:01:33,925 --> 00:01:37,420
+um so zu unterschiedlichen Antworten zu gelangen, je nachdem was wir optimieren wollen.
+
+33
+00:01:39,400 --> 00:01:42,400
+Nun, um euch ein bisschen entgegen zu kommen, bevor wir in die Mathematik eintauchen,
+
+34
+00:01:42,405 --> 00:01:45,375
+lasst mich euch zeigen was eine der Antworten ist,
+
+35
+00:01:45,375 --> 00:01:46,375
+da sie erstaunlich einfach ist
+
+36
+00:01:46,875 --> 00:01:49,680
+Wenn du eine online Bewertungen siehst, etwa wie hier
+
+37
+00:01:49,680 --> 00:01:52,255
+10 von 10, dann nimm an es gäbe noch 2 weitere
+
+38
+00:01:52,255 --> 00:01:55,525
+Bewertungen, eine positive und eine negative
+
+39
+00:01:55,525 --> 00:01:58,540
+In diesem Fall bedeutet das du nimmst an es wären 11 aus 12
+
+40
+00:01:58,540 --> 00:02:00,960
+was 91,7% entsprächen
+
+41
+00:02:01,725 --> 00:02:04,765
+Diese Zahl ist die Wahrscheinlichkeit eine gute Erfahrung
+
+42
+00:02:04,765 --> 00:02:06,415
+bei dem Kauf zu machen
+
+43
+00:02:07,745 --> 00:02:10,465
+Im Fall von 50 Rezensionen, wovon 48 positiv
+
+44
+00:02:10,465 --> 00:02:13,345
+und 2 negativ sind, nehmen wir an
+
+45
+00:02:13,345 --> 00:02:15,895
+es wären 49 positive und 3 negative
+
+46
+00:02:15,895 --> 00:02:18,765
+Hier haben wir also 49 aus 52
+
+47
+00:02:18,765 --> 00:02:19,940
+was 94,2% entspricht
+
+48
+00:02:20,640 --> 00:02:23,685
+Das ist die Wahrscheinlichkeit beim zweiten Verkäufer eine gute Erfahrung zu machen
+
+49
+00:02:23,685 --> 00:02:24,685
+ 
+
+50
+00:02:25,855 --> 00:02:28,795
+Das gleiche Spiel spielend beim dritten Verkäufer mit 200 Rezensionen,
+
+51
+00:02:28,795 --> 00:02:31,895
+bekommen wir 187 aus 202,
+
+52
+00:02:31,895 --> 00:02:33,995
+oder 92,6%
+
+53
+00:02:34,705 --> 00:02:37,825
+Dieser Vorschrift entsprechend wäre die beste Entscheidung also
+
+54
+00:02:37,825 --> 00:02:38,895
+den zweiten Verkäufer zu wählen
+
+55
+00:02:39,235 --> 00:02:42,265
+Dies ist bekannt als Laplace˙s Regel der Abfolge
+
+56
+00:02:42,265 --> 00:02:45,325
+die aus dem 18. Jhr. stammt. Um zu verstehen welche Annahmen
+
+57
+00:02:45,335 --> 00:02:48,325
+dem zugrundeliegen und wie das Ändern
+
+58
+00:02:48,325 --> 00:02:51,325
+dieser Annahmen oder das Ändern des zugrunde liegenden Ziels die Wahl
+
+59
+00:02:51,325 --> 00:02:54,085
+die du triffst verändern kann, müssen wir uns die ganze Mathematik dahinter ansehen
+
+60
+00:02:54,335 --> 00:02:56,495
+Ohne jetzt noch herumzureden, tauchen wir jetzt ein
+
+61
+00:03:00,595 --> 00:03:03,825
+Schritt 1, wie genau modellieren wir das Problem
+
+62
+00:03:03,825 --> 00:03:06,565
+und was genau wollen wir optimieren
+
+63
+00:03:06,905 --> 00:03:10,075
+Eine Möglichkeit ist es sich vorzustellen, jeder Verkäufer würde zufällige
+
+64
+00:03:10,075 --> 00:03:13,085
+Erfahrungen produzieren, die entweder positiv oder negativ sind, und dass
+
+65
+00:03:13,085 --> 00:03:16,245
+jeder Verkäufer eine konstante zugrundeliegende Wahrscheinlichkeit hat
+
+66
+00:03:16,245 --> 00:03:19,255
+ein gute Erfahrung zu generieren. Wir nennen diese
+
+67
+00:03:19,255 --> 00:03:21,925
+die Erfolgsrate, kurz s genannt
+
+68
+00:03:21,925 --> 00:03:24,425
+Das Problem ist dass wir s nicht kennen
+
+69
+00:03:25,375 --> 00:03:28,545
+Wenn man sich die erste Bewertung von 100% mit 10 Rezensionen ansieht,
+
+70
+00:03:28,545 --> 00:03:31,815
+heißt das nicht dass die zugrundeliegende Erfolgsrate 100% ist
+
+71
+00:03:31,815 --> 00:03:34,995
+Es könnte sehr wohl so etwas wie 95% sein
+
+72
+00:03:34,995 --> 00:03:37,685
+Um das zu illustrieren mache ich eine kleine Simulation
+
+73
+00:03:37,685 --> 00:03:40,695
+wo ich eine zufällige Zahl zwischen 0 und 1 wähle und
+
+74
+00:03:40,695 --> 00:03:43,405
+wenn es weniger als 0,95 ist, dann trage ich es als positive
+
+75
+00:03:43,405 --> 00:03:45,385
+Rezension ein, andernfalls
+
+76
+00:03:45,795 --> 00:03:47,575
+als eine negative Rezension
+
+77
+00:03:48,675 --> 00:03:50,785
+Jetzt machen wir das 10 mal hintereinander
+
+78
+00:03:51,805 --> 00:03:53,625
+und dann noch 10 weitere
+
+79
+00:03:54,005 --> 00:03:55,465
+und 10 weitere
+
+80
+00:03:56,025 --> 00:03:59,075
+und 10 weitere und so weiter, um ein Gefühl zu bekommen
+
+81
+00:03:59,075 --> 00:04:02,285
+wie Sequenzen von 10 Rezensionen von einem Verkäufer mit
+
+82
+00:04:02,285 --> 00:04:04,755
+dieser Erfolgsrate von 95% aussehen würden
+
+83
+00:04:05,555 --> 00:04:08,855
+Ziemlich viele von diesen, etwa 60%, haben 10 von 10
+
+84
+00:04:08,855 --> 00:04:12,035
+Also sind die Daten die wir sehen absolut plausibel
+
+85
+00:04:12,035 --> 00:04:15,375
+wenn die Erfolgsrate vom Verkäufer 95% wäre
+
+86
+00:04:15,635 --> 00:04:18,665
+Oder es könnten auch 90% sein oder 99%
+
+87
+00:04:18,665 --> 00:04:20,805
+Das Problem ist dass wir es ganz einfach nicht wissen
+
+88
+00:04:21,445 --> 00:04:24,395
+Unser Ziel ist es die Wahrscheinlichkeit zu maximieren
+
+89
+00:04:24,395 --> 00:04:27,425
+eine positive Erfahrung zu machen, obwohl
+
+90
+00:04:27,425 --> 00:04:29,135
+wir die Erfolgsrate nicht kennen
+
+91
+00:04:29,945 --> 00:04:33,295
+Denkt über das hier nach: Wir haben viele verschiedene mögliche
+
+92
+00:04:33,295 --> 00:04:36,165
+Erfolgsraten für jeden Verkäufer, jede Zahl von 0 bis 1
+
+93
+00:04:36,165 --> 00:04:39,025
+Wir müssen etwas darüber aussagen
+
+94
+00:04:39,025 --> 00:04:41,765
+wie wahrscheinlich jede dieser Wahrscheinlichkeiten ist
+
+95
+00:04:41,765 --> 00:04:44,345
+Sozusagen Wahscheinlichkeiten von Wahrscheinlichkeiten
+
+96
+00:04:44,815 --> 00:04:47,875
+anders als bei den spielerischen Beispielen wie Münz- und Würfelwurf
+
+97
+00:04:47,875 --> 00:04:50,755
+und den sonstigen Sachen, die man in Anfängekursen für Wahrscheinlichkeit sieht
+
+98
+00:04:50,755 --> 00:04:53,815
+wo eine bestimmte Häufigkeit angenommen wird,
+
+99
+00:04:53,815 --> 00:04:56,825
+wie zum Beispiel 1/2 oder 1/6
+
+100
+00:04:56,825 --> 00:04:59,935
+Was wir hier haben ist Ungewissheit in der Häufigkeit selbst,
+
+101
+00:04:59,935 --> 00:05:02,185
+was eine viel mächtigeres Konzept ist
+
+102
+00:05:02,835 --> 00:05:05,485
+Ich sollte auch noch betonen dass dieses Konzept
+
+103
+00:05:05,485 --> 00:05:08,215
+in sehr vielen Situationen der reellen Welt von großer Bedeutung ist,
+
+104
+00:05:08,220 --> 00:05:10,680
+wo man ein zufälligen Vorgang beurteilen muss bei
+
+105
+00:05:10,680 --> 00:05:12,260
+dem man nur limiteirte Informationen hat
+
+106
+00:05:12,545 --> 00:05:15,685
+Zum Beispiel sei eine Autofabrik gegeben
+
+107
+00:05:15,685 --> 00:05:18,635
+und in einem ersten Test von 100 Autos
+
+108
+00:05:18,635 --> 00:05:20,885
+haben 2 Stück einen Fehler
+
+109
+00:05:21,235 --> 00:05:24,335
+Wenn man jetzt eine Million Autos produziert,
+
+110
+00:05:24,335 --> 00:05:27,335
+was kann man dann darüber aussagen,
+
+111
+00:05:27,335 --> 00:05:30,805
+wie viele Autos davon einen Fehler haben
+
+112
+00:05:31,015 --> 00:05:33,825
+Es ist nicht so dass der Test garantiert dass die wirkliche Fehlerrate
+
+113
+00:05:33,825 --> 00:05:36,705
+2% beträgt. Aber was genau sagt es aus?
+
+114
+00:05:38,655 --> 00:05:41,285
+Als erste Aufgabe frage ich euch folgendes:
+
+115
+00:05:41,285 --> 00:05:44,245
+Wenn du auf magische Art und Weise die Erfolgsrate von einem Verkäufer wüsstest,
+
+116
+00:05:44,245 --> 00:05:47,205
+sagen wir 95%, wie würdest du
+
+117
+00:05:47,205 --> 00:05:50,045
+die Wahrscheinlichkeit rechnen um, sagen wir,
+
+118
+00:05:50,045 --> 00:05:52,575
+10 positive und 0 negative Rezensionen zu haben.
+
+119
+00:05:52,605 --> 00:05:55,635
+Oder 48 und 2, oder 186 und 14
+
+120
+00:05:55,635 --> 00:05:56,635
+ 
+
+121
+00:05:56,895 --> 00:05:59,875
+In anderen Worten, was ist die Wahrscheinlichkeit die Daten zu sehen,
+
+122
+00:06:00,435 --> 00:06:02,305
+gegeben eine angenommene Erfolgsrate
+
+123
+00:06:02,995 --> 00:06:06,115
+Vorhin habe ich sowas hier mit einer Simulation gezeigt
+
+124
+00:06:06,115 --> 00:06:09,125
+10 zufällige Rezensionen wurden generiert,
+
+125
+00:06:09,125 --> 00:06:12,115
+und mit ein bisschen Programmieren kann man das oft wiederholen, um ein Histogramm zu erstellen
+
+126
+00:06:12,115 --> 00:06:14,855
+um ein Gefühl zu bekommen wie diese Verteilung ausschaut
+
+127
+00:06:21,505 --> 00:06:24,565
+Genauso können wir Sequenzen von 50 Rezensionen simulieren
+
+128
+00:06:24,565 --> 00:06:27,645
+und ein Gefühl dafür bekommen wie wahrscheinlich es ist
+
+129
+00:06:27,645 --> 00:06:30,675
+48 positive und 2 negative zu bekommen
+
+130
+00:06:30,675 --> 00:06:34,125
+Das ist das Schöne an Wahrscheinlichkeit. Mit ein bisschen Programmieren lässt sich fast immer ein
+
+131
+00:06:34,125 --> 00:06:37,495
+bisschen mogeln und man sieht die Antwort indem man das ganze simuliert
+
+132
+00:06:37,515 --> 00:06:39,905
+Zum Beispiel, nach ein paar Hunderttausend Durchläufen
+
+133
+00:06:39,905 --> 00:06:42,885
+von 50 Rezensionen, angenommen die Erfolgsrate ist 95%
+
+134
+00:06:42,885 --> 00:06:45,885
+sieht es so aus als ob 26,1% davon
+
+135
+00:06:45,885 --> 00:06:48,485
+48 positive Rezensionen aus 50 ergeben
+
+136
+00:06:48,925 --> 00:06:51,895
+Glücklicherweise ist in diesem Fall eine exakte Formel nicht schlecht
+
+137
+00:06:51,895 --> 00:06:55,055
+Die Wahrscheinlichkeit um exakt 48 aus 50 zu haben
+
+138
+00:06:55,055 --> 00:06:57,025
+sieht so aus
+
+139
+00:06:57,495 --> 00:07:00,905
+Dieser erster Term heißt "wähle 48 aus 50"
+
+140
+00:07:00,905 --> 00:07:03,815
+Das entspricht der Anzahl an Möglichkeiten
+
+141
+00:07:03,815 --> 00:07:05,405
+von 50 Zellen
+
+142
+00:07:06,425 --> 00:07:07,575
+genau 48 auszufüllen
+
+143
+00:07:09,185 --> 00:07:11,915
+Zum Beispiel startet man mit 48 guten Rezensionen
+
+144
+00:07:11,915 --> 00:07:14,935
+und endet mit 2 schlechten
+
+145
+00:07:14,935 --> 00:07:17,965
+Oder man startet mit 47 guten Rezensionen, und dann schlecht-gut-schlecht
+
+146
+00:07:17,965 --> 00:07:20,665
+Prinzipiell, wenn man
+
+147
+00:07:20,665 --> 00:07:23,575
+alle möglichen Muster durchnummeriert um 48 aus 50 Zellen auszufüllen,
+
+148
+00:07:23,575 --> 00:07:26,565
+dann entspricht die Gesamtanzahl genau der Zahl
+
+149
+00:07:26,565 --> 00:07:29,105
+"wähle 48 aus 50"
+
+150
+00:07:29,105 --> 00:07:32,095
+was in dem Fall 1225 ist
+
+151
+00:07:32,380 --> 00:07:35,545
+Was multiplizieren wir da hinzu? Es ist die Wahrscheinlichkeit
+
+152
+00:07:35,545 --> 00:07:38,560
+eines jeden dieser Muster, was der Wahrscheinlichkeit
+
+153
+00:07:38,565 --> 00:07:41,605
+von einer einzelnen positiven Rezension hoch 48 entspricht,
+
+154
+00:07:41,605 --> 00:07:44,575
+mal der Wahrscheinlichkeit einer einzelnen negativen Rezension am Quadrat
+
+155
+00:07:44,575 --> 00:07:45,535
+ 
+
+156
+00:07:45,535 --> 00:07:48,585
+Entscheidend ist dass jede Rezension unabhängig von der vorherigen ist
+
+157
+00:07:48,585 --> 00:07:51,640
+So können wir alle Wahrscheinlichkeiten wie folgt multiplizieren
+
+158
+00:07:51,860 --> 00:07:54,855
+Mit den gegebenen Zahlen, wenn man das ausrechnet,
+
+159
+00:07:54,860 --> 00:07:57,220
+erhält man 0,261,
+
+160
+00:07:57,400 --> 00:08:00,480
+was dem entspricht was wir vorhin mit der Simulation herausgefunden haben
+
+161
+00:08:01,820 --> 00:08:04,780
+Man kann die 48 durch eine andere Anzahl an positiven Rezensionen ersetzen
+
+162
+00:08:04,960 --> 00:08:07,680
+und die Wahrscheinlichkeit ausrechnen mit der man diese Anzahl an
+
+163
+00:08:07,800 --> 00:08:09,800
+positiven Rezensionen erhält,
+
+164
+00:08:09,800 --> 00:08:11,580
+gegeben eine gewisse Erfolgsrate
+
+165
+00:08:14,725 --> 00:08:17,875
+Was ihr euch hier anseht,
+
+166
+00:08:18,125 --> 00:08:20,555
+wird Binomialverteilung genannt,
+
+167
+00:08:20,555 --> 00:08:23,495
+eine der fundamentalsten Verteilungen in der Wahrscheinlichkeitstheorie
+
+168
+00:08:23,520 --> 00:08:26,580
+Es kommt immer dann vor wenn man sowas wie einen Münzwurf hat
+
+169
+00:08:26,580 --> 00:08:28,955
+Ein zufälliges Ereigniss mit 2 möglichen Ausgängen,
+
+170
+00:08:28,955 --> 00:08:32,185
+das ganze eine bestimmte Anzahl an Malen wiederholt. Was man wissen will,
+
+171
+00:08:32,185 --> 00:08:35,320
+ist die Wahrscheinlichkeit an verschiedenen Gesamtanzahlen der Ausgänge
+
+172
+00:08:36,460 --> 00:08:39,635
+Für unsere Zwecke gibt uns die Formel die Wahrscheinlichkeit
+
+173
+00:08:39,640 --> 00:08:42,780
+gewisse Daten zu sehen, gegeben die angenomme Erfolgsrate
+
+174
+00:08:42,980 --> 00:08:45,380
+Das wollen wir letzlich irgendwie nutzen um
+
+175
+00:08:45,385 --> 00:08:48,395
+Aussagen über das Gegenteil zu treffen, die Wahrscheinlichkeit
+
+176
+00:08:48,395 --> 00:08:50,985
+einer Erfolgsrate, gegeben die fixe Daten die wir sehen
+
+177
+00:08:51,260 --> 00:08:54,040
+Beide haben eine Zusammenhang, sind aber definitiv unterschiedlich
+
+178
+00:08:54,440 --> 00:08:58,300
+Um in diese Richting zu gelangen, spielen wir mit dem Wert von s,
+
+179
+00:08:58,300 --> 00:09:02,440
+und schauen was passiert, wenn wir den Wert von s zwischen 0 und 1 verschieben
+
+180
+00:09:04,225 --> 00:09:07,285
+Die Binomialverteilung die daraus entsteht
+
+181
+00:09:07,285 --> 00:09:10,940
+sieht etwa so aus wie diese Balken, zentriert um den Wert von s mal 50
+
+182
+00:09:10,940 --> 00:09:13,155
+Der Wert für den wir uns interessieren ist
+
+183
+00:09:13,155 --> 00:09:15,875
+die Wahrscheinlichkeit von 48 positiven Rezensionen aus 50,
+
+184
+00:09:15,875 --> 00:09:19,055
+dargestellt durch den hervorgehobenen Balken
+
+185
+00:09:19,260 --> 00:09:21,960
+Wir zeichnen jetzt ein zweites Diagramm im unteren Teil des Bildes,
+
+186
+00:09:22,200 --> 00:09:25,280
+das darstellt wie dieser Wert von s abhängt
+
+187
+00:09:25,400 --> 00:09:28,000
+Wenn s den Wert 0,96 hat,
+
+188
+00:09:28,000 --> 00:09:31,900
+dann ist dieser Wert maximal. Und das sollte auch Sinn machen,
+
+189
+00:09:32,075 --> 00:09:35,215
+weil wenn wir uns die Bewertung von 96% ansehen,
+
+190
+00:09:35,220 --> 00:09:39,860
+dann sollte es am wahrscheinlichsten sein dass die tatsächlich zugrundeliegende Erfolgsrate 96% ist
+
+191
+00:09:40,960 --> 00:09:43,895
+Wenn s größer wird, dann verkleinert sich der Wert
+
+192
+00:09:43,895 --> 00:09:46,595
+und tendiert gegen 0 wenn s zu 1 annähert,
+
+193
+00:09:46,600 --> 00:09:50,480
+da jemand mit einer perfekten Erfolgsrate wird diese 2 negativen Rezensionen niemals haben
+
+194
+00:09:50,680 --> 00:09:54,660
+Wenn man s nach links laufen lässt, dann geht dieser Wert ziemlich schnell gegen 0
+
+195
+00:09:56,800 --> 00:09:59,785
+Wenn man s auf den Wert 0,8 setzt,
+
+196
+00:09:59,785 --> 00:10:03,620
+dann ist die Wahrscheinlichkeit 48 positive aus 50 zu bekommen extrem klein
+
+197
+00:10:03,620 --> 00:10:05,520
+Der Fall würde in einem von 1000 Fällen auftreten
+
+198
+00:10:06,075 --> 00:10:08,805
+Das Diagramm unten im Bild ist ein guter Ansatz um
+
+199
+00:10:08,805 --> 00:10:11,995
+eine quantitative Beschreibung zu bekommen, welche Werte von s
+
+200
+00:10:12,000 --> 00:10:13,540
+mehr oder weniger plausibel erscheinen
+
+201
+00:10:14,260 --> 00:10:17,420
+Als Formel niedergeschrieben: erinnert euch daran dass als
+
+202
+00:10:17,445 --> 00:10:20,185
+Funktion der Erfolgsrate s,
+
+203
+00:10:20,185 --> 00:10:24,420
+die Kurve einer Konstanten mal s hoch der Anzahl positiven Rezensionen mal
+
+204
+00:10:24,420 --> 00:10:28,400
+1 minus s hoch der Anzahl der negativen Rezensionen entspricht
+
+205
+00:10:28,760 --> 00:10:32,340
+Prinzipiell, wenn wir mehr Daten hat, wie zum Beispiel 480 postive Rezensionen
+
+206
+00:10:32,360 --> 00:10:34,660
+und 20 negative Rezensionen, dann
+
+207
+00:10:34,760 --> 00:10:37,860
+ist die resultierende Kurve immer noch um den Wert 0,96 zentriert,
+
+208
+00:10:37,860 --> 00:10:40,500
+sie wäre jedoch kleiner und konzentrierter
+
+209
+00:10:40,500 --> 00:10:44,860
+Eine gute Aufgabe wäre jetzt ob du erklären könntest warum das so ist
+
+210
+00:10:45,220 --> 00:10:47,720
+Da ist allerdings noch die bleibende Frage,
+
+211
+00:10:47,720 --> 00:10:50,360
+was wir nun mit diesen Kurven machen können
+
+212
+00:10:50,420 --> 00:10:53,680
+Ich meine das Ziel ist die Wahrscheinlichkeit zu berechnen damit du eine gute Erfahrung
+
+213
+00:10:53,685 --> 00:10:55,965
+bei diesem Verkäufer machst. Also was machen wir
+
+214
+00:10:56,600 --> 00:11:00,400
+Naiverweise könnte man meinen diese Wahrscheinlichkeit beträgt 96%,
+
+215
+00:11:00,400 --> 00:11:02,405
+also da wo die Spitze der Kurve ist
+
+216
+00:11:02,405 --> 00:11:05,260
+Das entspricht in gewisser Hinsicht der wahrscheinlichsten Erfolgsrate
+
+217
+00:11:05,320 --> 00:11:08,360
+Denke jedoch an das Beispiel der 10 positiven Rezensionen aus 10
+
+218
+00:11:08,520 --> 00:11:13,440
+In dem Fall entspricht die Binomialverteilung einfach s hoch 10
+
+219
+00:11:14,880 --> 00:11:18,080
+Die Wahrscheinlichkeit 10 aufeinanderfolgende positive Rezensionen zu sehen,
+
+220
+00:11:18,300 --> 00:11:20,820
+ist die Wahrscheinlichkeit eine davon zu sehen hoch 10
+
+221
+00:11:21,180 --> 00:11:23,695
+Je näher die wahre Erfolgsrate an 1 ist,
+
+222
+00:11:23,695 --> 00:11:26,905
+je höher die Wahrscheinlichkeit 10 von 10 zu sehen
+
+223
+00:11:27,080 --> 00:11:31,220
+Die Kurve im unteren Bild steigt immer weiter an wenn s gegen 1 geht
+
+224
+00:11:32,200 --> 00:11:35,960
+Doch sogar wenn s gleich 1 den Wert dieser Wahrscheinlichkeit maximiert,
+
+225
+00:11:36,060 --> 00:11:40,360
+würdest du sicher nicht sagen dass du eine 100 prozentige Chance
+
+226
+00:11:40,360 --> 00:11:42,840
+bei diesem Verkäufer hättest
+
+227
+00:11:43,220 --> 00:11:46,095
+Vielleicht denkst du dass man stattdessen nach einer Art
+
+228
+00:11:46,100 --> 00:11:48,260
+Schwerpunkt dieses Graphen suchen sollte,
+
+229
+00:11:48,340 --> 00:11:50,340
+und damit würdest du genau richtig liegen
+
+230
+00:11:51,305 --> 00:11:54,085
+Als erstes jedoch, müssen wir erklären wie wir
+
+231
+00:11:54,085 --> 00:11:57,145
+den Ausdruck für die sichtbaren Daten auffassen,
+
+232
+00:11:57,145 --> 00:12:01,000
+gegeben einen Wert für s, und eine Wahrscheinlichkeit für einen Wert von s bekommen,
+
+233
+00:12:01,040 --> 00:12:03,700
+was wir tatsächlich nicht wissen, gegeben die Daten,
+
+234
+00:12:03,700 --> 00:12:05,120
+die wir tatsächlich kennen
+
+235
+00:12:05,540 --> 00:12:07,980
+Das erfordert dass wir über den Satz von Bayes reden,
+
+236
+00:12:07,980 --> 00:12:10,680
+und auch über Dichtefunktionen
+
+237
+00:12:10,680 --> 00:12:13,340
+Für diese werden wir uns im zweiten Teil sehen
+

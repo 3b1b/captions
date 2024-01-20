@@ -1,0 +1,708 @@
+1
+00:00:06,618 --> 00:00:11,858
+Som du sikkert har opdaget nu, handler hovedparten af ​​denne serie om at forstå matrix- og vektoroperationer
+
+2
+00:00:11,858 --> 00:00:14,998
+gennem en mere visuel linse af lineære transformationer.
+
+3
+00:00:15,398 --> 00:00:19,198
+Denne video er ingen undtagelse, og beskriver begreberne inverse matricer,
+
+4
+00:00:19,198 --> 00:00:22,798
+søjlerum, rang, og nulrum gennem denne linse.
+
+5
+00:00:23,298 --> 00:00:27,958
+En lille advarsel dog: Jeg har ikke tænkt mig at tale om metoder til rent faktisk at beregne disse ting,
+
+6
+00:00:27,958 --> 00:00:30,178
+og nogle vil hævde, at det er temmelig vigtigt.
+
+7
+00:00:30,178 --> 00:00:34,258
+Der er mange meget gode ressourcer til at lære disse metoder uden denne serie.
+
+8
+00:00:34,258 --> 00:00:37,598
+Nøgleord: "Gauss elimination" og "Reduceret echelon form."
+
+9
+00:00:37,958 --> 00:00:42,178
+Jeg tror, ​​at intuitionen er der hvor jeg tilfører mest værdi.
+
+10
+00:00:42,178 --> 00:00:46,618
+Plus, i praksis, får vi normalt software til at beregne disse ting for os alligevel.
+
+11
+00:00:46,838 --> 00:00:49,458
+Først et par ord om nytten af ​​lineær algebra.
+
+12
+00:00:49,758 --> 00:00:53,738
+Du har allerede nu en idé om, hvordan det bruges til at beskrive manipulation af rummet,
+
+13
+00:00:53,738 --> 00:00:56,738
+som er nyttig til ting som computergrafik og robotteknik,
+
+14
+00:00:56,738 --> 00:01:00,478
+men en af ​​de vigtigste årsager til, at lineær algebra er mere bredt anvendelig,
+
+15
+00:01:00,478 --> 00:01:03,018
+og krævet indenfor næsten enhver teknisk disciplin,
+
+16
+00:01:03,018 --> 00:01:06,038
+er, at det lader os med at løse visse systemer af ligninger.
+
+17
+00:01:06,778 --> 00:01:11,518
+Når jeg siger "system af ligninger," mener jeg, du har en liste over variabler, ting, du ikke kender,
+
+18
+00:01:11,578 --> 00:01:13,658
+og en liste over ligninger vedrørende dem.
+
+19
+00:01:13,758 --> 00:01:17,278
+I mange situationer kan disse ligninger blive meget komplicerede,
+
+20
+00:01:17,658 --> 00:01:21,178
+men, hvis du er heldig, kan de se ud på en bestemt særlig form.
+
+21
+00:01:21,798 --> 00:01:27,518
+Inden for hver ligning, er det eneste, der sker med hver variabel, dét at den er skaleres med en konstant,
+
+22
+00:01:27,518 --> 00:01:32,158
+og det eneste, der sker til hver af disse skalerede variabler er, at de er lægges sammen.
+
+23
+00:01:32,998 --> 00:01:38,018
+Så ikke noget med eksponenter eller smarte funktioner eller at gange to variabler sammen; den slags ting.
+
+24
+00:01:38,918 --> 00:01:41,918
+Den typiske måde at organisere denne form for særlige ligningssystemer
+
+25
+00:01:41,998 --> 00:01:44,718
+er at skrive alle variabler til venstre,
+
+26
+00:01:44,898 --> 00:01:47,938
+og skrive de resterende konstanter til højre.
+
+27
+00:01:49,158 --> 00:01:52,078
+Det er også rart at centrere de fælles variable lodret under hinanden,
+
+28
+00:01:52,078 --> 00:01:57,518
+og for at gøre det, er du måske nødt til at skrive nogle nulkoefficienter, der hvor variablen ikke vises i en af ​​ligningerne.
+
+29
+00:01:59,938 --> 00:02:03,058
+Dette kaldes et "lineært ligningssystem."
+
+30
+00:02:03,398 --> 00:02:07,018
+Du vil måske bemærke, at dette ligner matrix-vektor multiplikation meget.
+
+31
+00:02:07,258 --> 00:02:12,198
+Faktisk kan man samle alle ligningerne sammen til en enkelt vektorligning,
+
+32
+00:02:12,198 --> 00:02:17,858
+hvor du har matricen, der indeholder alle de konstante koefficienter, og en vektor, der indeholder alle variablerne,
+
+33
+00:02:17,858 --> 00:02:22,498
+og deres matrix-vektor produkt er lig en anden konstant vektor.
+
+34
+00:02:24,118 --> 00:02:26,238
+Lad os kalde matricen med konstanter for A,
+
+35
+00:02:26,238 --> 00:02:29,858
+og kalde vektoren der holder variablerne med en fed x,
+
+36
+00:02:29,858 --> 00:02:33,358
+og kalde den konstante vektor på højre side v.
+
+37
+00:02:34,298 --> 00:02:38,758
+Dette er mere end blot et notationstrick for at få vores system af ligninger skrevet på én linje.
+
+38
+00:02:38,758 --> 00:02:42,478
+Det kaster lys over en temmelig cool geometrisk fortolkning for problemet.
+
+39
+00:02:43,098 --> 00:02:47,878
+Matricen A svarer til en lineær transformation, så at løse Ax = v
+
+40
+00:02:47,938 --> 00:02:53,858
+betyder, at vi leder efter en vektor x, der, efter anvendelse af transformationen, lander på v.
+
+41
+00:02:55,638 --> 00:02:57,538
+Tænk over, hvad der sker her et øjeblik.
+
+42
+00:02:57,538 --> 00:03:03,118
+Du kan i dit hoved holde den virkelig komplicerede idé om flere variabler alle sammenblandede med hinanden
+
+43
+00:03:03,118 --> 00:03:08,218
+bare ved at tænke på at klemme og strække rum og forsøge at finde ud af, hvilken vektor der lander på en anden.
+
+44
+00:03:08,558 --> 00:03:09,438
+Sejt, ikke?
+
+45
+00:03:10,158 --> 00:03:13,918
+For at starte enkelt, lad os sige du har et system med to ligninger og to ubekendte.
+
+46
+00:03:14,338 --> 00:03:17,218
+Dette betyder, at matricen A er en 2x2 matrix,
+
+47
+00:03:17,218 --> 00:03:19,538
+og v og x er hver todimensionelle vektorer.
+
+48
+00:03:20,878 --> 00:03:24,018
+Hvordan vi tænker på løsningerne på denne ligning
+
+49
+00:03:24,018 --> 00:03:29,238
+afhænger af, om transformationen i forbindelse med A klemmer hele rummet ned i en lavere dimension,
+
+50
+00:03:29,238 --> 00:03:30,578
+som en linje eller et punkt,
+
+51
+00:03:31,298 --> 00:03:34,558
+eller om det efterlader alt udspændende de fulde to dimensioner, hvor det startede.
+
+52
+00:03:35,978 --> 00:03:40,578
+I sprogbrugen fra forrige video, inddeler vi i det tilfælde, hvor A har determinant nul,
+
+53
+00:03:41,018 --> 00:03:43,518
+og det tilfælde, hvor A har determinant forskellig fra nul.
+
+54
+00:03:46,798 --> 00:03:50,078
+Lad os starte med det mest sandsynlige tilfælde, hvor determinanten er forskellig fra nul,
+
+55
+00:03:50,078 --> 00:03:53,198
+hvilket betyder rummet ikke bliver klemt ind i et område med et areal på nul.
+
+56
+00:03:53,878 --> 00:03:58,678
+I dette tilfælde vil der altid være en og kun en vektor, der lander på v,
+
+57
+00:03:58,678 --> 00:04:01,858
+og du kan finde den ved at spille transformationen baglæns.
+
+58
+00:04:02,358 --> 00:04:05,398
+Ved at følge hvor v går hen når vi spoler båndet baglæns som her,
+
+59
+00:04:05,538 --> 00:04:09,198
+finder du vektoren x således at A gange x er lig med v.
+
+60
+00:04:11,198 --> 00:04:15,958
+Når du spiller transformationen baglæns, svarer det reelt til en separat lineær transformation,
+
+61
+00:04:15,958 --> 00:04:18,278
+almindeligvis kaldet "den inverse af A"
+
+62
+00:04:18,378 --> 00:04:20,378
+betegnet A i minus første.
+
+63
+00:04:20,858 --> 00:04:24,178
+For eksempel, hvis A var en 90º rotation mod uret
+
+64
+00:04:24,658 --> 00:04:28,498
+så ville den inverse af A ville være en rotation på 90º med uret.
+
+65
+00:04:30,018 --> 00:04:33,358
+Hvis A var en forskydning mod højre, der skubber j-hat en enhed til højre,
+
+66
+00:04:33,678 --> 00:04:38,438
+så er den inverse af A en forskydning mod venstre, der skubber j-hat en enhed til venstre.
+
+67
+00:04:39,658 --> 00:04:44,818
+Generelt - den inverse af A er den unikke transformation med den egenskab, at hvis du først anvender A,
+
+68
+00:04:44,818 --> 00:04:47,318
+og derefter anvender den inverse af A,
+
+69
+00:04:47,318 --> 00:04:49,038
+så ender du tilbage hvor du startede.
+
+70
+00:04:49,858 --> 00:04:54,378
+Anvendelsen af en transformation efter den anden indfanges algebraisk med matrixmultiplikation,
+
+71
+00:04:55,098 --> 00:05:00,298
+så kernenegenskaben af transformationen A invers er, at A invers gange A
+
+72
+00:05:00,298 --> 00:05:02,878
+lig med matricen, der svarer til ikke at gøre noget.
+
+73
+00:05:03,598 --> 00:05:07,018
+Transformationen, der ikke gør noget kaldes "identitetstransformation."
+
+74
+00:05:07,018 --> 00:05:10,078
+Den efterlader i-hat og j-hat hver hvor de er, uberørt,
+
+75
+00:05:10,378 --> 00:05:13,258
+så dets søjler er én, nul, og nul, en.
+
+76
+00:05:15,438 --> 00:05:18,778
+Når du finder denne inverse, som du i praksis gør med en computer,
+
+77
+00:05:18,958 --> 00:05:23,518
+kan du løse din ligning ved at gange denne inverse matrix med v.
+
+78
+00:05:25,118 --> 00:05:32,098
+Og igen, hvad det betyder geometrisk er, at du spiller transformationen baglæns, og følger efter v.
+
+79
+00:05:35,638 --> 00:05:40,738
+Dette tilfælde med determinant forskellig fra nul, hvilket for et tilfældigt valg af matrix er langt det mest sandsynlige,
+
+80
+00:05:40,738 --> 00:05:44,638
+svarer til den idé, at hvis du har to ligninger med to ubekendte,
+
+81
+00:05:44,638 --> 00:05:48,378
+det er næsten helt sikkert sådan, at der er en enkelt, entydig løsning.
+
+82
+00:05:49,438 --> 00:05:51,638
+Denne idé giver også mening i højere dimensioner,
+
+83
+00:05:51,638 --> 00:05:54,158
+når antallet af ligninger er lig med antallet af ubekendte.
+
+84
+00:05:54,698 --> 00:05:59,018
+Igen, ligningssystemet kan oversættes til den geometriske fortolkning
+
+85
+00:05:59,258 --> 00:06:01,898
+hvor du har en given transformation, A,
+
+86
+00:06:03,758 --> 00:06:05,038
+og en given vektor, v,
+
+87
+00:06:05,238 --> 00:06:08,278
+og du leder efter vektoren x, der lander på v.
+
+88
+00:06:11,358 --> 00:06:15,498
+Så længe transformationen A ikke klemmer hele rummet i en lavere dimension,
+
+89
+00:06:15,498 --> 00:06:17,978
+hvilket betyder, dens determinant er forskellig fra nul,
+
+90
+00:06:17,978 --> 00:06:21,078
+vil der være en invers transformation, A invers,
+
+91
+00:06:21,078 --> 00:06:23,498
+med den egenskab, at hvis du først anvender A,
+
+92
+00:06:23,678 --> 00:06:25,118
+og så anvender A invers,
+
+93
+00:06:25,298 --> 00:06:26,818
+det er det samme som ikke at gøre noget.
+
+94
+00:06:29,078 --> 00:06:35,518
+Og for at løse din ligning, er du bare nødt til at gange den inverse transformationsmatrix med vektoren v.
+
+95
+00:06:38,978 --> 00:06:43,838
+Men når determinanten er nul, og transformationen foranledet af dette system af ligninger
+
+96
+00:06:43,838 --> 00:06:47,778
+klemmer rummet ned i en lavere dimension, er der ingen invers.
+
+97
+00:06:47,778 --> 00:06:51,058
+Du kan ikke hive en linje op og lave det til en plan.
+
+98
+00:06:51,058 --> 00:06:53,598
+I det mindste, det er ikke noget, som en funktion kan gøre.
+
+99
+00:06:53,598 --> 00:06:56,338
+Det ville kræve at omdanne hver enkelt vektor
+
+100
+00:06:56,498 --> 00:06:58,558
+til en hel linie fuld af vektorer.
+
+101
+00:06:59,078 --> 00:07:02,698
+Men funktioner kan kun tage et enkelt argument til et enkelt output.
+
+102
+00:07:03,718 --> 00:07:06,298
+Tilsvarende for tre ligninger i tre ubekendte,
+
+103
+00:07:06,298 --> 00:07:09,738
+vil der ikke være omvendt, hvis den tilsvarende transformation
+
+104
+00:07:09,878 --> 00:07:12,118
+klemmer 3D-rummet ned på en plan,
+
+105
+00:07:12,118 --> 00:07:14,718
+eller helt ned på en linie eller et punkt.
+
+106
+00:07:15,218 --> 00:07:17,738
+Disse svarer alle til tilfældet hvor deternimanten er nul,
+
+107
+00:07:17,738 --> 00:07:20,818
+da enhvert område bliver klemt til noget med et volumen på nul.
+
+108
+00:07:22,318 --> 00:07:26,238
+Det er stadig muligt, at der findes en løsning, selv når der ikke er en invers,
+
+109
+00:07:26,238 --> 00:07:30,238
+det er bare, at når din transformation klemmer rummet ned på, lad os sige, en linje,
+
+110
+00:07:30,238 --> 00:07:34,818
+så skal du skal være heldig at vektoren v bor et sted på denne linje.
+
+111
+00:07:38,778 --> 00:07:43,918
+Du vil måske bemærke, at nogle af disse nul determinant tilfælde føles meget mere restriktive end andre.
+
+112
+00:07:43,918 --> 00:07:48,858
+Givet en 3x3 matrix, for eksempel, synes det meget sværere for en løsning til at eksistere
+
+113
+00:07:48,858 --> 00:07:53,498
+når den klemmer rummet ned på en linie sammenlignet med, når den klemmer ting ned på en plan,
+
+114
+00:07:53,498 --> 00:07:55,498
+selv om de begge har determinant nul.
+
+115
+00:07:57,958 --> 00:08:01,858
+Vi har sprogbrug, der er lidt mere specifik end bare at sige "nul determinant."
+
+116
+00:08:01,858 --> 00:08:06,158
+Når værdimængden af ​​en transformation er en linje, hvilket betyder at det er endimensional,
+
+117
+00:08:06,158 --> 00:08:09,158
+siger vi at transformationen har "rang" en.
+
+118
+00:08:10,698 --> 00:08:13,318
+Hvis alle vektorerne lander på en todimensional plan,
+
+119
+00:08:13,598 --> 00:08:16,418
+siger vi at transformationen har "rang" to.
+
+120
+00:08:18,278 --> 00:08:23,098
+Så ordet "rang" betyder antallet af dimensioner i værdirummet af ​​en transformation.
+
+121
+00:08:23,538 --> 00:08:28,418
+For eksempel i tilfældet med 2x2 matricer, er rang 2 er det bedste, det kan være.
+
+122
+00:08:28,458 --> 00:08:34,558
+Det betyder basisvektorer fortsat spænder de fulde to dimensioner af rummet, og determinanten er forskellig fra nul.
+
+123
+00:08:34,998 --> 00:08:38,778
+Men for 3x3 matricer, betyder rang 2, at vi har kollapset,
+
+124
+00:08:38,778 --> 00:08:42,038
+men ikke så meget som de ville have kollapset i rang 1 situationen.
+
+125
+00:08:42,598 --> 00:08:47,518
+Hvis en 3D transformation har en determinant forskellig fra nul, og dens output fylder hele 3D rummet,
+
+126
+00:08:47,758 --> 00:08:49,038
+har den rang 3.
+
+127
+00:08:49,798 --> 00:08:52,418
+Dette sæt af alle mulige værdier for din matrix,
+
+128
+00:08:52,418 --> 00:08:55,378
+uanset om det er en linje, en plan, 3D-rum, eller noget fjerde,
+
+129
+00:08:55,398 --> 00:08:58,378
+kaldes "søjlerummet" af din matrix.
+
+130
+00:08:59,558 --> 00:09:01,978
+Du kan sikkert gætte, hvor det navn kommer fra.
+
+131
+00:09:02,138 --> 00:09:05,478
+Søjlerne i din matrix
+fortælle dig, hvor basisvektorerne havner,
+
+132
+00:09:06,438 --> 00:09:11,318
+og spandet af ​​disse tranformerede basisvektorer giver dig alle mulige outputs.
+
+133
+00:09:11,938 --> 00:09:17,067
+Med andre ord, søjlerummet er
+spandet af kolonnerne i din matrix.
+
+134
+00:09:19,138 --> 00:09:20,958
+Så en mere præcis definition af rang
+ville være, at
+
+135
+00:09:21,038 --> 00:09:24,498
+det er antallet af dimensioner i søjlerummet.
+
+136
+00:09:25,478 --> 00:09:27,658
+Når denne rang er så højt som det kan være,
+
+137
+00:09:27,658 --> 00:09:31,528
+hvilket betyder at det er lig med antallet af kolonner, siger vi at matricen har "fuld rang."
+
+138
+00:09:33,618 --> 00:09:37,938
+Bemærk at nulvektoren altid vil være
+i søjlerummet,
+
+139
+00:09:37,938 --> 00:09:41,298
+da lineære transformationer altid holder origo på plads.
+
+140
+00:09:42,398 --> 00:09:47,318
+For en transformation med fuld rang er den eneste vektor, der lander på nulvektoren, nulvektoren selv,
+
+141
+00:09:47,918 --> 00:09:51,578
+men for matricer, der ikke har fuld rang,
+som klemmer til en lavere dimension,
+
+142
+00:09:51,578 --> 00:09:54,878
+kan du kan have en hel masse af vektorer, der lander på nul.
+
+143
+00:09:57,338 --> 00:10:00,658
+Hvis en 2D transformation klemmer rummet ned på en linje, for eksempel,
+
+144
+00:10:00,878 --> 00:10:03,398
+er der er en separat linie i en anden retning,
+
+145
+00:10:03,598 --> 00:10:06,578
+fuld af vektorer der bliver klemt ned på origo.
+
+146
+00:10:06,938 --> 00:10:10,297
+Hvis en 3D transformation klemmer rummet ned på en plan,
+
+147
+00:10:10,297 --> 00:10:13,297
+er der også en hel linie af vektorer, som havner på nulvektoren.
+
+148
+00:10:15,998 --> 00:10:19,558
+Hvis et 3D transformation klemmer hele rummet ned på en linje,
+
+149
+00:10:19,618 --> 00:10:23,118
+så er der en hel plan fuld af vektorer, der lander på nulvektoren.
+
+150
+00:10:28,418 --> 00:10:34,538
+Dette sæt af vektorer, der lander i nul kaldes "nulrummet" eller "kernen" af din matrix.
+
+151
+00:10:34,658 --> 00:10:37,798
+Det er rummet af alle vektorer, der bliver nul,
+
+152
+00:10:37,808 --> 00:10:40,288
+i den forstand, at de lander på nulvektoren.
+
+153
+00:10:40,998 --> 00:10:45,378
+Med hensyn til det lineære ligningssystem, når v er nulvektoren,
+
+154
+00:10:45,698 --> 00:10:49,299
+giver nulrummet dig alle
+de mulige løsninger til ligningen.
+
+155
+00:10:52,118 --> 00:10:53,838
+Så det er en meget overfladisk oversigt
+
+156
+00:10:53,838 --> 00:10:57,438
+om, hvordan man kan tænke lineære ligningssystemer geometrisk.
+
+157
+00:10:57,718 --> 00:11:01,138
+Hvert system har
+en slags lineær transformation associeret  med det,
+
+158
+00:11:01,398 --> 00:11:03,578
+og når den
+transformation har en invers,
+
+159
+00:11:03,578 --> 00:11:06,778
+kan du bruge denne inverse til at løse dit system.
+
+160
+00:11:07,878 --> 00:11:12,978
+Tanken om søjlerum lader
+os forstå, hvornår en løsning eksisterer,
+
+161
+00:11:13,378 --> 00:11:16,838
+og tanken om et nulrum
+hjælper os til at forstå, hvordan sættet af
+
+162
+00:11:16,847 --> 00:11:19,307
+alle mulige løsninger kan se ud.
+
+163
+00:11:20,398 --> 00:11:22,838
+Igen er der en masse, som jeg ikke har
+dækket her,
+
+164
+00:11:22,838 --> 00:11:24,838
+især hvordan man kan beregne disse ting.
+
+165
+00:11:25,218 --> 00:11:27,658
+Jeg var også nødt til til at begrænse mit indhold til eksempler, hvor antallet af ligninger
+
+166
+00:11:27,658 --> 00:11:29,738
+er lig med antallet af ubekendte.
+
+167
+00:11:30,458 --> 00:11:32,458
+Men målet her er ikke at forsøge at lære alt;
+
+168
+00:11:32,558 --> 00:11:38,178
+det er, at du kommer herfra med
+en stærk intuition for inverse matricer, søjlerum, og nulrum,
+
+169
+00:11:38,678 --> 00:11:42,298
+og at disse intuitioner vil gøre enhver fremtidig læring, som du gør mere frugtbar.
+
+170
+00:11:43,158 --> 00:11:47,438
+Næste video, ved populær anmodning, vil være en kort fodnote om ikke-kvadratiske matricer.
+
+171
+00:11:47,718 --> 00:11:50,398
+Så efter det, vil jeg give dig mit bud på prikprodukter,
+
+172
+00:11:50,458 --> 00:11:52,458
+og noget temmelig cool der sker, når du se dem
+
+173
+00:11:52,458 --> 00:11:54,698
+i lyset af lineære transformationer.
+
+174
+00:11:54,798 --> 00:11:55,658
+Vi ses!
+
