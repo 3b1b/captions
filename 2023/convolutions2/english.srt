@@ -1,0 +1,1368 @@
+1
+00:00:00,000 --> 00:00:06,240
+Let's kick things off with a quiz. Suppose I take a normal distribution with this familiar bell curve shape,
+
+2
+00:00:06,240 --> 00:00:10,320
+and I have a random variable x that's drawn from that distribution.
+
+3
+00:00:10,320 --> 00:00:14,800
+So what you're looking at right now are repeated samples of that random variable.
+
+4
+00:00:14,800 --> 00:00:20,400
+And as a quick reminder, the way that you interpret this curve, what the function actually means,
+
+5
+00:00:20,400 --> 00:00:25,200
+is that if you want the probability that your sample falls within a given range of values,
+
+6
+00:00:25,200 --> 00:00:28,720
+say the probability that it ends up between negative one and two,
+
+7
+00:00:28,720 --> 00:00:35,200
+well, that would equal the area under this curve in that range of values. That's what the curve actually means.
+
+8
+00:00:35,200 --> 00:00:39,520
+I'll also pull up a second random variable, also following a normal distribution,
+
+9
+00:00:39,520 --> 00:00:43,280
+but maybe this time a little more spread out, a slightly bigger standard deviation.
+
+10
+00:00:43,280 --> 00:00:47,280
+And here's the quiz for you. If you repeatedly sample both of these variables,
+
+11
+00:00:47,280 --> 00:00:54,000
+and in each iteration you add up the two results, well, then that sum behaves like its own random variable.
+
+12
+00:00:54,000 --> 00:00:59,120
+And the question is what distribution describes that sum that you're looking at?
+
+13
+00:00:59,120 --> 00:01:02,560
+You think about it for a little moment, maybe you have a guess, maybe you think,
+
+14
+00:01:02,560 --> 00:01:07,040
+I don't know, it's another normal distribution, or something with a different shape.
+
+15
+00:01:07,040 --> 00:01:14,720
+Needless to say, guessing is not enough. The real quiz is to be able to explain why you get the answer that you do.
+
+16
+00:01:14,720 --> 00:01:21,040
+In this case, if you have that deep to your bones visceral level of understanding for why the answer is what it is,
+
+17
+00:01:21,040 --> 00:01:28,080
+you'll be a long way towards understanding why normal distributions serve the special function that they do in probability.
+
+18
+00:01:28,080 --> 00:01:31,520
+Zooming out though, this is actually meant to be a much more general lesson
+
+19
+00:01:31,520 --> 00:01:35,840
+about how you add two different random variables regardless of their distribution,
+
+20
+00:01:35,840 --> 00:01:39,040
+not necessarily just the normally distributed ones.
+
+21
+00:01:39,040 --> 00:01:44,560
+This amounts to a special operation that you apply to the distributions underlying those variables.
+
+22
+00:01:44,560 --> 00:01:47,840
+The operation has a special name, it's called a convolution.
+
+23
+00:01:47,840 --> 00:01:57,120
+And the primary thing you and I will do today is motivate and build up two distinct ways to visualize what a convolution looks like for continuous functions,
+
+24
+00:01:57,120 --> 00:02:01,920
+and then to talk about how these two different visualizations can each be helpful in different ways,
+
+25
+00:02:01,920 --> 00:02:04,800
+with a special focus on the central limit theorem.
+
+26
+00:02:04,800 --> 00:02:12,080
+After we do the general lesson, I want to return to the opening quiz and offer an unusually satisfying way to answer it.
+
+27
+00:02:12,080 --> 00:02:17,920
+As a quick side note, regular viewers among you might know there's already a video about convolutions on this channel.
+
+28
+00:02:17,920 --> 00:02:21,520
+But that one had a pretty different focus, we were only doing the discrete case,
+
+29
+00:02:21,520 --> 00:02:26,800
+and I wanted to show not just probability but the ways that it comes up in a wide variety of contexts.
+
+30
+00:02:26,800 --> 00:02:31,840
+I'm in a slightly awkward spot because it doesn't really make sense for that to be a prerequisite to this video,
+
+31
+00:02:31,840 --> 00:02:37,840
+but I think the best way to warm up today is to cover essentially one of the same examples used in that video.
+
+32
+00:02:37,840 --> 00:02:41,680
+So if you are coming straight from that one, you can probably skip safely ahead.
+
+33
+00:02:41,680 --> 00:02:43,440
+Otherwise, let's dive right in.
+
+34
+00:02:47,040 --> 00:02:53,360
+For this opening quiz question, each of the random variables can take on a value in a continuous infinite range of values,
+
+35
+00:02:53,360 --> 00:02:55,040
+all possible real numbers.
+
+36
+00:02:55,040 --> 00:02:59,360
+It'll be a lot easier if we warm up in a setting that's more discrete and finite,
+
+37
+00:02:59,360 --> 00:03:02,400
+like maybe rolling a pair of weighted dice.
+
+38
+00:03:02,400 --> 00:03:06,640
+Here, the animation you're looking at is simulating two weighted dice,
+
+39
+00:03:06,640 --> 00:03:10,320
+and you can probably tell what's going on, but just to spell it out explicitly,
+
+40
+00:03:10,320 --> 00:03:14,960
+the blue die is following a distribution that seems to be biased towards lower values,
+
+41
+00:03:14,960 --> 00:03:17,520
+the red die has a distinct distribution,
+
+42
+00:03:17,520 --> 00:03:23,520
+and I'm repeatedly sampling from each one and recording the sum of the two values at each iteration.
+
+43
+00:03:23,520 --> 00:03:29,120
+Repeating samples like this many, many different times can give you a heuristic sense of the final distribution,
+
+44
+00:03:29,120 --> 00:03:32,720
+but our real task today is to compute that distribution precisely.
+
+45
+00:03:32,720 --> 00:03:39,760
+What is the precise probability of rolling a 2, or a 3, or a 4, or a 5, on and on for all possibilities?
+
+46
+00:03:39,760 --> 00:03:44,800
+It's not too hard a question, I'd actually encourage you to pause and try working it out for yourself.
+
+47
+00:03:44,800 --> 00:03:48,960
+The main goal in this warm-up section will be to walk through two distinct ways
+
+48
+00:03:48,960 --> 00:03:53,040
+that you could visualize the underlying computation.
+
+49
+00:03:53,040 --> 00:03:59,040
+For example, one way you could start to think about it is that there are 36 distinct possible outcomes,
+
+50
+00:03:59,040 --> 00:04:02,800
+and we could organize those outcomes in a little 6x6 grid.
+
+51
+00:04:02,800 --> 00:04:08,080
+Now if I was to ask you, what is the probability of seeing any one of these specific outcomes,
+
+52
+00:04:08,080 --> 00:04:12,880
+say the probability of seeing a blue 4 and a red 2, what would you say?
+
+53
+00:04:12,880 --> 00:04:18,800
+We might say it should be the probability of that blue 4 multiplied by the probability of the red 2.
+
+54
+00:04:18,800 --> 00:04:23,440
+And that would be correct assuming that the die rolls are independent from each other.
+
+55
+00:04:23,440 --> 00:04:27,680
+You might say that's kind of pedantic, of course the die rolls should be independent from each other,
+
+56
+00:04:27,680 --> 00:04:32,240
+but it's a point worth emphasizing because everything that we're going to do from here moving forward,
+
+57
+00:04:32,240 --> 00:04:35,600
+from this simple example all the way up to the central limit theorem,
+
+58
+00:04:35,600 --> 00:04:38,640
+assumes that the random variables are independent.
+
+59
+00:04:38,640 --> 00:04:43,360
+In the real world, you want to keep a sharp eye out for if this assumption actually holds.
+
+60
+00:04:43,360 --> 00:04:46,880
+Now what I'm going to do is take this grid of all possible outcomes,
+
+61
+00:04:46,880 --> 00:04:49,040
+but start filling it in with some numbers.
+
+62
+00:04:49,040 --> 00:04:53,040
+Maybe we'll put the numbers for all the probabilities of the blue die down on the bottom,
+
+63
+00:04:53,040 --> 00:04:56,080
+all the probabilities for the red die over here on the left,
+
+64
+00:04:56,080 --> 00:05:00,800
+and then we will fill in the grid where the probability for every outcome inside the grid
+
+65
+00:05:00,800 --> 00:05:04,320
+looks like some product between one number from the blue distribution
+
+66
+00:05:04,320 --> 00:05:06,480
+and one number from the red distribution.
+
+67
+00:05:06,480 --> 00:05:10,640
+Another way to think about it is we're basically constructing a multiplication table.
+
+68
+00:05:10,640 --> 00:05:15,200
+To be a little more visual about all of this, we could plot each one of these probabilities
+
+69
+00:05:15,200 --> 00:05:20,080
+as the height of a bar above the square in this sort of three-dimensional plot.
+
+70
+00:05:20,080 --> 00:05:24,000
+In some sense, this three-dimensional plot carries all the data that we would need to know
+
+71
+00:05:24,000 --> 00:05:25,520
+about rolling a pair of dice.
+
+72
+00:05:26,240 --> 00:05:29,840
+And so the question is how do we extract the thing that we want to know,
+
+73
+00:05:29,840 --> 00:05:32,160
+the probabilities for various different sums?
+
+74
+00:05:33,440 --> 00:05:38,080
+Well, if you highlight all of the outcomes with a certain sum, say a sum of six,
+
+75
+00:05:38,720 --> 00:05:41,600
+notice how all of those end up on a certain diagonal.
+
+76
+00:05:41,600 --> 00:05:44,880
+Same deal if I highlight all the pairs where the sum is seven.
+
+77
+00:05:44,880 --> 00:05:47,120
+They sit along a different diagonal.
+
+78
+00:05:47,120 --> 00:05:50,160
+So to compute the probability of each possible sum,
+
+79
+00:05:50,160 --> 00:05:54,640
+what you do is you add together all of the entries that sit on one of these diagonals.
+
+80
+00:05:54,640 --> 00:06:02,240
+Pulling up the 3D plot, we can better foreshadow where we'll go with this later
+
+81
+00:06:02,240 --> 00:06:05,440
+by saying that the distribution of possible sums
+
+82
+00:06:05,440 --> 00:06:10,320
+looks like combining all of the heights of this plot along one of these diagonal slices.
+
+83
+00:06:12,160 --> 00:06:15,920
+It's as if we've taken this full distribution for all possible outcomes
+
+84
+00:06:15,920 --> 00:06:18,880
+and we've kind of collapsed it along one of the directions.
+
+85
+00:06:20,800 --> 00:06:24,320
+And admittedly, I'm just having a bit of fun with the animations at this point,
+
+86
+00:06:24,560 --> 00:06:26,800
+not like if you were working this out with pencil and paper,
+
+87
+00:06:26,800 --> 00:06:29,200
+you would be drawing some three-dimensional plot.
+
+88
+00:06:29,200 --> 00:06:30,080
+But it's fun!
+
+89
+00:06:30,080 --> 00:06:33,840
+When you collapse it on this direction, you actually do get the same distribution,
+
+90
+00:06:33,840 --> 00:06:36,240
+which I knew you should, but it's still fun to see.
+
+91
+00:06:36,880 --> 00:06:39,760
+Also, even though all of this might just seem a little bit playful
+
+92
+00:06:39,760 --> 00:06:42,240
+or even unnecessarily complicated,
+
+93
+00:06:42,240 --> 00:06:45,200
+I can promise you this intuition about diagonal slices
+
+94
+00:06:45,200 --> 00:06:48,400
+will come back to us later for a genuinely satisfying proof.
+
+95
+00:06:48,960 --> 00:06:52,320
+But staying focused on the simple dice case a little bit longer,
+
+96
+00:06:52,320 --> 00:06:54,560
+here's the second way that we could think about it.
+
+97
+00:06:54,560 --> 00:06:58,160
+Take that bottom distribution and flip it around horizontally,
+
+98
+00:06:58,160 --> 00:07:01,200
+so that the die values increase as you go from right to left.
+
+99
+00:07:02,560 --> 00:07:04,400
+Why do this, you might ask?
+
+100
+00:07:04,400 --> 00:07:08,160
+Well, notice now which of the pairs of dice values line up with each other.
+
+101
+00:07:08,800 --> 00:07:14,960
+As it's positioned right now, we have 1 and 6, 2 and 5, 3 and 4, and so on.
+
+102
+00:07:14,960 --> 00:07:18,480
+It is all of the pairs of values that add up to 7.
+
+103
+00:07:18,480 --> 00:07:21,760
+So if you want to think about the probability of rolling a 7,
+
+104
+00:07:21,760 --> 00:07:24,480
+a way to hold that computation in your mind
+
+105
+00:07:24,480 --> 00:07:28,480
+is to take all of the pairs of probabilities that line up with each other,
+
+106
+00:07:28,480 --> 00:07:32,080
+multiply together those pairs, and then add up all of the results.
+
+107
+00:07:32,720 --> 00:07:35,600
+Some of you might like to think of this as a kind of dot product.
+
+108
+00:07:36,160 --> 00:07:40,240
+But the operation as a whole is not just one dot product, but many.
+
+109
+00:07:40,240 --> 00:07:43,840
+If we were to slide that bottom distribution a little more to the left,
+
+110
+00:07:43,840 --> 00:07:50,480
+so in this case it looks like the die values which line up are 1 and 4, 2 and 3, 3 and 2, 4 and 1,
+
+111
+00:07:50,480 --> 00:07:52,720
+in other words all the ones that add up to a 5,
+
+112
+00:07:53,280 --> 00:07:57,680
+well now if we take the dot product, we multiply the pairs of probabilities
+
+113
+00:07:57,680 --> 00:08:02,480
+that line up and add them together, that would give us the total probability of rolling a 5.
+
+114
+00:08:03,040 --> 00:08:07,440
+In general, from this point of view, computing the full distribution for the sum
+
+115
+00:08:07,440 --> 00:08:11,120
+looks like sliding that bottom distribution into various different positions
+
+116
+00:08:11,120 --> 00:08:13,120
+and computing this dot product along the way.
+
+117
+00:08:14,960 --> 00:08:20,080
+It is precisely the same operation as the diagonal slices we were looking at earlier.
+
+118
+00:08:20,160 --> 00:08:23,760
+They're just two different ways to visualize the same underlying operation.
+
+119
+00:08:27,360 --> 00:08:32,880
+And however you choose to visualize it, this operation that takes in two different distributions
+
+120
+00:08:32,880 --> 00:08:37,280
+and spits out a new one, describing the sum of the relevant random variables,
+
+121
+00:08:37,280 --> 00:08:41,280
+is called a convolution, and we often denote it with this asterisk.
+
+122
+00:08:41,280 --> 00:08:45,120
+Really the way you want to think about it, especially as we set up for the continuous case,
+
+123
+00:08:45,120 --> 00:08:49,200
+is to think of it as combining two different functions and spitting out a new function.
+
+124
+00:08:50,160 --> 00:08:55,680
+For example, in this case, maybe I give the function for the first distribution the name px.
+
+125
+00:08:55,680 --> 00:09:00,640
+This would be a function that takes in a possible value for the die, like a 3,
+
+126
+00:09:00,640 --> 00:09:03,040
+and it spits out the corresponding probability.
+
+127
+00:09:04,320 --> 00:09:08,480
+Similarly, let's let py be the function for our second distribution,
+
+128
+00:09:08,480 --> 00:09:12,960
+and px plus y be the function describing the distribution for the sum.
+
+129
+00:09:13,760 --> 00:09:18,720
+In the lingo, what you would say is that px plus y is equal to a convolution
+
+130
+00:09:18,720 --> 00:09:20,960
+between px and py.
+
+131
+00:09:21,520 --> 00:09:26,320
+And what I want you to think about now is what the formula for this operation should look like.
+
+132
+00:09:26,320 --> 00:09:30,800
+You've seen two different ways to visualize it, but how do we actually write it down in symbols?
+
+133
+00:09:30,800 --> 00:09:34,240
+To get your bearings, maybe it's helpful to write down a specific example,
+
+134
+00:09:34,240 --> 00:09:38,880
+like the case of plugging in a 4, where you add up over all the different pairwise products
+
+135
+00:09:38,880 --> 00:09:41,520
+corresponding to pairs of inputs that add up to a 4.
+
+136
+00:09:42,240 --> 00:09:44,320
+And more generally, here's how it might look.
+
+137
+00:09:44,880 --> 00:09:50,800
+This new function takes as an input a possible sum for your random variables, which I'll call s,
+
+138
+00:09:50,800 --> 00:09:55,840
+and what it outputs looks like a sum over a bunch of pairs of values for x and y.
+
+139
+00:09:55,840 --> 00:09:59,360
+Except the usual way it's written is not to write with x and y,
+
+140
+00:09:59,360 --> 00:10:03,200
+but instead we just focus on one of those variables, in this case x,
+
+141
+00:10:03,200 --> 00:10:08,640
+letting it range over all of its possible values, which here just means going from 1 to 6.
+
+142
+00:10:08,640 --> 00:10:12,160
+And instead of writing y, you write s minus x,
+
+143
+00:10:12,160 --> 00:10:15,520
+essentially whatever the number has to be to make sure the sum is s.
+
+144
+00:10:17,120 --> 00:10:22,000
+Now the astute among you might notice a slightly weird quirk with the formula as it's written.
+
+145
+00:10:22,000 --> 00:10:25,600
+For example, if you plug in a given value like s equals 4,
+
+146
+00:10:25,600 --> 00:10:31,280
+and you unpack this sum, letting x range over all the possible values going from 1 up to 6,
+
+147
+00:10:31,280 --> 00:10:37,200
+then sometimes that corresponding y value drops below the domain of what we've explicitly defined.
+
+148
+00:10:37,200 --> 00:10:40,480
+For example, you plug in 0 and negative 1 and negative 2.
+
+149
+00:10:41,280 --> 00:10:45,840
+It's not actually that big a deal, essentially you would just say all of these values are 0,
+
+150
+00:10:45,840 --> 00:10:48,560
+so all these later terms don't get counted.
+
+151
+00:10:48,560 --> 00:10:49,760
+And that should kind of make sense.
+
+152
+00:10:49,760 --> 00:10:53,680
+What is the probability that the red die rolls to become a negative 1?
+
+153
+00:10:53,680 --> 00:10:56,320
+Well, it's 0. That is an impossible outcome.
+
+154
+00:11:01,040 --> 00:11:04,960
+As a next step, let's turn our attention towards continuous distributions,
+
+155
+00:11:04,960 --> 00:11:09,280
+where your random variable can take on values anywhere in an infinite continuum,
+
+156
+00:11:09,280 --> 00:11:11,360
+like all possible real numbers.
+
+157
+00:11:11,360 --> 00:11:15,680
+Maybe you're doing weather modeling and trying to predict the temperature tomorrow at noon,
+
+158
+00:11:15,680 --> 00:11:17,520
+or you're doing some financial projections,
+
+159
+00:11:17,520 --> 00:11:20,720
+or maybe you're modeling the typical wait times before a bus arrives.
+
+160
+00:11:20,720 --> 00:11:23,760
+There are all sorts of things where you need to handle continuity.
+
+161
+00:11:23,760 --> 00:11:28,080
+In all the graphs that we draw, the x value still represents a possible number
+
+162
+00:11:28,080 --> 00:11:32,640
+that the random variable can take on, but the interpretation of the y-axis is a little bit
+
+163
+00:11:32,640 --> 00:11:37,920
+different, because no longer does this represent probability, instead the thing that we're graphing
+
+164
+00:11:37,920 --> 00:11:40,160
+is what's called probability density.
+
+165
+00:11:40,160 --> 00:11:43,280
+This is something we've talked about before, so you know the deal.
+
+166
+00:11:43,280 --> 00:11:48,320
+Essentially, the probability that a sample of your variable falls within a given range
+
+167
+00:11:48,320 --> 00:11:51,440
+looks like the area under the curve in that range.
+
+168
+00:11:51,440 --> 00:11:55,760
+The function describing this curve is commonly called a probability density function,
+
+169
+00:11:55,760 --> 00:12:00,160
+a common enough phrase that it's frequently just given the abbreviation PDF.
+
+170
+00:12:00,160 --> 00:12:04,160
+And so the proper way to write all of this down would be to say that the probability that your
+
+171
+00:12:04,240 --> 00:12:09,120
+sample falls within a given range looks like the integral of your PDF,
+
+172
+00:12:09,120 --> 00:12:11,920
+the probability density function, in that range.
+
+173
+00:12:12,720 --> 00:12:17,040
+As a general rule of thumb, any time that you see a sum in the discrete case,
+
+174
+00:12:17,040 --> 00:12:19,520
+you would use an integral in the continuous case.
+
+175
+00:12:20,320 --> 00:12:23,280
+So let's think about what that means for our main example.
+
+176
+00:12:23,920 --> 00:12:28,320
+Let's say we have two different random variables, but this time each one will follow a continuous
+
+177
+00:12:28,320 --> 00:12:34,000
+distribution, and we want to understand their sum and the new distribution that describes that sum.
+
+178
+00:12:34,960 --> 00:12:38,960
+You can probably already guess what the formula will be just by analogy.
+
+179
+00:12:38,960 --> 00:12:44,720
+Remember, in the formula that we just wrote down, where p sub x is the function for the first variable
+
+180
+00:12:44,720 --> 00:12:49,440
+and p sub y is the function for the second variable, the convolution between them,
+
+181
+00:12:49,440 --> 00:12:55,920
+the thing describing a sum of those variables, itself looks like a sum where we combine a bunch of pairwise products.
+
+182
+00:12:55,920 --> 00:13:00,080
+The expression in the continuous case really does look 100% analogous,
+
+183
+00:13:00,080 --> 00:13:03,200
+it's just that we swap out that sum for an integral.
+
+184
+00:13:03,520 --> 00:13:08,960
+Sometimes when students see this definition of a convolution out of context, it can seem a little intimidating.
+
+185
+00:13:08,960 --> 00:13:14,320
+Hopefully the analogy is enough to make it clear, but the continuous nature really does give it a different flavor,
+
+186
+00:13:14,320 --> 00:13:18,640
+and it's worth taking a couple minutes to think through what it means on its own terms.
+
+187
+00:13:18,640 --> 00:13:25,600
+And so I put together a little interactive demo that helps unpack each part of the expression and what it's really saying.
+
+188
+00:13:25,600 --> 00:13:29,200
+For example, the first term in this integral is f of x,
+
+189
+00:13:29,200 --> 00:13:33,760
+which represents the density function for the first of the two random variables.
+
+190
+00:13:33,760 --> 00:13:39,520
+And in this case I'm choosing this sort of wedge-shaped function for that distribution, but it could be anything.
+
+191
+00:13:39,520 --> 00:13:43,920
+Similarly, g represents the density function for the second random variable,
+
+192
+00:13:43,920 --> 00:13:47,120
+for which I'm choosing this sort of double lump-shaped distribution.
+
+193
+00:13:47,120 --> 00:13:52,240
+And in the same way that earlier we went over all possible pairs of dice values with a given sum,
+
+194
+00:13:52,240 --> 00:13:56,560
+the way you want to think about this integral is that what it wants to do
+
+195
+00:13:56,560 --> 00:14:03,280
+is iterate over all possible pairs of values x and y that are constrained to a given sum, s.
+
+196
+00:14:03,280 --> 00:14:06,640
+We don't really have great notation for doing that symmetrically,
+
+197
+00:14:06,640 --> 00:14:13,280
+so instead the way we commonly write it down gives this artificial emphasis to one of the variables, in this case x,
+
+198
+00:14:13,280 --> 00:14:18,960
+where we let that value x range over all possible real numbers, negative infinity up to infinity,
+
+199
+00:14:18,960 --> 00:14:25,040
+and the thing we plug into the function g is s minus x, essentially whatever it has to be
+
+200
+00:14:25,040 --> 00:14:29,360
+to make sure that this sum is constrained to be s.
+
+201
+00:14:29,360 --> 00:14:35,120
+So for the demo, instead of graphing g directly, I want to graph g of s minus x.
+
+202
+00:14:35,120 --> 00:14:37,920
+You might ask yourself, what does that look like?
+
+203
+00:14:37,920 --> 00:14:44,640
+Well, if you plug in negative x as the input, that has the effect of flipping around the graph horizontally.
+
+204
+00:14:44,640 --> 00:14:48,720
+And then if we throw in this parameter s, treated as some kind of constant,
+
+205
+00:14:48,720 --> 00:14:54,560
+that has the effect of shifting the graph either left or right, depending on if s is positive or negative.
+
+206
+00:14:54,560 --> 00:14:58,560
+In the demo, s is a parameter that I'll just grab and shift around a little bit.
+
+207
+00:14:58,560 --> 00:15:04,800
+The real fun comes from graphing the entire contents of the integral, the product between these two graphs.
+
+208
+00:15:04,800 --> 00:15:08,800
+This is analogous to the list of pairwise products that we saw earlier,
+
+209
+00:15:08,800 --> 00:15:14,160
+but in this case, instead of adding up all of those pairwise products, we want to integrate them together,
+
+210
+00:15:14,160 --> 00:15:18,080
+which you would interpret as the area underneath this product graph.
+
+211
+00:15:18,080 --> 00:15:27,200
+As I shift around this value of s, the shape of that product graph changes, and so does the corresponding area.
+
+212
+00:15:27,200 --> 00:15:33,760
+Keep in mind, for all three graphs on the left, the input is x, and the number s is just a parameter.
+
+213
+00:15:33,760 --> 00:15:37,600
+But for the final graph on the right, for the resulting convolution itself,
+
+214
+00:15:37,600 --> 00:15:45,680
+this number s is the input to that function, and the corresponding output is whatever the area of the lower left graph is,
+
+215
+00:15:45,680 --> 00:15:50,480
+whatever the integral between this combination of f and g turns out to be.
+
+216
+00:15:53,520 --> 00:15:56,240
+Here, it might be helpful if we do a simple example,
+
+217
+00:15:56,240 --> 00:16:04,560
+say where each of our two random variables follows a uniform distribution between the values negative one-half and positive one-half.
+
+218
+00:16:04,560 --> 00:16:09,840
+So what that looks like is that our density functions each have this kind of top hat shape,
+
+219
+00:16:09,840 --> 00:16:17,040
+where the graph equals 1 for all inputs between negative one-half and positive one-half, and it equals 0 everywhere else.
+
+220
+00:16:17,040 --> 00:16:22,080
+The question, as always, is what should the distribution for the sum look like?
+
+221
+00:16:22,080 --> 00:16:25,440
+Well, let me show you how it looks inside our demo.
+
+222
+00:16:25,440 --> 00:16:29,600
+In this case, the product between the two graphs has a really easy interpretation.
+
+223
+00:16:29,600 --> 00:16:34,720
+It is 1 wherever the graphs overlap with each other, but 0 everywhere else.
+
+224
+00:16:34,720 --> 00:16:43,520
+So if I slide this parameter s far enough to the left that our top graphs don't overlap at all, then the product graph is 0 everywhere,
+
+225
+00:16:43,520 --> 00:16:47,360
+and that's a way of saying this is an impossible sum to achieve.
+
+226
+00:16:47,360 --> 00:16:55,760
+That should make sense. Each of the two variables can only get as low as negative one-half, so the sum could never get below negative 1.
+
+227
+00:16:55,760 --> 00:16:59,840
+As I start to slide s to the right and the graphs overlap with each other,
+
+228
+00:16:59,840 --> 00:17:06,160
+the area increases linearly until the graphs overlap entirely and it reaches a maximum.
+
+229
+00:17:06,160 --> 00:17:15,440
+And then after that point, it starts to decrease linearly again, which means that the distribution for the sum takes on this kind of wedge shape.
+
+230
+00:17:15,440 --> 00:17:21,920
+And I imagine this actually feels somewhat familiar for anyone who's thought about a pair of dice, that is, unweighted dice.
+
+231
+00:17:21,920 --> 00:17:29,920
+There, if you add up two different uniformly distributed variables, then the distribution for the sum has a certain wedge shape.
+
+232
+00:17:29,920 --> 00:17:36,400
+Probabilities increase until they max out at a 7, and then they decrease back down again.
+
+233
+00:17:36,400 --> 00:17:42,480
+Where this gets a lot more fun is if instead of asking for a sum of two uniformly distributed variables,
+
+234
+00:17:42,480 --> 00:17:47,280
+I ask you what it looks like if we add up three different uniformly distributed variables.
+
+235
+00:17:47,280 --> 00:17:53,360
+At first you might say, I don't know, we need some new way to visualize combining three things instead of two.
+
+236
+00:17:53,360 --> 00:18:01,200
+But really what you can do here is think about the sum of the first two as their own variable, which we just figured out follows this wedge shape distribution,
+
+237
+00:18:01,200 --> 00:18:05,040
+and then take a convolution between that and the top hat function.
+
+238
+00:18:05,040 --> 00:18:07,840
+Pulling up the demo, here's what that would look like.
+
+239
+00:18:07,840 --> 00:18:16,720
+Once again, what makes the top hat function really nice is that multiplying by it sort of has the effect of filtering out values from the top graph.
+
+240
+00:18:16,720 --> 00:18:22,400
+The product on the bottom looks just like a copy of the top graph, but limited to a certain window.
+
+241
+00:18:22,400 --> 00:18:30,000
+Again, as I slide this around left and right, and the area gets bigger and smaller, the result maxes out in the middle but tapers out to either side,
+
+242
+00:18:30,000 --> 00:18:32,560
+except this time it does so more smoothly.
+
+243
+00:18:32,560 --> 00:18:36,880
+It's kind of like we're taking a moving average of that top left graph.
+
+244
+00:18:36,880 --> 00:18:42,480
+Actually, it's more than just kind of, this literally is a moving average of the top left graph.
+
+245
+00:18:42,480 --> 00:18:45,440
+One thing you might think to do is take this even further.
+
+246
+00:18:45,440 --> 00:18:49,440
+The way we started was combining two top hat functions and we got this wedge,
+
+247
+00:18:49,440 --> 00:18:52,560
+then we replaced the first function with that wedge,
+
+248
+00:18:52,560 --> 00:18:59,520
+and then when we took the convolution we got this smoother shape describing a sum of three distinct uniform variables,
+
+249
+00:18:59,520 --> 00:19:01,120
+but we could just repeat.
+
+250
+00:19:01,120 --> 00:19:07,040
+Swap that out for the top function, and then convolve that with the flat rectangular function,
+
+251
+00:19:07,040 --> 00:19:13,600
+and whatever result we see should describe a sum of four uniformly distributed random variables.
+
+252
+00:19:13,600 --> 00:19:17,840
+Any of you who watched the video about the central limit theorem should know what to expect.
+
+253
+00:19:17,840 --> 00:19:22,800
+As we repeat this process over and over, the shape looks more and more like a bell curve.
+
+254
+00:19:22,800 --> 00:19:29,520
+Or to be more precise, at each iteration we should rescale the x-axis to make sure that the standard deviation is one,
+
+255
+00:19:29,520 --> 00:19:35,280
+because the dominant effect of this repeated convolution, the kind of repeated moving average process,
+
+256
+00:19:35,280 --> 00:19:37,520
+is to flatten out the function over time.
+
+257
+00:19:37,520 --> 00:19:40,160
+So in the limit it just flattens out towards zero.
+
+258
+00:19:40,160 --> 00:19:43,680
+But rescaling is a way of saying, yeah yeah yeah, I know that it gets flatter,
+
+259
+00:19:43,680 --> 00:19:46,160
+but what's the actual shape underlying it all?
+
+260
+00:19:48,160 --> 00:19:53,040
+The statement of the central limit theorem, one of the coolest facts from probability,
+
+261
+00:19:53,040 --> 00:19:58,480
+is that you could have started with essentially any distribution and this still would have been true.
+
+262
+00:19:58,480 --> 00:20:05,520
+That as you take repeated convolutions like this, representing bigger and bigger sums of a given random variable,
+
+263
+00:20:05,520 --> 00:20:11,600
+then the distribution describing that sum, which might start off looking very different from a normal distribution,
+
+264
+00:20:11,600 --> 00:20:18,080
+over time smooths out more and more until it gets arbitrarily close to a normal distribution.
+
+265
+00:20:18,080 --> 00:20:23,680
+It's as if a bell curve is, in some loose manner of speaking, the smoothest possible distribution,
+
+266
+00:20:23,680 --> 00:20:27,120
+an attractive fixed point in the space of all possible functions,
+
+267
+00:20:27,120 --> 00:20:30,880
+as we apply this process of repeated smoothing through the convolution.
+
+268
+00:20:35,520 --> 00:20:41,520
+Naturally you might wonder, why normal distributions? Why this function and not some other one?
+
+269
+00:20:41,520 --> 00:20:45,520
+That's a very good answer, and I think the most fun way to show the answer
+
+270
+00:20:45,520 --> 00:20:50,240
+is in the light of the last visualization that we'll show for convolutions.
+
+271
+00:20:50,240 --> 00:20:53,920
+Remember how in the discrete case, the first of our two visualizations
+
+272
+00:20:53,920 --> 00:20:56,720
+involved forming this kind of multiplication table,
+
+273
+00:20:56,720 --> 00:21:02,720
+showing the probabilities for all possible outcomes, and adding up along the diagonals?
+
+274
+00:21:02,720 --> 00:21:08,320
+You've probably guessed it by now, but our last step is to generalize this to the continuous case.
+
+275
+00:21:08,320 --> 00:21:11,760
+And it is beautiful, but you have to be a little bit careful.
+
+276
+00:21:11,760 --> 00:21:16,000
+Pulling up the same two functions we had before, f of x and g of y,
+
+277
+00:21:16,000 --> 00:21:22,240
+what in this case would be analogous to the grid of possible pairs that we were looking at earlier?
+
+278
+00:21:22,240 --> 00:21:26,080
+Well in this case, each of the variables can take on any real number,
+
+279
+00:21:26,080 --> 00:21:32,480
+so we want to think about all possible pairs of real numbers, and the xy-plane comes to mind.
+
+280
+00:21:32,480 --> 00:21:37,840
+Every point corresponds to a possible outcome when we sample from both distributions.
+
+281
+00:21:37,840 --> 00:21:41,200
+Now the probability of any one of these outcomes, xy,
+
+282
+00:21:41,200 --> 00:21:47,520
+or rather the probability density around that point, will look like f of x times g of y,
+
+283
+00:21:47,520 --> 00:21:49,760
+again, assuming that the two are independent.
+
+284
+00:21:49,760 --> 00:21:56,480
+So a natural thing to do is to graph this function, f of x times g of y, as a two-variable function,
+
+285
+00:21:56,480 --> 00:22:00,320
+which would give something that looks like a surface above the xy-plane.
+
+286
+00:22:00,400 --> 00:22:05,280
+Notice in this example how if we look at it from one angle, where we see the x values changing,
+
+287
+00:22:05,280 --> 00:22:09,360
+it has the shape of our first graph, but if we look at it from another angle,
+
+288
+00:22:09,360 --> 00:22:14,240
+emphasizing the change in the y direction, it takes on the shape of our second graph.
+
+289
+00:22:14,240 --> 00:22:17,920
+This three-dimensional graph encodes all of the information we need.
+
+290
+00:22:17,920 --> 00:22:21,040
+It shows all the probability densities for every possible outcome.
+
+291
+00:22:21,760 --> 00:22:26,880
+And if you want to limit your view just to those outcomes where x plus y is constrained
+
+292
+00:22:26,880 --> 00:22:31,520
+to be a given sum, what that looks like is limiting our view to a diagonal slice,
+
+293
+00:22:31,520 --> 00:22:35,840
+specifically a slice over the line x plus y equals some constant.
+
+294
+00:22:35,840 --> 00:22:40,480
+All of the possible probability densities for the outcome subject to this constraint
+
+295
+00:22:40,480 --> 00:22:45,520
+look sort of like a slice under this graph, and as we change around what specific sum
+
+296
+00:22:45,520 --> 00:22:50,480
+we're constraining to, it shifts around which specific diagonal slice we're looking at.
+
+297
+00:22:50,480 --> 00:22:58,560
+Now what you might predict is that the way to combine all of the probability densities
+
+298
+00:22:58,560 --> 00:23:04,320
+along one of these slices, the way to integrate them together, can be interpreted as the area
+
+299
+00:23:04,320 --> 00:23:09,680
+under this curve, which is a slice of the surface. And that is almost correct.
+
+300
+00:23:09,680 --> 00:23:14,080
+There's a subtle detail regarding a factor of the square root of two that we need to talk about,
+
+301
+00:23:14,080 --> 00:23:20,640
+but up to a constant factor, the areas of these slices give us the values of the convolution.
+
+302
+00:23:21,280 --> 00:23:25,360
+In fact, all of these slices that we're looking at are precisely the same
+
+303
+00:23:25,360 --> 00:23:28,160
+as the product graph that we were looking at earlier.
+
+304
+00:23:29,280 --> 00:23:34,080
+Here, to emphasize this point, let me pull up both visualizations side by side,
+
+305
+00:23:34,080 --> 00:23:39,200
+and I'm going to slowly decrease the value of s, which on the left means we're looking at
+
+306
+00:23:39,200 --> 00:23:44,080
+different slices, and on the right means we're shifting around the modified graph of g.
+
+307
+00:23:45,440 --> 00:23:49,120
+Notice how at all points the shape of the graph on the bottom right,
+
+308
+00:23:49,120 --> 00:23:54,560
+the product between the functions, looks exactly the same as the shape of the diagonal slice.
+
+309
+00:23:58,640 --> 00:24:02,480
+And this should make sense. They are two distinct ways to visualize the same thing.
+
+310
+00:24:03,040 --> 00:24:07,680
+It sounds like a lot when we put it into words, but what we're looking at are all the possible
+
+311
+00:24:07,680 --> 00:24:13,040
+products between outputs of the functions corresponding to pairs of inputs that have
+
+312
+00:24:13,040 --> 00:24:18,240
+a given sum. Again, it's kind of a mouthful, but I think you see what I'm saying,
+
+313
+00:24:18,240 --> 00:24:20,320
+and we now have two different ways to see it.
+
+314
+00:24:31,200 --> 00:24:34,800
+The nice thing about the diagonal slice visualization is that it makes it much
+
+315
+00:24:34,800 --> 00:24:40,240
+more clear that it's a symmetric operation. It's much more obvious that f convolved with g
+
+316
+00:24:40,240 --> 00:24:46,240
+is the same thing as g convolved with f. Technically, the diagonal slices are not
+
+317
+00:24:46,240 --> 00:24:51,120
+exactly the same shape. They've actually been stretched out by a factor of the square root of 2.
+
+318
+00:24:51,680 --> 00:24:56,800
+The basic reason is that if you imagine taking some small step along one of these lines where
+
+319
+00:24:56,800 --> 00:25:03,440
+x plus y equals a constant, then the change in your x value, the delta x here, is not the same
+
+320
+00:25:03,440 --> 00:25:08,880
+thing as the length of that step. That step is actually longer by a factor of the square root of 2.
+
+321
+00:25:09,440 --> 00:25:13,680
+I will leave a note up on the screen for the calculus enthusiasts among you who want to pause
+
+322
+00:25:13,680 --> 00:25:18,960
+and ponder, but the upshot is very simply that the outputs of our convolution are technically not
+
+323
+00:25:18,960 --> 00:25:24,000
+quite the areas of these diagonal slices. We have to divide those areas by a square root of 2.
+
+324
+00:25:26,080 --> 00:25:29,920
+Stepping back from all of this for a moment, I just think this is so beautiful.
+
+325
+00:25:29,920 --> 00:25:34,720
+We started with such a simple question, or at least such a seemingly simple question,
+
+326
+00:25:34,720 --> 00:25:40,160
+how do you add up two random variables? And what we end up with is this very intricate operation
+
+327
+00:25:40,160 --> 00:25:45,600
+for combining two different functions. We have at least two very pretty ways to understand it,
+
+328
+00:25:45,600 --> 00:25:50,400
+but still, some of you might be raising your hands and saying, pretty pictures are all well and good,
+
+329
+00:25:50,400 --> 00:25:55,360
+but do they actually help you calculate something? For example, I still have not answered the opening
+
+330
+00:25:55,360 --> 00:26:01,280
+quiz question about adding two normally distributed random variables. Well, the ordinary
+
+331
+00:26:01,280 --> 00:26:05,360
+way that you would approach this kind of question, if it showed up on a homework or something like
+
+332
+00:26:05,360 --> 00:26:10,800
+that, is that you would plug in the formula for a normal distribution into the definition of a
+
+333
+00:26:10,800 --> 00:26:16,720
+convolution, the integral that we've been describing here. And in that case, the visualizations would
+
+334
+00:26:16,720 --> 00:26:22,080
+really just be there to clarify what the expression is saying, but they sit in the back seat. In this
+
+335
+00:26:22,080 --> 00:26:28,400
+case, the integral is not prohibitively difficult, there are analytical methods, but for this example,
+
+336
+00:26:28,400 --> 00:26:33,840
+I want to show you a more fun method where the visualizations, specifically the diagonal slices,
+
+337
+00:26:33,840 --> 00:26:39,120
+will play a much more front and center role in the proof itself. I think many of you may actually
+
+338
+00:26:39,120 --> 00:26:44,480
+enjoy taking a moment to predict how this will look for yourself. Think about what this 3D graph
+
+339
+00:26:44,480 --> 00:26:49,360
+would look like in the case of two normal distributions, and what properties that it has
+
+340
+00:26:49,360 --> 00:26:55,040
+that you might be able to take advantage of. And it is for sure easiest if you start with a case
+
+341
+00:26:55,040 --> 00:27:00,960
+where both distributions have the same standard deviation. Whenever you want the details, and to
+
+342
+00:27:00,960 --> 00:27:05,280
+see how the answer fits into the central limit theorem, come join me in the next video.
+

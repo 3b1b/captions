@@ -1,0 +1,964 @@
+1
+00:00:00,000 --> 00:00:06,440
+Let's talk about space-filling curves.
+
+2
+00:00:06,440 --> 00:00:10,700
+They are incredibly fun to animate, and they also give a chance to address a certain philosophical
+
+3
+00:00:10,700 --> 00:00:11,920
+question.
+
+4
+00:00:11,920 --> 00:00:16,800
+Math often deals with infinite quantities, sometimes so intimately that the very substance
+
+5
+00:00:16,800 --> 00:00:20,480
+of a result only actually makes sense in an infinite world.
+
+6
+00:00:20,480 --> 00:00:27,140
+So the question is, how can these results ever be useful in a finite context?
+
+7
+00:00:27,140 --> 00:00:31,380
+As with all philosophizing, this is best left to discuss until after we look at the concrete
+
+8
+00:00:31,380 --> 00:00:33,200
+case and the real math.
+
+9
+00:00:33,200 --> 00:00:38,040
+So I'll begin by laying down an application of something called a Hilbert curve, followed
+
+10
+00:00:38,040 --> 00:00:42,020
+by a description of some of its origins in infinite math.
+
+11
+00:00:42,020 --> 00:00:48,660
+Let's say you wanted to write some software that would enable people to see with their
+
+12
+00:00:48,660 --> 00:00:49,660
+ears.
+
+13
+00:00:49,660 --> 00:00:55,820
+It would take in data from a camera, and then somehow translate that into a sound in a meaningful
+
+14
+00:00:55,820 --> 00:00:56,820
+way.
+
+15
+00:00:57,500 --> 00:01:01,260
+The thought here is that brains are plastic enough to build an intuition from sight, even
+
+16
+00:01:01,260 --> 00:01:04,260
+when raw data is scrambled into a different format.
+
+17
+00:01:04,260 --> 00:01:08,440
+I've left a few links in the description to studies to this effect.
+
+18
+00:01:08,440 --> 00:01:13,120
+To make initial experiments easier, you might start by treating incoming images with a low
+
+19
+00:01:13,120 --> 00:01:17,420
+resolution, maybe 256x256 pixels.
+
+20
+00:01:17,420 --> 00:01:21,100
+And to make my own animation efforts easier, let's represent one of these images with
+
+21
+00:01:21,100 --> 00:01:25,580
+a square grid, each cell corresponding with a pixel.
+
+22
+00:01:25,580 --> 00:01:30,660
+One approach to this sound-to-sight software would be to find a nice way to associate each
+
+23
+00:01:30,660 --> 00:01:35,100
+one of those pixels with a unique frequency value.
+
+24
+00:01:35,100 --> 00:01:39,060
+Then when that pixel is brighter, the frequency associated with it would be played louder,
+
+25
+00:01:39,060 --> 00:01:43,700
+and if the pixel were darker, the frequency would be quiet.
+
+26
+00:01:43,700 --> 00:01:48,140
+Listening to all of the pixels all at once would then sound like a bunch of frequencies
+
+27
+00:01:48,140 --> 00:01:52,820
+overlaid on top of one another, with dominant frequencies corresponding to the brighter
+
+28
+00:01:52,820 --> 00:01:58,900
+regions of the image sounding like some cacophonous mess until your brain learns to make sense
+
+29
+00:01:58,900 --> 00:02:01,300
+out of the information it contains.
+
+30
+00:02:01,300 --> 00:02:06,340
+Let's temporarily set aside worries about whether or not this would actually work, and
+
+31
+00:02:06,340 --> 00:02:11,740
+instead think about what function, from pixel space down to frequency space, gives this
+
+32
+00:02:11,740 --> 00:02:14,540
+software the best chance of working.
+
+33
+00:02:14,540 --> 00:02:22,340
+The tricky part is that pixel space is two-dimensional, but frequency space is one-dimensional.
+
+34
+00:02:22,340 --> 00:02:25,620
+You could, of course, try doing this with a random mapping.
+
+35
+00:02:25,620 --> 00:02:30,020
+After all, we're hoping people's brains make sense out of pretty wonky data anyway.
+
+36
+00:02:30,020 --> 00:02:35,100
+However, it might be nice to leverage some of the intuitions a given human brain already
+
+37
+00:02:35,100 --> 00:02:36,980
+has about sound.
+
+38
+00:02:36,980 --> 00:02:43,180
+For example, if we think in terms of the reverse mapping, from frequency space to pixel space,
+
+39
+00:02:43,180 --> 00:02:47,940
+frequencies that are close together should stay close together in the pixel space.
+
+40
+00:02:47,940 --> 00:02:53,220
+That way, even if an ear has a hard time distinguishing between two nearby frequencies, they will
+
+41
+00:02:53,220 --> 00:02:57,400
+at least refer to the same basic point in space.
+
+42
+00:02:57,400 --> 00:03:02,580
+To ensure this happens, you could first describe a way to weave a line through each one of
+
+43
+00:03:02,580 --> 00:03:04,340
+these pixels.
+
+44
+00:03:04,340 --> 00:03:10,060
+Then if you fix each pixel to a spot on that line, and unravel the whole thread to make
+
+45
+00:03:10,060 --> 00:03:16,220
+it straight, you could interpret this line as a frequency space, and you have an association
+
+46
+00:03:16,220 --> 00:03:20,380
+from pixels to frequencies, which is what we want.
+
+47
+00:03:20,380 --> 00:03:24,940
+One weaving method would be to just go one row at a time, alternating between left and
+
+48
+00:03:24,940 --> 00:03:27,780
+right as it moves up that pixel space.
+
+49
+00:03:27,780 --> 00:03:32,640
+This is like a well-played game of Snake, so let's call this a Snake Curve.
+
+50
+00:03:32,640 --> 00:03:37,420
+When you tell your mathematician friend about this idea, she says, why not use a Hilbert
+
+51
+00:03:37,420 --> 00:03:38,420
+curve?
+
+52
+00:03:38,420 --> 00:03:41,260
+When you ask her what that is, she stumbles for a moment.
+
+53
+00:03:41,260 --> 00:03:45,340
+So it's not a curve, but an infinite family of curves, she starts.
+
+54
+00:03:45,460 --> 00:03:50,140
+Well, no, it's just one thing, but I need to tell you about a certain infinite family
+
+55
+00:03:50,140 --> 00:03:51,140
+first.
+
+56
+00:03:51,140 --> 00:03:55,460
+She pulls out a piece of paper and starts explaining what she decides to call pseudo-Hilbert
+
+57
+00:03:55,460 --> 00:03:58,480
+curves, for lack of a better term.
+
+58
+00:03:58,480 --> 00:04:04,060
+For an order-1 pseudo-Hilbert curve, you divide a square into a 2x2 grid, and connect the
+
+59
+00:04:04,060 --> 00:04:10,580
+center of the lower left quadrant to the center of the upper left, over to the upper right,
+
+60
+00:04:10,580 --> 00:04:13,080
+and then down in the lower right.
+
+61
+00:04:13,080 --> 00:04:17,480
+For an order-2 pseudo-Hilbert curve, rather than just going straight from one quadrant
+
+62
+00:04:17,480 --> 00:04:23,120
+to another, we let our curve do a little work to fill out each quadrant while it does so.
+
+63
+00:04:23,120 --> 00:04:28,320
+Specifically, subdivide the square further into a 4x4 grid, and we have our curve trace
+
+64
+00:04:28,320 --> 00:04:34,080
+out a miniature order-1 pseudo-Hilbert curve inside each quadrant before it moves on to
+
+65
+00:04:34,080 --> 00:04:35,740
+the next.
+
+66
+00:04:35,740 --> 00:04:40,040
+If we left those mini-curves oriented as they are, going from the end of the mini-curve
+
+67
+00:04:40,040 --> 00:04:45,720
+in the lower left to the start of the mini-curve in the upper left requires an awkward jump,
+
+68
+00:04:45,720 --> 00:04:50,120
+same deal with going from the upper right down to the lower right, so we flip the curves
+
+69
+00:04:50,120 --> 00:04:55,040
+in the lower left and lower right to make that connection shorter.
+
+70
+00:04:55,040 --> 00:04:59,540
+Going from an order-2 to an order-3 pseudo-Hilbert curve is similar.
+
+71
+00:04:59,540 --> 00:05:05,240
+You divide the square into an 8x8 grid, then put an order-2 pseudo-Hilbert curve in each
+
+72
+00:05:05,240 --> 00:05:10,720
+quadrant, flip the lower left and lower right appropriately, and connect them all tip to
+
+73
+00:05:10,720 --> 00:05:11,720
+tail.
+
+74
+00:05:11,720 --> 00:05:22,280
+And the pattern continues like that for higher orders.
+
+75
+00:05:22,280 --> 00:05:29,080
+For the 256x256 pixel array, your mathematician friend explains, you would use an order-8
+
+76
+00:05:29,080 --> 00:05:31,280
+pseudo-Hilbert curve.
+
+77
+00:05:31,320 --> 00:05:36,360
+And remember, defining a curve which weaves through each pixel is basically the same as
+
+78
+00:05:36,360 --> 00:05:42,560
+defining a function from pixel space to frequency space, since you're associating each pixel
+
+79
+00:05:42,560 --> 00:05:44,840
+with a point on the line.
+
+80
+00:05:44,840 --> 00:05:50,440
+Now, this is nice as a piece of art, but why would these pseudo-Hilbert curves be any better
+
+81
+00:05:50,440 --> 00:05:52,000
+than just the snake curve?
+
+82
+00:05:52,000 --> 00:05:55,080
+Well, here's one very important reason.
+
+83
+00:05:55,080 --> 00:05:59,240
+Imagine you go through with this project, integrate the software with real cameras and
+
+84
+00:05:59,240 --> 00:06:01,280
+headphones, and it works!
+
+85
+00:06:01,280 --> 00:06:06,520
+People around the world are using the device, building intuitions for vision via sound.
+
+86
+00:06:06,520 --> 00:06:11,280
+What happens when you issue an upgrade that increases the resolution of the camera's
+
+87
+00:06:11,280 --> 00:06:16,760
+image from 256x256 to 512x512?
+
+88
+00:06:16,760 --> 00:06:22,160
+If you were using the snake curve, as you transition to a higher resolution, many points
+
+89
+00:06:22,160 --> 00:06:27,440
+on this frequency line would have to go to completely different parts of pixel space.
+
+90
+00:06:27,440 --> 00:06:31,160
+For example, let's follow a point about halfway along the frequency line.
+
+91
+00:06:31,160 --> 00:06:36,600
+It'll end up about halfway up the pixel space, no matter the resolution, but where
+
+92
+00:06:36,600 --> 00:06:43,040
+it is left to right can differ wildly as you go from 256x256 up to 512x512.
+
+93
+00:06:43,040 --> 00:06:48,200
+This means everyone using your software would have to relearn how to see with their ears,
+
+94
+00:06:48,200 --> 00:06:52,800
+since the original intuitions of which points in space correspond to which frequencies no
+
+95
+00:06:52,800 --> 00:06:54,760
+longer apply.
+
+96
+00:06:54,760 --> 00:07:00,440
+However, with the Hilbert curve technique, as you increase the order of a pseudo-Hilbert
+
+97
+00:07:00,440 --> 00:07:07,280
+curve, a given point on the line moves around less and less, just approaching a more specific
+
+98
+00:07:07,280 --> 00:07:09,680
+point in space.
+
+99
+00:07:09,680 --> 00:07:14,860
+That way, you've given your users the opportunity to fine-tune their intuitions rather than
+
+100
+00:07:14,860 --> 00:07:19,940
+relearning everything.
+
+101
+00:07:19,940 --> 00:07:24,600
+So for this sound-to-sight application, the Hilbert curve approach turns out to be exactly
+
+102
+00:07:24,600 --> 00:07:25,760
+what you want.
+
+103
+00:07:25,760 --> 00:07:32,240
+In fact, given how specific the goal is, it seems almost weirdly perfect.
+
+104
+00:07:32,240 --> 00:07:36,860
+So you go back to your mathematician friend and ask her, hey, what was the original motivation
+
+105
+00:07:36,860 --> 00:07:39,800
+for defining one of these curves?
+
+106
+00:07:39,800 --> 00:07:44,160
+She explains that near the end of the 19th century, in the aftershock of Cantor's research
+
+107
+00:07:44,160 --> 00:07:49,040
+on infinity, mathematicians were interested in finding a mapping from a one-dimensional
+
+108
+00:07:49,040 --> 00:07:54,320
+line into two-dimensional space in such a way that the line runs through every single
+
+109
+00:07:54,320 --> 00:07:56,240
+point in space.
+
+110
+00:07:56,240 --> 00:08:00,720
+To be clear, we're not talking about a finite bounded grid of pixels, like we had in the
+
+111
+00:08:00,720 --> 00:08:02,760
+sound-to-sight application.
+
+112
+00:08:02,760 --> 00:08:09,520
+This is continuous space, which is very infinite, and the goal is to have a line which is as
+
+113
+00:08:09,520 --> 00:08:15,540
+thin as thin can be and has zero area, somehow pass through every single one of those infinitely
+
+114
+00:08:15,540 --> 00:08:19,900
+many points that makes up the infinite area of space.
+
+115
+00:08:19,900 --> 00:08:25,940
+Before 1890, a lot of people thought this was obviously impossible, but then Peano discovered
+
+116
+00:08:25,940 --> 00:08:30,220
+the first of what would come to be known as space-filling curves.
+
+117
+00:08:30,220 --> 00:08:35,020
+In 1891, Hilbert followed with his own slightly simpler space-filling curve.
+
+118
+00:08:35,020 --> 00:08:39,640
+Technically, each one fills a square, not all of space, but I'll show you later on
+
+119
+00:08:39,640 --> 00:08:44,620
+how once you filled a square with a line, filling all of space is not an issue.
+
+120
+00:08:44,620 --> 00:08:49,460
+By the way, mathematicians use the word curve to talk about a line running through space
+
+121
+00:08:49,460 --> 00:08:52,260
+even if it has jagged corners.
+
+122
+00:08:52,260 --> 00:08:57,220
+This is especially counterintuitive terminology in the context of a space-filling curve, which
+
+123
+00:08:57,220 --> 00:09:01,000
+in a sense consists of nothing but sharp corners.
+
+124
+00:09:01,000 --> 00:09:06,500
+A better name might be something like space-filling fractal, which some people do use, but hey,
+
+125
+00:09:06,500 --> 00:09:10,400
+it's math, so we live with bad terminology.
+
+126
+00:09:10,480 --> 00:09:14,720
+None of the pseudo-Hilbert curves that you use to fill pixelated space would count as
+
+127
+00:09:14,720 --> 00:09:18,600
+a space-filling curve, no matter how high the order.
+
+128
+00:09:18,600 --> 00:09:21,040
+Just zoom in on one of the pixels.
+
+129
+00:09:21,040 --> 00:09:26,500
+When this pixel is considered part of infinite continuous space, the curve only passes through
+
+130
+00:09:26,500 --> 00:09:33,600
+the tiniest zero-area slice of it, and it certainly doesn't hit every single point.
+
+131
+00:09:33,600 --> 00:09:38,300
+Your mathematician friend explains that an actual bona fide Hilbert curve is not any
+
+132
+00:09:38,300 --> 00:09:41,060
+one of these pseudo-Hilbert curves.
+
+133
+00:09:41,060 --> 00:09:43,660
+Instead it's the limit of all of them.
+
+134
+00:09:43,660 --> 00:09:46,780
+Now defining this limit rigorously is delicate.
+
+135
+00:09:46,780 --> 00:09:52,660
+You first have to formalize what these curves are as functions, specifically functions which
+
+136
+00:09:52,660 --> 00:09:57,980
+take in a single number somewhere between 0 and 1 as their input, and output a pair
+
+137
+00:09:57,980 --> 00:09:59,660
+of numbers.
+
+138
+00:09:59,660 --> 00:10:03,140
+This input can be thought of as a point on the line, and the output can be thought of
+
+139
+00:10:03,140 --> 00:10:05,600
+as coordinates in 2D space.
+
+140
+00:10:05,600 --> 00:10:11,340
+But in principle it's just an association between a single number and pairs of numbers.
+
+141
+00:10:11,340 --> 00:10:18,440
+For example, an order-2 pseudo-Hilbert curve as a function maps the input 0.3 to the output
+
+142
+00:10:18,440 --> 00:10:22,640
+pair 0.125, 0.75.
+
+143
+00:10:22,640 --> 00:10:30,640
+An order-3 pseudo-Hilbert curve maps that same input 0.3 to the output pair 0.0758,
+
+144
+00:10:30,640 --> 00:10:33,320
+0.6875.
+
+145
+00:10:33,360 --> 00:10:38,800
+The core property that makes a function like this a curve, and not just any ol' association
+
+146
+00:10:38,800 --> 00:10:43,840
+between single numbers and pairs of numbers, is continuity.
+
+147
+00:10:43,840 --> 00:10:47,960
+The intuition behind continuity is that you don't want the output of your function to
+
+148
+00:10:47,960 --> 00:10:52,800
+suddenly jump at any point when the input is only changing smoothly.
+
+149
+00:10:52,800 --> 00:10:58,280
+And the way this is made rigorous in math is actually pretty clever, and fully appreciating
+
+150
+00:10:58,280 --> 00:11:04,560
+space-filling curves requires digesting the formal idea of continuity, so it's definitely
+
+151
+00:11:04,560 --> 00:11:08,620
+worth taking a brief side-step to go over it now.
+
+152
+00:11:08,620 --> 00:11:14,400
+Consider a particular input point, a, and the corresponding output of the function,
+
+153
+00:11:14,400 --> 00:11:15,400
+b.
+
+154
+00:11:15,400 --> 00:11:20,640
+Draw a circle centered around a, and look at all the other input points inside that
+
+155
+00:11:20,640 --> 00:11:27,040
+circle, and consider where the function takes all those points in the output space.
+
+156
+00:11:27,040 --> 00:11:33,440
+Now draw the smallest circle centered at b that contains those outputs.
+
+157
+00:11:33,440 --> 00:11:38,600
+Different choices for the size of the input circle might result in larger or smaller circles
+
+158
+00:11:38,600 --> 00:11:40,960
+in the output space.
+
+159
+00:11:40,960 --> 00:11:44,600
+But notice what happens when we go through this process at a point where the function
+
+160
+00:11:44,600 --> 00:11:51,200
+jumps, drawing a circle around a, and looking at the input points within the circle, seeing
+
+161
+00:11:51,200 --> 00:11:58,760
+where they map, and drawing the smallest possible circle centered at b containing those points.
+
+162
+00:11:58,760 --> 00:12:04,480
+No matter how small the circle around a, the corresponding circle around b just cannot
+
+163
+00:12:04,480 --> 00:12:07,840
+be smaller than that jump.
+
+164
+00:12:07,840 --> 00:12:13,160
+For this reason, we say that the function is discontinuous at a if there's any lower
+
+165
+00:12:13,160 --> 00:12:17,640
+bound on the size of this circle that surrounds b.
+
+166
+00:12:17,640 --> 00:12:22,360
+If the circle around b can be made as small as you want, with sufficiently small choices
+
+167
+00:12:22,360 --> 00:12:27,360
+for circles around a, you say that the function is continuous at a.
+
+168
+00:12:27,360 --> 00:12:31,760
+A function as a whole is called continuous if it's continuous at every possible input
+
+169
+00:12:31,760 --> 00:12:33,560
+point.
+
+170
+00:12:33,560 --> 00:12:38,280
+Now with that as a formal definition of curves, you're ready to define what an actual Hilbert
+
+171
+00:12:38,280 --> 00:12:40,200
+curve is.
+
+172
+00:12:40,200 --> 00:12:45,080
+Doing this relies on a wonderful property of the sequence of pseudo-Hilbert curves,
+
+173
+00:12:45,080 --> 00:12:47,560
+which should feel familiar.
+
+174
+00:12:47,560 --> 00:12:53,320
+Take a given input point, like 0.3, and apply each successive pseudo-Hilbert curve function
+
+175
+00:12:53,320 --> 00:12:55,120
+to this point.
+
+176
+00:12:55,120 --> 00:13:00,280
+The corresponding outputs, as we increase the order of the curve, approaches some particular
+
+177
+00:13:00,280 --> 00:13:02,320
+point in space.
+
+178
+00:13:02,320 --> 00:13:06,280
+It doesn't matter what input you start with, this sequence of outputs you get by applying
+
+179
+00:13:06,280 --> 00:13:11,680
+each successive pseudo-Hilbert curve to this point always stabilizes and approaches some
+
+180
+00:13:11,680 --> 00:13:15,400
+particular point in 2D space.
+
+181
+00:13:15,400 --> 00:13:20,840
+This is absolutely not true for snake curves, or for that matter most sequences of curves
+
+182
+00:13:20,840 --> 00:13:24,640
+filling pixelated space of higher and higher resolutions.
+
+183
+00:13:24,640 --> 00:13:30,840
+The outputs associated with a given input become wildly erratic as the resolution increases,
+
+184
+00:13:30,840 --> 00:13:36,200
+always jumping from left to right, and never approaching anything.
+
+185
+00:13:36,200 --> 00:13:41,120
+Because of this property, we can define a Hilbert curve function like this.
+
+186
+00:13:41,120 --> 00:13:46,320
+For a given input value between 0 and 1, consider the sequence of points in 2D space
+
+187
+00:13:46,320 --> 00:13:51,880
+you get by applying each successive pseudo-Hilbert curve function at that point.
+
+188
+00:13:51,880 --> 00:13:57,740
+The output of the Hilbert curve function evaluated on this input is just defined to be the limit
+
+189
+00:13:57,740 --> 00:14:00,540
+of those points.
+
+190
+00:14:00,540 --> 00:14:05,160
+Because the sequence of pseudo-Hilbert curve outputs always converges no matter what input
+
+191
+00:14:05,160 --> 00:14:10,080
+you start with, this is actually a well-defined function in a way that it never could have
+
+192
+00:14:10,120 --> 00:14:12,120
+been had we used snake curves.
+
+193
+00:14:12,120 --> 00:14:17,420
+Now, I'm not going to go through the proof for why this gives a space-filling curve,
+
+194
+00:14:17,420 --> 00:14:19,920
+but let's at least see what needs to be proved.
+
+195
+00:14:19,920 --> 00:14:24,560
+First, verify that this is a well-defined function by proving that the outputs of the
+
+196
+00:14:24,560 --> 00:14:29,360
+pseudo-Hilbert curve functions really do converge the way I'm telling you they do.
+
+197
+00:14:29,360 --> 00:14:34,680
+Second, show that this function gives a curve, meaning it's continuous.
+
+198
+00:14:34,680 --> 00:14:40,680
+Third, and most important, show that it fills space, in the sense that every single point
+
+199
+00:14:40,680 --> 00:14:44,000
+in the unit square is an output of this function.
+
+200
+00:14:44,000 --> 00:14:49,080
+I really do encourage anyone watching this to take a stab at each one of these.
+
+201
+00:14:49,080 --> 00:14:53,680
+Spoiler alert, all three of these facts turn out to be true.
+
+202
+00:14:53,680 --> 00:14:58,940
+You can extend this to a curve that fills all of space just by tiling space with squares
+
+203
+00:14:58,940 --> 00:15:03,760
+and then chaining a bunch of Hilbert curves together in a spiraling pattern of tiles,
+
+204
+00:15:03,760 --> 00:15:07,200
+connecting the end of one tile to the start of a new tile with an added little stretch
+
+205
+00:15:07,200 --> 00:15:09,820
+of line if you need to.
+
+206
+00:15:09,820 --> 00:15:14,320
+You can think of the first tile as coming from the interval from 0 to 1, the second
+
+207
+00:15:14,320 --> 00:15:18,960
+tile as coming from the interval from 1 to 2, and so on.
+
+208
+00:15:18,960 --> 00:15:25,600
+So the entire positive real number line is getting mapped into all of 2D space.
+
+209
+00:15:25,600 --> 00:15:27,680
+Take a moment to let that fact sink in.
+
+210
+00:15:27,680 --> 00:15:34,200
+A line, the platonic form of thinness itself, can wander through an infinitely extending
+
+211
+00:15:34,200 --> 00:15:43,920
+and richly dense space and hit every single point.
+
+212
+00:15:43,920 --> 00:15:49,960
+Notice the core property that made pseudo-Hilbert curves useful in both the sound-to-sight application
+
+213
+00:15:49,960 --> 00:15:55,860
+and in their infinite origins is that points on the curve move around less and less as
+
+214
+00:15:55,860 --> 00:15:58,860
+you increase the order of those curves.
+
+215
+00:15:58,860 --> 00:16:02,940
+While translating images to sound, this was useful because it means upgrading to higher
+
+216
+00:16:02,940 --> 00:16:07,700
+resolutions doesn't require retraining your senses all over again.
+
+217
+00:16:07,700 --> 00:16:12,780
+For mathematicians interested in filling continuous space, this property is what ensured that
+
+218
+00:16:12,780 --> 00:16:19,140
+talking about the limit of a sequence of curves was a meaningful thing to do.
+
+219
+00:16:19,140 --> 00:16:23,860
+And this connection here between the infinite and finite worlds seems to be more of a rule
+
+220
+00:16:23,860 --> 00:16:26,060
+in math than an exception.
+
+221
+00:16:26,060 --> 00:16:30,600
+Another example that several astute commenters on the Inventing Math video pointed out is
+
+222
+00:16:30,600 --> 00:16:35,540
+the connection between the divergent sum of all powers of 2 and the way that the number
+
+223
+00:16:35,540 --> 00:16:38,980
+negative 1 is represented in computers with bits.
+
+224
+00:16:38,980 --> 00:16:45,300
+It's not so much that the infinite result is directly useful, but instead the same patterns
+
+225
+00:16:45,300 --> 00:16:51,600
+and constructs that are used to define and prove infinite facts have finite analogs,
+
+226
+00:16:51,600 --> 00:16:55,280
+and these finite analogs are useful.
+
+227
+00:16:55,280 --> 00:16:58,400
+But the connection is often deeper than a mere analogy.
+
+228
+00:16:58,400 --> 00:17:03,520
+Many theorems about an infinite object are often equivalent to some theorem regarding
+
+229
+00:17:03,520 --> 00:17:06,280
+a family of finite objects.
+
+230
+00:17:06,280 --> 00:17:11,040
+For example, if during your sound-to-sight project you were to sit down and really formalize
+
+231
+00:17:11,040 --> 00:17:16,920
+what it means for your curve to stay stable as you increase camera resolution, you would
+
+232
+00:17:16,920 --> 00:17:21,600
+end up effectively writing the definition of what it means for a sequence of curves
+
+233
+00:17:21,600 --> 00:17:23,440
+to have a limit.
+
+234
+00:17:23,440 --> 00:17:29,280
+In fact, a statement about some infinite object, whether that's a sequence or a fractal, can
+
+235
+00:17:29,280 --> 00:17:35,120
+usually be viewed as a particularly clean way to encapsulate a truth about a family
+
+236
+00:17:35,120 --> 00:17:37,500
+of finite objects.
+
+237
+00:17:37,500 --> 00:17:41,840
+The lesson to take away here is that even when a statement seems very far removed from
+
+238
+00:17:41,840 --> 00:17:46,280
+reality, you should always be willing to look under the hood and at the nuts and bolts of
+
+239
+00:17:46,320 --> 00:17:48,040
+what's really being said.
+
+240
+00:17:48,040 --> 00:17:53,540
+Who knows, you might find insights for representing numbers from divergent sums, or for seeing
+
+241
+00:17:53,540 --> 00:17:55,540
+with your ears from filling space.
+

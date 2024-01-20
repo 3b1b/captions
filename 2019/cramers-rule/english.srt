@@ -1,0 +1,524 @@
+1
+00:00:00,000 --> 00:00:15,840
+In a previous video I've talked about linear systems of equations, and I sort of brushed
+
+2
+00:00:15,840 --> 00:00:19,720
+aside the discussion of actually computing solutions to these systems.
+
+3
+00:00:19,720 --> 00:00:23,520
+And while it's true that number crunching is typically something we leave to the computers,
+
+4
+00:00:23,520 --> 00:00:27,340
+digging into some of these computational methods is a good litmus test for whether or not you
+
+5
+00:00:27,340 --> 00:00:31,380
+actually understand what's going on, since that's really where the rubber meets the road.
+
+6
+00:00:31,380 --> 00:00:36,380
+Here I want to describe the geometry behind a certain method for computing solutions to
+
+7
+00:00:36,380 --> 00:00:42,420
+these systems, known as Cramer's rule. The relevant background here is understanding determinants,
+
+8
+00:00:42,420 --> 00:00:45,940
+a little bit of dot products, and of course linear systems of equations,
+
+9
+00:00:45,940 --> 00:00:50,380
+so be sure to watch the relevant videos on those topics if you're unfamiliar or rusty.
+
+10
+00:00:50,380 --> 00:00:55,300
+But first I should say up front that this Cramer's rule is not actually the best way for
+
+11
+00:00:55,500 --> 00:00:57,460
+computing solutions to linear systems of equations.
+
+12
+00:00:57,460 --> 00:01:03,060
+Gaussian elimination, for example, will always be faster. So why learn it?
+
+13
+00:01:03,060 --> 00:01:07,980
+Well think of it as a sort of cultural excursion. It's a helpful exercise in deepening your
+
+14
+00:01:07,980 --> 00:01:12,860
+knowledge of the theory behind these systems. Wrapping your mind around this concept is going
+
+15
+00:01:12,860 --> 00:01:17,260
+to help consolidate ideas from linear algebra, like the determinant and linear systems,
+
+16
+00:01:17,260 --> 00:01:21,980
+by seeing how they relate to each other. Also, from a purely artistic standpoint,
+
+17
+00:01:21,980 --> 00:01:26,900
+the ultimate result here is just really pretty to think about, way more so than Gaussian elimination.
+
+18
+00:01:26,900 --> 00:01:31,820
+Alright, so the setup here will be some linear system of equations,
+
+19
+00:01:31,820 --> 00:01:37,820
+say with two unknowns, x and y, and two equations. In principle, everything we're talking about
+
+20
+00:01:37,820 --> 00:01:41,900
+will also work for systems with larger number of unknowns and the same number of equations,
+
+21
+00:01:41,900 --> 00:01:45,460
+but for simplicity a smaller example is just nicer to hold in our heads.
+
+22
+00:01:45,460 --> 00:01:50,220
+So as I talked about in a previous video, you can think of this setup geometrically,
+
+23
+00:01:50,460 --> 00:01:57,100
+as a certain known matrix transforming an unknown vector, x, y, where you know what the output is
+
+24
+00:01:57,100 --> 00:02:02,860
+going to be, in this case, negative 4, negative 2. Remember, the columns of this matrix are telling
+
+25
+00:02:02,860 --> 00:02:09,100
+you how that matrix acts as a transform, each one telling you where the basis vectors of the input
+
+26
+00:02:09,100 --> 00:02:16,700
+space land. So what we have is a sort of puzzle. Which input vector, x, y, is going to land on this
+
+27
+00:02:16,700 --> 00:02:22,700
+output, negative 4, negative 2? One way to think about our little puzzle here is that we know the
+
+28
+00:02:22,700 --> 00:02:28,540
+given output vector is some linear combination of the columns of the matrix, x times the vector
+
+29
+00:02:28,540 --> 00:02:33,500
+where i-hat lands plus y times the vector where j-hat lands, but what we want is to figure out
+
+30
+00:02:33,500 --> 00:02:38,940
+what exactly that linear combination should be. Remember, the type of answer you get here can
+
+31
+00:02:38,940 --> 00:02:44,060
+depend on whether or not the transformation squishes all of space into a lower dimension,
+
+32
+00:02:44,060 --> 00:02:49,740
+that is, if it has a zero determinant. In that case, either none of the inputs land on our given
+
+33
+00:02:49,740 --> 00:02:58,620
+output, or there's a whole bunch of inputs landing on that output. But for this video, we'll limit
+
+34
+00:02:58,620 --> 00:03:04,140
+our view to the case of a non-zero determinant, meaning the outputs of this transformation still
+
+35
+00:03:04,140 --> 00:03:10,060
+span the full in-dimensional space that it started in. Every input lands on one and only one output,
+
+36
+00:03:10,060 --> 00:03:16,460
+and every output has one and only one input. As a first pass, let me show you an idea that's
+
+37
+00:03:16,460 --> 00:03:21,900
+wrong but in the right direction. The x-coordinate of this mystery input vector is what you get by
+
+38
+00:03:21,900 --> 00:03:28,300
+taking its dot product with the first basis vector, 1, 0. Likewise, the y-coordinate is what you get by
+
+39
+00:03:28,300 --> 00:03:34,860
+dotting it with the second basis vector, 0, 1. So maybe you hope that after the transformation,
+
+40
+00:03:34,860 --> 00:03:39,900
+the dot products with the transformed version of the mystery vector with the transformed version
+
+41
+00:03:40,780 --> 00:03:46,780
+will also be these coordinates, x and y. That'd be fantastic, because we know what the transformed
+
+42
+00:03:46,780 --> 00:03:54,460
+version of each of those vectors are. There's just one problem with it, it's not at all true.
+
+43
+00:03:54,460 --> 00:03:59,260
+For most linear transformations, the dot product before and after the transformation will look
+
+44
+00:03:59,260 --> 00:04:04,060
+very different. For example, you could have two vectors generally pointing in the same direction
+
+45
+00:04:04,060 --> 00:04:08,780
+with a positive dot product, which get pulled apart from each other during the transformation
+
+46
+00:04:08,860 --> 00:04:13,500
+in such a way that they end up having a negative dot product. Likewise, things that start off
+
+47
+00:04:13,500 --> 00:04:19,020
+perpendicular with dot product 0, like the two basis vectors, quite often don't stay perpendicular
+
+48
+00:04:19,020 --> 00:04:23,900
+to each other after the transformation, that is, they don't preserve that 0 dot product.
+
+49
+00:04:23,900 --> 00:04:27,340
+And looking at the example I just showed, dot products certainly aren't preserved,
+
+50
+00:04:27,340 --> 00:04:30,220
+they tend to get bigger since most vectors are getting stretched out.
+
+51
+00:04:30,940 --> 00:04:36,300
+In fact, worthwhile side note here, transformations which do preserve dot products are special enough
+
+52
+00:04:36,300 --> 00:04:41,500
+to have their own name, orthonormal transformations. These are the ones that leave all of the basis
+
+53
+00:04:41,500 --> 00:04:46,700
+vectors perpendicular to each other and still with unit lengths. You often think of these as
+
+54
+00:04:46,700 --> 00:04:52,220
+the rotation matrices, they correspond to rigid motion with no stretching or squishing or morphing.
+
+55
+00:04:52,860 --> 00:04:58,460
+Solving a linear system with an orthonormal matrix is actually super easy. Because dot products are
+
+56
+00:04:58,460 --> 00:05:03,820
+preserved, taking the dot product between the output vector and all the columns of your matrix
+
+57
+00:05:03,820 --> 00:05:08,460
+will be the same as taking the dot product between the mystery input vector and all of the
+
+58
+00:05:08,460 --> 00:05:14,460
+basis vectors, which is the same as just finding the coordinates of that mystery input. So in that
+
+59
+00:05:14,460 --> 00:05:19,820
+very special case, x would be the dot product of the first column with the output vector,
+
+60
+00:05:19,820 --> 00:05:23,740
+and y would be the dot product of the second column with the output vector.
+
+61
+00:05:27,020 --> 00:05:31,260
+Why am I bringing this up when this idea breaks down for almost all linear systems?
+
+62
+00:05:31,260 --> 00:05:36,060
+Well, it points us in a direction of something to look for. Is there an alternate geometric
+
+63
+00:05:36,060 --> 00:05:40,940
+understanding for the coordinates of our input vector that remains unchanged after the
+
+64
+00:05:40,940 --> 00:05:45,980
+transformation? If your mind has been mulling over determinants, you might think of the following
+
+65
+00:05:45,980 --> 00:05:52,700
+clever idea. Take the parallelogram defined by the first basis vector, i-hat, and the mystery input
+
+66
+00:05:52,700 --> 00:05:59,820
+vector, xy. The area of this parallelogram is the base, 1, times the height perpendicular to that
+
+67
+00:05:59,820 --> 00:06:05,980
+base, which is the y-coordinate of that input vector. So the area of that parallelogram is
+
+68
+00:06:05,980 --> 00:06:11,260
+a sort of screwy roundabout way to describe the vector's y-coordinate. It's a wacky way to talk
+
+69
+00:06:11,260 --> 00:06:16,060
+about coordinates, but run with me. And actually, to be a little more accurate, you should think of
+
+70
+00:06:16,060 --> 00:06:21,580
+this as the signed area of that parallelogram, in the sense described in the determinant video.
+
+71
+00:06:22,220 --> 00:06:27,660
+That way, a vector with a negative y-coordinate would correspond to a negative area for this
+
+72
+00:06:27,660 --> 00:06:32,460
+parallelogram, at least if you think of i-hat as in some sense being the first out of these two
+
+73
+00:06:32,460 --> 00:06:37,260
+vectors defining the parallelogram. And symmetrically, if you look at the parallelogram
+
+74
+00:06:37,260 --> 00:06:43,180
+spanned by our mystery input vector and the second basis, j-hat, its area is going to be the
+
+75
+00:06:43,180 --> 00:06:48,540
+x-coordinate of that mystery vector. Again, it's a strange way to represent the x-coordinate, but
+
+76
+00:06:48,540 --> 00:06:52,540
+you'll see what it buys us in a moment. And just to make sure it's clear how this might generalize,
+
+77
+00:06:52,540 --> 00:06:56,620
+let's look in three dimensions. Ordinarily, the way you might think about one of a vector's
+
+78
+00:06:56,620 --> 00:07:01,660
+coordinates, say its z-coordinate, would be to take its dot product with the third standard
+
+79
+00:07:01,660 --> 00:07:07,660
+basis vector, often called k-hat. But an alternate geometric interpretation would be to consider the
+
+80
+00:07:07,660 --> 00:07:13,900
+parallelepiped that it creates with the other two basis vectors, i-hat and j-hat. If you think of
+
+81
+00:07:13,900 --> 00:07:20,540
+the square with area 1 spanned by i-hat and j-hat as the base of this whole shape, then its volume
+
+82
+00:07:20,540 --> 00:07:25,500
+is the same as its height, which is the third coordinate of our vector. And likewise, the wacky
+
+83
+00:07:25,500 --> 00:07:29,740
+way to think about the other coordinates of the vector would be to form a parallelepiped using
+
+84
+00:07:29,740 --> 00:07:34,780
+the vector and then all of the basis vectors other than the one corresponding to the direction you're
+
+85
+00:07:34,780 --> 00:07:39,580
+looking for. Then the volume of this gives you the coordinate. Or rather, we should be talking about
+
+86
+00:07:39,580 --> 00:07:44,220
+the signed volume of parallelepiped, in the sense described in the determinant video using the
+
+87
+00:07:44,220 --> 00:07:49,580
+right-hand rule. So the order in which you list these three vectors matters. That way, negative
+
+88
+00:07:49,580 --> 00:07:55,500
+coordinates still make sense. Okay, so why think of coordinates as areas and volumes like this?
+
+89
+00:07:55,500 --> 00:08:01,100
+Well, as you apply some sort of matrix transformation, the areas of these parallelograms,
+
+90
+00:08:01,100 --> 00:08:05,740
+well, they don't stay the same, they might get scaled up or down. But, and this is the key idea
+
+91
+00:08:05,740 --> 00:08:11,500
+of determinants, all of the areas get scaled by the same amount, namely the determinant of our
+
+92
+00:08:11,500 --> 00:08:17,100
+transformation matrix. For example, if you look at the parallelogram spanned by the vector where your
+
+93
+00:08:17,100 --> 00:08:22,460
+first basis vector lands, which is the first column of the matrix, and the transformed version
+
+94
+00:08:22,460 --> 00:08:28,620
+of xy, what is its area? Well, this is the transformed version of the parallelogram we
+
+95
+00:08:28,620 --> 00:08:33,660
+were looking at earlier, the one whose area was the y-coordinate of the mystery input vector.
+
+96
+00:08:33,660 --> 00:08:39,180
+So its area is just going to be the determinant of the transformation multiplied by that y-coordinate.
+
+97
+00:08:39,980 --> 00:08:46,540
+So that means we can solve for y by taking the area of this new parallelogram in the output space,
+
+98
+00:08:46,540 --> 00:08:52,380
+divided by the determinant of the full transformation. And how do you get that area?
+
+99
+00:08:53,020 --> 00:08:57,340
+Well, we know the coordinates for where the mystery input vector lands, that's the whole
+
+100
+00:08:57,340 --> 00:09:03,260
+point of a linear system of equations. So what you might do is create a new matrix whose first column
+
+101
+00:09:03,260 --> 00:09:09,100
+is the same as that of our matrix, but whose second column is the output vector, and then you
+
+102
+00:09:09,100 --> 00:09:15,500
+take its determinant. So look at that, just using data from the output of the transformation,
+
+103
+00:09:15,500 --> 00:09:19,180
+namely the columns of the matrix and the coordinates of our output vector,
+
+104
+00:09:19,180 --> 00:09:23,980
+we can recover the y-coordinate of the mystery input vector, which is halfway to solving the
+
+105
+00:09:23,980 --> 00:09:29,580
+system. Likewise, the same idea can give us the x-coordinate. Look at the parallelogram we defined
+
+106
+00:09:29,580 --> 00:09:35,180
+earlier, which encodes the x-coordinate of the mystery input vector, spanned by that vector and
+
+107
+00:09:35,180 --> 00:09:41,900
+j-hat. The transformed version of this guy is spanned by the output vector and the second column
+
+108
+00:09:41,900 --> 00:09:46,860
+of the matrix, and its area will have been multiplied by the determinant of that matrix.
+
+109
+00:09:47,500 --> 00:09:52,220
+So to solve for x, you can take this new area divided by the determinant of the full
+
+110
+00:09:52,220 --> 00:09:57,260
+transformation. And similar to what we did before, you can compute the area of that output
+
+111
+00:09:57,260 --> 00:10:03,260
+parallelogram by creating a new matrix whose first column is the output vector and whose second
+
+112
+00:10:03,260 --> 00:10:08,540
+column is the same as the original matrix. So again, just using data from the output space,
+
+113
+00:10:08,540 --> 00:10:12,620
+the numbers we see in our original linear system, we can solve for what x must be.
+
+114
+00:10:13,340 --> 00:10:18,380
+This formula for finding the solutions to a linear system of equations is known as Cramer's rule.
+
+115
+00:10:19,020 --> 00:10:23,660
+Here, just to sanity check ourselves, plug in some numbers here. The determinant of that top,
+
+116
+00:10:23,660 --> 00:10:30,140
+altered matrix is 4 plus 2, which is 6, and the bottom determinant is 2, so the x-coordinate
+
+117
+00:10:30,140 --> 00:10:35,420
+should be 3. And indeed, looking back at the input vector we started with, the x-coordinate is 3.
+
+118
+00:10:36,140 --> 00:10:40,940
+Likewise, Cramer's rule suggests that the y-coordinate should be 4 divided by 2,
+
+119
+00:10:40,940 --> 00:10:46,220
+or 2, and that is the y-coordinate of the input vector we were starting with.
+
+120
+00:10:47,260 --> 00:10:52,300
+The case with 3 dimensions or more is similar, and I highly recommend you take a moment to pause
+
+121
+00:10:52,300 --> 00:10:57,420
+and think through it yourself. Here, I'll give you a little bit of momentum. What we have is a
+
+122
+00:10:57,420 --> 00:11:03,740
+known transformation given by some 3x3 matrix, and a known output vector given by the right side of
+
+123
+00:11:03,740 --> 00:11:10,060
+our linear system, and we want to know what input lands on that output. And if you think of, say,
+
+124
+00:11:10,060 --> 00:11:15,340
+the z-coordinate of that input vector as the volume of that special parallelepiped we were
+
+125
+00:11:15,340 --> 00:11:21,580
+looking at earlier, spanned by i-hat, j-hat, and the mystery input vector, what happens to that
+
+126
+00:11:21,580 --> 00:11:27,420
+volume after the transformation? And what are the various ways you can compute that volume?
+
+127
+00:11:28,140 --> 00:11:32,060
+Really, pause and take a moment to think through the details of generalizing this to higher
+
+128
+00:11:32,060 --> 00:11:36,940
+dimensions, finding an expression for each coordinate of the solution to a larger linear
+
+129
+00:11:36,940 --> 00:11:42,060
+system. Thinking through more general cases like this and convincing yourself that it works and
+
+130
+00:11:42,060 --> 00:11:46,780
+why it works is where all of the learning really happens, much more so than listening to some dude
+
+131
+00:11:46,780 --> 00:11:49,660
+on YouTube walk you through the same reasoning again.
+

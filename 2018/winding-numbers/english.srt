@@ -1,0 +1,1336 @@
+1
+00:00:00,000 --> 00:00:06,720
+There's two things here, the main topic and the meta topic.
+
+2
+00:00:06,720 --> 00:00:10,440
+The main topic is going to be this really neat algorithm for solving two-dimensional
+
+3
+00:00:10,440 --> 00:00:14,900
+equations, things that have two unknown real numbers, or also those involving a single
+
+4
+00:00:14,900 --> 00:00:17,420
+unknown which is a complex number.
+
+5
+00:00:17,420 --> 00:00:21,840
+So for example, if you wanted to find the complex roots of a polynomial, or maybe some
+
+6
+00:00:21,840 --> 00:00:25,960
+of those million dollar zeros of the Riemann zeta function, this algorithm would do it
+
+7
+00:00:25,960 --> 00:00:26,960
+for you.
+
+8
+00:00:27,000 --> 00:00:30,520
+And this method is super pretty, since a lot of colors are involved.
+
+9
+00:00:30,520 --> 00:00:34,960
+And more importantly, the core underlying idea applies to all sorts of math well beyond
+
+10
+00:00:34,960 --> 00:00:39,600
+this algorithm for solving equations, including a bit of topology, which I'll talk about
+
+11
+00:00:39,600 --> 00:00:40,600
+afterwards.
+
+12
+00:00:40,600 --> 00:00:44,880
+But what really makes this worth 20 minutes or so of your time is that it illustrates
+
+13
+00:00:44,880 --> 00:00:50,000
+a lesson much more generally useful throughout math, which is try to define constructs that
+
+14
+00:00:50,000 --> 00:00:52,120
+compose nicely with each other.
+
+15
+00:00:52,120 --> 00:00:55,460
+You'll see what I mean by that as the story progresses.
+
+16
+00:00:55,460 --> 00:00:59,460
+To motivate the case with functions that have 2d inputs and 2d outputs, let's start
+
+17
+00:00:59,460 --> 00:01:05,100
+off simpler, with functions that just take in a real number and spit out a real number.
+
+18
+00:01:05,100 --> 00:01:10,060
+If you want to know when a function f of x equals some other function g of x, you might
+
+19
+00:01:10,060 --> 00:01:14,260
+think of this as searching for when the graphs of those functions intersect, right?
+
+20
+00:01:14,260 --> 00:01:19,340
+I mean, that gives you an input where both functions have the same output.
+
+21
+00:01:19,340 --> 00:01:24,520
+To take a very simple example, imagine f of x is x squared, and g of x is the constant
+
+22
+00:01:24,520 --> 00:01:25,520
+function 2.
+
+23
+00:01:25,520 --> 00:01:29,620
+In other words, you want to find the square root of 2.
+
+24
+00:01:29,620 --> 00:01:33,620
+Even if you know almost nothing about finding square roots, you can probably see that 1
+
+25
+00:01:33,620 --> 00:01:39,260
+squared is less than 2, and 2 squared is bigger than 2, so you realize, ah, there's going
+
+26
+00:01:39,260 --> 00:01:42,640
+to be some solution in between those two values.
+
+27
+00:01:42,640 --> 00:01:46,740
+And then if you wanted to narrow it down further, maybe you try squaring the halfway point,
+
+28
+00:01:46,740 --> 00:01:47,740
+1.5.
+
+29
+00:01:47,740 --> 00:01:53,060
+This comes out to be 2.25, a little too high, so you'd focus on the region between 1 and
+
+30
+00:01:53,060 --> 00:01:54,940
+1.5.
+
+31
+00:01:54,940 --> 00:01:58,560
+And so on, you can probably see how this would keep going, you'd keep computing at the
+
+32
+00:01:58,560 --> 00:02:05,540
+midpoint and then chopping your search space in half.
+
+33
+00:02:05,540 --> 00:02:08,340
+Another way to think about this, which is going to make it easier for us once we get
+
+34
+00:02:08,340 --> 00:02:13,560
+up to higher dimensions, is to instead focus on the equivalent question for when the difference
+
+35
+00:02:13,560 --> 00:02:16,300
+between these two functions is zero.
+
+36
+00:02:16,380 --> 00:02:20,700
+In those terms, we found a region of inputs where that difference was negative on one
+
+37
+00:02:20,700 --> 00:02:24,020
+end, and it was positive on another end.
+
+38
+00:02:24,020 --> 00:02:28,660
+We split it into two, and the half we narrowed our attention to was the one where the outermost
+
+39
+00:02:28,660 --> 00:02:31,600
+points had varying signs.
+
+40
+00:02:31,600 --> 00:02:36,020
+Like this, we were able to keep going forever, taking each region with varying signs on the
+
+41
+00:02:36,020 --> 00:02:41,320
+border, finding a smaller such region among its halves, knowing that ultimately we have
+
+42
+00:02:41,320 --> 00:02:46,260
+to be narrowing in on a point which is going to be exactly zero.
+
+43
+00:02:46,260 --> 00:02:50,480
+In short, solving equations can always be framed as finding when a certain function
+
+44
+00:02:50,480 --> 00:02:55,780
+is equal to zero, and to do that, we have this heuristic, if f is positive at one point
+
+45
+00:02:55,780 --> 00:03:00,420
+and negative at another point, you can find someplace in between where it's zero, at
+
+46
+00:03:00,420 --> 00:03:03,980
+least if everything changes smoothly with no sudden jumps.
+
+47
+00:03:03,980 --> 00:03:08,060
+The amazing thing I want to show you is that you can extend this kind of thinking into
+
+48
+00:03:08,060 --> 00:03:13,220
+two-dimensional equations, equations between functions whose inputs and outputs are both
+
+49
+00:03:13,220 --> 00:03:14,940
+two-dimensional.
+
+50
+00:03:14,940 --> 00:03:19,540
+For example, complex numbers are 2D, and this tool we're developing is perfect for finding
+
+51
+00:03:19,540 --> 00:03:21,780
+solutions to complex equations.
+
+52
+00:03:21,780 --> 00:03:25,700
+Now, since we're going to be talking about these 2D functions so much, let's take a
+
+53
+00:03:25,700 --> 00:03:29,380
+brief side step and consider how we illustrate these.
+
+54
+00:03:29,380 --> 00:03:34,700
+Graphing a function with a 2D input and 2D output would require four dimensions, and
+
+55
+00:03:34,700 --> 00:03:39,220
+that's not going to work so well in our 3D world on our 2D screens, but we still have
+
+56
+00:03:39,220 --> 00:03:41,140
+a couple good options.
+
+57
+00:03:41,140 --> 00:03:46,020
+One is to just look at both the input space and output space side by side.
+
+58
+00:03:46,020 --> 00:03:51,540
+Each point in the input space moves to a particular point in the output space, and I can show
+
+59
+00:03:51,540 --> 00:03:57,060
+how moving around that input point corresponds to certain movements in the output space.
+
+60
+00:03:57,060 --> 00:04:01,460
+All of the functions we consider will be continuous, in the sense that small little changes to
+
+61
+00:04:01,460 --> 00:04:05,820
+the input only correspond to small little changes in the output, there's no sudden
+
+62
+00:04:05,820 --> 00:04:07,460
+jumps.
+
+63
+00:04:07,460 --> 00:04:12,020
+Another option we have is to imagine the arrow from the origin of the output space to that
+
+64
+00:04:12,020 --> 00:04:17,380
+output point, and to attach a miniature version of that arrow to the input point.
+
+65
+00:04:17,380 --> 00:04:22,340
+This can give us a sense, at a glance, for where a given input point goes, or where many
+
+66
+00:04:22,340 --> 00:04:27,580
+different input points go by drawing the full vector field.
+
+67
+00:04:27,580 --> 00:04:30,740
+And unfortunately when you do this at a lot of points it can get pretty cluttered, so
+
+68
+00:04:30,740 --> 00:04:34,340
+here let me make all of the arrows the same size, and what this means is we can get a
+
+69
+00:04:34,340 --> 00:04:37,900
+sense of the direction of each output point.
+
+70
+00:04:37,900 --> 00:04:41,660
+But perhaps the prettiest way to illustrate two-dimensional functions, and the one we'll
+
+71
+00:04:41,660 --> 00:04:47,400
+be using most this video, is to associate each point in that output space with a color.
+
+72
+00:04:47,400 --> 00:04:52,180
+Here we've used hues, that is where the color falls along a rainbow or a color wheel,
+
+73
+00:04:52,180 --> 00:04:57,020
+to correspond to the direction away from the origin, and we're using darkness or brightness
+
+74
+00:04:57,020 --> 00:05:00,060
+to correspond to the distance from the origin.
+
+75
+00:05:00,060 --> 00:05:05,720
+For example, focusing on this array of outputs, all of these points are red, but the ones
+
+76
+00:05:05,720 --> 00:05:10,340
+closer to the origin are a little darker, and the ones farther away are a little brighter.
+
+77
+00:05:10,340 --> 00:05:15,360
+And focusing on this array of outputs, all of the points are green, and again, closer
+
+78
+00:05:15,360 --> 00:05:18,980
+to the origin means darker, farther away means lighter.
+
+79
+00:05:18,980 --> 00:05:24,300
+And so on, all we're doing here is assigning a specific color to each direction, all changing
+
+80
+00:05:24,300 --> 00:05:25,300
+continuously.
+
+81
+00:05:25,300 --> 00:05:29,100
+You might notice the darkness and brightness differences here are pretty subtle, but for
+
+82
+00:05:29,140 --> 00:05:33,940
+this video, all we care about is the direction of outputs, not the magnitudes, the hues,
+
+83
+00:05:33,940 --> 00:05:35,300
+not the brightness.
+
+84
+00:05:35,300 --> 00:05:39,160
+The one important thing about brightness for you to notice is that near the origin, which
+
+85
+00:05:39,160 --> 00:05:44,440
+has no particular direction, all of the colors fade to black.
+
+86
+00:05:44,440 --> 00:05:48,820
+So for thinking about functions, now that we've decided on a color for each output,
+
+87
+00:05:48,820 --> 00:05:54,020
+we can visualize 2D functions by coloring each point in the input space based on the
+
+88
+00:05:54,020 --> 00:05:57,860
+color of the point where it lands in the output space.
+
+89
+00:05:57,860 --> 00:06:02,340
+I like to imagine many different points from that input space hopping over to their corresponding
+
+90
+00:06:02,340 --> 00:06:06,340
+outputs in the output space, then getting painted based on the color of the point where
+
+91
+00:06:06,340 --> 00:06:11,820
+they land, and then hopping back to where they came from in the input space.
+
+92
+00:06:11,820 --> 00:06:15,700
+Doing this for every point in the input space, you can get a sense just by looking at that
+
+93
+00:06:15,700 --> 00:06:19,140
+input space for roughly where the function takes each point.
+
+94
+00:06:19,140 --> 00:06:23,880
+For example, this stripe of pink points on the left tells us that all of those points
+
+95
+00:06:23,920 --> 00:06:30,000
+get mapped somewhere in the pink direction, that lower left of the output space.
+
+96
+00:06:30,000 --> 00:06:34,120
+Also those three points which are black with lots of colors around them are the ones that
+
+97
+00:06:34,120 --> 00:06:37,120
+go to zero.
+
+98
+00:06:37,120 --> 00:06:46,120
+Alright, so just like the 1D case, solving equations of 2D functions can always be reframed
+
+99
+00:06:46,120 --> 00:06:49,780
+by asking when a certain function is equal to zero.
+
+100
+00:06:49,780 --> 00:06:54,820
+So that's our challenge right now, create an algorithm that finds which input points
+
+101
+00:06:54,820 --> 00:07:00,900
+of a given 2D function go to zero.
+
+102
+00:07:00,900 --> 00:07:04,560
+You might point out that if you're looking at a color map like this by seeing those black
+
+103
+00:07:04,560 --> 00:07:08,700
+dots, you already know where the zeros of the function are.
+
+104
+00:07:08,700 --> 00:07:11,460
+So does that count?
+
+105
+00:07:11,460 --> 00:07:15,100
+Keep in mind that to create a diagram like this, we've had the computer compute the
+
+106
+00:07:15,100 --> 00:07:21,020
+function at all the pixels on the plane, but our goal is to find a more efficient algorithm
+
+107
+00:07:21,020 --> 00:07:25,380
+that only requires computing the function at as few points as possible, only having
+
+108
+00:07:25,380 --> 00:07:29,600
+a limited view of the colors, so to speak.
+
+109
+00:07:29,600 --> 00:07:33,940
+And also from a more theoretical standpoint, it'd be nice to have a general construct
+
+110
+00:07:33,940 --> 00:07:38,300
+that tells us the conditions for whether or not a zero exists inside a given region.
+
+111
+00:07:38,300 --> 00:07:43,700
+Remember, in one dimension the main insight was that if a continuous function is positive
+
+112
+00:07:43,700 --> 00:07:48,920
+at one point and negative at another, somewhere in between it must be zero.
+
+113
+00:07:48,920 --> 00:07:50,960
+So how do we extend that into two dimensions?
+
+114
+00:07:50,960 --> 00:07:55,180
+We need some sort of analog of talking about signs.
+
+115
+00:07:55,180 --> 00:07:59,140
+One way to think about what signs even are is directions.
+
+116
+00:07:59,140 --> 00:08:02,620
+Positive means you're pointing to the right along the number line, and negative means
+
+117
+00:08:02,620 --> 00:08:04,240
+you're pointing to the left.
+
+118
+00:08:04,240 --> 00:08:08,800
+Two-dimensional quantities also have direction, but for them the options are much wider, they
+
+119
+00:08:08,800 --> 00:08:12,780
+can point anywhere along a whole circle of possibilities.
+
+120
+00:08:12,780 --> 00:08:16,860
+So the same way that in one dimension we were asking whether a given function is positive
+
+121
+00:08:16,860 --> 00:08:22,860
+or negative on the boundary of a range, which is just two points, for 2d functions we're
+
+122
+00:08:22,860 --> 00:08:28,200
+going to be looking at the boundary of a region, which is a loop, and ask about the direction
+
+123
+00:08:28,200 --> 00:08:33,760
+of the function's output along that boundary.
+
+124
+00:08:33,760 --> 00:08:39,220
+For example, we see that along this loop around this zero, the output goes through every possible
+
+125
+00:08:39,220 --> 00:08:43,460
+direction, all the colors of the rainbow, red, yellow, green, blue, back to red, and
+
+126
+00:08:43,460 --> 00:08:45,820
+everything in between along the way.
+
+127
+00:08:45,820 --> 00:08:50,640
+But along this loop over here, with no zeros inside of it, the output doesn't go through
+
+128
+00:08:50,640 --> 00:08:55,420
+every color, it goes through some of the orangish ones, but never, say, green or blue.
+
+129
+00:08:55,420 --> 00:08:59,320
+And this is promising, it looks a lot like how things worked in one dimension.
+
+130
+00:08:59,320 --> 00:09:03,540
+Maybe in the same way that if a 1d function takes both possible signs on the boundary
+
+131
+00:09:03,540 --> 00:09:09,700
+of a 1d region, there was a zero somewhere inside, we might hypothesize that if a 2d
+
+132
+00:09:09,700 --> 00:09:15,140
+function hits outputs of all possible directions, all possible colors, along the boundary of
+
+133
+00:09:15,140 --> 00:09:20,980
+a 2d region, then somewhere inside that region it must go to zero.
+
+134
+00:09:20,980 --> 00:09:25,100
+So that's our guess, and take a moment to think about if this should be true, and if
+
+135
+00:09:25,100 --> 00:09:27,660
+so why.
+
+136
+00:09:27,660 --> 00:09:32,020
+If we start thinking about a tiny loop around some input point, we know that since everything
+
+137
+00:09:32,020 --> 00:09:36,660
+is continuous, our function takes it to some tiny loop near the corresponding output.
+
+138
+00:09:36,660 --> 00:09:41,140
+But look, for most tiny loops, the output varies in color.
+
+139
+00:09:41,140 --> 00:09:46,300
+If you pick any output point other than zero, and draw a sufficiently tight loop near it,
+
+140
+00:09:46,300 --> 00:09:49,860
+the loop's colors are all going to be about the same color as that point.
+
+141
+00:09:49,860 --> 00:09:55,980
+A tight loop over here is all bluish, a tight loop over here is all yellowish, you certainly
+
+142
+00:09:55,980 --> 00:09:58,440
+aren't going to get every color of the rainbow.
+
+143
+00:09:58,440 --> 00:10:03,580
+The only point where you can tighten loops around it while still getting all the colors
+
+144
+00:10:03,580 --> 00:10:07,120
+is the colorless origin, zero itself.
+
+145
+00:10:07,120 --> 00:10:11,680
+So it is indeed the case that if you have loops going through every color of the rainbow,
+
+146
+00:10:11,680 --> 00:10:15,960
+tightening and tightening, narrowing in on a point, then that point must in fact be a
+
+147
+00:10:15,960 --> 00:10:17,360
+zero.
+
+148
+00:10:17,360 --> 00:10:22,360
+And so let's set up a 2d equation solver just like our one-dimensional equation solver.
+
+149
+00:10:22,360 --> 00:10:27,200
+When we find a large region whose border goes through every color, split it into two, and
+
+150
+00:10:27,200 --> 00:10:30,640
+then look at the colors on the boundary of each half.
+
+151
+00:10:30,640 --> 00:10:34,920
+In the example shown here, the border on the left half doesn't go through all colors,
+
+152
+00:10:34,920 --> 00:10:39,080
+there are no points that map to the orangeish yellowish directions, for example.
+
+153
+00:10:39,080 --> 00:10:43,480
+So I'll grey out this area as a way of saying we don't want to search it any further.
+
+154
+00:10:43,480 --> 00:10:47,840
+The right half does go through all the colors, spends a lot of time in the green direction,
+
+155
+00:10:47,840 --> 00:10:51,120
+then passes through yellow orange red, as well as blue violet pink.
+
+156
+00:10:51,120 --> 00:10:56,060
+Now remember, what that means is that points of this boundary get mapped to outputs of
+
+157
+00:10:56,060 --> 00:10:57,800
+all possible directions.
+
+158
+00:10:57,800 --> 00:11:02,900
+So we'll explore it further, subdividing again and checking the boundary for each region.
+
+159
+00:11:02,900 --> 00:11:07,000
+The boundary of the top is all green, so we'll stop searching there.
+
+160
+00:11:07,000 --> 00:11:10,500
+But the bottom is colorful enough to deserve a subdivision.
+
+161
+00:11:10,500 --> 00:11:12,420
+And just continue like this.
+
+162
+00:11:12,420 --> 00:11:16,860
+Check which subregion has a boundary covering all possible colors, meaning points of that
+
+163
+00:11:16,860 --> 00:11:21,280
+boundary get mapped to all possible directions, and keep chopping those regions in half like
+
+164
+00:11:21,280 --> 00:11:25,400
+we did for the one-dimensional case, eventually leading us to a zero over the func-
+
+165
+00:11:25,400 --> 00:11:29,320
+Oh, hang on a second.
+
+166
+00:11:29,320 --> 00:11:30,320
+What happened here?
+
+167
+00:11:30,320 --> 00:11:34,520
+Neither of those last subdivisions on the bottom right passed through all the colors,
+
+168
+00:11:34,520 --> 00:11:38,160
+so our algorithm stopped because it didn't want to search through either of those, but
+
+169
+00:11:38,160 --> 00:11:41,160
+it also didn't find a zero.
+
+170
+00:11:41,160 --> 00:11:43,720
+Okay, clearly something's wrong here.
+
+171
+00:11:43,720 --> 00:11:46,680
+And that's okay, being wrong is a regular part of doing math.
+
+172
+00:11:46,680 --> 00:11:51,400
+If we look back, we had this hypothesis, and it led us to this proposed algorithm,
+
+173
+00:11:51,400 --> 00:11:53,680
+so we were mistaken somewhere.
+
+174
+00:11:53,680 --> 00:11:56,860
+And being good at math is not about being right the first time, it's about having
+
+175
+00:11:56,860 --> 00:12:00,920
+the resilience to carefully look back and understand the mistakes, and understand how
+
+176
+00:12:00,920 --> 00:12:02,520
+to fix them.
+
+177
+00:12:02,520 --> 00:12:06,760
+Now the problem here is that we had a region whose border went through every color, but
+
+178
+00:12:06,760 --> 00:12:11,260
+when we split it in the middle, neither subregion's border went through every color, we had no
+
+179
+00:12:11,260 --> 00:12:14,880
+options for where to keep searching next, and that broke the zero finder.
+
+180
+00:12:15,280 --> 00:12:18,120
+Now in one dimension, this sort of thing never happened.
+
+181
+00:12:18,120 --> 00:12:22,960
+Any time you had an interval whose endpoints have different signs, if you split it up,
+
+182
+00:12:22,960 --> 00:12:28,200
+you know that you're guaranteed to get some subinterval whose endpoints also have different
+
+183
+00:12:28,200 --> 00:12:29,200
+signs.
+
+184
+00:12:29,200 --> 00:12:34,120
+Or put another way, any time you have two intervals whose endpoints don't change signs,
+
+185
+00:12:34,120 --> 00:12:38,280
+if you combine them, you'll get a bigger interval whose endpoints also don't change
+
+186
+00:12:38,280 --> 00:12:39,280
+sign.
+
+187
+00:12:39,280 --> 00:12:43,140
+But in two dimensions, it's possible to find two regions whose borders don't go
+
+188
+00:12:43,140 --> 00:12:48,040
+through every color, but whose boundaries combine to give a region whose border does
+
+189
+00:12:48,040 --> 00:12:49,940
+go through every color.
+
+190
+00:12:49,940 --> 00:12:53,740
+And in just this way, our proposed zero-finding algorithm broke.
+
+191
+00:12:53,740 --> 00:12:58,680
+In fact, if you think about it, you can find a big loop whose border goes through every
+
+192
+00:12:58,680 --> 00:13:03,120
+possible color without there being a zero inside of it.
+
+193
+00:13:03,120 --> 00:13:07,100
+Now that's not to say that we were wrong in our claims about tiny loops when we said
+
+194
+00:13:07,100 --> 00:13:13,040
+that a forever narrowing loop going through every color has to be narrowing in on a zero.
+
+195
+00:13:13,040 --> 00:13:17,120
+But what made a mess of things for us is that this does-my-border-go-through-every-color-or-not
+
+196
+00:13:17,120 --> 00:13:23,040
+property doesn't combine in a nice, predictable way when you combine regions.
+
+197
+00:13:23,040 --> 00:13:28,100
+But don't worry, it turns out we can modify this slightly to a more sophisticated property
+
+198
+00:13:28,100 --> 00:13:38,560
+that does combine to give us what we want.
+
+199
+00:13:38,560 --> 00:13:42,540
+The idea is that instead of simply asking whether we can find a color at some point
+
+200
+00:13:42,540 --> 00:13:47,100
+along the loop, let's keep more careful track of how these colors change as we walk
+
+201
+00:13:47,100 --> 00:13:48,100
+around that loop.
+
+202
+00:13:48,100 --> 00:13:50,060
+Let me show you what I mean with an example.
+
+203
+00:13:50,060 --> 00:13:54,120
+I'll keep a little color wheel up here in the corner to help us keep track.
+
+204
+00:13:54,120 --> 00:13:58,540
+When the colors along a path of inputs move through the rainbow in a specific direction,
+
+205
+00:13:58,540 --> 00:14:04,380
+from red to yellow, yellow to green, green to blue, or blue to red, the output is swinging
+
+206
+00:14:04,380 --> 00:14:05,720
+clockwise.
+
+207
+00:14:05,720 --> 00:14:09,980
+But on the other hand, if the colors move the other way through the rainbow, from blue
+
+208
+00:14:09,980 --> 00:14:17,160
+to green, green to yellow, yellow to red, or red to blue, the output is swinging counterclockwise.
+
+209
+00:14:17,160 --> 00:14:22,940
+So walking along this short path here, the colors wind a fifth of the way clockwise through
+
+210
+00:14:22,940 --> 00:14:28,340
+the color wheel, and walking along this path here, the colors wind another fifth of the
+
+211
+00:14:28,340 --> 00:14:30,620
+way clockwise through the color wheel.
+
+212
+00:14:30,620 --> 00:14:35,400
+Of course, that means that if you go through both paths, one after the other, the colors
+
+213
+00:14:35,400 --> 00:14:39,380
+wind a total of two-fifths of a full turn clockwise.
+
+214
+00:14:39,380 --> 00:14:43,740
+The total amount of winding just adds up, and this is going to be key, this is the kind
+
+215
+00:14:43,740 --> 00:14:47,140
+of straightforward combining that will be useful to us.
+
+216
+00:14:47,140 --> 00:14:51,980
+When I say total amount of winding, I want you to imagine an old fashioned odometer that
+
+217
+00:14:51,980 --> 00:14:58,700
+ticks forward as the arrow spins clockwise, but backwards as the arrow spins counterclockwise.
+
+218
+00:14:58,700 --> 00:15:03,020
+So counterclockwise winding counts as negative clockwise winding.
+
+219
+00:15:03,020 --> 00:15:07,460
+The outputs may turn a lot, but if some of that turning is in the opposite direction,
+
+220
+00:15:07,460 --> 00:15:08,940
+it cancels out.
+
+221
+00:15:08,940 --> 00:15:13,220
+For example, if you move forward along this path, and then move backwards along that same
+
+222
+00:15:13,220 --> 00:15:18,100
+path, the total amount of winding ends up being zero, the backwards movement literally
+
+223
+00:15:18,100 --> 00:15:23,440
+rewinds through the previously seen colors, reversing all the previous winding, and returning
+
+224
+00:15:23,440 --> 00:15:26,300
+the odometer back to where it started.
+
+225
+00:15:26,300 --> 00:15:30,480
+For our purposes, we'll care most about looking at the winding along loops.
+
+226
+00:15:30,480 --> 00:15:34,280
+For example, let's say we walk around this entire loop clockwise.
+
+227
+00:15:34,280 --> 00:15:39,680
+The outputs we come across wind around a total of three full clockwise turns, the colors
+
+228
+00:15:39,680 --> 00:15:47,120
+swung through the rainbow, in order, from red to red again, and then again, and again.
+
+229
+00:15:47,120 --> 00:15:52,260
+In the jargon mathematicians use, we say that along this loop, the total winding number
+
+230
+00:15:52,260 --> 00:15:54,100
+is 3.
+
+231
+00:15:54,100 --> 00:15:58,440
+For other loops, it could be any other whole number, maybe a larger one if the output swings
+
+232
+00:15:58,440 --> 00:16:03,680
+around many times as the input walks around a single loop, or it could be a smaller number
+
+233
+00:16:03,720 --> 00:16:07,060
+if the output only swings around once or twice.
+
+234
+00:16:07,060 --> 00:16:12,260
+Or that winding number could even be a negative integer, if the output was swinging counterclockwise
+
+235
+00:16:12,260 --> 00:16:15,200
+as we walk clockwise around the loop.
+
+236
+00:16:15,200 --> 00:16:19,720
+But along any loop, this total amount of winding has to be a whole number.
+
+237
+00:16:19,720 --> 00:16:23,980
+I mean, by the time you get back to where you started, you'll have the same output
+
+238
+00:16:23,980 --> 00:16:25,840
+that you started with.
+
+239
+00:16:25,840 --> 00:16:31,520
+Incidentally, if a path actually contains a point where the output is precisely zero,
+
+240
+00:16:31,560 --> 00:16:35,640
+then technically you can't define a winding number along that, since the output has no
+
+241
+00:16:35,640 --> 00:16:37,600
+particular direction.
+
+242
+00:16:37,600 --> 00:16:41,740
+This isn't going to be a problem for us, because our whole goal is to find zeros, so
+
+243
+00:16:41,740 --> 00:16:45,200
+if this ever comes up, we just lucked out early.
+
+244
+00:16:45,200 --> 00:16:48,720
+The main thing to notice about these winding numbers is that they add up nicely when you
+
+245
+00:16:48,720 --> 00:16:55,040
+combine paths into bigger paths.
+
+246
+00:16:55,040 --> 00:16:59,440
+But what we really want is for the winding numbers along the borders of regions to add
+
+247
+00:16:59,440 --> 00:17:03,120
+up nicely when we combine regions to make bigger regions.
+
+248
+00:17:03,120 --> 00:17:06,320
+So do we have that property?
+
+249
+00:17:06,320 --> 00:17:09,600
+Well, take a look.
+
+250
+00:17:09,600 --> 00:17:14,760
+The winding number as we go clockwise around this region on the left is the sum of the
+
+251
+00:17:14,760 --> 00:17:17,920
+winding numbers from these four paths.
+
+252
+00:17:17,920 --> 00:17:21,960
+And the winding as we go clockwise around this region on the right is the sum of the
+
+253
+00:17:21,960 --> 00:17:25,480
+winding numbers from these four paths.
+
+254
+00:17:25,480 --> 00:17:29,840
+And when we combine those two regions into a bigger one, most of those paths become part
+
+255
+00:17:29,840 --> 00:17:33,760
+of the clockwise border of the bigger region.
+
+256
+00:17:33,760 --> 00:17:36,040
+And as for those two paths that don't?
+
+257
+00:17:36,040 --> 00:17:40,520
+They cancel out perfectly, one of them is just the reverse, the rewinding of the other
+
+258
+00:17:40,520 --> 00:17:42,660
+one like we saw before.
+
+259
+00:17:42,660 --> 00:17:48,840
+So the winding numbers along borders of regions add up in just the way we want them to.
+
+260
+00:17:48,840 --> 00:17:53,560
+Also side note, this reasoning about oriented borders adding up nicely like this comes up
+
+261
+00:17:53,560 --> 00:17:57,320
+a lot in mathematics, and it often goes under the name Stokes' theorem.
+
+262
+00:17:57,320 --> 00:18:02,880
+Those of you who've studied multivariable calculus might recognize it from that context.
+
+263
+00:18:02,880 --> 00:18:08,040
+So now, finally, with winding numbers in hand, we can get back to our equation solving goals.
+
+264
+00:18:08,040 --> 00:18:12,400
+The problem with the region we saw earlier is that even though its border passed through
+
+265
+00:18:12,400 --> 00:18:16,620
+all possible colors, the winding number was actually zero.
+
+266
+00:18:16,620 --> 00:18:22,360
+The outputs wound around halfway, through yellow to red, and then started going counterclockwise
+
+267
+00:18:22,360 --> 00:18:26,000
+back the other direction, then continued going through blue and hitting red from the
+
+268
+00:18:26,000 --> 00:18:32,040
+other way, all in such a way that the total winding netted out to be zero.
+
+269
+00:18:32,040 --> 00:18:36,000
+But if you find a loop which not only hits every color, but it has the stronger condition
+
+270
+00:18:36,000 --> 00:18:41,200
+of a non-zero winding number, then if you were to split it in half, you're guaranteed
+
+271
+00:18:41,200 --> 00:18:46,400
+that at least one of those halves has a non-zero winding number as well, since things add up
+
+272
+00:18:46,400 --> 00:18:48,600
+nicely in the way we want them to.
+
+273
+00:18:48,600 --> 00:18:54,280
+So in this way, you can keep going, narrowing in further and further onto one point.
+
+274
+00:18:54,280 --> 00:18:58,440
+And as you narrow in onto a point, you'll be doing so with tiny loops that have non-zero
+
+275
+00:18:58,440 --> 00:19:02,840
+winding numbers, which implies they go through all possible colors, and therefore, like I
+
+276
+00:19:02,840 --> 00:19:07,680
+said before, the point they're narrowing in on must be a zero.
+
+277
+00:19:07,680 --> 00:19:08,760
+And that's it!
+
+278
+00:19:08,760 --> 00:19:13,280
+We have now created a two-dimensional equation solver, and this time, I promise, there are
+
+279
+00:19:13,280 --> 00:19:14,760
+no bugs.
+
+280
+00:19:14,760 --> 00:19:18,200
+Winding numbers are precisely the tool we need to make this work.
+
+281
+00:19:18,200 --> 00:19:23,040
+We can now solve equations that look like where does f of x equal g of x in two dimensions,
+
+282
+00:19:23,040 --> 00:19:27,660
+just by considering how the difference between f and g winds around.
+
+283
+00:19:27,660 --> 00:19:31,800
+Whenever we have a loop whose winding number isn't zero, we can run this algorithm on
+
+284
+00:19:31,800 --> 00:19:35,160
+it, and we're guaranteed to find a solution somewhere within it.
+
+285
+00:19:35,160 --> 00:19:40,300
+And what's more, just like in one dimension, this algorithm is incredibly efficient.
+
+286
+00:19:40,300 --> 00:19:44,880
+We keep narrowing in on half the size of our region each round, thus quickly narrowing
+
+287
+00:19:44,880 --> 00:19:49,840
+in on the zeros, and all the while, we only have to check the value of the function along
+
+288
+00:19:49,840 --> 00:19:55,240
+points of these loops, rather than checking it on the many points of the interior.
+
+289
+00:19:55,240 --> 00:20:00,400
+So in some sense, the overall work done is proportional only to the search space's
+
+290
+00:20:00,400 --> 00:20:04,960
+perimeter, not the full area, which is amazing.
+
+291
+00:20:04,960 --> 00:20:09,360
+Now once you understand what's going on, it's weirdly mesmerizing to just watch this
+
+292
+00:20:09,360 --> 00:20:13,800
+in action, giving it some function and letting it search for zeros.
+
+293
+00:20:13,800 --> 00:20:18,600
+Like I said before, complex numbers are two-dimensional, so let's apply it to some equation with
+
+294
+00:20:18,600 --> 00:20:20,340
+complex numbers.
+
+295
+00:20:20,340 --> 00:20:25,240
+For example, here's the algorithm finding the zeros of the function x to the fifth minus
+
+296
+00:20:25,240 --> 00:20:28,920
+x minus one over the complex plane.
+
+297
+00:20:28,920 --> 00:20:33,160
+It started by considering a very large region around the origin, which ended up having a
+
+298
+00:20:33,160 --> 00:20:35,440
+winding number of 5.
+
+299
+00:20:35,440 --> 00:20:39,640
+Each time you find a loop with a non-zero winding number, you split it in half, and
+
+300
+00:20:39,640 --> 00:20:42,840
+figure out the winding number of the two smaller loops.
+
+301
+00:20:42,880 --> 00:20:46,880
+Either one or both of them is guaranteed to have a non-zero winding number, and when you
+
+302
+00:20:46,880 --> 00:20:51,440
+see this, you know there's a zero somewhere inside that smaller loop, so you keep going
+
+303
+00:20:51,440 --> 00:20:54,300
+in the same way, searching the smaller space.
+
+304
+00:20:54,300 --> 00:20:58,920
+We also stop exploring a region if the path we're computing along happens to stumble
+
+305
+00:20:58,920 --> 00:21:03,420
+across a zero, which actually happened once for this example on the right half here.
+
+306
+00:21:03,420 --> 00:21:07,600
+Those rare occurrences interfere with our ability to compute winding numbers, but hey,
+
+307
+00:21:07,600 --> 00:21:09,320
+we got a zero.
+
+308
+00:21:09,320 --> 00:21:13,320
+And as for loops whose winding number is zero, you just don't explore those further.
+
+309
+00:21:13,320 --> 00:21:18,520
+Maybe they have a solution inside, maybe they don't, we have no guarantees.
+
+310
+00:21:18,520 --> 00:21:22,240
+And letting our equation solver continue in this same way, it eventually converges to
+
+311
+00:21:22,240 --> 00:21:26,020
+lots of zeros for this polynomial.
+
+312
+00:21:26,020 --> 00:21:30,400
+By the way, it is no coincidence that the total winding number in this example happened
+
+313
+00:21:30,400 --> 00:21:31,660
+to be 5.
+
+314
+00:21:31,660 --> 00:21:37,280
+With complex numbers, the operation x to the n directly corresponds to walking around the
+
+315
+00:21:37,280 --> 00:21:45,000
+output's origin n times as you walk around the input's origin once.
+
+316
+00:21:45,000 --> 00:21:50,500
+So with the polynomial, for large enough inputs, every term other than the leading term becomes
+
+317
+00:21:50,500 --> 00:21:52,700
+insignificant in comparison.
+
+318
+00:21:52,700 --> 00:21:58,780
+So any complex polynomial whose leading term is x to the n has a winding number of n around
+
+319
+00:21:58,780 --> 00:22:00,700
+a large enough loop.
+
+320
+00:22:00,700 --> 00:22:06,240
+And in that way, our winding number technology actually guarantees that every complex polynomial
+
+321
+00:22:06,240 --> 00:22:07,620
+has a zero.
+
+322
+00:22:07,620 --> 00:22:13,880
+This is such an important fact that mathematicians call it the fundamental theorem of algebra.
+
+323
+00:22:13,880 --> 00:22:18,040
+Having an algorithm for finding numerical solutions to equations like this is extremely
+
+324
+00:22:18,040 --> 00:22:22,420
+practical, but the fundamental theorem of algebra is a good example of how these winding
+
+325
+00:22:22,420 --> 00:22:27,780
+numbers are also quite useful on a theoretical level, guaranteeing the existence of a solution
+
+326
+00:22:27,780 --> 00:22:32,280
+to a broad class of equations for suitable conditions, which is much more the kind of
+
+327
+00:22:32,280 --> 00:22:34,060
+thing mathematicians like thinking about.
+
+328
+00:22:34,400 --> 00:22:39,360
+I'll show you a couple more amazing applications of this in the context of topology in a follow-up
+
+329
+00:22:39,360 --> 00:22:44,080
+video, which includes correcting a mistake from an old 3blue1brown video.
+
+330
+00:22:44,080 --> 00:22:45,080
+Which one?
+
+331
+00:22:45,080 --> 00:22:48,740
+Well, watch all of the videos, everything on this channel, and see if you can spot the
+
+332
+00:22:48,740 --> 00:22:51,640
+error first.
+
+333
+00:22:51,640 --> 00:22:55,960
+The primary author of this video is one of the newest 3blue1brown team members, Sridhar
+
+334
+00:22:55,960 --> 00:22:56,460
+Ramesh.
+

@@ -1,0 +1,1156 @@
+1
+00:00:00,000 --> 00:00:08,840
+This right here is what we're going to build to this video, a certain animated approach
+
+2
+00:00:08,840 --> 00:00:13,540
+to thinking about a super important idea from math, the Fourier transform.
+
+3
+00:00:13,540 --> 00:00:17,920
+For anyone unfamiliar with what that is, my number one goal here is just for the video
+
+4
+00:00:17,920 --> 00:00:20,480
+to be an introduction to that topic.
+
+5
+00:00:20,480 --> 00:00:23,960
+But even for those of you who are already familiar with it, I still think that there's
+
+6
+00:00:23,960 --> 00:00:29,520
+something fun and enriching about seeing what all of its components actually look like.
+
+7
+00:00:29,520 --> 00:00:33,640
+The central example to start is going to be the classic one, decomposing frequencies
+
+8
+00:00:33,640 --> 00:00:34,820
+from sound.
+
+9
+00:00:34,820 --> 00:00:39,860
+But after that I also want to show a glimpse of how this idea extends well beyond sound
+
+10
+00:00:39,860 --> 00:00:45,000
+and frequency into many seemingly disparate areas of math, and even physics.
+
+11
+00:00:45,000 --> 00:00:48,560
+Really it's crazy just how ubiquitous this idea is.
+
+12
+00:00:48,560 --> 00:00:50,760
+Let's dive in.
+
+13
+00:00:50,760 --> 00:00:56,500
+This sound right here is a pure A, 440 beats per second, meaning if you were to measure
+
+14
+00:00:56,500 --> 00:01:01,580
+the air pressure right next to your headphones or your speaker as a function of time, it
+
+15
+00:01:01,580 --> 00:01:08,540
+would oscillate up and down around its usual equilibrium in this wave, making 440 oscillations
+
+16
+00:01:08,540 --> 00:01:09,540
+each second.
+
+17
+00:01:09,540 --> 00:01:15,780
+A lower pitch note, like a D, has the same structure, just fewer beats per second.
+
+18
+00:01:15,780 --> 00:01:19,820
+And when both of them are played at once, what do you think the resulting pressure vs.
+
+19
+00:01:19,820 --> 00:01:22,820
+time graph looks like?
+
+20
+00:01:22,820 --> 00:01:27,360
+At any point in time, this pressure difference is going to be the sum of what it would be
+
+21
+00:01:27,360 --> 00:01:32,060
+for each of those notes individually, which let's face it is kind of a complicated thing
+
+22
+00:01:32,060 --> 00:01:34,380
+to think about.
+
+23
+00:01:34,380 --> 00:01:39,020
+At some points the peaks match up with each other, resulting in a really high pressure.
+
+24
+00:01:39,020 --> 00:01:41,580
+At other points they tend to cancel out.
+
+25
+00:01:41,580 --> 00:01:46,580
+And all in all, what you get is a wave-ish pressure vs. time graph that is not a pure
+
+26
+00:01:46,580 --> 00:01:49,540
+sine wave, it's something more complicated.
+
+27
+00:01:49,540 --> 00:01:53,380
+And as you add in other notes, the wave gets more and more complicated.
+
+28
+00:01:53,380 --> 00:01:59,300
+But right now, all it is is a combination of four pure frequencies, so it seems needlessly
+
+29
+00:01:59,300 --> 00:02:03,140
+complicated given the low amount of information put into it.
+
+30
+00:02:03,140 --> 00:02:07,560
+A microphone recording any sound just picks up on the air pressure at many different points
+
+31
+00:02:07,560 --> 00:02:10,780
+in time, it only sees the final sum.
+
+32
+00:02:10,780 --> 00:02:15,720
+So our central question is going to be how you can take a signal like this and decompose
+
+33
+00:02:15,720 --> 00:02:18,900
+it into the pure frequencies that make it up.
+
+34
+00:02:18,900 --> 00:02:20,420
+Pretty interesting, right?
+
+35
+00:02:20,420 --> 00:02:25,000
+Adding up those signals really mixes them all together, so pulling them back apart feels
+
+36
+00:02:25,000 --> 00:02:29,940
+akin to unmixing multiple paint colors that have all been stirred up together.
+
+37
+00:02:29,940 --> 00:02:34,780
+The general strategy is going to be to build for ourselves a mathematical machine that
+
+38
+00:02:34,780 --> 00:02:40,580
+treats signals with a given frequency differently from how it treats other signals.
+
+39
+00:02:40,580 --> 00:02:46,080
+To start, consider simply taking a pure signal, say with a lowly 3 beats per second so that
+
+40
+00:02:46,080 --> 00:02:47,860
+we can plot it easily.
+
+41
+00:02:47,860 --> 00:02:51,900
+And let's limit ourselves to looking at a finite portion of this graph, in this case
+
+42
+00:02:51,900 --> 00:02:55,660
+the portion between 0 seconds and 4.5 seconds.
+
+43
+00:02:55,660 --> 00:03:01,380
+The key idea is going to be to take this graph and sort of wrap it up around a circle.
+
+44
+00:03:04,940 --> 00:03:07,040
+Concretely, here's what I mean by that.
+
+45
+00:03:07,040 --> 00:03:12,000
+Imagine a little rotating vector where at each point in time, its length is equal to
+
+46
+00:03:12,000 --> 00:03:14,820
+the height of our graph for that time.
+
+47
+00:03:15,180 --> 00:03:19,620
+High points of the graph correspond to a greater distance from the origin, and low points end
+
+48
+00:03:19,620 --> 00:03:22,220
+up closer to the origin.
+
+49
+00:03:22,220 --> 00:03:26,920
+Right now I'm drawing it in such a way that moving forward 2 seconds in time corresponds
+
+50
+00:03:26,920 --> 00:03:29,860
+to a single rotation around the circle.
+
+51
+00:03:29,860 --> 00:03:35,680
+Our little vector drawing this wound up graph is rotating at half a cycle per second.
+
+52
+00:03:35,680 --> 00:03:39,000
+This is important, there are two different frequencies at play here.
+
+53
+00:03:39,000 --> 00:03:43,380
+There's the frequency of our signal, which goes up and down 3 times per second, and then
+
+54
+00:03:43,420 --> 00:03:48,480
+Separately, there's the frequency with which we're wrapping the graph around the circle,
+
+55
+00:03:48,480 --> 00:03:51,660
+which at the moment is half of a rotation per second.
+
+56
+00:03:51,660 --> 00:03:54,840
+But we can adjust that second frequency however we want.
+
+57
+00:03:54,840 --> 00:03:57,320
+Maybe we want to wrap it around faster?
+
+58
+00:03:59,060 --> 00:04:01,800
+Or maybe we go and wrap it around slower?
+
+59
+00:04:03,760 --> 00:04:09,160
+And that choice of winding frequency determines what the wound up graph looks like.
+
+60
+00:04:09,160 --> 00:04:12,560
+Some of the diagrams that come out of this can be pretty complicated, although they are
+
+61
+00:04:12,560 --> 00:04:16,420
+very pretty, but it's important to keep in mind that all that's happening here is that
+
+62
+00:04:16,420 --> 00:04:19,160
+we're wrapping the signal around a circle.
+
+63
+00:04:21,280 --> 00:04:25,000
+The vertical lines that I'm drawing up top, by the way, are just a way to keep track of
+
+64
+00:04:25,000 --> 00:04:30,860
+the distance on the original graph that corresponds to a full rotation around the circle.
+
+65
+00:04:30,860 --> 00:04:37,280
+So lines spaced out by 1.5 seconds would mean it takes 1.5 seconds to make one full revolution.
+
+66
+00:04:37,280 --> 00:04:41,020
+And at this point we might have some sort of vague sense that something special will
+
+67
+00:04:41,020 --> 00:04:46,980
+happen when the winding frequency matches the frequency of our signal, 3 beats per second.
+
+68
+00:04:46,980 --> 00:04:50,300
+All of the high points on the graph happen on the right side of the circle, and all of
+
+69
+00:04:50,300 --> 00:04:52,600
+the low points happen on the left.
+
+70
+00:04:52,600 --> 00:04:58,880
+But how precisely can we take advantage of that in our attempt to build a frequency unmixing machine?
+
+71
+00:04:58,880 --> 00:05:04,420
+Well, imagine this graph as having some kind of mass to it, like a metal wire.
+
+72
+00:05:04,420 --> 00:05:08,320
+This little dot is going to represent the center of mass of that wire.
+
+73
+00:05:08,320 --> 00:05:12,480
+As we change the frequency and the graph winds up differently, that center of mass
+
+74
+00:05:12,480 --> 00:05:16,500
+kind of wobbles around a bit.
+
+75
+00:05:16,500 --> 00:05:20,020
+And for most of the winding frequencies, the peaks and valleys are all spaced out around
+
+76
+00:05:20,020 --> 00:05:26,260
+the circle in such a way that the center of mass stays pretty close to the origin.
+
+77
+00:05:26,260 --> 00:05:31,840
+But when the winding frequency is the same as the frequency of our signal, in this case
+
+78
+00:05:31,840 --> 00:05:35,780
+3 cycles per second, all of the peaks are on the right and all of the valleys are on
+
+79
+00:05:35,780 --> 00:05:40,860
+the left, so the center of mass is unusually far to the right.
+
+80
+00:05:40,860 --> 00:05:46,600
+Here, to capture this, let's draw some kind of plot that keeps track of where that center
+
+81
+00:05:46,600 --> 00:05:49,240
+of mass is for each winding frequency.
+
+82
+00:05:49,240 --> 00:05:52,960
+Of course, the center of mass is a two-dimensional thing, it requires two coordinates to fully
+
+83
+00:05:52,960 --> 00:05:57,600
+keep track of, but for the moment let's only keep track of the x-coordinate.
+
+84
+00:05:57,600 --> 00:06:01,940
+So for a frequency of zero, when everything is bunched up on the right, this x-coordinate
+
+85
+00:06:01,940 --> 00:06:03,840
+is relatively high.
+
+86
+00:06:04,260 --> 00:06:09,180
+As you increase the winding frequency, and the graph balances out around the circle,
+
+87
+00:06:09,180 --> 00:06:13,460
+the x-coordinate of that center of mass goes closer to zero, and it just wobbles around
+
+88
+00:06:13,460 --> 00:06:27,420
+a bit.
+
+89
+00:06:27,440 --> 00:06:44,880
+But then, at 3 beats per second, there's a spike, as everything lines up to the right.
+
+90
+00:06:44,880 --> 00:06:48,400
+This right here is the central construct, so let's sum up what we have so far.
+
+91
+00:06:48,400 --> 00:06:53,480
+We have that original intensity vs time graph, and then we have the wound up version of that
+
+92
+00:06:53,540 --> 00:06:58,940
+in some two-dimensional plane, and then as a third thing we have a plot for how the winding
+
+93
+00:06:58,940 --> 00:07:02,980
+frequency influences the center of mass of that graph.
+
+94
+00:07:02,980 --> 00:07:07,860
+And by the way, let's look back at those really low frequencies near zero.
+
+95
+00:07:07,860 --> 00:07:12,940
+This big spike around zero in our new frequency plot just corresponds to the fact that the
+
+96
+00:07:12,940 --> 00:07:16,800
+whole cosine wave is shifted up.
+
+97
+00:07:16,800 --> 00:07:22,700
+If I had chosen a signal that oscillates around zero, dipping into negative values, then as
+
+98
+00:07:22,720 --> 00:07:27,820
+we play around with various winding frequencies, this plot of the winding frequency vs center
+
+99
+00:07:27,820 --> 00:07:32,800
+of mass would only have a spike at the value of 3.
+
+100
+00:07:32,800 --> 00:07:36,400
+But negative values are a little bit weird and messy to think about, especially for a
+
+101
+00:07:36,400 --> 00:07:40,840
+first example, so let's just continue thinking in terms of the shifted up graph.
+
+102
+00:07:40,840 --> 00:07:46,040
+I just want you to understand that that spike around zero only corresponds to the shift.
+
+103
+00:07:46,040 --> 00:07:51,520
+Our main focus, as far as frequency decomposition is concerned, is that bump at 3.
+
+104
+00:07:51,540 --> 00:07:56,260
+This whole plot is what I'll call the almost Fourier transform of the original signal.
+
+105
+00:07:56,260 --> 00:08:00,980
+There's a couple small distinctions between this and the Fourier transform, which I'll
+
+106
+00:08:00,980 --> 00:08:05,020
+get to in a couple minutes, but already you might be able to see how this machine lets
+
+107
+00:08:05,020 --> 00:08:08,000
+us pick out the frequency of a signal.
+
+108
+00:08:08,000 --> 00:08:12,240
+Just to play around with it a little bit more, take a different pure signal, let's say
+
+109
+00:08:12,240 --> 00:08:16,620
+with a lower frequency of 2 beats per second, and do the same thing.
+
+110
+00:08:16,620 --> 00:08:21,120
+Wind it around a circle, imagine different potential winding frequencies, and as you
+
+111
+00:08:21,120 --> 00:08:26,200
+do that keep track of where the center of mass of that graph is, and then plot the x
+
+112
+00:08:26,200 --> 00:08:30,960
+coordinate of that center of mass as you adjust the winding frequency.
+
+113
+00:08:30,960 --> 00:08:35,320
+Just like before, we get a spike when the winding frequency is the same as the signal
+
+114
+00:08:35,320 --> 00:08:39,740
+frequency, which in this case is when it equals 2 cycles per second.
+
+115
+00:08:39,740 --> 00:08:44,060
+But the real key point, the thing that makes this machine so delightful, is how it enables
+
+116
+00:08:44,060 --> 00:08:49,460
+us to take a signal consisting of multiple frequencies and pick out what they are.
+
+117
+00:08:49,460 --> 00:08:52,840
+Imagine taking the two signals we just looked at, the wave with 3 beats per second and the
+
+118
+00:08:52,840 --> 00:08:56,980
+wave with 2 beats per second, and add them up.
+
+119
+00:08:56,980 --> 00:09:00,800
+Like I said earlier, what you get is no longer a nice pure cosine wave, it's something
+
+120
+00:09:00,800 --> 00:09:02,520
+a little more complicated.
+
+121
+00:09:02,520 --> 00:09:06,360
+But imagine throwing this into our winding frequency machine.
+
+122
+00:09:06,360 --> 00:09:10,240
+It is certainly the case that as you wrap this thing around it looks a lot more complicated,
+
+123
+00:09:10,240 --> 00:09:14,100
+you have this chaos and chaos and chaos and chaos, and then whoop, things seem to line
+
+124
+00:09:14,100 --> 00:09:18,800
+up really nicely at 2 cycles per second, and as you continue on it's more chaos and more
+
+125
+00:09:18,800 --> 00:09:21,980
+chaos and more chaos and chaos and chaos and chaos, whoop, things nicely align again
+
+126
+00:09:21,980 --> 00:09:23,980
+at 3 cycles per second.
+
+127
+00:09:23,980 --> 00:09:27,680
+And like I said before, the wound up graph can look kind of busy and complicated, but
+
+128
+00:09:27,680 --> 00:09:32,020
+all it is is the relatively simple idea of wrapping the graph around a circle.
+
+129
+00:09:32,020 --> 00:09:36,180
+It's just a more complicated graph and a pretty quick winding frequency.
+
+130
+00:09:36,180 --> 00:09:40,900
+Now what's going on here with the two different spikes is that if you were to take two signals
+
+131
+00:09:40,900 --> 00:09:46,000
+and then apply this almost Fourier transform to each of them individually, and then add
+
+132
+00:09:46,000 --> 00:09:52,060
+up the results, what you get is the same as if you first added up the signals and then
+
+133
+00:09:52,060 --> 00:09:55,780
+applied this almost Fourier transform.
+
+134
+00:09:55,780 --> 00:09:59,580
+And the attentive viewers among you might want to pause and ponder and convince yourself
+
+135
+00:09:59,580 --> 00:10:01,900
+that what I just said is actually true.
+
+136
+00:10:01,900 --> 00:10:06,420
+It's a pretty good test to verify for yourself that it's clear what exactly is being measured
+
+137
+00:10:06,420 --> 00:10:09,060
+inside this winding machine.
+
+138
+00:10:09,060 --> 00:10:14,040
+Now this property makes things really useful to us, because the transform of a pure frequency
+
+139
+00:10:14,100 --> 00:10:19,500
+is close to zero everywhere except for a spike around that frequency, so when you add together
+
+140
+00:10:19,500 --> 00:10:24,780
+two pure frequencies, the transform graph just has these little peaks above the frequencies
+
+141
+00:10:24,780 --> 00:10:26,500
+that went into it.
+
+142
+00:10:26,500 --> 00:10:30,040
+So this little mathematical machine does exactly what we wanted.
+
+143
+00:10:30,040 --> 00:10:34,780
+It pulls out the original frequencies from their jumbled up sums, unmixing the mixed
+
+144
+00:10:34,780 --> 00:10:36,960
+bucket of paint.
+
+145
+00:10:36,960 --> 00:10:41,000
+And before continuing into the full math that describes this operation, let's just get a
+
+146
+00:10:41,000 --> 00:10:44,900
+quick glimpse of one context where this thing is useful, sound editing.
+
+147
+00:10:44,900 --> 00:10:48,440
+Let's say you have some recording and it's got an annoying high pitch that you would
+
+148
+00:10:48,440 --> 00:10:50,820
+like to filter out.
+
+149
+00:10:50,820 --> 00:10:55,660
+Well at first your signal is coming in as a function of various intensities over time,
+
+150
+00:10:55,660 --> 00:11:00,300
+different voltages given to your speaker from one millisecond to the next, but we want to
+
+151
+00:11:00,300 --> 00:11:02,660
+think of this in terms of frequencies.
+
+152
+00:11:02,660 --> 00:11:07,940
+So when you take the Fourier transform of that signal, the annoying high pitch is going
+
+153
+00:11:07,940 --> 00:11:11,580
+to show up just as a spike at some high frequency.
+
+154
+00:11:11,580 --> 00:11:15,520
+Filtering that out by just smooshing the spike down, what you'd be looking at is the Fourier
+
+155
+00:11:15,520 --> 00:11:21,320
+transform of a sound that's just like your recording only without that high frequency.
+
+156
+00:11:21,320 --> 00:11:26,200
+Luckily there's a notion of an inverse Fourier transform that tells you which signal would
+
+157
+00:11:26,200 --> 00:11:29,180
+have produced this as its Fourier transform.
+
+158
+00:11:29,180 --> 00:11:33,680
+I'll be talking about that inverse much more fully in the next video, but long story short,
+
+159
+00:11:33,680 --> 00:11:38,820
+applying the Fourier transform to the Fourier transform gives you back something close to
+
+160
+00:11:38,820 --> 00:11:40,300
+the original function.
+
+161
+00:11:40,300 --> 00:11:44,940
+Kind of, this is a little bit of a lie, but it's in the direction of truth.
+
+162
+00:11:44,940 --> 00:11:48,660
+And most of the reason that it's a lie is that I still have yet to tell you what the
+
+163
+00:11:48,660 --> 00:11:53,080
+actual Fourier transform is, since it's a little more complex than this x-coordinate
+
+164
+00:11:53,080 --> 00:11:55,540
+of the center of mass idea.
+
+165
+00:11:55,540 --> 00:12:00,500
+First off, bringing back this wound up graph and looking at its center of mass, the x-coordinate
+
+166
+00:12:00,500 --> 00:12:02,820
+is really only half the story, right?
+
+167
+00:12:02,840 --> 00:12:06,040
+This thing is in two dimensions, it's got a y-coordinate as well.
+
+168
+00:12:06,040 --> 00:12:10,440
+And as is typical in math, whenever you're dealing with something two-dimensional, it's
+
+169
+00:12:10,440 --> 00:12:14,600
+elegant to think of it as the complex plane, where this center of mass is going to be a
+
+170
+00:12:14,600 --> 00:12:18,660
+complex number that has both a real and an imaginary part.
+
+171
+00:12:21,520 --> 00:12:25,120
+And the reason for talking in terms of complex numbers, rather than just saying it has two
+
+172
+00:12:25,120 --> 00:12:29,120
+coordinates, is that complex numbers lend themselves to really nice descriptions of
+
+173
+00:12:29,120 --> 00:12:32,460
+things that have to do with winding and rotation.
+
+174
+00:12:32,460 --> 00:12:37,920
+For example, Euler's formula famously tells us that if you take e to some number times
+
+175
+00:12:37,920 --> 00:12:42,220
+i, you're going to land on the point that you get if you were to walk that number of
+
+176
+00:12:42,220 --> 00:12:47,960
+units around a circle with radius 1 counterclockwise starting on the right.
+
+177
+00:12:47,960 --> 00:12:54,280
+So imagine you wanted to describe rotating at a rate of one cycle per second.
+
+178
+00:12:54,280 --> 00:13:01,100
+One thing that you could do is take the expression e to the 2 pi times i times t, where t is
+
+179
+00:13:01,100 --> 00:13:06,200
+the amount of time that has passed, since for a circle with radius 1, 2 pi describes
+
+180
+00:13:06,200 --> 00:13:09,240
+the full length of its circumference.
+
+181
+00:13:09,240 --> 00:13:12,640
+And this is a little bit dizzying to look at, so maybe you want to describe a different
+
+182
+00:13:12,640 --> 00:13:17,220
+frequency, something lower and more reasonable, and for that you would just multiply that
+
+183
+00:13:17,220 --> 00:13:21,380
+time t in the exponent by the frequency f.
+
+184
+00:13:21,380 --> 00:13:27,520
+For example, if f was 1 tenth, then this vector makes one full turn every 10 seconds, since
+
+185
+00:13:27,520 --> 00:13:32,800
+the time t has to increase all the way to 10 before the full exponent looks like 2 pi
+
+186
+00:13:32,800 --> 00:13:34,440
+i.
+
+187
+00:13:34,440 --> 00:13:38,980
+I have another video giving some intuition on why this is the behavior of e to the x
+
+188
+00:13:38,980 --> 00:13:42,980
+for imaginary inputs, if you're curious, but for right now we're just going to take it
+
+189
+00:13:42,980 --> 00:13:43,980
+as a given.
+
+190
+00:13:43,980 --> 00:13:46,720
+Now, why am I telling you this, you might ask?
+
+191
+00:13:46,720 --> 00:13:51,480
+Well it gives us a really nice way to write down the idea of winding up the graph into
+
+192
+00:13:51,480 --> 00:13:54,180
+a single, tight little formula.
+
+193
+00:13:54,180 --> 00:13:58,480
+First off, the convention in the context of Fourier transforms is to think about rotating
+
+194
+00:13:58,480 --> 00:14:04,500
+in the clockwise direction, so let's throw a negative sign up into that exponent.
+
+195
+00:14:04,500 --> 00:14:09,140
+Now take some function describing a signal intensity versus time, like this pure cosine
+
+196
+00:14:09,140 --> 00:14:12,980
+wave we had before, and call it g of t.
+
+197
+00:14:12,980 --> 00:14:19,240
+If you multiply this exponential expression times g of t, it means that the rotating complex
+
+198
+00:14:19,240 --> 00:14:24,540
+number is getting scaled up and down according to the value of this function.
+
+199
+00:14:24,540 --> 00:14:29,600
+So you can think of this little rotating vector with its changing length as drawing the wound
+
+200
+00:14:29,600 --> 00:14:31,320
+up graph.
+
+201
+00:14:31,320 --> 00:14:36,340
+So think about it, this is awesome, this really small expression is a super elegant way to
+
+202
+00:14:36,340 --> 00:14:42,280
+encapsulate the whole idea of winding a graph around a circle with a variable frequency,
+
+203
+00:14:42,280 --> 00:14:43,280
+f.
+
+204
+00:14:43,280 --> 00:14:47,720
+And remember, the thing we want to do with this wound up graph is to track its center
+
+205
+00:14:47,720 --> 00:14:51,560
+of mass, so think about what formula is going to capture that.
+
+206
+00:14:51,560 --> 00:14:57,160
+Well, to approximate it at least, you might sample a whole bunch of times from the original
+
+207
+00:14:57,160 --> 00:15:02,600
+signal, see where those points end up on the wound up graph, and then just take an average,
+
+208
+00:15:02,600 --> 00:15:07,280
+that is, add them all together as complex numbers, and then divide by the number of
+
+209
+00:15:07,280 --> 00:15:09,240
+points you've sampled.
+
+210
+00:15:09,240 --> 00:15:14,340
+This will become more accurate if you sample more points which are closer together.
+
+211
+00:15:14,340 --> 00:15:18,180
+And in the limit, rather than looking at the sum of a whole bunch of points divided
+
+212
+00:15:18,180 --> 00:15:23,780
+by the number of points, you take an integral of this function divided by the size of the
+
+213
+00:15:23,780 --> 00:15:26,100
+time interval we're looking at.
+
+214
+00:15:26,100 --> 00:15:30,940
+The idea of integrating a complex valued function might seem weird, and to anyone who's shaky
+
+215
+00:15:30,940 --> 00:15:35,060
+with calculus maybe even intimidating, but the underlying meaning here really doesn't
+
+216
+00:15:35,060 --> 00:15:39,580
+require any calculus knowledge, the whole expression is just the center of mass of the
+
+217
+00:15:39,580 --> 00:15:41,620
+wound up graph.
+
+218
+00:15:41,620 --> 00:15:46,740
+So great, step by step, we have built up this kind of complicated but let's face
+
+219
+00:15:46,740 --> 00:15:52,160
+it, surprisingly small expression for the whole winding machine idea I talked about.
+
+220
+00:15:52,160 --> 00:15:57,100
+And now there is only one final distinction to point out between this and the actual honest
+
+221
+00:15:57,100 --> 00:16:02,620
+to goodness Fourier transform, namely, just don't divide out by the time interval.
+
+222
+00:16:02,620 --> 00:16:06,420
+The Fourier transform is just the integral part of this.
+
+223
+00:16:06,420 --> 00:16:10,060
+What that means is that instead of looking at the center of mass, you would scale it
+
+224
+00:16:10,060 --> 00:16:11,820
+up by some amount.
+
+225
+00:16:11,820 --> 00:16:16,120
+If the portion of the original graph you were using spanned 3 seconds, you would multiply
+
+226
+00:16:16,120 --> 00:16:19,740
+the center of mass by 3.
+
+227
+00:16:19,740 --> 00:16:24,580
+If it was spanning 6 seconds, you would multiply the center of mass by 6.
+
+228
+00:16:24,580 --> 00:16:30,100
+Physically, this has the effect that when a certain frequency persists for a long time,
+
+229
+00:16:30,100 --> 00:16:36,240
+then the magnitude of the Fourier transform at that frequency is scaled up more and more.
+
+230
+00:16:36,240 --> 00:16:40,760
+For example, what we're looking at here is how when you have a pure frequency of
+
+231
+00:16:40,760 --> 00:16:45,740
+2 beats per second and you wind it around the graph at 2 cycles per second, the center
+
+232
+00:16:45,740 --> 00:16:49,800
+of mass stays in the same spot, just tracing out the same shape.
+
+233
+00:16:49,800 --> 00:16:55,340
+But the longer that signal persists, the larger the value of the Fourier transform at that
+
+234
+00:16:55,340 --> 00:16:56,580
+frequency.
+
+235
+00:16:56,580 --> 00:17:00,500
+For other frequencies though, even if you just increase it by a bit, this is cancelled
+
+236
+00:17:00,500 --> 00:17:05,000
+out by the fact that for longer time intervals, you're giving the wound up graph more of
+
+237
+00:17:05,000 --> 00:17:09,440
+a chance to balance itself around the circle.
+
+238
+00:17:09,440 --> 00:17:13,620
+That is a lot of different moving parts, so let's step back and summarize what we have
+
+239
+00:17:13,620 --> 00:17:14,800
+so far.
+
+240
+00:17:14,800 --> 00:17:21,240
+The Fourier transform of an intensity vs time function, like g of t, is a new function,
+
+241
+00:17:21,240 --> 00:17:25,840
+which doesn't have time as an input, but instead takes in a frequency, what I've
+
+242
+00:17:25,840 --> 00:17:28,720
+been calling the winding frequency.
+
+243
+00:17:28,720 --> 00:17:33,580
+In terms of notation, by the way, the common convention is to call this new function g-hat,
+
+244
+00:17:33,580 --> 00:17:36,020
+with a little circumflex on top of it.
+
+245
+00:17:36,020 --> 00:17:42,020
+The output of this function is a complex number, some point in the 2d plane that corresponds
+
+246
+00:17:42,020 --> 00:17:46,040
+to the strength of a given frequency in the original signal.
+
+247
+00:17:46,040 --> 00:17:50,540
+The plot I've been graphing for the Fourier transform is just the real component of that
+
+248
+00:17:50,540 --> 00:17:55,280
+output, the x-coordinate, but you could also graph the imaginary component separately if
+
+249
+00:17:55,280 --> 00:17:57,580
+you wanted a fuller description.
+
+250
+00:17:57,580 --> 00:18:02,060
+And all of this is encapsulated inside that formula we built up.
+
+251
+00:18:02,060 --> 00:18:06,220
+Out of context, you can imagine how seeing this formula would seem daunting, but if you
+
+252
+00:18:06,220 --> 00:18:11,980
+understand how exponentials correspond to rotation, how multiplying that by the function
+
+253
+00:18:11,980 --> 00:18:17,820
+g of t means drawing a wound up version of the graph, and how an integral of a complex
+
+254
+00:18:17,820 --> 00:18:22,940
+valued function can be interpreted in terms of a center of mass idea, you can see how
+
+255
+00:18:22,940 --> 00:18:27,620
+this whole thing carries with it a very rich intuitive meaning.
+
+256
+00:18:27,700 --> 00:18:31,240
+By the way, one quick small note before we can call this wrapped up.
+
+257
+00:18:31,240 --> 00:18:34,620
+Even though in practice, with things like sound editing, you'll be integrating over
+
+258
+00:18:34,620 --> 00:18:39,500
+a finite time interval, the theory of Fourier transforms is often phrased where the bounds
+
+259
+00:18:39,500 --> 00:18:42,740
+of this integral are negative infinity and infinity.
+
+260
+00:18:42,740 --> 00:18:47,940
+Concretely, what that means is that you consider this expression for all possible finite time
+
+261
+00:18:47,940 --> 00:18:54,900
+intervals, and you just ask, what is its limit as that time interval grows to infinity?
+
+262
+00:18:54,900 --> 00:18:58,580
+And man oh man, there's so much more to say, so much, I don't want to call it done
+
+263
+00:18:58,580 --> 00:18:59,580
+here.
+
+264
+00:18:59,580 --> 00:19:02,980
+This transform extends to corners of math well beyond the idea of extracting frequencies
+
+265
+00:19:02,980 --> 00:19:04,340
+from signal.
+
+266
+00:19:04,340 --> 00:19:08,020
+So the next video I put out is going to go through a couple of these, and that's where
+
+267
+00:19:08,020 --> 00:19:10,020
+things start getting interesting.
+
+268
+00:19:10,020 --> 00:19:14,860
+So stay subscribed for when that comes out, or an alternate option is to binge on a couple
+
+269
+00:19:14,860 --> 00:19:19,060
+3blueandbrown videos so that the YouTube recommender is more inclined to show you new things that
+
+270
+00:19:19,060 --> 00:19:20,060
+come out.
+
+271
+00:19:20,060 --> 00:19:22,820
+Really, the choice is yours.
+
+272
+00:19:22,820 --> 00:19:26,260
+And to close things off, I have something pretty fun, a mathematical puzzler from this
+
+273
+00:19:26,260 --> 00:19:31,220
+video's sponsor, Jane Street, who's looking to recruit more technical talent.
+
+274
+00:19:31,220 --> 00:19:38,100
+So let's say you have a closed bounded convex set C sitting in 3D space, and let B be the
+
+275
+00:19:38,100 --> 00:19:42,220
+boundary of that space, the surface of your complex blob.
+
+276
+00:19:42,220 --> 00:19:47,260
+Now imagine taking every possible pair of points on that surface and adding them up,
+
+277
+00:19:47,260 --> 00:19:48,660
+doing a vector sum.
+
+278
+00:19:48,660 --> 00:19:52,020
+Let's name this set of all possible sums D.
+
+279
+00:19:52,180 --> 00:19:57,260
+Your task is to prove that D is also a convex set.
+
+280
+00:19:57,260 --> 00:20:01,240
+So Jane Street is a quantitative trading firm, and if you're the kind of person who enjoys
+
+281
+00:20:01,240 --> 00:20:06,420
+math and solving puzzles like this, the team there really values intellectual curiosity,
+
+282
+00:20:06,420 --> 00:20:08,460
+so they might be interested in hiring you.
+
+283
+00:20:08,460 --> 00:20:11,220
+And they're looking both for full-time employees and interns.
+
+284
+00:20:11,220 --> 00:20:14,660
+For my part, I can say the couple of people I've interacted with there just seem to love
+
+285
+00:20:14,660 --> 00:20:18,980
+math and sharing math, and when they're hiring they look less at a background in finance
+
+286
+00:20:19,020 --> 00:20:22,940
+than they do at how you think, how you learn, and how you solve problems, hence the sponsorship
+
+287
+00:20:22,940 --> 00:20:25,140
+of a 3Blue1Brown video.
+
+288
+00:20:25,140 --> 00:20:28,420
+If you want the answer to that puzzler, or to learn more about what they do, or to apply
+
+289
+00:20:28,420 --> 00:20:32,900
+for open positions, go to janestreet.com slash 3b1b.
+
