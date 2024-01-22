@@ -1,0 +1,1216 @@
+1
+00:00:00,000 --> 00:00:08,620
+Bir CD&#39;yi veya DVD&#39;yi çizerken, içinde sakladığı şeyi
+
+2
+00:00:08,620 --> 00:00:10,900
+oynatmanın nasıl mümkün olduğunu hiç merak ettiniz mi?
+
+3
+00:00:10,900 --> 00:00:15,280
+Çizik gerçekten diskteki 1&#39;leri ve 0&#39;ları etkiler, bu nedenle
+
+4
+00:00:15,280 --> 00:00:20,500
+depolanan verilerden farklı verileri okur, ancak gerçekten çizilmediği sürece
+
+5
+00:00:20,500 --> 00:00:26,540
+okuduğu bitlerin kodu, üzerine kodlanmış olanla tam olarak aynı
+
+6
+00:00:26,540 --> 00:00:28,400
+dosyaya dönüştürülür. tüm bu hatalara rağmen bit bit kopya.
+
+7
+00:00:28,400 --> 00:00:32,800
+Verileri depolamamıza ve aynı derecede önemlisi, hatalara karşı dirençli bir
+
+8
+00:00:32,800 --> 00:00:36,840
+şekilde veri iletmemize olanak tanıyan bir sürü matematiksel zeka var.
+
+9
+00:00:36,840 --> 00:00:41,480
+Tamam, aslında bunu yapmanın bir yolunu bulmak
+
+10
+00:00:41,480 --> 00:00:42,480
+o kadar da zeki olmayı gerektirmiyor.
+
+11
+00:00:42,480 --> 00:00:47,660
+Herhangi bir dosya, ister video, ister ses, ister metin, ister bir kod,
+
+12
+00:00:47,660 --> 00:00:50,960
+ister bir görüntü olsun, sonuçta 1&#39;ler ve 0&#39;lardan oluşan bir dizidir.
+
+13
+00:00:50,960 --> 00:00:55,340
+Ve ters çevrilen herhangi bir biti düzeltmek için basit
+
+14
+00:00:55,340 --> 00:00:57,780
+bir strateji, her bitin üç kopyasını saklamak olacaktır.
+
+15
+00:00:57,780 --> 00:01:02,240
+Daha sonra bu dosyayı okuyan makine bu üç kopyayı karşılaştırabilir ve
+
+16
+00:01:02,240 --> 00:01:07,440
+bir tutarsızlık olduğunda her zaman 3 üzerinden en iyi 2&#39;yi alabilir.
+
+17
+00:01:07,440 --> 00:01:11,560
+Ancak bunun anlamı, alanınızın üçte ikisini yedeklilik için kullanmaktır.
+
+18
+00:01:11,560 --> 00:01:15,360
+Ve o zaman bile, kaybedilen tüm bu alana rağmen, birden fazla
+
+19
+00:01:15,360 --> 00:01:18,120
+bitin ters çevrilmesi durumunda ne olacağına dair güçlü bir garanti yoktur.
+
+20
+00:01:18,120 --> 00:01:21,960
+Çok daha ilginç olan soru, mümkün olduğunca az
+
+21
+00:01:21,960 --> 00:01:24,740
+yer kaplarken hataların düzeltilebilmesi için bunun nasıl yapılacağıdır.
+
+22
+00:01:24,740 --> 00:01:28,500
+Örneğin, bu videoda öğreneceğiniz yöntemi kullanarak verilerinizi 256 bitlik bloklarda saklayabilirsiniz;
+
+23
+00:01:28,500 --> 00:01:35,840
+burada her blok 9 bit, 9! bir tür artıklık görevi görür
+
+24
+00:01:35,840 --> 00:01:41,000
+ve diğer 247 bit, istediğiniz anlamlı mesajı veya veriyi taşımakta özgürdür.
+
+25
+00:01:41,000 --> 00:01:44,740
+Ve yine de burada herhangi bir bit ters çevrilirse, sadece bu bloğa bakarak
+
+26
+00:01:44,740 --> 00:01:49,640
+ve başka hiçbir şeye bakmadan, bir makine bir hata olduğunu ve tam
+
+27
+00:01:49,640 --> 00:01:53,120
+olarak nerede olduğunu tespit edebilecek ve böylece onu nasıl düzelteceğini bilebilecektir. .
+
+28
+00:01:53,140 --> 00:01:55,540
+Ve dürüst olmak gerekirse, bu sihir gibi geliyor.
+
+29
+00:01:55,540 --> 00:01:59,400
+Ve bu özel şema için, eğer iki bit ters çevrilirse, makine en
+
+30
+00:01:59,400 --> 00:02:03,180
+azından iki hata olduğunu tespit edebilecektir, ancak bunları nasıl düzelteceğini bilemeyecektir.
+
+31
+00:02:03,180 --> 00:02:08,140
+Bunun farklı boyutlardaki bloklar için nasıl ölçeklendirileceği hakkında biraz sonra konuşacağız.
+
+32
+00:02:08,140 --> 00:02:12,620
+Bunun gibi hataları düzeltmenize izin veren yöntemler,
+
+33
+00:02:12,620 --> 00:02:13,880
+makul olarak, hata düzeltme kodları olarak bilinir.
+
+34
+00:02:13,880 --> 00:02:18,220
+Geçen yüzyılın büyük bir bölümünde bu alan, her gün kullandığımız cihazlara dahil
+
+35
+00:02:18,220 --> 00:02:23,000
+edilen, şaşırtıcı derecede derin bir matematik açısından gerçekten zengin bir kaynak oldu.
+
+36
+00:02:23,000 --> 00:02:27,740
+Buradaki amaç size Hamming kodu olarak bilinen en
+
+37
+00:02:27,740 --> 00:02:29,660
+eski örneklerden biri hakkında kapsamlı bir anlayış kazandırmaktır.
+
+38
+00:02:29,660 --> 00:02:32,620
+Bu arada, bu videonun yapısı hakkında düşünme biçimim, onu
+
+39
+00:02:32,620 --> 00:02:37,060
+mümkün olduğunca doğrudan açıklamaktan çok, ara sıra hafif bir
+
+40
+00:02:37,060 --> 00:02:40,220
+rehberlikle sizi onu kendiniz icat etmeye teşvik etmekle ilgili.
+
+41
+00:02:40,220 --> 00:02:44,100
+Yani bir noktada işlerin nereye gideceğini gördüğünüzü hissettiğinizde, o anı duraklatın ve
+
+42
+00:02:44,100 --> 00:02:47,180
+ben size söylemeden önce planın ne olacağını aktif olarak tahmin edin.
+
+43
+00:02:47,180 --> 00:02:51,500
+Ayrıca, anlayışınızın donanım düzeyine inmesini istiyorsanız, Ben Eater bununla
+
+44
+00:02:51,500 --> 00:02:55,160
+bağlantılı olarak Hamming kodlarını devre tahtalarına nasıl uygulayacağınızı gösteren
+
+45
+00:02:55,160 --> 00:02:59,520
+bir video hazırladı ki bu son derece tatmin edici.
+
+46
+00:02:59,520 --> 00:03:03,120
+Hamming kodlarının, Reed-Solomon algoritması gibi daha modern kodlar kadar yaygın kullanılmadığını bilmelisiniz,
+
+47
+00:03:03,120 --> 00:03:08,040
+ancak bu görevin başlangıçta ne kadar imkansız hissettirdiği ile bir kez ne
+
+48
+00:03:08,040 --> 00:03:14,240
+kadar mantıklı göründüğü arasındaki karşıtlıkta belli bir sihir var. Hamming&#39;i öğreniyorsun.
+
+49
+00:03:14,240 --> 00:03:19,080
+Hata düzeltmenin temel ilkesi, olası tüm mesajların geniş bir alanında
+
+50
+00:03:19,300 --> 00:03:22,860
+yalnızca bazı alt kümelerin geçerli mesaj olarak kabul edilmesidir.
+
+51
+00:03:22,860 --> 00:03:29,100
+Bir benzetme olarak, doğru yazılan sözcükler ile yanlış yazılan sözcükleri düşünün.
+
+52
+00:03:29,100 --> 00:03:33,340
+Geçerli bir mesaj değiştirildiğinde, tıpkı bir yazım hatasında yapabileceğiniz
+
+53
+00:03:33,340 --> 00:03:38,380
+gibi, alıcı gördüklerini en yakın geçerli komşuya düzeltmekten sorumludur.
+
+54
+00:03:38,380 --> 00:03:43,100
+Ancak bunun gibi mesajları etkili bir şekilde kategorize etmek
+
+55
+00:03:43,100 --> 00:03:47,160
+için somut bir algoritma bulmak belli bir zeka gerektirir.
+
+56
+00:03:47,160 --> 00:03:52,060
+Hikaye 1940&#39;larda, genç Richard Hamming&#39;in Bell Laboratuvarları için çalıştığı
+
+57
+00:03:52,060 --> 00:03:55,900
+ve bazı işlerinin sınırlı erişime sahip olduğu çok büyük,
+
+58
+00:03:55,900 --> 00:03:57,420
+pahalı bir delikli kart bilgisayarını kullandığı zaman başlıyor.
+
+59
+00:03:57,420 --> 00:04:01,200
+Ve uygulamaya koyduğu programlar sürekli başarısız oluyordu
+
+60
+00:04:01,200 --> 00:04:03,140
+çünkü ara sıra bazı kısımlar yanlış okunuyordu.
+
+61
+00:04:03,140 --> 00:04:07,140
+Hayal kırıklığı buluşun potası olduğundan o kadar bıktı
+
+62
+00:04:07,140 --> 00:04:09,280
+ki dünyanın ilk hata düzeltme kodunu icat etti.
+
+63
+00:04:09,280 --> 00:04:13,020
+Hamming kodlarını çerçevelemenin pek çok farklı yolu vardır, ancak ilk geçiş
+
+64
+00:04:13,020 --> 00:04:16,620
+olarak biz bunu Hamming&#39;in kendisinin onlar hakkında düşündüğü şekilde ele alacağız.
+
+65
+00:04:16,620 --> 00:04:21,400
+Basit ama çok da basit olmayan bir örnek, 16 bitlik bir blok kullanalım.
+
+66
+00:04:21,400 --> 00:04:25,700
+Bu bitlerin konumlarını 0&#39;dan 15&#39;e kadar numaralandıracağız.
+
+67
+00:04:25,700 --> 00:04:30,520
+Saklamak istediğimiz gerçek veriler bu bitlerden yalnızca 12&#39;sini oluşturacak,
+
+68
+00:04:30,520 --> 00:04:33,920
+konumların 4&#39;ü ise bir tür artıklık olarak ayrılmış durumda.
+
+69
+00:04:33,920 --> 00:04:38,120
+Buradaki gereksiz kelimesi sadece kopyalama anlamına gelmiyor, sonuçta bu 4
+
+70
+00:04:38,120 --> 00:04:40,200
+bit bize verileri körü körüne kopyalamak için yeterli alan vermiyor.
+
+71
+00:04:40,200 --> 00:04:44,880
+Bunun yerine, bunların çok daha incelikli ve akıllı bir tür fazlalık
+
+72
+00:04:44,880 --> 00:04:48,740
+olması, herhangi bir yeni bilgi eklemesi değil, esneklik sağlaması gerekecek.
+
+73
+00:04:48,740 --> 00:04:52,620
+Bu 4 özel parçanın, belki sonunda ya da buna benzer bir şekilde
+
+74
+00:04:52,620 --> 00:04:56,400
+güzel bir şekilde bir araya gelmesini bekleyebilirsiniz, ancak göreceğiniz gibi, bunların 2&#39;nin
+
+75
+00:04:56,400 --> 00:05:00,320
+kuvvetleri olan konumlara yerleştirilmesi, sonunda gerçekten zarif bir şeye olanak tanır.
+
+76
+00:05:00,320 --> 00:05:05,420
+Ayrıca, bunun daha büyük bloklar için nasıl ölçeklendiğine dair size küçük bir ipucu verebilir.
+
+77
+00:05:05,420 --> 00:05:09,220
+Ayrıca teknik olarak sadece 11 bitlik bir veriden ibarettir, 0 konumunda olup
+
+78
+00:05:09,220 --> 00:05:14,260
+bitenlerle ilgili hafif bir nüans olduğunu göreceksiniz, ancak şimdilik bunun için endişelenmeyin.
+
+79
+00:05:14,280 --> 00:05:18,640
+Herhangi bir hata düzeltme algoritması gibi, bu da iki oyuncuyu içerecektir;
+
+80
+00:05:18,640 --> 00:05:23,200
+bu 4 özel bitin ayarlanmasından sorumlu olan bir gönderici ve bir
+
+81
+00:05:23,200 --> 00:05:26,360
+tür kontrolün gerçekleştirilmesinden ve hataların düzeltilmesinden sorumlu olan bir alıcı.
+
+82
+00:05:26,360 --> 00:05:30,040
+Elbette, gönderen ve alıcı kelimeleri aslında tüm kontrolleri yapan makinelere
+
+83
+00:05:30,040 --> 00:05:34,040
+veya yazılımlara atıfta bulunur ve mesaj fikri, depolama gibi
+
+84
+00:05:34,040 --> 00:05:35,480
+şeyleri de içerecek şekilde oldukça geniş bir anlama gelir.
+
+85
+00:05:35,480 --> 00:05:39,320
+Sonuçta veri depolamak, mesajın bir yerden başka bir
+
+86
+00:05:39,320 --> 00:05:42,640
+yere değil, geçmişten geleceğe gönderilmesiyle aynı şeydir.
+
+87
+00:05:42,640 --> 00:05:46,700
+Kurulum bu, ancak konuya dalmadan önce, keşfi sırasında Hamming&#39;in aklında
+
+88
+00:05:46,700 --> 00:05:51,080
+yeni olan ilgili bir fikir hakkında konuşmamız gerekiyor; herhangi bir
+
+89
+00:05:51,080 --> 00:05:55,520
+tek bit hatasını tespit etmenize izin veren ancak bunları düzeltmenize
+
+90
+00:05:55,520 --> 00:05:57,300
+izin vermeyen bir yöntem, bilinen iş dünyasında parite kontrolü olarak.
+
+91
+00:05:57,300 --> 00:06:01,300
+Eşlik kontrolü için, gönderenin ayarlamadan sorumlu olduğu tek bir
+
+92
+00:06:01,300 --> 00:06:04,940
+biti ayırıyoruz ve geri kalanı mesaj taşımakta özgür.
+
+93
+00:06:04,940 --> 00:06:10,380
+Bu özel bitin tek görevi mesajdaki 1&#39;lerin
+
+94
+00:06:10,380 --> 00:06:12,100
+toplam sayısının çift sayı olmasını sağlamaktır.
+
+95
+00:06:12,100 --> 00:06:16,920
+Örneğin şu anda, 1&#39;lerin toplam sayısı 7&#39;dir, bu tek sayıdır, dolayısıyla gönderenin
+
+96
+00:06:16,920 --> 00:06:20,960
+bu özel biti 1 olacak şekilde çevirmesi gerekir, böylece sayı çift olur.
+
+97
+00:06:20,960 --> 00:06:25,320
+Ancak blok zaten çift sayıda 1&#39;lerle başlamış
+
+98
+00:06:25,320 --> 00:06:27,480
+olsaydı, bu özel bit 0&#39;da tutulurdu.
+
+99
+00:06:27,480 --> 00:06:31,640
+Bu oldukça basit, yanıltıcı derecede basit, ancak bir mesajın herhangi bir yerindeki değişimin
+
+100
+00:06:31,640 --> 00:06:37,760
+tek bir bilgi parçasına yansıtılacağı fikrini damıtmanın inanılmaz derecede zarif bir yolu.
+
+101
+00:06:37,760 --> 00:06:43,680
+Bu mesajın herhangi bir bitinin 0&#39;dan 1&#39;e veya 1&#39;den 0&#39;a
+
+102
+00:06:43,680 --> 00:06:48,140
+çevrilmesi durumunda, 1&#39;lerin toplam sayısının çiftten teke değişmesine dikkat edin.
+
+103
+00:06:48,140 --> 00:06:52,000
+Yani eğer alıcıysanız, bu mesaja baktığınızda ve tek
+
+104
+00:06:52,000 --> 00:06:56,580
+sayıda 1&#39;ler görüyorsanız, nerede olduğu hakkında hiçbir fikriniz
+
+105
+00:06:56,580 --> 00:06:58,700
+olmasa bile bir hatanın meydana geldiğinden emin olabilirsiniz.
+
+106
+00:06:58,700 --> 00:07:02,820
+Jargonda, bir bit grubunun çift veya tek sayıda
+
+107
+00:07:02,820 --> 00:07:04,940
+1&#39;e sahip olup olmadığı, eşlik olarak bilinir.
+
+108
+00:07:04,940 --> 00:07:09,140
+Ayrıca sayıları kullanabilir ve paritenin 0 veya 1 olduğunu söyleyebilirsiniz;
+
+109
+00:07:09,140 --> 00:07:11,320
+bu fikirle matematik yapmaya başladığınızda genellikle daha yararlı olur.
+
+110
+00:07:11,320 --> 00:07:15,200
+Ve göndericinin pariteyi kontrol etmek için kullandığı
+
+111
+00:07:15,200 --> 00:07:18,020
+bu özel bit, eşlik biti olarak adlandırılır.
+
+112
+00:07:18,020 --> 00:07:22,460
+Ve aslında, açık olmalıyız ki, eğer alıcı tek bir parite görürse, bu
+
+113
+00:07:22,460 --> 00:07:26,920
+sadece bir hata olduğu anlamına gelmez, 3 hata, 5 hata veya başka
+
+114
+00:07:26,920 --> 00:07:29,560
+herhangi bir tek sayı olabilir, ancak kesin olarak bilebilir. 0 değildi.
+
+115
+00:07:29,560 --> 00:07:34,880
+Öte yandan, 2 hata veya herhangi bir çift sayıda hata olsaydı,
+
+116
+00:07:34,880 --> 00:07:39,560
+son 1 sayısı hâlâ çift sayı olurdu, dolayısıyla alıcı, çift sayının
+
+117
+00:07:39,560 --> 00:07:43,360
+mutlaka mesajın hatasız olduğu anlamına geldiğine tam olarak güvenemez. .
+
+118
+00:07:43,360 --> 00:07:47,860
+Yalnızca 2 bitlik geçişlerle bozulan bir mesajın oldukça
+
+119
+00:07:47,860 --> 00:07:49,760
+zayıf olduğundan şikayet edebilirsiniz ve kesinlikle haklısınız.
+
+120
+00:07:49,760 --> 00:07:54,480
+Ancak, aldığınız mesajın gönderenin amaçladığı mesaj olduğuna dair size %100
+
+121
+00:07:54,480 --> 00:07:59,720
+güven verecek bir hata tespiti veya düzeltme yöntemi olmadığını unutmayın.
+
+122
+00:07:59,720 --> 00:08:03,760
+Sonuçta, yeterince rastgele gürültü her zaman geçerli bir mesajı
+
+123
+00:08:03,760 --> 00:08:05,920
+tamamen şans eseri başka bir geçerli mesaja dönüştürebilir.
+
+124
+00:08:05,920 --> 00:08:10,520
+Bunun yerine amaç, belirli bir maksimum hata sayısına kadar dayanıklı
+
+125
+00:08:10,520 --> 00:08:16,480
+bir şema bulmak veya bunun gibi yanlış pozitif olasılığını azaltmaktır.
+
+126
+00:08:16,480 --> 00:08:20,940
+Eşlik kontrolleri kendi başlarına oldukça zayıftır, ancak tüm mesajdaki
+
+127
+00:08:20,940 --> 00:08:25,640
+değişim fikrini tek bir bit&#39;e indirgeyerek bize verdikleri şey,
+
+128
+00:08:25,640 --> 00:08:28,000
+daha karmaşık planlar için güçlü bir yapı taşıdır.
+
+129
+00:08:28,000 --> 00:08:32,880
+Örneğin, Hamming bir hatanın sadece meydana geldiğini değil, nerede meydana geldiğini de
+
+130
+00:08:32,880 --> 00:08:37,160
+belirlemenin bir yolunu ararken, onun temel görüşü şuydu: Eğer bazı eşitlik kontrollerini
+
+131
+00:08:37,160 --> 00:08:42,040
+mesajın tamamına değil de dikkatle seçilmiş belirli alt kümelere uygularsanız, şu soruyu
+
+132
+00:08:42,040 --> 00:08:46,840
+sorabilirsiniz: herhangi bir bit hatasının yerini belirleyen daha rafine bir dizi soru.
+
+133
+00:08:46,840 --> 00:08:51,280
+Genel his biraz 20 soruluk bir oyun oynamaya, olasılıklar
+
+134
+00:08:51,280 --> 00:08:54,300
+alanını yarıya indiren evet veya hayır soruları sormaya benziyor.
+
+135
+00:08:54,300 --> 00:08:58,840
+Örneğin, diyelim ki sadece bu 8 bit üzerinde, tek
+
+136
+00:08:58,840 --> 00:08:59,840
+sayılı konumların tümü üzerinde bir eşlik kontrolü yaptığımızı varsayalım.
+
+137
+00:09:00,400 --> 00:09:04,560
+Daha sonra bir hata tespit edilirse, alıcıya hatanın tam olarak nerede
+
+138
+00:09:04,560 --> 00:09:09,160
+olduğu, yani tek bir konumda olduğu hakkında biraz daha bilgi verilir.
+
+139
+00:09:09,160 --> 00:09:14,360
+Bu 8 bit arasında herhangi bir hata tespit edilmezse, bu ya hiç
+
+140
+00:09:14,360 --> 00:09:17,240
+hata olmadığı anlamına gelir ya da çift konumlarda bir yerde bulunur.
+
+141
+00:09:17,240 --> 00:09:21,560
+Eşlik kontrolünü bitlerin yarısıyla sınırlandırmanın onu daha az etkili hale
+
+142
+00:09:21,560 --> 00:09:25,460
+getirdiğini düşünebilirsiniz, ancak diğer iyi seçilmiş kontrollerle birlikte yapıldığında, mantıksız
+
+143
+00:09:25,460 --> 00:09:29,720
+bir şekilde bize çok daha güçlü bir şey verir.
+
+144
+00:09:29,720 --> 00:09:34,440
+Eşlik kontrolünü gerçekten ayarlamak için, unutmayın, o tam grubun
+
+145
+00:09:34,440 --> 00:09:37,600
+eşliğini kontrol eden bazı özel bitlerin tahsis edilmesi gerekir.
+
+146
+00:09:37,600 --> 00:09:39,920
+Burada sadece konum 1&#39;i seçelim.
+
+147
+00:09:39,920 --> 00:09:43,960
+Gösterilen örnekte, bu 8 bitin paritesi şu anda tektir, dolayısıyla
+
+148
+00:09:43,960 --> 00:09:48,220
+gönderen bu eşlik bitinin değiştirilmesinden sorumludur ve artık çifttir.
+
+149
+00:09:48,220 --> 00:09:51,040
+Bu, yapacağımız 4 eşlik kontrolünden yalnızca 1&#39;idir.
+
+150
+00:09:51,040 --> 00:09:55,560
+İkinci kontrol, en azından burada çizdiğimiz şekliyle,
+
+151
+00:09:55,560 --> 00:09:56,880
+ızgaranın sağ yarısındaki 8 bit arasındadır.
+
+152
+00:09:56,880 --> 00:10:02,520
+Bu kez konum 2&#39;yi eşlik biti olarak kullanabiliriz, böylece bu 8 bit zaten eşit
+
+153
+00:10:02,520 --> 00:10:07,160
+bir eşliğe sahiptir ve gönderen, bu 2 numaralı biti değiştirmeden bırakmanın kendisini iyi hissedebilir.
+
+154
+00:10:07,160 --> 00:10:11,040
+Diğer taraftan eğer alıcı bu grubun paritesini kontrol ederse ve bunun tuhaf
+
+155
+00:10:11,040 --> 00:10:15,960
+olduğunu görürse, hatanın sağdaki bu 8 bit arasında bir yerde olduğunu anlayacaktır.
+
+156
+00:10:15,960 --> 00:10:21,260
+Aksi takdirde bu, ya hata olmadığı ya da hatanın sol yarıda bir yerde olduğu anlamına gelir.
+
+157
+00:10:21,260 --> 00:10:24,040
+Ya da sanırım iki hata olabilirdi ama şimdilik
+
+158
+00:10:24,040 --> 00:10:27,080
+tüm blokta en fazla bir hata olduğunu varsayacağız.
+
+159
+00:10:27,080 --> 00:10:29,160
+Bundan daha fazlası için işler tamamen bozulur.
+
+160
+00:10:29,160 --> 00:10:32,920
+Burada, sonraki iki kontrole bakmadan önce, bir dakika durup bu
+
+161
+00:10:32,920 --> 00:10:35,880
+ilk ikisinin birlikte değerlendirildiğinde bize ne yapmamıza olanak sağladığını düşünün.
+
+162
+00:10:35,880 --> 00:10:40,240
+Diyelim ki tek sütunlar arasında ve sağ yarıda bir hata tespit ettiniz.
+
+163
+00:10:40,240 --> 00:10:43,940
+Bu mutlaka hatanın son sütunda bir yerde olduğu anlamına gelir.
+
+164
+00:10:43,940 --> 00:10:48,280
+Tek sütunda hata yoksa ancak sağ yarıda bir hata
+
+165
+00:10:48,280 --> 00:10:50,520
+varsa, bu size sorunun sondan ikinci sütunda olduğunu gösterir.
+
+166
+00:10:50,520 --> 00:10:54,640
+Benzer şekilde, tek sütunlarda bir hata varsa ancak sağ
+
+167
+00:10:54,640 --> 00:10:56,560
+yarıda değilse, bunun ikinci sütunda bir yerde olduğunu bilirsiniz.
+
+168
+00:10:56,560 --> 00:11:00,560
+Ve eğer bu iki eşlik kontrolünden hiçbiri bir şey tespit etmezse,
+
+169
+00:11:00,560 --> 00:11:03,760
+bu, hatanın olabileceği tek yerin en soldaki sütun olduğu anlamına gelir.
+
+170
+00:11:03,760 --> 00:11:06,480
+Ancak bu aynı zamanda hiçbir hatanın olmadığı anlamına da gelebilir.
+
+171
+00:11:06,480 --> 00:11:10,800
+Bu, iki eşlik kontrolünün sütunu belirlememize izin
+
+172
+00:11:10,800 --> 00:11:11,800
+verdiğini söylemenin oldukça ayrıntılı bir yolu.
+
+173
+00:11:11,800 --> 00:11:14,000
+Buradan sonrasını muhtemelen tahmin edebilirsiniz.
+
+174
+00:11:14,000 --> 00:11:16,240
+Temelde aynı şeyi yapıyoruz ancak satırlar için.
+
+175
+00:11:16,240 --> 00:11:21,040
+Konum 4&#39;ü eşlik biti olarak kullanarak tek satırlarda bir eşlik kontrolü yapılacak.
+
+176
+00:11:21,040 --> 00:11:25,480
+Yani bu örnekte bu grup zaten çift
+
+177
+00:11:25,480 --> 00:11:26,480
+eşlikli olduğundan bit 4, 0&#39;a ayarlanacaktır.
+
+178
+00:11:26,480 --> 00:11:31,280
+Ve son olarak, alt iki satırda, konum 8&#39;i
+
+179
+00:11:31,280 --> 00:11:32,280
+eşlik biti olarak kullanan bir eşlik kontrolü var.
+
+180
+00:11:32,280 --> 00:11:35,840
+Bu durumda, gruba eşit eşitlik sağlamak için
+
+181
+00:11:35,840 --> 00:11:37,840
+gönderenin 8. biti açması gerekiyor gibi görünüyor.
+
+182
+00:11:37,840 --> 00:11:41,360
+İlk iki kontrol sütunu belirlememize izin verdiği gibi,
+
+183
+00:11:41,360 --> 00:11:43,000
+sonraki iki kontrol de satırı belirlemenize olanak sağlar.
+
+184
+00:11:43,000 --> 00:11:48,400
+Örnek olarak, iletim sırasında örneğin 3. pozisyonda bir hata olduğunu hayal edin.
+
+185
+00:11:48,400 --> 00:11:52,620
+Bu, birinci eşlik grubunu etkiler ve aynı zamanda ikinci eşlik grubunu da
+
+186
+00:11:52,620 --> 00:11:56,340
+etkiler, böylece alıcı, sağ sütunda bir yerde bir hata olduğunu bilir.
+
+187
+00:11:56,340 --> 00:12:01,380
+Ama üçüncü grubu etkilemediği gibi dördüncü grubu da etkilemez.
+
+188
+00:12:01,380 --> 00:12:05,460
+Ve bu, alıcının hatayı ilk satıra kadar tespit etmesini sağlar, bu
+
+189
+00:12:05,460 --> 00:12:08,660
+da zorunlu olarak 3. konum anlamına gelir, böylece hatayı düzeltebilirler.
+
+190
+00:12:08,660 --> 00:12:12,640
+Bu dört sorunun yanıtlarının, nerede olursa olsun, belirli bir konumu belirlemenize gerçekten
+
+191
+00:12:12,680 --> 00:12:17,320
+olanak sağlayacağına kendinizi ikna etmek için bir dakikanızı ayırmanın tadını çıkarabilirsiniz.
+
+192
+00:12:17,320 --> 00:12:22,640
+Hatta aranızdaki zeki biri bu sorularla ikili
+
+193
+00:12:22,640 --> 00:12:23,640
+sayım arasında bir bağlantı bile fark edebilir.
+
+194
+00:12:23,640 --> 00:12:27,840
+Ve eğer yaparsanız, tekrar vurgulayayım, duraklatın, ben
+
+195
+00:12:27,840 --> 00:12:30,880
+onu bozmadan bağlantıyı kendiniz kurmaya çalışın.
+
+196
+00:12:30,880 --> 00:12:35,560
+Bir eşlik bitinin kendisi etkilenirse ne
+
+197
+00:12:35,560 --> 00:12:36,560
+olacağını merak ediyorsanız, bunu deneyebilirsiniz.
+
+198
+00:12:36,560 --> 00:12:40,720
+Bir dakikanızı ayırıp bu dört özel parça arasındaki herhangi bir hatanın,
+
+199
+00:12:40,720 --> 00:12:47,440
+tıpkı diğerleri gibi, dört sorudan oluşan aynı grupla nasıl bulunacağını düşünün.
+
+200
+00:12:47,440 --> 00:12:50,500
+Aslında bunun bir önemi yok, çünkü günün sonunda istediğimiz şey
+
+201
+00:12:50,500 --> 00:12:53,640
+mesaj bitlerini korumaktır, hata düzeltme bitleri yoluna devam eder.
+
+202
+00:12:53,640 --> 00:12:57,120
+Ancak bu parçaların da korunması, doğal olarak bir
+
+203
+00:12:57,120 --> 00:12:59,260
+yan ürün olarak planın dışında kalan bir şeydir.
+
+204
+00:12:59,260 --> 00:13:02,380
+Bunun nasıl ölçekleneceğini tahmin etmekten de keyif alabilirsiniz.
+
+205
+00:13:02,380 --> 00:13:08,040
+Örneğin, bir konumu belirlemek için 256 bit boyutunda bir blok kullansaydık, belirli bir noktaya
+
+206
+00:13:08,040 --> 00:13:15,680
+giden yolu ikili olarak aramak için yalnızca sekiz evet veya hayır sorusuna ihtiyacınız olurdu.
+
+207
+00:13:15,680 --> 00:13:19,680
+Ve unutmayın, her soru uygun eşlik kontrolünü ayarlamak
+
+208
+00:13:19,680 --> 00:13:23,340
+için yalnızca tek bir bitten vazgeçmeyi gerektirir.
+
+209
+00:13:23,340 --> 00:13:26,960
+Bazılarınız bunu zaten görmüş olabilir, ancak daha sonra bu soruların ne
+
+210
+00:13:26,960 --> 00:13:29,960
+olduğunu bir veya iki dakika içinde bulmanın sistematik yolundan bahsedeceğiz.
+
+211
+00:13:29,960 --> 00:13:33,440
+Umarım bu taslak, burada geliştirdiğimiz şeyin
+
+212
+00:13:33,440 --> 00:13:34,440
+verimliliğini takdir etmek için yeterlidir.
+
+213
+00:13:34,440 --> 00:13:38,440
+İlk şey, vurgulanan sekiz eşlik biti dışında, istediğiniz
+
+214
+00:13:38,440 --> 00:13:41,720
+her şey olabilir, istediğiniz mesajı veya veriyi taşıyabilir.
+
+215
+00:13:41,720 --> 00:13:45,480
+8 bit, tamamen mesajın geri kalanı tarafından belirlenmeleri anlamında gereksizdir, ancak
+
+216
+00:13:45,480 --> 00:13:53,640
+bu, mesajın bir bütün olarak kopyalanmasından çok daha akıllı bir yoldur.
+
+217
+00:13:53,640 --> 00:13:58,000
+Ve yine de, bu kadar az vazgeçmekle, herhangi
+
+218
+00:13:58,000 --> 00:13:59,000
+bir tek bit hatasını tespit edip düzeltebileceksiniz.
+
+219
+00:13:59,000 --> 00:14:00,400
+Neredeyse.
+
+220
+00:14:00,400 --> 00:14:05,920
+Tamam, buradaki sorun şu ki, eğer dört eşlik kontrolünden hiçbiri bir
+
+221
+00:14:05,920 --> 00:14:10,240
+hata tespit etmezse, yani özel olarak seçilmiş 8 bitlik alt kümelerin
+
+222
+00:14:10,240 --> 00:14:15,520
+tümü, gönderenin amaçladığı gibi eşit eşliklere sahipse, o zaman bu da
+
+223
+00:14:15,520 --> 00:14:17,760
+hiçbir hata olmadığı anlamına gelir. veya bizi 0 pozisyonuna daraltır.
+
+224
+00:14:17,760 --> 00:14:23,040
+Görüyorsunuz, dört evet veya hayır sorusuyla, eşitlik kontrollerimiz için 16 olası sonuç var
+
+225
+00:14:23,040 --> 00:14:28,000
+ve ilk başta bu, bloktaki 16 konumdan 1&#39;inin yerini belirlemek için mükemmel gibi
+
+226
+00:14:28,000 --> 00:14:33,000
+geliyor, ancak aynı zamanda 17. sonucu da iletmeniz gerekiyor, yani hata yok durum.
+
+227
+00:14:33,000 --> 00:14:37,860
+Buradaki çözüm aslında oldukça basit, sadece o 0&#39;ıncı biti tamamen unutun.
+
+228
+00:14:37,860 --> 00:14:41,920
+Yani dört eşlik kontrolümüzü yaptığımızda ve hepsinin eşit olduğunu
+
+229
+00:14:41,920 --> 00:14:44,320
+gördüğümüzde, bu açıkça hiçbir hata olmadığı anlamına gelir.
+
+230
+00:14:44,320 --> 00:14:49,240
+Bunun anlamı, 16 bitlik bir blokla çalışmak yerine, 15 bitlik bir blokla çalışıyoruz;
+
+231
+00:14:49,240 --> 00:14:54,040
+burada bitlerin 11&#39;i mesaj taşımak için serbest ve 4&#39;ü yedeklik için orada.
+
+232
+00:14:54,080 --> 00:14:58,400
+Ve bununla birlikte, artık sektördeki insanların 15-11
+
+233
+00:14:58,400 --> 00:14:59,400
+Hamming kodu olarak adlandıracağı şeye sahibiz.
+
+234
+00:14:59,400 --> 00:15:03,920
+Bununla birlikte, 2&#39;nin temiz kuvveti olan bir blok boyutuna sahip olmak güzel ve bu 0&#39;ıncı
+
+235
+00:15:03,920 --> 00:15:08,880
+biti etrafta tutmanın ve bizim için biraz fazladan iş yapmasını sağlamanın akıllıca bir yolu var.
+
+236
+00:15:08,880 --> 00:15:13,600
+Bunu tüm blok boyunca bir eşlik biti olarak kullanırsak,
+
+237
+00:15:13,600 --> 00:15:16,320
+2 bitlik hataları düzeltemesek bile aslında tespit etmemizi sağlar.
+
+238
+00:15:16,320 --> 00:15:17,440
+İşte nasıl çalışıyor?
+
+239
+00:15:17,440 --> 00:15:21,740
+Bu dört özel hata düzeltme bitini ayarladıktan sonra, tam bloğun paritesi
+
+240
+00:15:21,740 --> 00:15:25,540
+normal bir eşlik kontrolü gibi çift olacak şekilde 0&#39;ıncı biti ayarladık.
+
+241
+00:15:25,540 --> 00:15:29,780
+Şimdi, eğer tek bir bit hatası varsa, o zaman tam bloğun paritesi tek
+
+242
+00:15:29,780 --> 00:15:33,940
+olacak şekilde değişir, ancak dört hata düzeltme kontrolü sayesinde bunu yine de yakalarız.
+
+243
+00:15:33,940 --> 00:15:38,100
+Bununla birlikte, eğer iki hata varsa, o zaman genel parite tekrar
+
+244
+00:15:38,100 --> 00:15:42,660
+eşit duruma dönecektir, ancak alıcı yine de bu dört eşlik kontrolünde
+
+245
+00:15:42,660 --> 00:15:45,820
+olup bitenlerden dolayı en azından bir miktar hata olduğunu görecektir.
+
+246
+00:15:45,820 --> 00:15:49,780
+Yani genel olarak eşit bir eşitlik fark ederlerse ancak diğer kontrollerde sıfırdan
+
+247
+00:15:49,820 --> 00:15:52,980
+farklı bir şey oluyorsa, bu onlara en az iki hata olduğunu söyler.
+
+248
+00:15:52,980 --> 00:15:54,420
+Bu çok akıllıca değil mi?
+
+249
+00:15:54,420 --> 00:15:58,500
+Her ne kadar bu 2 bitlik hataları düzeltemesek de, o küçük
+
+250
+00:15:58,500 --> 00:16:02,340
+can sıkıcı 0&#39;ıncı biti tekrar devreye sokarak, onları tespit etmemizi sağlıyor.
+
+251
+00:16:02,340 --> 00:16:06,540
+Bu oldukça standarttır, genişletilmiş Hamming kodu olarak bilinir.
+
+252
+00:16:06,540 --> 00:16:10,860
+Teknik açıdan konuşursak, artık en azından 16 bitlik bir blok
+
+253
+00:16:10,860 --> 00:16:13,580
+örneği için Hamming kodunun ne yaptığının tam bir açıklamasına sahipsiniz.
+
+254
+00:16:13,580 --> 00:16:17,300
+Ancak, baştan sona kendi başınıza tam bir örnek yaparak anlayışınızı kontrol etmeyi
+
+255
+00:16:17,300 --> 00:16:21,980
+ve bu noktaya kadar her şeyi sağlamlaştırmayı daha tatmin edici bulacağınızı düşünüyorum.
+
+256
+00:16:21,980 --> 00:16:25,100
+Kendinizi kontrol edebilmeniz için ben de sizinle birlikte üzerinden geçeceğim.
+
+257
+00:16:25,100 --> 00:16:29,180
+İster uzayda çevirdiğiniz gerçek bir mesaj, ister zaman içinde
+
+258
+00:16:29,180 --> 00:16:34,100
+depolamak istediğiniz bazı veriler olsun, bir mesaj oluşturmak
+
+259
+00:16:34,100 --> 00:16:35,700
+için ilk adım, onu 11 bitlik parçalara bölmektir.
+
+260
+00:16:35,700 --> 00:16:40,340
+Her parça, hataya dayanıklı 16 bitlik bir blok halinde paketlenecek.
+
+261
+00:16:40,340 --> 00:16:43,740
+Hadi bunu bir örnek olarak alalım ve gerçekten üzerinde çalışalım.
+
+262
+00:16:43,740 --> 00:16:45,340
+Devam edin, gerçekten yapın!
+
+263
+00:16:45,380 --> 00:16:47,380
+Durup bu bloğu bir araya getirmeyi deneyelim.
+
+264
+00:16:52,980 --> 00:16:53,980
+Tamam, hazır mısın?
+
+265
+00:16:53,980 --> 00:16:58,500
+Unutmayın, 0 konumu ve 2&#39;nin diğer kuvvetleri hata düzeltme görevi için
+
+266
+00:16:58,500 --> 00:17:05,700
+ayrılmıştır, bu nedenle mesaj bitlerini kalan tüm noktalara sırayla yerleştirerek başlarsınız.
+
+267
+00:17:05,700 --> 00:17:09,700
+Bu grubun çift eşlikli olması gerekir ki zaten öyledir, dolayısıyla
+
+268
+00:17:09,700 --> 00:17:13,140
+1 konumundaki eşlik bitini 0 olacak şekilde ayarlamanız gerekir.
+
+269
+00:17:13,140 --> 00:17:17,700
+Bir sonraki grup tek bir eşlikle başlar,
+
+270
+00:17:17,700 --> 00:17:19,260
+dolayısıyla eşlik bitini 1 olarak ayarlamanız gerekir.
+
+271
+00:17:19,260 --> 00:17:23,740
+Bundan sonraki grup tek eşlikle başlar, dolayısıyla
+
+272
+00:17:23,740 --> 00:17:24,740
+eşlik bitini yine 1&#39;e ayarlamanız gerekir.
+
+273
+00:17:24,740 --> 00:17:29,500
+Ve son grubun da tek bir paritesi var,
+
+274
+00:17:29,500 --> 00:17:31,500
+yani bu biti 8 pozisyonuna 1 olarak ayarladık.
+
+275
+00:17:31,500 --> 00:17:36,460
+Ve son adım olarak, tam bloğun artık çift bir eşlik durumu var; bu,
+
+276
+00:17:36,460 --> 00:17:41,500
+0 numaralı bit sayısını, yani kapsayıcı eşlik bitini 0 olarak ayarlayabileceğiniz anlamına geliyor.
+
+277
+00:17:41,500 --> 00:17:45,660
+Yani bu blok gönderildiğinde, dört özel alt kümenin ve
+
+278
+00:17:45,660 --> 00:17:48,980
+bir bütün olarak bloğun paritesi çift veya 0 olacaktır.
+
+279
+00:17:48,980 --> 00:17:53,620
+Alıştırmanın ikinci bölümünde alıcı rolünü oynamanızı sağlayalım.
+
+280
+00:17:53,620 --> 00:17:57,580
+Tabii bu, bu mesajın ne olduğunu henüz bilmediğiniz anlamına
+
+281
+00:17:57,580 --> 00:18:00,180
+gelir, belki bazılarınız ezberlemiştir, ama varsayalım ki ezberlemediniz.
+
+282
+00:18:00,180 --> 00:18:05,820
+Yapacağım şey, o bloktaki bitlerden 0, 1 veya 2&#39;sini
+
+283
+00:18:05,820 --> 00:18:08,340
+değiştirmek ve sonra sizden ne yaptığımı bulmanızı istemek.
+
+284
+00:18:08,340 --> 00:18:13,460
+Tekrar duraklatın ve çözmeye çalışın.
+
+285
+00:18:13,460 --> 00:18:23,960
+Tamam, şimdi alıcı olarak siz ilk eşlik grubunu kontrol ediyorsunuz ve bunun
+
+286
+00:18:23,960 --> 00:18:29,820
+çift olduğunu görebiliyorsunuz, dolayısıyla mevcut herhangi bir hatanın çift sütunda olması gerekir.
+
+287
+00:18:29,820 --> 00:18:34,620
+Bir sonraki kontrol bize tek bir sayı veriyor, ikimize de en
+
+288
+00:18:34,620 --> 00:18:38,760
+az bir hata olduğunu söylüyor ve bizi bu spesifik sütuna daraltıyor.
+
+289
+00:18:38,760 --> 00:18:42,900
+Üçüncü kontrol eşittir, olasılıkları daha da azaltır.
+
+290
+00:18:42,900 --> 00:18:46,780
+Ve son eşlik kontrolü tuhaf, bize altta bir yerde bir hata
+
+291
+00:18:46,780 --> 00:18:51,700
+olduğunu söylüyor, şu anda bunun 10 numaralı konumda olması gerektiğini görebiliyoruz.
+
+292
+00:18:51,700 --> 00:18:56,140
+Dahası, tüm bloğun paritesi tuhaftır ve bize iki
+
+293
+00:18:56,140 --> 00:18:58,220
+değil, tek bir atış olduğu konusunda güven verir.
+
+294
+00:18:58,220 --> 00:19:01,600
+Üç veya daha fazla ise tüm bahisler kapalıdır.
+
+295
+00:19:01,600 --> 00:19:06,520
+10 numaralı biti düzelttikten sonra, düzeltme için kullanılmayan 11 biti
+
+296
+00:19:06,520 --> 00:19:11,620
+çıkarmak bize orijinal mesajın ilgili bölümünü verir; geri sararsanız ve
+
+297
+00:19:11,620 --> 00:19:16,160
+karşılaştırırsanız, bu gerçekten de örneğe başladığımız şeyin tam olarak aynısıdır.
+
+298
+00:19:16,160 --> 00:19:19,260
+Artık tüm bunları elle nasıl yapacağınızı bildiğinize göre, size tüm bu mantığın
+
+299
+00:19:19,260 --> 00:19:23,940
+temel kısmını tek bir Python kodu satırıyla nasıl gerçekleştirebileceğinizi göstermek istiyorum.
+
+300
+00:19:23,940 --> 00:19:28,400
+Görüyorsunuz, size henüz söylemediğim şey, bu algoritmanın gerçekte ne kadar zarif
+
+301
+00:19:28,400 --> 00:19:32,380
+olduğu, bir makinenin hatanın konumunu göstermesinin ne kadar basit olduğu, bunu
+
+302
+00:19:32,380 --> 00:19:37,680
+sistematik olarak nasıl ölçeklendireceğimiz ve tüm bunları nasıl çerçeveleyebileceğimizdir. bu, birden
+
+303
+00:19:37,680 --> 00:19:39,580
+fazla ayrı eşlik kontrolü yerine tek bir işlem olarak yapılır.
+
+304
+00:19:39,580 --> 00:19:41,680
+Ne demek istediğimi anlamak için 2. bölümde bana katılın.
+

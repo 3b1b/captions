@@ -1,0 +1,1560 @@
+1
+00:00:00,000 --> 00:00:05,640
+Has visto el título, entonces sabes que esto conduce a cierto fractal.
+
+2
+00:00:05,640 --> 00:00:08,120
+Y en realidad es una familia infinita de fractales.
+
+3
+00:00:08,120 --> 00:00:12,920
+Y sí, será una de esas formas alucinantemente intrincadas
+
+4
+00:00:12,920 --> 00:00:14,800
+que tiene infinitos detalles sin importar cuánto te acerques.
+
+5
+00:00:14,800 --> 00:00:18,880
+Pero este no es realmente un video sobre cómo generar una imagen bonita para que nos quedemos boquiabiertos.
+
+6
+00:00:18,880 --> 00:00:22,780
+Bueno, está bien, tal vez eso sea parte de ello, pero la verdadera historia aquí tiene
+
+7
+00:00:22,780 --> 00:00:26,540
+un punto de partida mucho más pragmático que la historia detrás de muchos otros fractales.
+
+8
+00:00:26,540 --> 00:00:29,860
+Y más que eso, las imágenes finales a las que lleguemos serán mucho
+
+9
+00:00:29,860 --> 00:00:34,900
+más significativas si hacemos un esfuerzo por entender por qué, dado lo
+
+10
+00:00:34,900 --> 00:00:39,640
+que representan, tienen que parecer tan complicadas como lo son, y qué refleja
+
+11
+00:00:39,640 --> 00:00:48,300
+esta complejidad. un algoritmo que se utiliza en todas partes en ingeniería.
+
+12
+00:00:48,300 --> 00:00:51,940
+El punto de partida aquí será asumir que tienes algún tipo
+
+13
+00:00:51,940 --> 00:00:54,180
+de polinomio y que quieres saber cuándo es igual a cero.
+
+14
+00:00:54,820 --> 00:00:57,980
+Para el gráfico aquí, pueden ver visualmente que hay tres lugares diferentes donde
+
+15
+00:00:57,980 --> 00:01:01,980
+cruza el eje x, y pueden observar cuáles podrían ser esos valores.
+
+16
+00:01:01,980 --> 00:01:04,380
+A esas las llamaríamos raíces del polinomio.
+
+17
+00:01:04,380 --> 00:01:06,620
+Pero, ¿cómo se calculan exactamente?
+
+18
+00:01:06,620 --> 00:01:10,580
+Ahora bien, este es el tipo de pregunta en la que, si ya estás interesado en
+
+19
+00:01:10,580 --> 00:01:13,080
+las matemáticas, tal vez sea lo suficientemente interesante por derecho propio como para seguir adelante.
+
+20
+00:01:13,080 --> 00:01:16,160
+Pero si simplemente llamas a alguien en la calle y le preguntas esto,
+
+21
+00:01:16,160 --> 00:01:18,960
+quiero decir, ya se está quedando dormido, porque ¿a quién le importa?
+
+22
+00:01:18,960 --> 00:01:22,900
+Pero la cuestión es que este tipo de preguntas surgen todo el tiempo en ingeniería.
+
+23
+00:01:22,940 --> 00:01:26,620
+Donde personalmente estoy más familiarizado con ecuaciones como esta que aparecen es en el
+
+24
+00:01:26,620 --> 00:01:30,420
+entorno de gráficos por computadora, donde los polinomios están esparcidos por todas partes.
+
+25
+00:01:30,420 --> 00:01:35,020
+Por lo tanto, no es raro que cuando estás averiguando cómo se debe colorear
+
+26
+00:01:35,020 --> 00:01:39,640
+un píxel determinado, de alguna manera implica resolver una ecuación que usa estos polinomios.
+
+27
+00:01:39,640 --> 00:01:41,320
+Aquí déjame darte un ejemplo divertido.
+
+28
+00:01:41,320 --> 00:01:46,160
+Cuando una computadora muestra texto en la pantalla, esas
+
+29
+00:01:46,160 --> 00:01:47,160
+fuentes generalmente no se definen utilizando valores de píxeles.
+
+30
+00:01:47,160 --> 00:01:51,480
+Se definen como un conjunto de curvas polinomiales, lo que
+
+31
+00:01:51,480 --> 00:01:53,500
+se conoce en el negocio como curvas de Bézier.
+
+32
+00:01:53,500 --> 00:01:57,660
+Y cualquiera de ustedes que haya jugado con gráficos vectoriales, tal vez en
+
+33
+00:01:57,660 --> 00:02:00,520
+algún software de diseño, estará muy familiarizado con este tipo de curvas.
+
+34
+00:02:00,520 --> 00:02:04,860
+Pero para mostrar realmente uno de ellos en la pantalla, necesita una forma de decirle
+
+35
+00:02:04,860 --> 00:02:08,400
+a cada uno de los píxeles de su pantalla si debe colorearse o no.
+
+36
+00:02:08,400 --> 00:02:12,200
+Estas curvas se pueden mostrar con algún tipo de ancho de trazo
+
+37
+00:02:12,200 --> 00:02:15,420
+o, si encierran una región, algún tipo de relleno para esa región.
+
+38
+00:02:15,420 --> 00:02:18,960
+Pero si das un paso atrás y realmente piensas en ello, es
+
+39
+00:02:18,960 --> 00:02:23,460
+un rompecabezas interesante descubrir cómo cada uno de los píxeles sabe si
+
+40
+00:02:23,460 --> 00:02:25,100
+debe colorearse o no basándose simplemente en la curva matemática pura.
+
+41
+00:02:25,100 --> 00:02:27,480
+Quiero decir, tomemos el caso del ancho del trazo.
+
+42
+00:02:27,480 --> 00:02:32,400
+Esto se reduce a comprender qué tan lejos está un píxel dado de esta curva
+
+43
+00:02:32,400 --> 00:02:36,780
+matemática pura, que en sí misma es un ideal platónico, tiene un ancho cero.
+
+44
+00:02:36,780 --> 00:02:41,120
+Se podría considerar una curva paramétrica que tiene algún parámetro t.
+
+45
+00:02:41,120 --> 00:02:44,540
+Ahora, una cosa que podrías hacer para calcular esta distancia es calcular la distancia entre tu píxel
+
+46
+00:02:44,540 --> 00:02:48,940
+y un conjunto de puntos de muestra en esa curva, y luego calcular el más pequeño.
+
+47
+00:02:49,920 --> 00:02:52,620
+Pero eso es a la vez ineficiente e impreciso.
+
+48
+00:02:52,620 --> 00:02:56,440
+Mejor es ser un poco matemático y reconocer que esta distancia a la curva
+
+49
+00:02:56,440 --> 00:03:01,440
+en todos los puntos posibles es en sí misma una función suave del parámetro.
+
+50
+00:03:01,440 --> 00:03:05,960
+Y resulta que el cuadrado de esa distancia será en sí
+
+51
+00:03:05,960 --> 00:03:07,960
+mismo un polinomio, lo que lo hace bastante agradable de manejar.
+
+52
+00:03:07,960 --> 00:03:11,240
+Y si esta fuera una lección completa sobre renderizado de gráficos vectoriales, podríamos expandir todo
+
+53
+00:03:11,240 --> 00:03:15,180
+eso y aceptar el desorden, pero en este momento el único punto destacado que quiero
+
+54
+00:03:15,200 --> 00:03:21,840
+resaltar es que, en principio, esta función, cuyo mínimo desea saber, es algún polinomio.
+
+55
+00:03:21,840 --> 00:03:25,540
+Encontrar este mínimo y, por tanto, determinar qué tan cerca está el píxel de
+
+56
+00:03:25,540 --> 00:03:29,420
+la curva y si debe rellenarse, es ahora sólo un problema de cálculo clásico.
+
+57
+00:03:29,420 --> 00:03:33,540
+Lo que haces es calcular la pendiente de esta gráfica de función, es decir,
+
+58
+00:03:33,540 --> 00:03:39,400
+su derivada, nuevamente algún polinomio, y preguntas: ¿cuándo es eso igual a cero?
+
+59
+00:03:39,400 --> 00:03:44,780
+Entonces, para llevar a cabo esta tarea aparentemente simple de mostrar
+
+60
+00:03:44,780 --> 00:03:49,220
+una curva, ¿no sería bueno si tuvieras una manera sistemática y
+
+61
+00:03:49,220 --> 00:03:51,060
+general de determinar cuándo un polinomio dado es igual a cero?
+
+62
+00:03:51,060 --> 00:03:55,260
+Por supuesto, podríamos extraer otros 100 ejemplos de otras 100 disciplinas, solo
+
+63
+00:03:55,260 --> 00:03:59,420
+quiero que tengas en cuenta que cuando buscamos las raíces de los
+
+64
+00:03:59,420 --> 00:04:03,980
+polinomios, aunque siempre las mostramos de una manera limpiamente abstraída del desorden
+
+65
+00:04:03,980 --> 00:04:06,820
+de cualquier realidad... problema mundial, la tarea no es sólo académica.
+
+66
+00:04:06,820 --> 00:04:12,380
+Pero, de nuevo, pregúntese: ¿cómo se calcula realmente una de esas raíces?
+
+67
+00:04:12,380 --> 00:04:17,100
+Si cualquier problema en el que estés trabajando te lleva a una función cuadrática,
+
+68
+00:04:17,100 --> 00:04:20,260
+entonces, feliz día, puedes usar la fórmula cuadrática que todos conocemos y amamos.
+
+69
+00:04:20,260 --> 00:04:25,140
+Como nota al margen divertida, nuevamente relevante para la búsqueda de raíces en gráficos por computadora,
+
+70
+00:04:25,140 --> 00:04:29,740
+una vez un ingeniero de Pixar me dio la estimación de que, considerando cuántas luces se
+
+71
+00:04:29,740 --> 00:04:34,000
+usaron en algunas de las escenas de la película Coco, y dada la naturaleza de algunas
+
+72
+00:04:34,000 --> 00:04:38,840
+de estas, En los cálculos por píxel, cuando se trata de cosas definidas polinómicamente, como esferas,
+
+73
+00:04:38,840 --> 00:04:42,840
+la fórmula cuadrática se utilizó fácilmente varios billones de veces en la producción de esa película.
+
+74
+00:04:42,840 --> 00:04:48,200
+Ahora, cuando tu problema te lleva a un polinomio de orden superior, las cosas empiezan a ponerse más complicadas.
+
+75
+00:04:48,200 --> 00:04:52,800
+Para los polinomios cúbicos, también hay una fórmula, sobre la cual Mathologer
+
+76
+00:04:52,800 --> 00:04:57,800
+ha hecho un video maravilloso, e incluso hay una fórmula cuártica, algo
+
+77
+00:04:57,800 --> 00:05:01,540
+que resuelve polinomios de grado 4, aunque, sinceramente, esa es una fórmula
+
+78
+00:05:01,540 --> 00:05:04,120
+tan espantosa que esencialmente no uno realmente lo usa en la práctica.
+
+79
+00:05:04,120 --> 00:05:08,620
+Pero después de eso, y creo que este es uno de los resultados más fascinantes de todas las
+
+80
+00:05:08,620 --> 00:05:14,240
+matemáticas, no se puede tener una fórmula análoga para resolver polinomios que tengan un grado 5 o más.
+
+81
+00:05:14,240 --> 00:05:18,380
+Más específicamente, para un conjunto bastante extenso de funciones estándar, puede demostrar
+
+82
+00:05:18,380 --> 00:05:22,500
+que no hay forma posible de combinar esas funciones que le permita
+
+83
+00:05:22,500 --> 00:05:27,800
+sustituir los coeficientes de un polinomio quíntico y obtener siempre una raíz.
+
+84
+00:05:27,800 --> 00:05:32,060
+Esto se conoce como la insolubilidad de la quíntica, que es otra
+
+85
+00:05:32,060 --> 00:05:36,860
+lata de gusanos, con suerte podremos abordarlo en otro momento, pero
+
+86
+00:05:36,900 --> 00:05:40,980
+en la práctica no importa, porque tenemos algoritmos para aproximar soluciones a
+
+87
+00:05:40,980 --> 00:05:43,220
+estos tipos. de ecuaciones con cualquier nivel de precisión que desees.
+
+88
+00:05:43,220 --> 00:05:47,700
+Uno común, y el tema principal para usted y para mí hoy, es el método de Newton.
+
+89
+00:05:47,700 --> 00:05:51,060
+Y sí, esto es lo que nos llevará a los fractales, pero quiero que
+
+90
+00:05:51,060 --> 00:05:55,660
+presten atención a lo inocente y benigno que parece todo el procedimiento al principio.
+
+91
+00:05:55,660 --> 00:05:59,700
+El algoritmo comienza con una suposición aleatoria, llamémosla x0.
+
+92
+00:05:59,700 --> 00:06:04,780
+Es casi seguro que la salida de tu polinomio en x0 no es 0, por lo que no
+
+93
+00:06:04,820 --> 00:06:08,060
+has encontrado una solución, es algún otro valor visible como la altura de este gráfico en ese punto.
+
+94
+00:06:08,060 --> 00:06:13,340
+Entonces, para mejorar la suposición, la idea es preguntar: ¿cuándo una aproximación
+
+95
+00:06:13,340 --> 00:06:16,100
+lineal a la función alrededor de ese valor es igual a 0?
+
+96
+00:06:16,100 --> 00:06:19,900
+En otras palabras, si dibujaras una línea tangente a la gráfica
+
+97
+00:06:19,900 --> 00:06:23,500
+en este punto, ¿cuándo esa línea tangente cruza el eje x?
+
+98
+00:06:23,500 --> 00:06:26,860
+Ahora, suponiendo que esta línea tangente es una aproximación decente de la
+
+99
+00:06:26,860 --> 00:06:31,340
+función en la vecindad de alguna raíz verdadera, el lugar donde esta
+
+100
+00:06:31,340 --> 00:06:33,980
+aproximación es igual a 0 debería acercarlo más a esa raíz verdadera.
+
+101
+00:06:33,980 --> 00:06:37,580
+Siempre que puedas tomar una derivada de esta función, y con los
+
+102
+00:06:37,580 --> 00:06:42,140
+polinomios siempre podrás hacerlo, podrás calcular concretamente la pendiente de esta recta.
+
+103
+00:06:42,140 --> 00:06:45,300
+Así que aquí es donde los espectadores activos entre ustedes tal vez quieran hacer una pausa
+
+104
+00:06:45,300 --> 00:06:48,700
+y preguntar: ¿cómo se puede determinar la diferencia entre la suposición actual y la suposición mejorada?
+
+105
+00:06:48,700 --> 00:06:51,300
+¿Cuál es el tamaño de este paso?
+
+106
+00:06:51,300 --> 00:06:54,540
+Una forma de pensarlo es considerar el hecho de que la pendiente de esta recta tangente, su ascenso
+
+107
+00:06:54,540 --> 00:06:59,940
+sobre el recorrido, se parece a la altura de esta gráfica dividida por la longitud de ese paso.
+
+108
+00:07:00,460 --> 00:07:03,620
+Pero, por otro lado, por supuesto, la pendiente de la
+
+109
+00:07:03,620 --> 00:07:05,300
+recta tangente es la derivada del polinomio en ese punto.
+
+110
+00:07:05,300 --> 00:07:09,980
+Si reorganizamos esta ecuación aquí, obtendremos una forma
+
+111
+00:07:09,980 --> 00:07:11,660
+muy concreta de calcular el tamaño del paso.
+
+112
+00:07:11,660 --> 00:07:17,260
+Entonces, la siguiente estimación, que podríamos llamar x1, es
+
+113
+00:07:17,260 --> 00:07:18,820
+la estimación anterior, ajustada por este tamaño de paso.
+
+114
+00:07:18,820 --> 00:07:21,500
+Y después de eso, puedes repetir el proceso.
+
+115
+00:07:21,500 --> 00:07:25,520
+Calculas el valor de esta función y la pendiente en esta nueva estimación,
+
+116
+00:07:25,520 --> 00:07:30,680
+lo que te da una nueva aproximación lineal, y luego haces la
+
+117
+00:07:30,680 --> 00:07:32,880
+siguiente estimación, x2, dondequiera que esa línea tangente cruce el eje x.
+
+118
+00:07:32,880 --> 00:07:36,520
+Y luego aplica el mismo cálculo a x2, y esto te da x3.
+
+119
+00:07:36,520 --> 00:07:40,600
+Y en poco tiempo, te encuentras extremadamente cerca de una
+
+120
+00:07:40,600 --> 00:07:45,120
+verdadera raíz, casi tan cerca como podrías desear estar.
+
+121
+00:07:45,120 --> 00:07:49,040
+Siempre vale la pena comprobar que una fórmula realmente tiene sentido
+
+122
+00:07:49,040 --> 00:07:50,040
+y, en este caso, es de esperar que así sea.
+
+123
+00:07:50,040 --> 00:07:54,500
+Si p de x es grande, lo que significa que la gráfica es
+
+124
+00:07:54,500 --> 00:07:56,260
+muy alta, debes dar un paso más grande para llegar a la raíz.
+
+125
+00:07:56,260 --> 00:08:01,280
+Pero si p' de x también es grande, lo que significa que la
+
+126
+00:08:01,280 --> 00:08:03,780
+gráfica es bastante pronunciada, tal vez deberías reducir la magnitud del paso.
+
+127
+00:08:03,780 --> 00:08:09,440
+Ahora bien, como sugiere el nombre, este era un método que Newton usaba para resolver expresiones polinómicas.
+
+128
+00:08:09,440 --> 00:08:13,940
+Pero en cierto modo hizo que pareciera mucho más complicado de lo necesario, y un tipo llamado
+
+129
+00:08:13,940 --> 00:08:18,500
+Joseph Rafson publicó una versión mucho más simple, más parecida a la que usted y yo estamos
+
+130
+00:08:18,500 --> 00:08:22,740
+viendo ahora, por lo que también se escucha a menudo este algoritmo llamado Newton. -Método Rafson.
+
+131
+00:08:22,780 --> 00:08:25,460
+Hoy en día es un tema común en las clases de cálculo.
+
+132
+00:08:25,460 --> 00:08:29,660
+Por cierto, un pequeño ejercicio agradable para intentar tener una idea
+
+133
+00:08:29,660 --> 00:08:33,380
+es intentar utilizar este método para aproximar raíces cuadradas a mano.
+
+134
+00:08:33,380 --> 00:08:38,020
+Pero lo que la mayoría de los estudiantes de cálculo no ven, lo cual es
+
+135
+00:08:38,020 --> 00:08:42,500
+desafortunado, es cuán profundas pueden llegar a ser las cosas cuando te permites jugar
+
+136
+00:08:42,500 --> 00:08:45,340
+con este procedimiento aparentemente simple y comienzas a hurgar en algunas de sus costras.
+
+137
+00:08:45,340 --> 00:08:49,340
+Verá, si bien el método de Newton funciona muy bien si comienza cerca de una raíz, donde converge
+
+138
+00:08:49,340 --> 00:08:55,060
+muy rápidamente, si su suposición inicial está lejos de una raíz, puede tener un par de debilidades.
+
+139
+00:08:55,060 --> 00:08:58,900
+Por ejemplo, tomemos la función que estábamos viendo, pero moviéndola hacia
+
+140
+00:08:58,900 --> 00:09:02,340
+arriba y juguemos el mismo juego con la misma suposición inicial.
+
+141
+00:09:07,660 --> 00:09:12,120
+Observe cómo la secuencia de nuevas conjeturas que estamos obteniendo rebota alrededor del
+
+142
+00:09:12,120 --> 00:09:15,540
+mínimo local de esta función que se encuentra sobre el eje x.
+
+143
+00:09:15,540 --> 00:09:19,380
+Esto debería tener sentido, quiero decir, una aproximación lineal de la función alrededor de
+
+144
+00:09:19,380 --> 00:09:23,980
+estos valores hacia la derecha no tiene ninguna relación con la naturaleza de
+
+145
+00:09:23,980 --> 00:09:28,240
+la función alrededor de la única raíz verdadera que tiene hacia la izquierda,
+
+146
+00:09:28,240 --> 00:09:32,020
+por lo que No te estamos dando información útil sobre esa verdadera raíz.
+
+147
+00:09:32,020 --> 00:09:35,980
+Sólo cuando este proceso simplemente arroja la nueva conjetura lo suficientemente
+
+148
+00:09:35,980 --> 00:09:40,140
+hacia la izquierda, por casualidad, la secuencia de nuevas conjeturas hace
+
+149
+00:09:40,140 --> 00:09:42,900
+algo productivo y realmente se aproxima a esa verdadera raíz.
+
+150
+00:09:42,900 --> 00:09:47,100
+Donde las cosas se ponen especialmente interesantes es si preguntamos
+
+151
+00:09:47,100 --> 00:09:48,640
+acerca de cómo encontrar raíces en el plano complejo.
+
+152
+00:09:48,640 --> 00:09:53,040
+Incluso si un polinomio como el que se muestra aquí tiene solo
+
+153
+00:09:53,040 --> 00:09:57,760
+una raíz de número real, siempre podrás factorizar este polinomio en cinco
+
+154
+00:09:57,760 --> 00:10:00,220
+términos como este si permites que estas raíces sean potencialmente números complejos.
+
+155
+00:10:00,220 --> 00:10:02,500
+Este es el famoso teorema fundamental del álgebra.
+
+156
+00:10:02,500 --> 00:10:07,220
+Ahora, en la tierra despreocupada de las funciones con entradas y salidas de números reales, donde
+
+157
+00:10:07,220 --> 00:10:11,380
+puedes imaginar la asociación entre entradas y salidas como una gráfica, el método de Newton
+
+158
+00:10:11,380 --> 00:10:16,260
+tiene este significado visual realmente agradable con líneas tangentes y que cruzan la x. -eje.
+
+159
+00:10:16,260 --> 00:10:20,500
+Pero si quieres permitir que estas entradas sean cualquier número complejo,
+
+160
+00:10:20,500 --> 00:10:25,260
+lo que significa que nuestras salidas correspondientes también podrían ser cualquier
+
+161
+00:10:25,260 --> 00:10:26,660
+número complejo, ya no puedes pensar en rectas tangentes y gráficas.
+
+162
+00:10:26,660 --> 00:10:29,420
+Pero a la fórmula realmente no le importa cómo la visualices.
+
+163
+00:10:29,420 --> 00:10:34,980
+Aún puedes jugar el mismo juego, comenzando con una suposición aleatoria y
+
+164
+00:10:34,980 --> 00:10:40,060
+evaluando el polinomio en este punto, así como su derivada, y
+
+165
+00:10:40,060 --> 00:10:41,380
+luego usando esta regla de actualización para generar una nueva suposición.
+
+166
+00:10:41,380 --> 00:10:45,680
+Y es de esperar que esa nueva suposición esté más cerca de la verdadera raíz.
+
+167
+00:10:45,680 --> 00:10:49,700
+Pero quiero dejar claro que incluso si no podemos visualizar estos
+
+168
+00:10:49,700 --> 00:10:51,700
+pasos con una línea tangente, realmente es la misma lógica.
+
+169
+00:10:51,700 --> 00:10:56,380
+Estamos averiguando dónde una aproximación lineal de la función alrededor de tu estimación sería igual
+
+170
+00:10:56,380 --> 00:11:01,940
+a cero, y luego usas ese cero de la aproximación lineal como tu próxima estimación.
+
+171
+00:11:01,940 --> 00:11:05,740
+No es que estemos aplicando ciegamente la regla a un
+
+172
+00:11:05,740 --> 00:11:06,740
+nuevo contexto sin ninguna razón para esperar que funcione.
+
+173
+00:11:07,020 --> 00:11:11,020
+Y de hecho, al menos con el que estoy mostrando aquí después de algunas
+
+174
+00:11:11,020 --> 00:11:16,380
+iteraciones, puedes ver que llegamos a un valor cuya salida correspondiente es esencialmente cero.
+
+175
+00:11:16,380 --> 00:11:17,380
+Ahora viene la parte divertida.
+
+176
+00:11:17,380 --> 00:11:21,260
+Apliquemos esta idea a muchas conjeturas iniciales posibles diferentes.
+
+177
+00:11:21,260 --> 00:11:25,740
+Como referencia, colocaré las cinco raíces verdaderas de
+
+178
+00:11:25,740 --> 00:11:27,580
+este polinomio en particular en el plano complejo.
+
+179
+00:11:27,580 --> 00:11:32,960
+Con cada iteración, cada uno de nuestros pequeños puntos da un paso según el método de Newton.
+
+180
+00:11:32,960 --> 00:11:36,940
+La mayoría de los puntos convergerán rápidamente en una de las cinco raíces
+
+181
+00:11:36,940 --> 00:11:41,160
+verdaderas, pero hay algunos rezagados notables que parecen pasar un tiempo rebotando.
+
+182
+00:11:41,160 --> 00:11:45,720
+En particular, ¿notas cómo son los que están atrapados en la recta de números reales positivos?
+
+183
+00:11:45,720 --> 00:11:50,800
+Parecen un poco perdidos, y esto es exactamente lo que ya vimos antes para
+
+184
+00:11:50,800 --> 00:11:56,800
+este mismo polinomio cuando miramos el caso de los números reales con su gráfica.
+
+185
+00:11:56,800 --> 00:12:00,960
+Ahora lo que voy a hacer es colorear cada uno de estos
+
+186
+00:12:00,960 --> 00:12:05,640
+puntos según cuál de esas cinco raíces terminó más cerca, y luego
+
+187
+00:12:05,640 --> 00:12:09,600
+retrocederemos el reloj para que cada punto regrese a donde comenzó.
+
+188
+00:12:09,600 --> 00:12:13,000
+Ahora bien, como lo he hecho aquí, esta no es suficiente resolución para obtener la historia
+
+189
+00:12:13,000 --> 00:12:16,760
+completa, así que déjame mostrarte cómo se vería si empezáramos con una cuadrícula aún más
+
+190
+00:12:16,760 --> 00:12:20,960
+fina de conjeturas iniciales y jugáramos el mismo juego, aplicando El método de Newton un
+
+191
+00:12:20,960 --> 00:12:26,360
+montón de veces, dejando que cada raíz avance, coloreando cada punto según la raíz en
+
+192
+00:12:26,360 --> 00:12:29,500
+la que cae, y luego haciendo retroceder el reloj para ver de dónde vino originalmente.
+
+193
+00:12:29,540 --> 00:12:33,440
+Pero ni siquiera esta es una resolución lo suficientemente alta como para apreciar el patrón.
+
+194
+00:12:33,440 --> 00:12:40,560
+Si hiciéramos este proceso para cada píxel del avión, esto es lo que obtendríamos.
+
+195
+00:12:40,560 --> 00:12:44,460
+Y con este nivel de detalle, la combinación de colores al menos
+
+196
+00:12:44,460 --> 00:12:46,460
+me resulta un poco discordante, así que déjame calmarlo un poco.
+
+197
+00:12:46,460 --> 00:12:50,560
+Realmente, cualquier resolución que intente usar para mostrarles esto aquí nunca podría ser suficiente, porque
+
+198
+00:12:50,560 --> 00:12:56,060
+los detalles más finos de la forma que obtenemos continúan con una complejidad infinita.
+
+199
+00:12:59,500 --> 00:13:05,220
+Pero tómate un momento para pensar en lo que esto realmente quiere decir.
+
+200
+00:13:05,220 --> 00:13:09,380
+Significa que hay regiones en el plano complejo donde si ajustas ligeramente ese valor inicial,
+
+201
+00:13:09,380 --> 00:13:13,820
+ya sabes, simplemente lo desplazas hacia un lado en una 1,1 millonésima o 1,1 billonésima,
+
+202
+00:13:13,820 --> 00:13:18,420
+puede cambiar completamente cuál de las cinco verdaderas raíces en las que termina aterrizando.
+
+203
+00:13:18,420 --> 00:13:22,140
+Vimos un presagio de este tipo de caos con el gráfico real y la suposición
+
+204
+00:13:22,140 --> 00:13:26,500
+problemática mostrada anteriormente, pero imaginar todo esto en el plano complejo realmente arroja luz
+
+205
+00:13:26,500 --> 00:13:31,020
+sobre cuán impredecible puede ser este tipo de algoritmo de búsqueda de raíces, y
+
+206
+00:13:31,020 --> 00:13:37,060
+cómo Hay franjas enteras de valores iniciales donde tendrá lugar este tipo de imprevisibilidad.
+
+207
+00:13:37,060 --> 00:13:40,460
+Ahora, si tomo una de estas raíces y la cambio, lo que significa que estamos
+
+208
+00:13:40,460 --> 00:13:45,640
+usando un polinomio diferente para el proceso, pueden ver cómo cambia el patrón fractal resultante.
+
+209
+00:13:45,640 --> 00:13:50,740
+Y observe, por ejemplo, cómo las regiones alrededor de una raíz determinada siempre tienen el mismo
+
+210
+00:13:50,740 --> 00:13:54,560
+color, ya que esos son los puntos que están lo suficientemente cerca de la raíz donde
+
+211
+00:13:54,560 --> 00:13:58,320
+este esquema de aproximación lineal funciona como una forma de encontrar esa raíz sin problemas.
+
+212
+00:13:58,320 --> 00:14:02,760
+Todo el caos parece estar ocurriendo en los límites entre las regiones.
+
+213
+00:14:02,760 --> 00:14:03,760
+Recuerda eso.
+
+214
+00:14:03,760 --> 00:14:07,640
+Y parece que no importa dónde coloque estas
+
+215
+00:14:07,640 --> 00:14:08,640
+raíces, esos límites fractales siempre están ahí.
+
+216
+00:14:08,640 --> 00:14:12,240
+Claramente no fue algo único para el polinomio con el que
+
+217
+00:14:12,240 --> 00:14:16,840
+comenzamos, parece ser un hecho general para cualquier polinomio dado.
+
+218
+00:14:16,840 --> 00:14:20,980
+Otra faceta que podemos modificar aquí sólo para ilustrar mejor lo que
+
+219
+00:14:20,980 --> 00:14:23,040
+está sucediendo es cuántos pasos del método de Newton estamos usando.
+
+220
+00:14:23,040 --> 00:14:27,160
+Por ejemplo, si hiciera que la computadora simplemente diera cero pasos, lo que significa que solo colorea cada
+
+221
+00:14:27,160 --> 00:14:31,680
+punto del plano según la raíz a la que ya esté más cerca, esto es lo que obtendríamos.
+
+222
+00:14:31,680 --> 00:14:36,220
+Y este tipo de diagrama en realidad tiene un nombre especial, se llama Diagrama de Voronoi.
+
+223
+00:14:36,220 --> 00:14:40,060
+Y si dejamos que cada punto del plano tome un solo paso del método
+
+224
+00:14:40,060 --> 00:14:44,560
+de Newton, y luego lo coloreamos según la raíz a la que esté
+
+225
+00:14:44,560 --> 00:14:47,560
+más cerca el resultado de ese único paso, esto es lo que obtendríamos.
+
+226
+00:14:47,560 --> 00:14:54,920
+De manera similar, si permitimos dos pasos, obtenemos un patrón
+
+227
+00:14:54,920 --> 00:14:59,720
+ligeramente más complejo, y así sucesivamente, donde cuantos más pasos
+
+228
+00:14:59,720 --> 00:15:01,400
+permitas, más intrincada será la imagen, acercándonos al fractal original.
+
+229
+00:15:01,400 --> 00:15:05,320
+Y esto es importante, tenga en cuenta que la verdadera forma que estamos estudiando aquí no
+
+230
+00:15:05,320 --> 00:15:14,560
+es ninguna de estas, es el límite ya que permitimos un número arbitrariamente grande de iteraciones.
+
+231
+00:15:14,560 --> 00:15:17,840
+En este punto, hay tantas preguntas que podríamos hacer.
+
+232
+00:15:17,840 --> 00:15:21,980
+Tal vez quieras probar esto con otros polinomios, ver qué tan general es, o
+
+233
+00:15:21,980 --> 00:15:26,600
+tal vez quieras profundizar en qué dinámicas son exactamente posibles con estos puntos iterados,
+
+234
+00:15:26,600 --> 00:15:31,080
+o ver si hay conexiones con otras piezas matemáticas que tienen un tema similar.
+
+235
+00:15:31,080 --> 00:15:35,320
+Pero creo que la pregunta más pertinente debería
+
+236
+00:15:35,320 --> 00:15:36,320
+ser algo como: ¿qué carajo está pasando aquí?
+
+237
+00:15:36,320 --> 00:15:40,960
+Quiero decir, todo lo que estamos haciendo aquí es resolver repetidamente aproximaciones lineales.
+
+238
+00:15:40,960 --> 00:15:44,280
+¿Por qué eso produciría algo tan infinitamente complicado?
+
+239
+00:15:44,280 --> 00:15:47,880
+Casi parece que la regla subyacente aquí simplemente no debería
+
+240
+00:15:47,880 --> 00:15:50,580
+contener suficiente información para producir una imagen como esta.
+
+241
+00:15:50,580 --> 00:15:53,880
+Y antes de ver esto, ¿no cree que una suposición inicial razonable podría haber sido que
+
+242
+00:15:53,880 --> 00:15:58,440
+cada valor de semilla simplemente tiende hacia la raíz a la que esté más cercana?
+
+243
+00:15:58,440 --> 00:16:01,640
+Y en ese caso, ya sabes, si coloreas cada punto según la raíz en la
+
+244
+00:16:01,640 --> 00:16:05,880
+que aterriza y lo mueves de regreso a la posición original, la imagen final
+
+245
+00:16:05,880 --> 00:16:09,280
+se vería como uno de estos diagramas de Voronoi, con límites de líneas rectas.
+
+246
+00:16:09,280 --> 00:16:13,360
+Y como antes hice referencia a la insolubilidad de la quíntica, tal vez
+
+247
+00:16:13,440 --> 00:16:15,680
+te preguntes si la complejidad aquí tiene algo que ver con eso.
+
+248
+00:16:15,680 --> 00:16:19,240
+Sería genial, pero son esencialmente ideas no relacionadas.
+
+249
+00:16:19,240 --> 00:16:24,080
+De hecho, utilizar hasta ahora sólo polinomios de grado 5 podría haber sido un poco engañoso.
+
+250
+00:16:24,080 --> 00:16:28,440
+Observa lo que sucede si jugamos el mismo juego, pero con un
+
+251
+00:16:28,440 --> 00:16:31,000
+polinomio cúbico, con tres raíces en algún lugar del plano complejo.
+
+252
+00:16:31,000 --> 00:16:35,800
+Observe cómo, nuevamente, mientras la mayoría de los puntos se anidan en una
+
+253
+00:16:35,800 --> 00:16:37,240
+raíz, algunos de ellos vuelan por todos lados de manera más caótica.
+
+254
+00:16:37,240 --> 00:16:41,480
+De hecho, esos son los más notables en una animación como esta, con
+
+255
+00:16:41,480 --> 00:16:45,400
+los que van hacia las raíces simplemente ubicados silenciosamente en sus puntos finales.
+
+256
+00:16:45,400 --> 00:16:49,040
+Y nuevamente, si detenemos esto en un cierto número de iteraciones y coloreamos todos los puntos
+
+257
+00:16:49,040 --> 00:16:53,560
+según la raíz a la que están más cercanos, y retrocedemos el reloj, la imagen
+
+258
+00:16:53,560 --> 00:17:01,040
+relevante para todos los puntos de partida posibles forma este patrón fractal con infinito detalle.
+
+259
+00:17:01,040 --> 00:17:09,880
+Sin embargo, los polinomios cuadráticos con sólo dos raíces son diferentes.
+
+260
+00:17:09,880 --> 00:17:13,880
+En ese caso, cada valor de semilla simplemente tiende hacia
+
+261
+00:17:13,880 --> 00:17:16,400
+la raíz más cercana, de la manera que cabría esperar.
+
+262
+00:17:16,400 --> 00:17:20,040
+Hay un poco de comportamiento serpenteante en todos los puntos que están a
+
+263
+00:17:20,040 --> 00:17:24,480
+la misma distancia de cada raíz, es como si no pudieran decidir a
+
+264
+00:17:24,480 --> 00:17:28,440
+cuál ir, pero eso es solo una única línea de puntos, y cuando
+
+265
+00:17:28,440 --> 00:17:32,080
+Si jugamos a colorear, el diagrama que obtenemos es decididamente más aburrido.
+
+266
+00:17:32,080 --> 00:17:36,600
+Entonces, algo nuevo parece suceder cuando saltas del 2
+
+267
+00:17:36,600 --> 00:17:37,600
+al 3, y la pregunta es ¿qué exactamente?
+
+268
+00:17:37,600 --> 00:17:41,480
+Si me hubieran preguntado hace un mes, probablemente me habría encogido de hombros y simplemente habría dicho,
+
+269
+00:17:41,480 --> 00:17:45,600
+ya sabes, las matemáticas son lo que son, a veces las respuestas parecen simples, a veces
+
+270
+00:17:45,600 --> 00:17:49,000
+no, no siempre está claro lo que significaría preguntar por qué en un entorno como esto.
+
+271
+00:17:49,000 --> 00:17:53,040
+Pero me habría equivocado, en realidad hay una razón que podemos
+
+272
+00:17:53,040 --> 00:17:55,960
+dar por la cual esta imagen tiene que parecer tan complicada.
+
+273
+00:17:55,960 --> 00:18:01,040
+Verá, hay una propiedad muy peculiar que podemos demostrar que debe tener este diagrama.
+
+274
+00:18:01,040 --> 00:18:05,480
+Centra tu atención en solo una de las regiones coloreadas, digamos esta azul; en otras palabras,
+
+275
+00:18:05,480 --> 00:18:10,880
+el conjunto de todos los puntos que eventualmente tienden hacia una raíz particular del polinomio.
+
+276
+00:18:10,880 --> 00:18:14,720
+Consideremos ahora el límite de esa región, que, en el ejemplo que
+
+277
+00:18:14,720 --> 00:18:17,360
+se muestra en la pantalla, tiene este tipo de bonita simetría triple.
+
+278
+00:18:17,360 --> 00:18:21,840
+Lo sorprendente es que si miras cualquier otro color
+
+279
+00:18:21,840 --> 00:18:25,480
+y consideras sus límites, obtienes exactamente el mismo conjunto.
+
+280
+00:18:25,480 --> 00:18:29,120
+Ahora bien, cuando digo la palabra límite, probablemente tengas una idea intuitiva de lo que
+
+281
+00:18:29,120 --> 00:18:32,560
+significa, pero los matemáticos tienen una manera bastante inteligente de formalizarla, y esto hace que
+
+282
+00:18:32,640 --> 00:18:36,800
+sea más fácil razonar en el contexto de conjuntos más salvajes como nuestro fractal.
+
+283
+00:18:36,800 --> 00:18:40,920
+Decimos que un punto está en el límite de un conjunto si cuando
+
+284
+00:18:40,920 --> 00:18:45,720
+dibujas un pequeño círculo centrado en ese punto, por pequeño que sea,
+
+285
+00:18:45,720 --> 00:18:47,960
+siempre contendrá puntos que están tanto dentro como fuera de ese conjunto.
+
+286
+00:18:47,960 --> 00:18:51,640
+Entonces, si tienes un punto en el interior, un círculo lo suficientemente pequeño
+
+287
+00:18:51,640 --> 00:18:56,800
+eventualmente solo contendrá puntos dentro del conjunto, y para un punto en el
+
+288
+00:18:56,800 --> 00:18:58,760
+exterior, un círculo lo suficientemente pequeño no contiene ningún punto del conjunto.
+
+289
+00:18:58,760 --> 00:19:02,400
+Pero cuando está en el límite, lo que significa estar en
+
+290
+00:19:03,240 --> 00:19:05,840
+el límite es que tus diminutos círculos siempre contendrán ambos.
+
+291
+00:19:05,840 --> 00:19:10,560
+Entonces, volviendo a nuestra propiedad, una forma de leerla es decir que si dibujas un círculo,
+
+292
+00:19:10,560 --> 00:19:15,480
+no importa cuán pequeño sea ese círculo, contiene todos los colores, lo que sucede cuando
+
+293
+00:19:15,480 --> 00:19:21,000
+este límite compartido de los colores está dentro de ese círculo. , o contiene solo
+
+294
+00:19:21,000 --> 00:19:27,120
+un color, y esto sucede cuando está en el interior de una de las regiones.
+
+295
+00:19:27,120 --> 00:19:31,320
+En particular, lo que esto implica es que nunca deberías poder encontrar un
+
+296
+00:19:31,320 --> 00:19:36,000
+círculo que contenga solo dos de los colores, ya que eso requeriría
+
+297
+00:19:36,000 --> 00:19:38,960
+que tuvieras puntos en el límite entre dos regiones, pero no todos.
+
+298
+00:19:38,960 --> 00:19:43,160
+Y antes de explicar de dónde proviene realmente
+
+299
+00:19:43,160 --> 00:19:45,060
+este hecho, es divertido intentar comprenderlo un poco.
+
+300
+00:19:45,060 --> 00:19:48,760
+Podrías imaginar presentarle esto a alguien como una especie de rompecabezas artístico, completamente fuera de contexto,
+
+301
+00:19:48,760 --> 00:19:52,160
+sin mencionar nunca el método de Newton ni nada por el estilo, donde dices que el
+
+302
+00:19:52,160 --> 00:19:56,760
+desafío es construir una imagen con al menos tres colores, tal vez digamos rojo, verde y
+
+303
+00:19:56,760 --> 00:20:01,080
+azul, de modo que el límite de un color es el límite de todos ellos.
+
+304
+00:20:01,080 --> 00:20:04,800
+Entonces, si comenzaste con algo simple como esto, claramente no funciona, porque tenemos toda esta línea
+
+305
+00:20:04,800 --> 00:20:08,580
+de puntos que están en el límite de verde y rojo, pero sin tocar nada de
+
+306
+00:20:08,580 --> 00:20:13,600
+azul, y de la misma manera tienes estas otras líneas de puntos no permitidos. puntos.
+
+307
+00:20:13,600 --> 00:20:18,080
+Entonces, para corregir eso, puedes agregar algunas manchas azules a lo largo del límite, y
+
+308
+00:20:18,080 --> 00:20:23,160
+luego agregar también algunas manchas verdes entre el rojo y el azul, y algunas manchas
+
+309
+00:20:23,160 --> 00:20:27,440
+rojas entre el verde y el azul, pero, por supuesto, ahora el límite de esas
+
+310
+00:20:27,440 --> 00:20:29,800
+manchas. son un problema, por ejemplo, tocar solo azul y rojo, pero no verde.
+
+311
+00:20:29,800 --> 00:20:34,160
+Entonces, tal vez intentes agregar manchas aún más pequeñas, con el tercer color
+
+312
+00:20:34,160 --> 00:20:37,240
+relevante alrededor de esos límites más pequeños para ayudar a intentar corregir.
+
+313
+00:20:37,240 --> 00:20:44,880
+Y de igual forma tienes que hacer esto para cada uno de los blobs que agregaste inicialmente.
+
+314
+00:20:44,880 --> 00:20:49,040
+Pero entonces todos los límites de esas pequeñas manchas son problemas en sí
+
+315
+00:20:49,040 --> 00:20:54,480
+mismos, y de alguna manera tendrías que seguir haciendo este proceso para siempre.
+
+316
+00:20:54,480 --> 00:20:59,280
+Y si nos fijamos en el fractal de Newton, este tipo de patrón
+
+317
+00:20:59,280 --> 00:21:07,000
+de manchas sobre manchas sobre manchas parece ser exactamente lo que está haciendo.
+
+318
+00:21:07,000 --> 00:21:10,480
+Lo principal que quiero que notes es que esta propiedad implica que nunca
+
+319
+00:21:10,480 --> 00:21:15,880
+podrías tener un límite que sea suave, o incluso parcialmente suave en
+
+320
+00:21:15,880 --> 00:21:18,600
+algún segmento pequeño, ya que cualquier segmento suave solo tocaría dos colores.
+
+321
+00:21:18,600 --> 00:21:23,860
+En cambio, el límite tiene que consistir enteramente en esquinas afiladas, por así decirlo.
+
+322
+00:21:23,860 --> 00:21:28,240
+Entonces, si crees en la propiedad, explica por qué el
+
+323
+00:21:28,240 --> 00:21:30,080
+límite sigue siendo irregular sin importar cuánto te acerques.
+
+324
+00:21:30,080 --> 00:21:33,640
+Y para aquellos de ustedes que están familiarizados con el concepto de dimensión fractal, pueden medir
+
+325
+00:21:33,640 --> 00:21:40,040
+la dimensión del límite particular que les estoy mostrando ahora en alrededor de 1. 44.
+
+326
+00:21:40,040 --> 00:21:44,200
+Teniendo en cuenta lo que realmente representan nuestros colores, recuerde que esto no es
+
+327
+00:21:44,200 --> 00:21:48,760
+sólo una imagen por imagen, piense en lo que realmente nos dice la propiedad.
+
+328
+00:21:48,760 --> 00:21:52,560
+Dice que si estás cerca de un punto sensible donde algunos de los valores
+
+329
+00:21:52,560 --> 00:21:58,040
+semilla van a una raíz pero otros valores semilla cercanos irían a otra raíz,
+
+330
+00:21:58,040 --> 00:22:01,560
+entonces, de hecho, todas las raíces posibles deben ser accesibles desde ese pequeño vecindario.
+
+331
+00:22:01,560 --> 00:22:06,040
+Para cualquier pequeño círculo que dibujes, o todos los puntos en ese
+
+332
+00:22:06,040 --> 00:22:10,880
+círculo tienden a una sola raíz, o tienden a todas las raíces,
+
+333
+00:22:10,880 --> 00:22:14,160
+pero nunca habrá nada intermedio, solo tenderán a un subconjunto de raíces.
+
+334
+00:22:14,160 --> 00:22:18,120
+Para tener un poco de intuición, me resultó esclarecedor simplemente observar cómo
+
+335
+00:22:18,120 --> 00:22:20,500
+un grupo como el que aparece en la pantalla experimenta este proceso.
+
+336
+00:22:20,500 --> 00:22:25,680
+Comienza en su mayoría pegados, pero en una iteración todos explotan hacia afuera,
+
+337
+00:22:25,680 --> 00:22:31,400
+y después de eso parece mucho más razonable que cualquier raíz esté disponible.
+
+338
+00:22:31,400 --> 00:22:35,060
+Y tenga en cuenta que solo le estoy mostrando un número finito de puntos, pero en principio querrá
+
+339
+00:22:35,060 --> 00:22:45,000
+pensar en lo que sucede con todos los infinitos e incontables puntos dentro de un disco pequeño.
+
+340
+00:22:45,000 --> 00:22:49,040
+Esta propiedad también explica por qué está bien que las cosas se vean normales
+
+341
+00:22:49,040 --> 00:22:54,400
+en el caso de polinomios cuadráticos con solo dos raíces, porque allí un
+
+342
+00:22:54,400 --> 00:22:56,920
+límite suave está bien, de todos modos solo hay dos colores para tocar.
+
+343
+00:22:56,920 --> 00:23:01,020
+Para ser claros, no garantiza que el caso cuadrático tenga un límite suave,
+
+344
+00:23:01,020 --> 00:23:04,920
+es perfectamente posible tener un límite fractal entre dos colores, simplemente parece
+
+345
+00:23:04,920 --> 00:23:09,240
+que nuestro diagrama del método de Newton no está haciendo nada más
+
+346
+00:23:09,240 --> 00:23:13,920
+complicado de lo necesario. bajo la limitación de esta extraña condición límite.
+
+347
+00:23:13,920 --> 00:23:18,480
+Pero, por supuesto, todo esto simplemente plantea la pregunta de por qué esta
+
+348
+00:23:18,480 --> 00:23:20,560
+extraña propiedad de los límites tendría que ser cierta en primer lugar.
+
+349
+00:23:20,560 --> 00:23:22,580
+¿De dónde viene?
+
+350
+00:23:22,580 --> 00:23:26,260
+Por eso me gustaría hablarles sobre un campo de las matemáticas
+
+351
+00:23:26,260 --> 00:23:28,460
+que estudia este tipo de preguntas, se llama dinámica holomorfa.
+
+352
+00:23:28,460 --> 00:23:31,500
+Y creo que hoy hemos cubierto suficiente terreno y ciertamente queda mucho
+
+353
+00:23:31,500 --> 00:23:35,140
+por contar, por lo que tiene sentido sacarlo como un video separado.
+
+354
+00:23:35,140 --> 00:23:38,700
+Para cerrar, hay algo gracioso para mí en el hecho de que llamemos
+
+355
+00:23:38,700 --> 00:23:43,260
+a esto fractal de Newton, a pesar de que Newton no tenía
+
+356
+00:23:43,260 --> 00:23:47,460
+idea de nada de esto y nunca podría haber jugado con estas imágenes
+
+357
+00:23:47,460 --> 00:23:49,220
+de la forma en que usted y Puedo con la tecnología moderna.
+
+358
+00:23:49,220 --> 00:23:53,100
+Y sucede muchas veces a través de las matemáticas que los nombres de las
+
+359
+00:23:53,100 --> 00:23:55,220
+personas se vinculan a cosas mucho más allá de lo que podrían haber soñado.
+
+360
+00:23:55,220 --> 00:23:58,940
+Los hamiltonianos son fundamentales para la mecánica cuántica, a pesar
+
+361
+00:23:58,940 --> 00:23:59,940
+de que Hamilton no sabe nada sobre la mecánica cuántica.
+
+362
+00:23:59,940 --> 00:24:05,080
+El propio Fourier nunca calculó una transformada rápida de Fourier, y la lista continúa.
+
+363
+00:24:05,080 --> 00:24:10,580
+Pero esta sobreextensión de la nomenclatura conlleva lo que creo que es un punto inspirador.
+
+364
+00:24:10,580 --> 00:24:15,160
+Refleja cómo incluso las ideas simples, que pudieron descubrirse hace siglos,
+
+365
+00:24:15,160 --> 00:24:19,600
+a menudo contienen algún nuevo ángulo o un nuevo dominio de
+
+366
+00:24:19,600 --> 00:24:22,040
+relevancia que puede permanecer esperando ser descubierto cientos de años después.
+
+367
+00:24:22,040 --> 00:24:25,720
+No es sólo que Newton no tuviera idea sobre el fractal de Newton.
+
+368
+00:24:25,720 --> 00:24:29,640
+Probablemente hay muchos otros datos sobre el método de Newton, o sobre todo tipo de
+
+369
+00:24:29,640 --> 00:24:34,660
+matemáticas que pueden parecer noticias viejas, que provienen de preguntas que nadie ha pensado en
+
+370
+00:24:34,660 --> 00:24:43,200
+hacer todavía, preguntas que simplemente están ahí, esperando que alguien, como usted, para preguntarles.
+
+371
+00:24:43,240 --> 00:24:46,800
+Por ejemplo, si preguntaras si este proceso del que hemos estado hablando hoy alguna
+
+372
+00:24:46,800 --> 00:24:51,280
+vez queda atrapado en un ciclo, te llevaría a una conexión sorprendente con el
+
+373
+00:24:51,280 --> 00:24:55,120
+conjunto de Mandelbrot, y hablaremos un poco sobre eso en el siguiente artículo. parte.
+
+374
+00:24:55,120 --> 00:24:58,060
+En el momento en que publico esto, la segunda parte,
+
+375
+00:24:58,060 --> 00:24:59,520
+por cierto, está disponible como lanzamiento anticipado para los mecenas.
+
+376
+00:24:59,520 --> 00:25:02,960
+Siempre me gusta darle un poco de tiempo al
+
+377
+00:25:02,960 --> 00:25:03,960
+contenido nuevo para recopilar comentarios y detectar errores.
+
+378
+00:25:03,960 --> 00:25:06,480
+La versión final debería estar disponible en breve.
+
+379
+00:25:06,480 --> 00:25:09,580
+Y sobre el tema de los patrocinadores, sólo quiero dar las
+
+380
+00:25:09,580 --> 00:25:10,740
+gracias a todos aquellos cuyo nombre aparece en la pantalla.
+
+381
+00:25:10,780 --> 00:25:14,500
+Sé que en la historia reciente los nuevos vídeos han tardado un poco en llegar.
+
+382
+00:25:14,500 --> 00:25:17,340
+Parte de esto tiene que ver con otros proyectos que han estado en proceso.
+
+383
+00:25:17,340 --> 00:25:20,360
+Cosas de las que estoy orgulloso, por cierto, como la Exposición de Verano de Matemáticas, que fue
+
+384
+00:25:20,360 --> 00:25:25,160
+una sorprendente cantidad de trabajo, para ser honesto, pero que valió la pena dado el resultado.
+
+385
+00:25:25,160 --> 00:25:29,540
+Hablaré de todo eso y anunciaré los ganadores muy pronto, así que estad atentos.
+
+386
+00:25:29,540 --> 00:25:33,020
+Solo quiero que sepas que el plan para el futuro previsible es definitivamente volver
+
+387
+00:25:33,020 --> 00:25:37,020
+a hacer nuevos videos con más entusiasmo y, más que nada, quiero decir gracias
+
+388
+00:25:37,060 --> 00:25:40,740
+por tu continuo apoyo, incluso durante los momentos en que probamos algunas cosas nuevas.
+
+389
+00:25:40,740 --> 00:25:44,180
+Significa mucho para mí, es lo que mantiene el canal en funcionamiento y haré todo lo posible
+
+390
+00:25:44,180 --> 00:25:47,300
+para que las nuevas lecciones en proceso estén a la altura de su voto de confianza allí.
+

@@ -1,0 +1,740 @@
+1
+00:00:00,000 --> 00:00:03,200
+Anda membeli produk secara online, dan Anda melihat tiga penjual berbeda.
+
+2
+00:00:03,200 --> 00:00:06,560
+Mereka semua menawarkan produk yang sama dengan harga yang pada dasarnya sama.
+
+3
+00:00:06,560 --> 00:00:11,040
+Salah satunya memiliki rating positif 100%, tetapi hanya dengan 10 ulasan.
+
+4
+00:00:11,040 --> 00:00:15,040
+Yang lain memiliki peringkat positif 96%, dengan total 50 ulasan.
+
+5
+00:00:15,040 --> 00:00:19,440
+Dan satu lagi memiliki peringkat positif 93%, tetapi dengan total 200 ulasan.
+
+6
+00:00:20,080 --> 00:00:21,200
+Dari mana Anda harus membeli?
+
+7
+00:00:21,200 --> 00:00:31,120
+Saya rasa kita semua memiliki naluri bahwa semakin banyak data
+
+8
+00:00:31,120 --> 00:00:33,520
+yang kita lihat, semakin kita yakin terhadap rating yang diberikan.
+
+9
+00:00:33,520 --> 00:00:36,160
+Kami agak curiga melihat peringkat 100%, karena sering kali peringkat tersebut berasal
+
+10
+00:00:36,160 --> 00:00:39,360
+dari sejumlah kecil ulasan, sehingga terasa lebih masuk akal bahwa segala
+
+11
+00:00:39,360 --> 00:00:43,840
+sesuatunya bisa saja terjadi sebaliknya dan diberi peringkat yang lebih rendah.
+
+12
+00:00:43,840 --> 00:00:46,240
+Namun bagaimana Anda menjadikan intuisi itu kuantitatif?
+
+13
+00:00:46,240 --> 00:00:50,240
+Apa cara rasional untuk mempertimbangkan trade-off antara kepercayaan yang diperoleh
+
+14
+00:00:50,240 --> 00:00:53,200
+dari lebih banyak data versus persentase absolut yang lebih rendah?
+
+15
+00:00:54,320 --> 00:00:58,640
+Contoh khusus ini adalah sedikit modifikasi dari contoh yang diberikan John Cook
+
+16
+00:00:58,640 --> 00:01:02,480
+dalam postingan blognya yang luar biasa, A Bayesian Review of Amazon Reseller.
+
+17
+00:01:02,480 --> 00:01:08,080
+Bagi Anda dan saya, ini adalah alasan yang bagus untuk menggali beberapa topik inti tentang probabilitas dan statistik.
+
+18
+00:01:08,080 --> 00:01:11,360
+Dan untuk benar-benar membahas topik ini dengan baik, dibutuhkan waktu.
+
+19
+00:01:11,360 --> 00:01:14,240
+Jadi yang akan saya lakukan adalah membaginya menjadi tiga video,
+
+20
+00:01:14,240 --> 00:01:17,280
+di mana dalam video pertama ini kita akan menyiapkan model
+
+21
+00:01:17,280 --> 00:01:20,160
+untuk situasi tersebut, dan mulai dengan membahas tentang distribusi binomial.
+
+22
+00:01:20,640 --> 00:01:23,600
+Yang kedua akan membawa ide-ide pembaruan Bayesian, dan
+
+23
+00:01:23,600 --> 00:01:27,040
+bagaimana bekerja dengan probabilitas terhadap nilai-nilai berkelanjutan.
+
+24
+00:01:27,040 --> 00:01:30,720
+Dan yang ketiga, kita akan melihat sesuatu yang dikenal sebagai distribusi beta,
+
+25
+00:01:30,720 --> 00:01:33,520
+dan menggunakan python kecil untuk menganalisis data yang kita miliki, dan
+
+26
+00:01:33,520 --> 00:01:37,600
+mendapatkan berbagai jawaban berbeda tergantung pada apa yang ingin Anda optimalkan.
+
+27
+00:01:39,680 --> 00:01:42,400
+Sekarang, sebagai gambaran sebelum kita menyelami semua perhitungan matematika, izinkan saya
+
+28
+00:01:42,400 --> 00:01:47,040
+menunjukkan kepada Anda apa salah satu jawabannya, karena jawabannya sangat sederhana.
+
+29
+00:01:47,040 --> 00:01:50,800
+Saat Anda melihat peringkat online, kira-kira seperti ini
+
+30
+00:01:50,800 --> 00:01:53,440
+10 dari 10, Anda berpura-pura ada dua ulasan
+
+31
+00:01:53,440 --> 00:01:55,840
+lagi, satu positif dan satu lagi negatif.
+
+32
+00:01:55,840 --> 00:02:01,760
+Dalam hal ini, itu berarti Anda berpura-pura bahwa hasilnya adalah 11 dari 12, sehingga menghasilkan 91. 7%.
+
+33
+00:02:01,760 --> 00:02:06,320
+Angka ini adalah probabilitas Anda untuk mendapatkan pengalaman yang baik dengan penjual tersebut.
+
+34
+00:02:08,080 --> 00:02:12,080
+Jadi dalam kasus 50 ulasan, di mana Anda memiliki 48 positif dan
+
+35
+00:02:12,080 --> 00:02:16,160
+2 negatif, Anda berpura-pura bahwa ulasan tersebut benar-benar 49 positif dan
+
+36
+00:02:16,160 --> 00:02:19,440
+3 negatif, sehingga Anda mendapatkan 49 dari 52, atau 94. 2%.
+
+37
+00:02:20,560 --> 00:02:23,920
+Itulah kemungkinan Anda mendapatkan pengalaman yang baik dengan penjual kedua.
+
+38
+00:02:25,520 --> 00:02:29,040
+Memainkan game yang sama dengan penjual ketiga kami, yang memiliki
+
+39
+00:02:29,040 --> 00:02:33,440
+200 ulasan, Anda mendapatkan 187 dari 202, atau 92. 6%.
+
+40
+00:02:34,960 --> 00:02:38,720
+Jadi menurut aturan ini, taruhan terbaik Anda adalah memilih penjual nomor 2.
+
+41
+00:02:39,520 --> 00:02:44,000
+Ini adalah sesuatu yang dikenal sebagai aturan suksesi Laplace, yang sudah
+
+42
+00:02:44,000 --> 00:02:46,880
+ada sejak abad ke-18. Untuk memahami asumsi apa yang mendasari hal
+
+43
+00:02:46,880 --> 00:02:52,320
+ini, dan bagaimana mengubah asumsi tersebut atau tujuan mendasar Anda dapat
+
+44
+00:02:52,320 --> 00:02:54,400
+mengubah pilihan yang Anda buat, kita benar-benar perlu melaluinya. semua matematika.
+
+45
+00:02:54,400 --> 00:02:56,240
+Jadi tanpa basa-basi lagi, mari selami.
+
+46
+00:03:00,800 --> 00:03:03,920
+Langkah 1, bagaimana sebenarnya kita memodelkan situasi tersebut,
+
+47
+00:03:03,920 --> 00:03:06,160
+dan apa sebenarnya yang ingin Anda optimalkan?
+
+48
+00:03:06,960 --> 00:03:10,640
+Salah satu pilihannya adalah menganggap masing-masing penjual menghasilkan pengalaman acak
+
+49
+00:03:10,640 --> 00:03:12,560
+yang positif atau negatif, dan setiap penjual mempunyai semacam
+
+50
+00:03:12,560 --> 00:03:18,080
+probabilitas mendasar yang konstan dalam memberikan pengalaman yang baik, yang
+
+51
+00:03:18,080 --> 00:03:21,200
+kita sebut sebagai tingkat keberhasilan, atau S untuk pendek.
+
+52
+00:03:21,760 --> 00:03:23,920
+Tantangannya adalah kita tidak mengenal S.
+
+53
+00:03:25,520 --> 00:03:28,640
+Saat Anda melihat peringkat pertama 100% dengan 10
+
+54
+00:03:28,640 --> 00:03:31,040
+ulasan, bukan berarti tingkat keberhasilan dasarnya adalah 100%.
+
+55
+00:03:31,840 --> 00:03:33,920
+Bisa jadi sekitar 95%.
+
+56
+00:03:34,800 --> 00:03:37,520
+Dan sebagai ilustrasi saja, izinkan saya menjalankan sedikit simulasi, di mana
+
+57
+00:03:37,520 --> 00:03:40,400
+saya memilih angka acak antara 0 dan 1, dan jika angkanya
+
+58
+00:03:40,400 --> 00:03:44,480
+kurang dari 0. 95, saya akan mencatatnya sebagai ulasan
+
+59
+00:03:44,480 --> 00:03:47,280
+positif, jika tidak, saya akan mencatatnya sebagai ulasan negatif.
+
+60
+00:03:48,960 --> 00:03:50,640
+Sekarang lakukan ini 10 kali berturut-turut,
+
+61
+00:03:52,080 --> 00:03:53,280
+lalu buat 10 ulasan lagi,
+
+62
+00:03:54,240 --> 00:03:55,040
+dan 10 ulasan lagi, dan 10
+
+63
+00:03:56,240 --> 00:03:57,200
+ulasan lagi, dan seterusnya, untuk
+
+64
+00:03:57,200 --> 00:03:57,920
+mengetahui urutan 10 ulasan untuk
+
+65
+00:03:57,920 --> 00:04:03,920
+penjual dengan tingkat keberhasilan 0. 95
+
+66
+00:04:03,920 --> 00:04:04,880
+akan cenderung terlihat seperti itu.
+
+67
+00:04:05,600 --> 00:04:09,920
+Cukup banyak dari mereka, sekitar 60%, memberikan nilai 10 dari 10.
+
+68
+00:04:09,920 --> 00:04:14,640
+Jadi data yang kita lihat nampaknya sangat masuk akal jika tingkat keberhasilan sebenarnya dari penjual adalah 95%.
+
+69
+00:04:15,680 --> 00:04:18,160
+Atau mungkin memang 90%, atau 99%.
+
+70
+00:04:18,720 --> 00:04:20,560
+Tantangannya adalah kita tidak tahu.
+
+71
+00:04:21,440 --> 00:04:26,720
+Mengenai tujuannya, katakanlah Anda hanya ingin memaksimalkan kemungkinan mendapatkan
+
+72
+00:04:26,720 --> 00:04:28,880
+pengalaman positif, meskipun tidak yakin dengan tingkat keberhasilannya.
+
+73
+00:04:30,080 --> 00:04:31,360
+Jadi pikirkan hal ini di sini.
+
+74
+00:04:31,360 --> 00:04:36,960
+Kita mempunyai banyak kemungkinan tingkat keberhasilan yang berbeda untuk setiap penjual, angka
+
+75
+00:04:36,960 --> 00:04:41,200
+berapa pun dari 0 hingga 1, dan kita perlu mengatakan sesuatu tentang
+
+76
+00:04:41,200 --> 00:04:43,920
+seberapa besar kemungkinan masing-masing tingkat keberhasilan ini, semacam probabilitas dari probabilitas.
+
+77
+00:04:45,040 --> 00:04:48,480
+Berbeda dengan contoh yang lebih gamifikasi seperti pelemparan koin dan pelemparan
+
+78
+00:04:48,480 --> 00:04:51,120
+dadu, dan hal-hal yang Anda lihat di kelas probabilitas intro, di
+
+79
+00:04:51,120 --> 00:04:55,840
+mana Anda mengasumsikan frekuensi jangka panjang, seperti 1 setengah atau 1
+
+80
+00:04:55,840 --> 00:05:00,080
+perenam, yang kita miliki di sini adalah ketidakpastian tentang frekuensi jangka
+
+81
+00:05:00,080 --> 00:05:02,000
+panjang itu sendiri, yang merupakan jenis keraguan yang jauh lebih kuat.
+
+82
+00:05:02,880 --> 00:05:08,160
+Saya juga harus menekankan bahwa pengaturan semacam ini relevan dengan banyak situasi di dunia
+
+83
+00:05:08,160 --> 00:05:11,680
+nyata di mana Anda perlu membuat penilaian tentang proses acak dari data yang terbatas.
+
+84
+00:05:12,640 --> 00:05:16,240
+Misalnya, Anda mendirikan pabrik yang memproduksi mobil, dan dalam pengujian
+
+85
+00:05:16,240 --> 00:05:20,720
+awal terhadap 100 mobil, dua di antaranya mengalami masalah.
+
+86
+00:05:21,440 --> 00:05:24,960
+Jika Anda berencana untuk memproduksi satu juta mobil, apa yang ingin Anda katakan
+
+87
+00:05:24,960 --> 00:05:30,480
+dengan yakin tentang berapa banyak mobil yang memiliki masalah yang perlu diatasi?
+
+88
+00:05:31,040 --> 00:05:34,160
+Pengujian ini tidak menjamin bahwa tingkat kesalahan sebenarnya adalah
+
+89
+00:05:34,960 --> 00:05:36,480
+2%, tetapi apa sebenarnya yang tertulis di dalamnya?
+
+90
+00:05:38,560 --> 00:05:40,800
+Sebagai tantangan pertama Anda, izinkan saya menanyakan hal ini kepada Anda.
+
+91
+00:05:40,800 --> 00:05:45,200
+Jika Anda secara ajaib mengetahui tingkat keberhasilan sebenarnya untuk penjual tertentu, katakanlah
+
+92
+00:05:46,080 --> 00:05:49,680
+95%, bagaimana Anda menghitung kemungkinan melihat, katakanlah, 10 ulasan positif dan
+
+93
+00:05:49,680 --> 00:05:56,160
+0 ulasan negatif, atau 48 dan 2, atau 186 dan 14?
+
+94
+00:05:57,040 --> 00:06:02,000
+Dengan kata lain, berapa probabilitas melihat data dengan asumsi tingkat keberhasilan?
+
+95
+00:06:03,040 --> 00:06:08,240
+Beberapa saat yang lalu, saya menunjukkan kepada Anda sesuatu seperti ini dengan
+
+96
+00:06:08,240 --> 00:06:11,280
+simulasi, menghasilkan 10 ulasan acak, dan dengan sedikit pemrograman, Anda dapat
+
+97
+00:06:11,280 --> 00:06:14,640
+melakukannya berkali-kali, membuat histogram untuk mendapatkan gambaran seperti apa distribusi ini.
+
+98
+00:06:21,680 --> 00:06:24,400
+Demikian pula, Anda dapat menyimulasikan kumpulan 50 ulasan, dan memahami seberapa
+
+99
+00:06:24,400 --> 00:06:29,120
+besar kemungkinannya untuk melihat 48 ulasan positif dan 2 ulasan negatif.
+
+100
+00:06:29,760 --> 00:06:31,760
+Anda tahu, inilah hal yang menyenangkan tentang probabilitas.
+
+101
+00:06:31,760 --> 00:06:34,560
+Pemrograman kecil hampir selalu memungkinkan Anda melakukan sedikit kecurangan,
+
+102
+00:06:34,560 --> 00:06:37,680
+dan melihat jawabannya terlebih dahulu dengan melakukan simulasi.
+
+103
+00:06:37,680 --> 00:06:41,200
+Misalnya, setelah beberapa ratus ribu sampel dari 50
+
+104
+00:06:41,200 --> 00:06:42,880
+ulasan, dengan asumsi tingkat keberhasilan 95%, sepertinya
+
+105
+00:06:43,680 --> 00:06:48,160
+sekitar 26. 1% dari mereka akan memberi kami ulasan 48 dari 50 ini.
+
+106
+00:06:49,120 --> 00:06:52,800
+Untungnya, dalam hal ini, formula yang tepat tidaklah buruk sama sekali.
+
+107
+00:06:52,800 --> 00:06:56,560
+Peluang untuk melihat tepat 48 dari 50 terlihat seperti ini.
+
+108
+00:06:57,600 --> 00:07:00,960
+Istilah pertama ini diucapkan 50 pilih 48, dan
+
+109
+00:07:00,960 --> 00:07:04,960
+ini mewakili jumlah total cara Anda dapat
+
+110
+00:07:06,000 --> 00:07:07,600
+mengambil 50 slot, dan mengisi 48 slot.
+
+111
+00:07:09,280 --> 00:07:13,520
+Misalnya, mungkin Anda memulai dengan 48 ulasan bagus dan diakhiri dengan 2 ulasan buruk, atau
+
+112
+00:07:13,520 --> 00:07:18,400
+mungkin Anda memulai dengan 47 ulasan bagus lalu menjadi buruk, baik, buruk, dan seterusnya.
+
+113
+00:07:18,960 --> 00:07:22,080
+Pada prinsipnya, jika Anda menghitung setiap cara yang
+
+114
+00:07:22,080 --> 00:07:24,800
+mungkin untuk mengisi 48 dari 50 slot seperti
+
+115
+00:07:24,800 --> 00:07:28,480
+ini, jumlah total pola ini adalah 50 pilih
+
+116
+00:07:28,480 --> 00:07:31,840
+48, yang dalam hal ini adalah 1.225.
+
+117
+00:07:32,480 --> 00:07:34,160
+Berapa yang kita kalikan dengan hitungan ini?
+
+118
+00:07:34,160 --> 00:07:37,120
+Ya, probabilitas salah satu dari pola-pola ini, yang
+
+119
+00:07:37,120 --> 00:07:41,440
+merupakan probabilitas satu ulasan positif dikuadratkan hingga 48
+
+120
+00:07:41,440 --> 00:07:44,800
+kali lipat dari probabilitas satu ulasan negatif.
+
+121
+00:07:45,440 --> 00:07:49,120
+Yang terpenting adalah kita berasumsi setiap tinjauan tidak bergantung pada tinjauan
+
+122
+00:07:49,120 --> 00:07:51,920
+sebelumnya, sehingga kita dapat mengalikan semua probabilitas seperti ini, dan dengan
+
+123
+00:07:52,480 --> 00:07:57,360
+angka yang kita miliki, saat Anda mengevaluasinya, hasilnya adalah 0. 261,
+
+124
+00:07:57,360 --> 00:08:00,160
+yang cocok dengan apa yang baru saja kita lihat secara empiris dengan simulasi.
+
+125
+00:08:02,000 --> 00:08:04,960
+Anda juga dapat mengganti 48 ini dengan nilai
+
+126
+00:08:04,960 --> 00:08:08,640
+lain, dan menghitung kemungkinan melihat sejumlah ulasan positif
+
+127
+00:08:09,200 --> 00:08:11,280
+lainnya, sekali lagi dengan asumsi tingkat keberhasilan tertentu.
+
+128
+00:08:14,880 --> 00:08:16,960
+Omong-omong, apa yang Anda lihat saat ini
+
+129
+00:08:16,960 --> 00:08:20,000
+dikenal dalam dunia bisnis sebagai distribusi binomial,
+
+130
+00:08:20,000 --> 00:08:23,680
+salah satu distribusi probabilitas yang paling mendasar.
+
+131
+00:08:23,680 --> 00:08:26,480
+Itu muncul setiap kali Anda melakukan sesuatu seperti lemparan koin, peristiwa acak yang
+
+132
+00:08:26,480 --> 00:08:31,040
+dapat terjadi dengan salah satu dari dua cara, dan Anda mengulanginya beberapa
+
+133
+00:08:31,040 --> 00:08:35,120
+kali, dan yang ingin Anda ketahui adalah kemungkinan mendapatkan berbagai total berbeda.
+
+134
+00:08:36,560 --> 00:08:41,120
+Untuk tujuan kita, rumus ini memberi kita probabilitas untuk
+
+135
+00:08:41,120 --> 00:08:43,360
+melihat data berdasarkan asumsi tingkat keberhasilan, yang pada akhirnya
+
+136
+00:08:43,360 --> 00:08:47,360
+ingin kita gunakan untuk membuat penilaian tentang kebalikannya, probabilitas
+
+137
+00:08:47,360 --> 00:08:51,120
+tingkat keberhasilan berdasarkan data tetap yang kita lihat.
+
+138
+00:08:51,120 --> 00:08:53,440
+Ini terkait, tapi jelas berbeda.
+
+139
+00:08:54,560 --> 00:08:57,920
+Untuk lebih memahaminya, mari kita bermain-main dengan nilai s ini, dan lihat apa
+
+140
+00:08:57,920 --> 00:09:02,080
+yang terjadi jika kita mengubahnya ke angka lain antara 0 dan 1.
+
+141
+00:09:04,320 --> 00:09:08,320
+Distribusi binomial yang dihasilkannya tampak seperti tumpukan
+
+142
+00:09:08,320 --> 00:09:10,720
+yang berpusat di sekitar s kali 50.
+
+143
+00:09:11,280 --> 00:09:15,760
+Nilai yang kami pedulikan, kemungkinan melihat 48 dari 50
+
+144
+00:09:15,760 --> 00:09:18,640
+ulasan, diwakili oleh bilah ke-48 yang disorot ini.
+
+145
+00:09:19,440 --> 00:09:24,480
+Jadi mari kita menggambar plot kedua di bawah, yang menunjukkan bagaimana nilai tersebut bergantung pada s.
+
+146
+00:09:25,440 --> 00:09:30,640
+Ketika s sama dengan 0. 96, nilai itu sangat tinggi.
+
+147
+00:09:30,640 --> 00:09:34,640
+Dan ini seharusnya masuk akal, karena jika Anda melihat ulasan
+
+148
+00:09:35,440 --> 00:09:39,280
+sebesar 96% tersebut, kemungkinan besar tingkat keberhasilan sebenarnya adalah 96%.
+
+149
+00:09:41,120 --> 00:09:46,480
+Saat s meningkat, ulasan tersebut akan berkurang, menjadi 0 saat s mendekati 1, karena
+
+150
+00:09:46,480 --> 00:09:50,400
+seseorang dengan tingkat keberhasilan sempurna tidak akan pernah mendapatkan dua ulasan negatif tersebut.
+
+151
+00:09:51,280 --> 00:09:54,400
+Selain itu, saat Anda bergerak ke kiri, ia mendekati 0 dengan cukup cepat.
+
+152
+00:09:56,800 --> 00:09:59,760
+Pada saat Anda mencapai s sama dengan 0. 8,
+
+153
+00:09:59,760 --> 00:10:03,280
+mendapatkan 48 dari 50 ulasan secara kebetulan sangatlah
+
+154
+00:10:03,280 --> 00:10:05,040
+jarang, itu akan terjadi satu dari seribu kali.
+
+155
+00:10:06,160 --> 00:10:10,320
+Plot yang ada di bawah ini adalah awal yang baik untuk mendapatkan deskripsi
+
+156
+00:10:10,320 --> 00:10:13,360
+yang lebih kuantitatif yang nilai snya terasa lebih atau kurang masuk akal.
+
+157
+00:10:14,400 --> 00:10:19,280
+Jika ditulis dalam bentuk rumus, saya ingin Anda ingat bahwa sebagai fungsi
+
+158
+00:10:19,280 --> 00:10:24,960
+dari tingkat keberhasilan, s, kurvanya terlihat seperti beberapa kali s yang konstan
+
+159
+00:10:24,960 --> 00:10:28,000
+terhadap jumlah ulasan positif dikalikan 1 dikurangi s terhadap jumlah ulasan negatif.
+
+160
+00:10:28,960 --> 00:10:34,560
+Pada prinsipnya, jika kita memiliki lebih banyak data, misalnya 480 ulasan positif dan
+
+161
+00:10:34,560 --> 00:10:37,440
+20 ulasan negatif, plot yang dihasilkan akan tetap berpusat di sekitar 0. 96,
+
+162
+00:10:37,440 --> 00:10:39,520
+tapi ukurannya akan lebih kecil dan lebih terkonsentrasi.
+
+163
+00:10:40,080 --> 00:10:44,160
+Latihan yang baik saat ini adalah melihat apakah Anda dapat menjelaskan mengapa hal tersebut terjadi.
+
+164
+00:10:45,360 --> 00:10:49,440
+Namun, masih ada pertanyaan mengenai apa yang sebenarnya harus dilakukan terhadap kurva ini.
+
+165
+00:10:50,000 --> 00:10:54,880
+Maksud saya, tujuan kami adalah menghitung kemungkinan Anda memiliki pengalaman
+
+166
+00:10:54,880 --> 00:10:55,600
+yang baik dengan penjual ini, jadi apa yang Anda lakukan?
+
+167
+00:10:56,720 --> 00:10:59,760
+Secara naif, Anda mungkin berpikir bahwa probabilitasnya adalah 96%, karena di
+
+168
+00:11:00,400 --> 00:11:05,440
+situlah puncak grafiknya, yang merupakan tingkat keberhasilan yang paling mungkin.
+
+169
+00:11:05,440 --> 00:11:08,400
+Tapi pikirkan contoh dengan 10 dari 10 hal positif.
+
+170
+00:11:08,400 --> 00:11:13,200
+Dalam hal ini, seluruh rumus binomial disederhanakan menjadi s pangkat 10.
+
+171
+00:11:14,880 --> 00:11:17,840
+Peluang melihat 10 ulasan bagus berturut-turut adalah peluang melihat
+
+172
+00:11:17,840 --> 00:11:20,640
+salah satu ulasan tersebut dinaikkan ke peringkat 10.
+
+173
+00:11:21,360 --> 00:11:26,560
+Semakin dekat tingkat keberhasilan sebenarnya dengan 1, semakin tinggi kemungkinan mendapatkan nilai 10 dari 10.
+
+174
+00:11:27,120 --> 00:11:30,880
+Plot kita di bawah hanya meningkat ketika s mendekati 1.
+
+175
+00:11:32,320 --> 00:11:36,560
+Namun meskipun s sama dengan 1 adalah nilai yang memaksimalkan probabilitas ini,
+
+176
+00:11:36,560 --> 00:11:40,240
+tentunya Anda tidak akan merasa nyaman mengatakan bahwa Anda secara pribadi
+
+177
+00:11:40,240 --> 00:11:42,480
+memiliki probabilitas 100% untuk mendapatkan pengalaman yang baik dengan penjual ini.
+
+178
+00:11:43,440 --> 00:11:48,240
+Mungkin Anda berpikir bahwa kita harus mencari semacam pusat massa pada
+
+179
+00:11:48,240 --> 00:11:50,240
+grafik ini, dan itu pasti berada di jalur yang benar.
+
+180
+00:11:51,280 --> 00:11:54,800
+Namun, pertama-tama, kita perlu menjelaskan cara menggunakan ekspresi ini untuk
+
+181
+00:11:54,800 --> 00:11:58,720
+probabilitas data yang kita lihat jika diberi nilai s,
+
+182
+00:11:58,720 --> 00:12:02,720
+dan mendapatkan probabilitas dengan nilai s, hal yang sebenarnya tidak
+
+183
+00:12:02,720 --> 00:12:04,800
+kita ketahui, mengingat data, hal yang sebenarnya kita ketahui.
+
+184
+00:12:05,600 --> 00:12:09,920
+Dan itu mengharuskan kita membicarakan aturan Bayes, dan juga fungsi kepadatan probabilitas.
+
+185
+00:12:10,480 --> 00:12:13,040
+Untuk itu, sampai jumpa di bagian 2.
+

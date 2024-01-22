@@ -1,0 +1,1056 @@
+1
+00:00:00,000 --> 00:00:04,480
+Supongamos que le doy dos listas diferentes de números, o tal vez dos funciones diferentes, y le pido que
+
+2
+00:00:04,480 --> 00:00:08,400
+piense en todas las formas en que podría combinar esas dos listas para obtener una nueva lista de números,
+
+3
+00:00:08,400 --> 00:00:14,000
+o combinar las dos funciones para obtener una nueva función. . Quizás una forma sencilla que se nos
+
+4
+00:00:14,000 --> 00:00:18,640
+ocurra sea simplemente sumarlos término por término. Así mismo con las funciones, puedes agregar todas
+
+5
+00:00:18,640 --> 00:00:24,000
+las salidas correspondientes. De manera similar, también puedes multiplicar las dos listas término por término
+
+6
+00:00:24,000 --> 00:00:28,720
+y hacer lo mismo con las funciones. Pero hay otro tipo de combinación
+
+7
+00:00:28,720 --> 00:00:33,840
+tan fundamental como ambas, pero mucho menos discutida, conocida como convolución.
+
+8
+00:00:33,840 --> 00:00:38,240
+Pero a diferencia de los dos casos anteriores, no es algo que simplemente se hereda de una operación
+
+9
+00:00:38,240 --> 00:00:43,360
+que puedes hacer con números. Es algo realmente nuevo para el contexto de listas de números o
+
+10
+00:00:43,360 --> 00:00:49,280
+combinación de funciones. Aparecen por todas partes, son omnipresentes en el procesamiento de imágenes, es una
+
+11
+00:00:49,280 --> 00:00:53,760
+construcción central en la teoría de la probabilidad, se usan mucho para resolver ecuaciones diferenciales y es
+
+12
+00:00:53,760 --> 00:00:58,240
+un contexto en el que es casi seguro que lo hayas visto, si no. con este nombre,
+
+13
+00:00:58,240 --> 00:01:03,440
+es multiplicar dos polinomios entre sí. Como alguien en el negocio de las explicaciones visuales, este
+
+14
+00:01:03,440 --> 00:01:08,800
+es un tema especialmente bueno, porque la definición formulada aislada y sin contexto puede parecer un
+
+15
+00:01:08,800 --> 00:01:14,080
+poco intimidante, pero si nos tomamos el tiempo para analizar realmente lo que dice, y
+
+16
+00:01:14,080 --> 00:01:18,800
+antes de eso, motivar por qué querrías algo como esto, es una operación increíblemente hermosa.
+
+17
+00:01:18,800 --> 00:01:22,880
+Y tengo que admitir que en realidad aprendí algo mientras armaba las imágenes para este
+
+18
+00:01:22,880 --> 00:01:26,960
+proyecto. En el caso de convolucionar dos funciones diferentes, estaba tratando de pensar en diferentes formas en
+
+19
+00:01:26,960 --> 00:01:30,720
+las que podría imaginarse lo que eso podría significar, y con una de ellas tuve un pequeño
+
+20
+00:01:30,720 --> 00:01:35,840
+momento de ajá sobre por qué las distribuciones normales desempeñan el papel que lo hacen con probabilidad,
+
+21
+00:01:35,840 --> 00:01:40,320
+por qué es una forma tan natural para una función. Pero me estoy adelantando, hay mucha
+
+22
+00:01:40,320 --> 00:01:44,800
+preparación para eso. En este video, nuestro enfoque principal será el caso discreto
+
+23
+00:01:44,800 --> 00:01:49,920
+y, en particular, desarrollar un algoritmo muy inesperado pero muy inteligente para calcularlos.
+
+24
+00:01:49,920 --> 00:01:54,400
+Y llevaré la discusión del caso continuo a una segunda parte.
+
+25
+00:01:57,840 --> 00:02:03,120
+Es muy tentador comenzar con los ejemplos de procesamiento de imágenes, ya que son visualmente los más
+
+26
+00:02:03,120 --> 00:02:06,880
+intrigantes, pero hay un par de detalles que hacen que el caso de procesamiento de imágenes sea
+
+27
+00:02:06,880 --> 00:02:11,760
+menos representativo de las convoluciones en general, así que comencemos con la probabilidad. y en particular
+
+28
+00:02:11,760 --> 00:02:15,520
+uno de los ejemplos más simples en el que estoy seguro todos aquí han pensado en algún
+
+29
+00:02:15,520 --> 00:02:20,320
+momento de su vida, que es tirar un par de dados y calcular las posibilidades de obtener
+
+30
+00:02:20,320 --> 00:02:25,600
+varias sumas diferentes. Y se podría decir, no es un problema, no es un problema. Cada uno de tus dos
+
+31
+00:02:25,600 --> 00:02:31,600
+dados tiene seis resultados posibles diferentes, lo que nos da un total de 36 pares de
+
+32
+00:02:31,600 --> 00:02:35,600
+resultados posibles distintos, y si los analizamos todos podemos contar cuántos pares tienen una suma determinada.
+
+33
+00:02:36,240 --> 00:02:41,120
+Y al organizar todos los pares en una cuadrícula como esta, una cosa bastante buena es que todos los pares que
+
+34
+00:02:41,120 --> 00:02:47,040
+tienen una suma constante son visibles a lo largo de una de estas diagonales diferentes. Entonces, simplemente contar cuántos
+
+35
+00:02:47,040 --> 00:02:51,920
+existen en cada una de esas diagonales le indicará la probabilidad de que vea una suma particular.
+
+36
+00:02:52,880 --> 00:02:57,760
+Y yo diría, muy bien, muy bien, pero ¿se te ocurre alguna otra manera de visualizar la
+
+37
+00:02:57,760 --> 00:03:03,120
+misma pregunta? ¿Otras imágenes que te pueden venir a la cabeza al pensar en todos los distintos pares que tienen una
+
+38
+00:03:03,120 --> 00:03:08,800
+suma determinada? Y tal vez uno de ustedes levante la mano y diga: sí, tengo uno. Digamos que imaginas estos dos
+
+39
+00:03:08,800 --> 00:03:14,560
+conjuntos diferentes de posibilidades, cada uno en una fila, pero le das la vuelta a la segunda fila. De esa
+
+40
+00:03:14,560 --> 00:03:20,160
+manera, todos los diferentes pares que suman siete se alinean verticalmente así. Y si deslizamos la
+
+41
+00:03:20,160 --> 00:03:24,880
+fila inferior completamente hacia la derecha, entonces el par único que suma dos, los ojos de serpiente, son
+
+42
+00:03:24,880 --> 00:03:29,680
+los únicos que se alinean. Y si lo distribuyo una unidad hacia la derecha, los pares que se
+
+43
+00:03:29,680 --> 00:03:35,440
+alinean son los dos pares diferentes que suman tres. Y, en general, los diferentes valores de compensación de
+
+44
+00:03:35,440 --> 00:03:40,320
+esta matriz inferior, que recuerdo que tuve que darle la vuelta primero, revelan todos los pares distintos que tienen
+
+45
+00:03:40,320 --> 00:03:48,800
+una suma determinada. En lo que respecta a las preguntas de probabilidad, esto todavía no es especialmente interesante,
+
+46
+00:03:48,800 --> 00:03:53,120
+porque lo único que estamos haciendo es contar cuántos resultados hay en cada una de estas categorías.
+
+47
+00:03:53,120 --> 00:03:57,280
+Pero eso es con el supuesto implícito de que hay la misma probabilidad de que aparezca cada una de
+
+48
+00:03:57,280 --> 00:04:02,240
+estas caras. Pero ¿y si te dijera que tengo un juego de dados especial que no es uniforme? Tal vez
+
+49
+00:04:02,240 --> 00:04:06,800
+el dado azul tenga su propio conjunto de números que describen las probabilidades de que salga cada cara, y el
+
+50
+00:04:06,800 --> 00:04:11,920
+dado rojo tenga su propio conjunto de números distintivo y único. En ese caso, si quisieras calcular, digamos, la
+
+51
+00:04:11,920 --> 00:04:17,360
+probabilidad de ver un dos, multiplicarías la probabilidad de que el dado azul sea un uno por la
+
+52
+00:04:17,360 --> 00:04:22,000
+probabilidad de que el dado rojo sea un uno. Y para conocer las posibilidades de ver
+
+53
+00:04:22,000 --> 00:04:26,880
+un tres, observas los dos pares distintos cuando sea posible y, nuevamente, multiplicas las
+
+54
+00:04:26,880 --> 00:04:32,240
+probabilidades correspondientes y luego sumas esos dos productos. De manera similar, las posibilidades de
+
+55
+00:04:32,240 --> 00:04:36,320
+ver un cuatro implican multiplicar tres pares diferentes de posibilidades y sumarlos
+
+56
+00:04:36,320 --> 00:04:41,360
+todos. Y con el ánimo de establecer algunas fórmulas, llamemos a estas probabilidades superiores a1, a2,
+
+57
+00:04:41,360 --> 00:04:48,000
+a3, etc., y llamemos a las inferiores b1, b2, b3, etc. Y en general, este proceso,
+
+58
+00:04:48,000 --> 00:04:52,080
+en el que tomamos dos conjuntos diferentes de números, volteamos el segundo y luego los
+
+59
+00:04:52,080 --> 00:04:56,160
+alineamos en varios valores de compensación diferentes, tomamos un montón de productos por pares y
+
+60
+00:04:56,160 --> 00:05:00,960
+los sumamos, ese es uno de los Formas fundamentales de pensar qué es una convolución.
+
+61
+00:05:00,960 --> 00:05:08,960
+Entonces, para explicarlo un poco más exactamente, a través de este proceso, simplemente generamos probabilidades de
+
+62
+00:05:08,960 --> 00:05:13,840
+ver dos, tres, cuatro, y así hasta 12, y las obtuvimos mezclando una lista de
+
+63
+00:05:13,840 --> 00:05:20,080
+valores, a, y otra. lista de valores, b. En la jerga, diríamos que la convolución de esas
+
+64
+00:05:20,080 --> 00:05:25,600
+dos secuencias nos da esta nueva secuencia, la nueva secuencia de 11 valores, cada uno de los cuales parece
+
+65
+00:05:25,600 --> 00:05:30,160
+una suma de productos por pares. Si lo prefieres, otra forma de pensar en la misma operación
+
+66
+00:05:30,160 --> 00:05:36,240
+es crear primero una tabla de todos los productos por pares y luego sumar todas estas
+
+67
+00:05:36,240 --> 00:05:41,120
+diagonales. Nuevamente, esa es una forma de mezclar estas dos secuencias de números para obtener una nueva secuencia
+
+68
+00:05:41,120 --> 00:05:46,400
+de 11 números. Es el mismo funcionamiento que pensaban las ventanas correderas, sólo que desde otra perspectiva.
+
+69
+00:05:46,960 --> 00:05:51,280
+Poniéndole una pequeña notación, así es como podría verlo escrito. La convolución de a y
+
+70
+00:05:51,280 --> 00:05:57,200
+b, indicada con este pequeño asterisco, es una nueva lista, y el enésimo elemento de esa lista parece una suma, y
+
+71
+00:05:57,200 --> 00:06:03,440
+esa suma abarca todos los diferentes pares de índices, i y j, de modo que la suma de esos índices
+
+72
+00:06:03,440 --> 00:06:09,440
+es igual a n. Es un poco complicado, pero por ejemplo, si n fuera 6, los pares que repasaremos son 1 y
+
+73
+00:06:09,440 --> 00:06:15,680
+5, 2 y 4, 3 y 3, 4 y 2, 5 y 1, todos los pares diferentes que se suman a 6.
+
+74
+00:06:16,400 --> 00:06:20,640
+Pero, sinceramente, independientemente de cómo lo escribas, la notación tiene una importancia secundaria frente a la imagen que puedas
+
+75
+00:06:20,640 --> 00:06:26,320
+tener en tu cabeza durante el proceso. Aquí, tal vez sea útil hacer un ejemplo súper simple, donde podría
+
+76
+00:06:26,320 --> 00:06:32,000
+preguntarte cuál es la convolución de la lista 1, 2, 3, con la lista 4, 5, 6. Podrías imaginarte tomar
+
+77
+00:06:32,000 --> 00:06:36,160
+ambas listas, darle la vuelta a la segunda y luego comenzar con la tapa
+
+78
+00:06:36,160 --> 00:06:41,200
+completamente hacia la izquierda. Luego, el par de valores que se alinean son 1 y 4, los
+
+79
+00:06:41,200 --> 00:06:45,680
+multiplicamos y eso nos da nuestro primer término de nuestra salida. Deslice la matriz inferior una unidad hacia la derecha,
+
+80
+00:06:45,680 --> 00:06:51,840
+los pares que se alinean son 1 y 5, y 2 y 4, multiplique esos pares, súmelos y eso nos
+
+81
+00:06:51,840 --> 00:06:57,600
+da 13, la siguiente entrada en nuestra salida. Desliza las cosas una vez más y tomaremos 1 por 6, más
+
+82
+00:06:57,600 --> 00:07:04,400
+2 por 5, más 3 por 4, lo que resulta ser 28. Una diapositiva más y obtenemos 2 por 6, más
+
+83
+00:07:04,400 --> 00:07:10,000
+3 por 5, y eso nos da 27, y finalmente el último término se verá como 3 por 6.
+
+84
+00:07:10,560 --> 00:07:14,080
+Si lo desea, puede consultar cualquiera que sea su lenguaje de programación favorito y su
+
+85
+00:07:14,080 --> 00:07:18,640
+biblioteca favorita que incluya varias operaciones numéricas, y podrá confirmar que no le estoy mintiendo.
+
+86
+00:07:18,640 --> 00:07:24,320
+Si tomas la convolución de 1, 2, 3 contra 4, 5, 6, este es de hecho el resultado que obtendrás.
+
+87
+00:07:24,880 --> 00:07:29,200
+Hemos visto un caso en el que se trata de una operación natural y deseable, que se suma
+
+88
+00:07:29,200 --> 00:07:34,640
+a distribuciones de probabilidad, y otro ejemplo común sería una media móvil. Imagina que tienes una lista larga
+
+89
+00:07:34,640 --> 00:07:39,920
+de números y tomas otra lista más pequeña de números que suman 1. En este caso, solo tengo
+
+90
+00:07:39,920 --> 00:07:45,280
+una pequeña lista de 5 valores y todos son iguales a 15. Luego, si hacemos este proceso de convolución
+
+91
+00:07:45,280 --> 00:07:49,760
+de ventana deslizante, cerramos los ojos y escondemos debajo de la alfombra lo que sucede al principio, una
+
+92
+00:07:50,560 --> 00:07:55,120
+vez que nuestra lista más pequeña de valores se superpone por completo con la más grande, piense en
+
+93
+00:07:55,680 --> 00:08:01,120
+lo que significa cada término en este realmente significa convolución. En cada iteración, lo que estás haciendo
+
+94
+00:08:01,120 --> 00:08:06,400
+es multiplicar cada uno de los valores de tus datos por 15 y sumarlos todos, es decir,
+
+95
+00:08:06,400 --> 00:08:12,080
+estás tomando un promedio de tus datos dentro de esta pequeña ventana. En general, el proceso
+
+96
+00:08:12,080 --> 00:08:16,800
+le brinda una versión suavizada de los datos originales, y puede modificarla comenzando con una pequeña
+
+97
+00:08:16,800 --> 00:08:21,280
+lista diferente de números, y mientras esa pequeña lista sume 1, aún puede interpretarla como
+
+98
+00:08:21,280 --> 00:08:25,840
+una lista en movimiento. promedio. En el ejemplo que se muestra aquí, esa media móvil daría
+
+99
+00:08:25,840 --> 00:08:30,720
+más peso al valor central. Esto también da como resultado una versión suavizada de los datos.
+
+100
+00:08:33,200 --> 00:08:37,840
+Si haces una especie de analogía bidimensional de esto, obtendrás un algoritmo divertido para desenfocar una
+
+101
+00:08:37,840 --> 00:08:43,120
+imagen determinada. Y debo decir que las animaciones que estoy a punto de mostrar están modificadas de algo que
+
+102
+00:08:43,120 --> 00:08:48,160
+hice originalmente para parte de una serie de conferencias que di con el Julia Lab en el MIT para
+
+103
+00:08:48,160 --> 00:08:52,320
+cierta clase de OpenCourseWare que incluía una unidad de procesamiento de imágenes. Allí hicimos un poco más para profundizar
+
+104
+00:08:52,320 --> 00:08:56,640
+en el código detrás de todo esto, así que si tienes curiosidad te dejaré algunos enlaces. Pero
+
+105
+00:08:56,640 --> 00:09:01,440
+volviendo a centrarnos en este ejemplo borroso, lo que está pasando es que tengo esta pequeña cuadrícula de valores
+
+106
+00:09:01,440 --> 00:09:06,480
+de 3x3 que avanza a lo largo de nuestra imagen original, y si nos acercamos, cada uno de esos
+
+107
+00:09:06,480 --> 00:09:11,120
+valores es 19, y lo que estoy haciendo en cada iteración se multiplica cada uno de esos valores por
+
+108
+00:09:11,120 --> 00:09:16,080
+el píxel correspondiente sobre el que se encuentra. Y, por supuesto, en informática pensamos en los colores
+
+109
+00:09:16,080 --> 00:09:20,400
+como pequeños vectores de tres valores, que representan los componentes rojo, verde y azul.
+
+110
+00:09:20,400 --> 00:09:25,440
+Cuando multiplico todos estos pequeños valores por 19 y los sumo, obtenemos un promedio a lo largo de
+
+111
+00:09:25,440 --> 00:09:30,480
+cada canal de color, y el píxel correspondiente a la imagen de la derecha se define como esa
+
+112
+00:09:30,480 --> 00:09:36,320
+suma. El efecto general, al hacer esto para cada píxel de la imagen, es que cada uno
+
+113
+00:09:36,320 --> 00:09:40,880
+se fusiona con todos sus vecinos, lo que nos da una versión más borrosa que la original.
+
+114
+00:09:41,680 --> 00:09:46,640
+En la jerga diríamos que la imagen de la derecha es una convolución de nuestra imagen original con una
+
+115
+00:09:46,640 --> 00:09:52,000
+pequeña cuadrícula de valores. O más técnicamente tal vez debería decir que es la convolución con una versión
+
+116
+00:09:52,000 --> 00:09:56,160
+girada 180 grados de esa pequeña cuadrícula de valores. No es que importe cuando la cuadrícula
+
+117
+00:09:56,160 --> 00:10:00,720
+es simétrica, pero vale la pena tener en cuenta que la definición de convolución, heredada
+
+118
+00:10:00,720 --> 00:10:05,760
+del contexto matemático puro, siempre debería invitarte a pensar en invertir esa segunda matriz.
+
+119
+00:10:05,760 --> 00:10:10,240
+Si modificamos esto ligeramente podemos conseguir un efecto de desenfoque mucho más elegante eligiendo una cuadrícula de
+
+120
+00:10:10,240 --> 00:10:15,920
+valores diferente. En este caso tengo una pequeña cuadrícula de 5x5, pero la distinción no es tanto su tamaño.
+
+121
+00:10:15,920 --> 00:10:19,920
+Si nos acercamos, notamos que el valor en el medio es mucho mayor que el valor hacia los bordes,
+
+122
+00:10:19,920 --> 00:10:25,360
+y esto se debe a que todos están muestreados a partir de una curva de campana, conocida como
+
+123
+00:10:25,360 --> 00:10:30,240
+distribución gaussiana. De esa manera, cuando multiplicamos todos estos valores por el píxel correspondiente sobre el que
+
+124
+00:10:30,240 --> 00:10:35,200
+se encuentran, le damos mucho más peso a ese píxel central y mucho menos a los que
+
+125
+00:10:35,200 --> 00:10:39,920
+están en el borde. Y al igual que antes, el píxel correspondiente a la derecha se define como esta
+
+126
+00:10:39,920 --> 00:10:45,360
+suma. A medida que realizamos este proceso para cada píxel, se obtiene un efecto de desenfoque
+
+127
+00:10:45,360 --> 00:10:49,760
+que simula de manera mucho más auténtica la noción de desenfocar la lente o algo así.
+
+128
+00:10:49,760 --> 00:10:54,960
+Pero difuminar está lejos de ser lo único que se puede hacer con esta idea. Por ejemplo, eche un vistazo
+
+129
+00:10:54,960 --> 00:10:59,600
+a esta pequeña cuadrícula de valores, que incluye algunos números positivos a la izquierda y algunos números
+
+130
+00:10:59,600 --> 00:11:04,480
+negativos a la derecha, que colorearé con azul y rojo respectivamente. Tómate un momento para ver si
+
+131
+00:11:04,480 --> 00:11:11,680
+puedes predecir y comprender qué efecto tendrá esto en la imagen final. Entonces, en este caso, pensaré en
+
+132
+00:11:11,680 --> 00:11:16,560
+la imagen en escala de grises en lugar de coloreada, de modo que cada uno de los píxeles esté representado por
+
+133
+00:11:16,560 --> 00:11:21,280
+un número en lugar de tres. Y una cosa que vale la pena señalar es que al hacer esta
+
+134
+00:11:21,280 --> 00:11:26,240
+convolución es posible obtener valores negativos. Por ejemplo, en este punto, si hacemos zoom, la mitad izquierda de nuestra
+
+135
+00:11:26,240 --> 00:11:30,960
+pequeña cuadrícula se ubica completamente sobre los píxeles negros, lo que tendría un valor de cero, pero la mitad
+
+136
+00:11:30,960 --> 00:11:35,360
+derecha de los valores negativos se ubicará sobre los píxeles blancos, lo que tendría tiene un valor de uno.
+
+137
+00:11:36,000 --> 00:11:40,960
+Entonces, cuando multiplicamos los términos correspondientes y los sumamos, los resultados serán muy negativos, y la forma en que
+
+138
+00:11:40,960 --> 00:11:45,120
+muestro esto con la imagen de la derecha es colorear los valores negativos en rojo y los valores
+
+139
+00:11:45,120 --> 00:11:49,520
+positivos en azul. Otra cosa a tener en cuenta es que cuando estás en una zona que es del mismo
+
+140
+00:11:49,520 --> 00:11:55,680
+color, todo llega a cero ya que la suma de los valores en nuestra pequeña cuadrícula es cero. Esto es muy
+
+141
+00:11:55,680 --> 00:11:59,680
+diferente de los dos ejemplos anteriores donde la suma de nuestra pequeña cuadrícula era uno, lo que nos permitió interpretarla
+
+142
+00:11:59,680 --> 00:12:05,760
+como una media móvil y, por tanto, como una imagen borrosa. En general, este pequeño proceso básicamente detecta dónde
+
+143
+00:12:05,760 --> 00:12:10,240
+hay variación en el valor del píxel a medida que te mueves de izquierda a derecha, por
+
+144
+00:12:10,240 --> 00:12:13,760
+lo que te brinda una especie de forma de detectar todos los bordes verticales de tu imagen.
+
+145
+00:12:16,560 --> 00:12:20,960
+Y de manera similar, si rotamos esa cuadrícula para que varíe a medida que te mueves de arriba
+
+146
+00:12:20,960 --> 00:12:26,000
+a abajo, esto se recogerá en todos los bordes horizontales, lo que en el caso de nuestra imagen
+
+147
+00:12:26,000 --> 00:12:31,520
+de la pequeña criatura de pastel resulta en algunos ojos bastante demoníacos. Por cierto, esta cuadrícula más pequeña
+
+148
+00:12:31,520 --> 00:12:36,160
+a menudo se llama kernel, y la belleza aquí es cómo simplemente eligiendo un kernel diferente puedes obtener
+
+149
+00:12:36,160 --> 00:12:40,240
+diferentes efectos de procesamiento de imágenes, no solo desenfocar la detección de bordes sino también cosas como la
+
+150
+00:12:40,240 --> 00:12:44,800
+nitidez. Para aquellos de ustedes que han oído hablar de una red neuronal convolucional, la
+
+151
+00:12:44,800 --> 00:12:49,600
+idea es utilizar datos para determinar cuáles deberían ser los núcleos en primer lugar, según lo
+
+152
+00:12:49,600 --> 00:12:55,120
+que determine la red neuronal. Otra cosa que tal vez debería mencionar es la duración de la
+
+153
+00:12:55,120 --> 00:12:59,040
+salida. Para algo como el ejemplo de media móvil, es posible que solo desee pensar en los términos
+
+154
+00:12:59,040 --> 00:13:04,080
+cuando ambas ventanas se alinean completamente entre sí, o en el ejemplo de procesamiento de imágenes, tal vez
+
+155
+00:13:04,080 --> 00:13:09,200
+desee que la salida final tenga el mismo tamaño que el original. Ahora bien, las convoluciones como operación
+
+156
+00:13:09,200 --> 00:13:13,920
+matemática pura siempre producen una matriz que es más grande que las dos matrices con las que comenzó, al
+
+157
+00:13:13,920 --> 00:13:17,520
+menos asumiendo que una de ellas no tiene una longitud de uno. Solo sepa que en
+
+158
+00:13:17,520 --> 00:13:21,440
+ciertos contextos informáticos a menudo desea truncar deliberadamente esa salida.
+
+159
+00:13:21,520 --> 00:13:29,200
+Otra cosa que vale la pena destacar es que en el contexto de las ciencias de la computación esta noción
+
+160
+00:13:29,200 --> 00:13:34,080
+de darle la vuelta a ese núcleo antes de dejarlo avanzar a través del original a menudo parece realmente
+
+161
+00:13:34,080 --> 00:13:38,960
+extraña y simplemente innecesaria, pero nuevamente tenga en cuenta que eso es lo que se hereda del contexto matemático
+
+162
+00:13:38,960 --> 00:13:44,000
+puro donde, como nosotros Vi con las probabilidades que es algo increíblemente natural. Y de hecho, puedo mostrarles un
+
+163
+00:13:44,000 --> 00:13:48,480
+ejemplo más de matemáticas puras en el que incluso los programadores deberían preocuparse por este porque abre
+
+164
+00:13:48,480 --> 00:13:53,760
+las puertas a un algoritmo mucho más rápido para calcular todo esto. Para configurar lo que quiero
+
+165
+00:13:53,760 --> 00:13:58,560
+decir con más rápido aquí, déjame regresar y abrir algo de Python nuevamente y crearé dos matrices
+
+166
+00:13:58,560 --> 00:14:02,880
+diferentes relativamente grandes. Cada uno tendrá cien mil elementos aleatorios y voy a evaluar el
+
+167
+00:14:02,880 --> 00:14:08,640
+tiempo de ejecución de la función de convolución de la biblioteca numpy. Y en este caso
+
+168
+00:14:08,640 --> 00:14:12,800
+lo ejecuta durante múltiples iteraciones diferentes, intenta encontrar un promedio y parece que en esta computadora
+
+169
+00:14:12,880 --> 00:14:18,640
+al menos tiene un promedio de 4. 87 segundos. Por el contrario, si uso una función
+
+170
+00:14:18,640 --> 00:14:24,080
+diferente de la biblioteca scipy llamada fftconvolve, que es lo mismo pero implementado de manera
+
+171
+00:14:24,080 --> 00:14:30,640
+diferente, solo toma 4. 3 milisegundos en promedio, es decir, una mejora de tres órdenes de magnitud.
+
+172
+00:14:30,640 --> 00:14:34,800
+Y nuevamente, aunque tiene un nombre diferente, está dando el mismo resultado que la otra
+
+173
+00:14:34,800 --> 00:14:38,880
+función de convolución, simplemente está haciendo algo para hacerlo de una manera más inteligente.
+
+174
+00:14:38,880 --> 00:14:46,800
+Recuerde que en el ejemplo de probabilidad dije que otra forma de pensar en la convolución era crear
+
+175
+00:14:46,800 --> 00:14:51,520
+esta tabla de todos los productos por pares y luego sumar esos productos por pares a lo largo
+
+176
+00:14:51,520 --> 00:14:56,560
+de las diagonales. Por supuesto, no hay nada específico sobre la probabilidad. Cada vez que convolucionas
+
+177
+00:14:56,560 --> 00:15:00,880
+dos listas diferentes de números, puedes pensarlo de esta manera. Crea este tipo de tabla de multiplicar con
+
+178
+00:15:00,880 --> 00:15:05,520
+todos los productos por pares y luego cada suma a lo largo de la diagonal corresponde a uno de tus
+
+179
+00:15:05,520 --> 00:15:11,680
+resultados finales. Un contexto en el que esta visión resulta especialmente natural es cuando se multiplican
+
+180
+00:15:11,680 --> 00:15:16,240
+dos polinomios. Por ejemplo, permítanme tomar la pequeña cuadrícula que ya tenemos y reemplazar los términos superiores con
+
+181
+00:15:16,240 --> 00:15:23,920
+1, 2x y 3x al cuadrado y reemplazar los otros términos con 4, 5x y 6x al cuadrado.
+
+182
+00:15:23,920 --> 00:15:27,920
+Ahora piense en lo que significa cuando creamos todos estos productos diferentes en pares entre las
+
+183
+00:15:27,920 --> 00:15:32,960
+dos listas. Lo que estás haciendo es esencialmente expandir el producto completo de los dos polinomios que
+
+184
+00:15:32,960 --> 00:15:38,240
+he escrito y luego, cuando sumas a lo largo de la diagonal que corresponde a recolectar todos
+
+185
+00:15:38,240 --> 00:15:43,920
+los términos semejantes, lo cual es bastante bueno, expandir un polinomio y recolectar términos semejantes es exactamente lo
+
+186
+00:15:43,920 --> 00:15:50,640
+mismo. El mismo proceso que una convolución. Pero esto nos permite hacer algo muy bueno porque piensen
+
+187
+00:15:50,640 --> 00:15:55,360
+en lo que estamos diciendo aquí. Estamos diciendo que si tomas dos funciones diferentes y las
+
+188
+00:15:55,360 --> 00:16:00,560
+multiplicas, que es una operación puntual simple, es lo mismo que si primero hubieras extraído
+
+189
+00:16:00,560 --> 00:16:05,920
+los coeficientes de cada una de ellas, asumiendo que son polinomios, y luego hubieras tomado una
+
+190
+00:16:05,920 --> 00:16:11,840
+convolución de esas. dos listas de coeficientes. Lo que hace que esto sea tan interesante es
+
+191
+00:16:11,840 --> 00:16:16,560
+que las convoluciones parecen, en principio, mucho más complicadas que una simple multiplicación y no me refiero
+
+192
+00:16:16,560 --> 00:16:21,760
+sólo conceptualmente a que son más difíciles de pensar, sino que computacionalmente requiere más pasos para
+
+193
+00:16:21,760 --> 00:16:27,040
+realizar una convolución que para realizar una Producto puntual de dos listas diferentes. Por ejemplo, digamos que
+
+194
+00:16:27,040 --> 00:16:31,920
+te di dos polinomios realmente grandes, digamos cada uno con cien coeficientes diferentes, entonces, si la
+
+195
+00:16:32,480 --> 00:16:37,520
+forma en que los multiplicas fuera expandir este producto, ya sabes, completando esta cuadrícula completa de 100
+
+196
+00:16:37,520 --> 00:16:43,600
+por 100 de productos por pares que requerirían que realice 10.000 productos diferentes y luego, cuando recopile
+
+197
+00:16:43,600 --> 00:16:48,560
+todos los términos semejantes a lo largo de las diagonales, ese será otro conjunto de alrededor de
+
+198
+00:16:48,560 --> 00:16:55,200
+10.000 operaciones. De manera más general, en la jerga diríamos que el algoritmo es O de n al cuadrado, lo que
+
+199
+00:16:55,200 --> 00:17:00,560
+significa que para dos listas de tamaño n la forma en que el número de operaciones escala es proporcional al cuadrado de n.
+
+200
+00:17:00,560 --> 00:17:06,320
+Por otro lado, si pienso en dos polinomios en términos de sus salidas, por ejemplo,
+
+201
+00:17:06,320 --> 00:17:11,680
+muestreando sus valores en un puñado de entradas, multiplicarlos solo requiere tantas operaciones como
+
+202
+00:17:11,680 --> 00:17:17,200
+el número de muestras, ya que nuevamente es una operación puntual y con polinomios solo
+
+203
+00:17:17,200 --> 00:17:22,400
+necesitas un número finito de muestras para poder recuperar los coeficientes. Por ejemplo, dos salidas son
+
+204
+00:17:22,400 --> 00:17:27,920
+suficientes para especificar de forma única un polinomio lineal, tres salidas serían suficientes para especificar de forma
+
+205
+00:17:27,920 --> 00:17:33,680
+única un polinomio cuadrático y, en general, si conoce n salidas distintas, eso es suficiente para especificar de
+
+206
+00:17:33,680 --> 00:17:38,800
+forma única un polinomio que tiene n coeficientes diferentes o, si lo prefiere, podríamos Expresa esto en
+
+207
+00:17:38,800 --> 00:17:43,680
+el lenguaje de los sistemas de ecuaciones. Imagina que te digo que tengo un polinomio pero no te
+
+208
+00:17:43,680 --> 00:17:47,840
+digo cuáles son los coeficientes. Esos son un misterio para ti. En nuestro ejemplo, podrías pensar en
+
+209
+00:17:47,840 --> 00:17:52,960
+esto como el producto que estamos tratando de calcular y luego supongamos que te diré cuáles serían las
+
+210
+00:17:52,960 --> 00:17:59,600
+salidas de este polinomio si ingresaras varias entradas diferentes como 0, 1, 2. , 3, una y otra
+
+211
+00:17:59,600 --> 00:18:04,800
+vez y te doy lo suficiente para que tengas tantas ecuaciones como incógnitas, incluso resulta ser un sistema
+
+212
+00:18:04,800 --> 00:18:09,840
+lineal de ecuaciones, así que eso es bueno y, en principio, al menos esto debería ser suficiente
+
+213
+00:18:09,840 --> 00:18:14,880
+para recuperar los coeficientes.
+
+214
+00:18:14,880 --> 00:18:20,160
+
+
+215
+00:18:20,160 --> 00:18:26,560
+
+
+216
+00:18:26,560 --> 00:18:32,720
+
+
+217
+00:18:32,720 --> 00:18:38,000
+
+
+218
+00:18:38,000 --> 00:18:43,120
+
+
+219
+00:18:43,120 --> 00:18:47,760
+
+
+220
+00:18:47,760 --> 00:18:53,520
+
+
+221
+00:18:53,520 --> 00:18:58,400
+
+
+222
+00:18:58,400 --> 00:19:04,240
+
+
+223
+00:19:04,240 --> 00:19:09,200
+
+
+224
+00:19:09,200 --> 00:19:13,600
+
+
+225
+00:19:13,600 --> 00:19:18,720
+
+
+226
+00:19:18,720 --> 00:19:23,840
+
+
+227
+00:19:23,840 --> 00:19:30,080
+
+
+228
+00:19:30,080 --> 00:19:34,400
+
+
+229
+00:19:34,400 --> 00:19:41,600
+
+
+230
+00:19:41,600 --> 00:19:46,480
+
+
+231
+00:19:46,480 --> 00:19:51,360
+
+
+232
+00:19:51,360 --> 00:19:57,600
+
+
+233
+00:19:57,600 --> 00:20:03,200
+
+
+234
+00:20:03,200 --> 00:20:08,160
+
+
+235
+00:20:08,160 --> 00:20:12,640
+
+
+236
+00:20:12,640 --> 00:20:17,520
+
+
+237
+00:20:17,520 --> 00:20:22,720
+
+
+238
+00:20:22,720 --> 00:20:28,320
+
+
+239
+00:20:28,320 --> 00:20:33,040
+
+
+240
+00:20:33,040 --> 00:20:38,080
+
+
+241
+00:20:38,080 --> 00:20:43,600
+
+
+242
+00:20:43,600 --> 00:20:48,640
+
+
+243
+00:20:48,640 --> 00:20:53,200
+
+
+244
+00:20:53,200 --> 00:20:58,960
+
+
+245
+00:20:58,960 --> 00:21:03,280
+
+
+246
+00:21:03,280 --> 00:21:08,960
+
+
+247
+00:21:08,960 --> 00:21:14,480
+
+
+248
+00:21:14,480 --> 00:21:18,480
+
+
+249
+00:21:18,480 --> 00:21:25,600
+
+
+250
+00:21:25,600 --> 00:21:30,560
+
+
+251
+00:21:30,560 --> 00:21:35,120
+
+
+252
+00:21:35,120 --> 00:21:39,600
+
+
+253
+00:21:39,600 --> 00:21:44,480
+
+
+254
+00:21:44,480 --> 00:21:50,160
+
+
+255
+00:21:50,160 --> 00:21:54,800
+
+
+256
+00:21:54,800 --> 00:21:59,360
+
+
+257
+00:21:59,360 --> 00:22:04,640
+
+
+258
+00:22:04,640 --> 00:22:10,720
+
+
+259
+00:22:10,720 --> 00:22:16,000
+
+
+260
+00:22:16,000 --> 00:22:20,720
+
+
+261
+00:22:20,720 --> 00:22:26,320
+
+
+262
+00:22:26,320 --> 00:22:31,280
+
+
+263
+00:22:31,280 --> 00:22:36,880
+
+
+264
+00:22:36,880 --> 00:22:51,040
+
+
