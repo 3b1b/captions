@@ -1,0 +1,2702 @@
+[
+ {
+  "input": "The game Wurdle has gone pretty viral in the last month or two, and never one to overlook an opportunity for a math lesson, it occurs to me that this game makes for a very good central example in a lesson about information theory, and in particular a topic known as entropy.",
+  "model": "nmt",
+  "translatedText": "Le jeu Wurdle est devenu assez viral au cours des deux derniers mois, et n'a jamais négligé une opportunité de cours de mathématiques. Il me semble que ce jeu constitue un très bon exemple central dans une leçon sur la théorie de l'information, et en particulier un sujet connu sous le nom d’entropie.",
+  "time_range": [
+   0.0,
+   13.12
+  ]
+ },
+ {
+  "input": "You see, like a lot of people I got kind of sucked into the puzzle, and like a lot of programmers I also got sucked into trying to write an algorithm that would play the game as optimally as it could.",
+  "model": "nmt",
+  "translatedText": "Vous voyez, comme beaucoup de gens, je me suis laissé entraîner dans le puzzle, et comme beaucoup de programmeurs, je me suis également laissé entraîner à essayer d'écrire un algorithme qui permettrait de jouer au jeu de la manière la plus optimale possible.",
+  "time_range": [
+   13.12,
+   23.2
+  ]
+ },
+ {
+  "input": "And what I thought I'd do here is just talk through with you some of my process in that, and explain some of the math that went into it, since the whole algorithm centers on this idea of entropy.",
+  "model": "nmt",
+  "translatedText": "Et ce que j'ai pensé faire ici, c'est simplement parler avec vous de certains de mes processus et expliquer certains des calculs qui y sont liés, puisque tout l'algorithme est centré sur cette idée d'entropie.",
+  "time_range": [
+   23.2,
+   32.08
+  ]
+ },
+ {
+  "input": "First things first, in case you haven't heard of it, what is Wurdle?",
+  "model": "nmt",
+  "translatedText": "Tout d’abord, au cas où vous n’en auriez pas entendu parler, qu’est-ce que Wurdle?",
+  "time_range": [
+   32.08,
+   42.18
+  ]
+ },
+ {
+  "input": "And to kill two birds with one stone here while we go through the rules of the game, let me also preview where we're going with this, which is to develop a little algorithm that will basically play the game for us.",
+  "model": "nmt",
+  "translatedText": "Et pour faire d'une pierre deux coups pendant que nous examinons les règles du jeu, permettez-moi également de vous montrer où nous allons avec cela, c'est-à-dire développer un petit algorithme qui jouera essentiellement le jeu pour nous.",
+  "time_range": [
+   42.18,
+   51.38
+  ]
+ },
+ {
+  "input": "Though I haven't done today's Wurdle, this is February 4th, and we'll see how the bot does.",
+  "model": "nmt",
+  "translatedText": "Bien que je n'aie pas fait le Wurdle d'aujourd'hui, nous sommes le 4 février et nous verrons comment le bot se comporte.",
+  "time_range": [
+   51.38,
+   55.86
+  ]
+ },
+ {
+  "input": "The goal of Wurdle is to guess a mystery five letter word, and you're given six different chances to guess.",
+  "model": "nmt",
+  "translatedText": "Le but de Wurdle est de deviner un mot mystérieux de cinq lettres, et vous avez six chances différentes de le deviner.",
+  "time_range": [
+   55.86,
+   60.86
+  ]
+ },
+ {
+  "input": "For example, my Wurdle bot suggests that I start with the guess crane.",
+  "model": "nmt",
+  "translatedText": "Par exemple, mon robot Wurdle me suggère de commencer par la grue à devinettes.",
+  "time_range": [
+   60.86,
+   65.24
+  ]
+ },
+ {
+  "input": "Each time that you make a guess, you get some information about how close your guess is to the true answer.",
+  "model": "nmt",
+  "translatedText": "Chaque fois que vous faites une supposition, vous obtenez des informations sur la proximité de votre supposition avec la vraie réponse.",
+  "time_range": [
+   65.24,
+   70.94
+  ]
+ },
+ {
+  "input": "Here the grey box is telling me there's no C in the actual answer.",
+  "model": "nmt",
+  "translatedText": "Ici, la case grise me dit qu'il n'y a pas de C dans la réponse réelle.",
+  "time_range": [
+   70.94,
+   74.54
+  ]
+ },
+ {
+  "input": "The yellow box is telling me there is an R, but it's not in that position.",
+  "model": "nmt",
+  "translatedText": "La case jaune m'indique qu'il y a un R, mais il n'est pas dans cette position.",
+  "time_range": [
+   74.54,
+   78.34
+  ]
+ },
+ {
+  "input": "The green box is telling me that the secret word does have an A, and it's in the third position.",
+  "model": "nmt",
+  "translatedText": "La case verte m'indique que le mot secret a un A et qu'il est en troisième position.",
+  "time_range": [
+   78.34,
+   82.82
+  ]
+ },
+ {
+  "input": "And then there's no N and there's no E.",
+  "model": "nmt",
+  "translatedText": "Et puis il n’y a ni N ni E.",
+  "time_range": [
+   82.82,
+   84.3
+  ]
+ },
+ {
+  "input": "So let me just go in and tell the Wurdle bot that information.",
+  "model": "nmt",
+  "translatedText": "Alors laissez-moi entrer et donner cette information au robot Wurdle.",
+  "time_range": [
+   84.3,
+   87.42
+  ]
+ },
+ {
+  "input": "We started with crane, we got grey, yellow, green, grey, grey.",
+  "model": "nmt",
+  "translatedText": "Nous avons commencé avec la grue, nous avons eu du gris, du jaune, du vert, du gris, du gris.",
+  "time_range": [
+   87.42,
+   91.5
+  ]
+ },
+ {
+  "input": "Don't worry about all the data that it's showing right now, I'll explain that in due time.",
+  "model": "nmt",
+  "translatedText": "Ne vous inquiétez pas de toutes les données qu'il affiche en ce moment, je vous l'expliquerai en temps voulu.",
+  "time_range": [
+   91.5,
+   95.46
+  ]
+ },
+ {
+  "input": "But its top suggestion for our second pick is shtick.",
+  "model": "nmt",
+  "translatedText": "Mais sa principale suggestion pour notre deuxième choix est shtick.",
+  "time_range": [
+   95.46,
+   99.7
+  ]
+ },
+ {
+  "input": "And your guess does have to be an actual five letter word, but as you'll see, it's pretty liberal with what it will actually let you guess.",
+  "model": "nmt",
+  "translatedText": "Et votre supposition doit être un véritable mot de cinq lettres, mais comme vous le verrez, elle est assez libérale quant à ce qu'elle vous laissera réellement deviner.",
+  "time_range": [
+   99.7,
+   105.7
+  ]
+ },
+ {
+  "input": "In this case, we try shtick.",
+  "model": "nmt",
+  "translatedText": "Dans ce cas, nous essayons shtick.",
+  "time_range": [
+   105.7,
+   108.86
+  ]
+ },
+ {
+  "input": "And alright, things are looking pretty good.",
+  "model": "nmt",
+  "translatedText": "Et bien, les choses s’annoncent plutôt bien.",
+  "time_range": [
+   108.86,
+   110.26
+  ]
+ },
+ {
+  "input": "We hit the S and the H, so we know the first three letters, we know that there's an R.",
+  "model": "nmt",
+  "translatedText": "On touche le S et le H, donc on connaît les trois premières lettres, on sait qu'il y a un R.",
+  "time_range": [
+   110.26,
+   114.74
+  ]
+ },
+ {
+  "input": "And so it's going to be like S-H-A something R, or S-H-A R something.",
+  "model": "nmt",
+  "translatedText": "Et donc ça va être comme SHA quelque chose de R, ou SHA R quelque chose.",
+  "time_range": [
+   114.74,
+   119.74
+  ]
+ },
+ {
+  "input": "And it looks like the Wurdle bot knows that it's down to just two possibilities, either shard or sharp.",
+  "model": "nmt",
+  "translatedText": "Et il semble que le robot Wurdle sache qu'il ne reste que deux possibilités, soit un fragment, soit un tranchant.",
+  "time_range": [
+   119.74,
+   125.22
+  ]
+ },
+ {
+  "input": "That's kind of a toss up between them at this point, so I guess probably just because it's alphabetical it goes with shard.",
+  "model": "nmt",
+  "translatedText": "C'est une sorte de mélange entre eux à ce stade, donc je suppose que c'est probablement simplement parce que c'est par ordre alphabétique que cela va avec le fragment.",
+  "time_range": [
+   125.22,
+   131.26
+  ]
+ },
+ {
+  "input": "Which hooray, is the actual answer.",
+  "model": "nmt",
+  "translatedText": "Quelle hourra, c'est la vraie réponse.",
+  "time_range": [
+   131.26,
+   133.0
+  ]
+ },
+ {
+  "input": "So we got it in three.",
+  "model": "nmt",
+  "translatedText": "Nous l'avons donc eu en trois.",
+  "time_range": [
+   133.0,
+   134.66
+  ]
+ },
+ {
+  "input": "If you're wondering if that's any good, the way I heard one person phrase it is that with Wurdle four is par and three is birdie.",
+  "model": "nmt",
+  "translatedText": "Si vous vous demandez si c'est bon, la façon dont j'ai entendu une personne dire qu'avec Wurdle, quatre est la normale et trois est un birdie.",
+  "time_range": [
+   134.66,
+   140.82
+  ]
+ },
+ {
+  "input": "Which I think is a pretty apt analogy.",
+  "model": "nmt",
+  "translatedText": "Ce qui, je pense, est une analogie assez pertinente.",
+  "time_range": [
+   140.82,
+   142.96
+  ]
+ },
+ {
+  "input": "You have to be consistently on your game to be getting four, but it's certainly not crazy.",
+  "model": "nmt",
+  "translatedText": "Il faut être constamment sur son jeu pour en obtenir quatre, mais ce n'est certainement pas fou.",
+  "time_range": [
+   142.96,
+   147.56
+  ]
+ },
+ {
+  "input": "But when you get it in three, it just feels great.",
+  "model": "nmt",
+  "translatedText": "Mais quand vous l'obtenez en trois, ça fait du bien.",
+  "time_range": [
+   147.56,
+   150.0
+  ]
+ },
+ {
+  "input": "So if you're down for it, what I'd like to do here is just talk through my thought process from the beginning for how I approach the Wurdle bot.",
+  "model": "nmt",
+  "translatedText": "Donc, si vous êtes partant, ce que j'aimerais faire ici, c'est simplement parler de mon processus de réflexion depuis le début sur la façon dont j'aborde le robot Wurdle.",
+  "time_range": [
+   150.0,
+   156.6
+  ]
+ },
+ {
+  "input": "And like I said, really it's an excuse for an information theory lesson.",
+  "model": "nmt",
+  "translatedText": "Et comme je l'ai dit, c'est en réalité une excuse pour un cours de théorie de l'information.",
+  "time_range": [
+   156.6,
+   159.8
+  ]
+ },
+ {
+  "input": "The main goal is to explain what is information and what is entropy.",
+  "model": "nmt",
+  "translatedText": "L’objectif principal est d’expliquer ce qu’est l’information et ce qu’est l’entropie.",
+  "time_range": [
+   159.8,
+   168.56
+  ]
+ },
+ {
+  "input": "My first thought in approaching this was to take a look at the relative frequencies of different letters in the English language.",
+  "model": "nmt",
+  "translatedText": "Ma première pensée en abordant ce sujet a été de jeter un œil aux fréquences relatives des différentes lettres de la langue anglaise.",
+  "time_range": [
+   168.56,
+   173.56
+  ]
+ },
+ {
+  "input": "So I thought, okay, is there an opening guess or an opening pair of guesses that hits a lot of these most frequent letters?",
+  "model": "nmt",
+  "translatedText": "Alors j'ai pensé, d'accord, y a-t-il une supposition d'ouverture ou une paire de suppositions d'ouverture qui touche beaucoup de ces lettres les plus fréquentes?",
+  "time_range": [
+   173.56,
+   179.96
+  ]
+ },
+ {
+  "input": "And one that I was pretty fond of was doing other followed by nails.",
+  "model": "nmt",
+  "translatedText": "Et celui que j'aimais beaucoup était d'en faire d'autres suivis de clous.",
+  "time_range": [
+   179.96,
+   183.78
+  ]
+ },
+ {
+  "input": "The thought is that if you hit a letter, you know, you get a green or a yellow, that always feels good.",
+  "model": "nmt",
+  "translatedText": "L’idée est que si vous frappez une lettre, vous savez, vous obtenez un vert ou un jaune, ça fait toujours du bien.",
+  "time_range": [
+   183.78,
+   187.98
+  ]
+ },
+ {
+  "input": "It feels like you're getting information.",
+  "model": "nmt",
+  "translatedText": "C'est comme si vous receviez des informations.",
+  "time_range": [
+   187.98,
+   189.46
+  ]
+ },
+ {
+  "input": "But in these cases, even if you don't hit and you always get grays, that's still giving you a lot of information since it's pretty rare to find a word that doesn't have any of these letters.",
+  "model": "nmt",
+  "translatedText": "Mais dans ces cas-là, même si vous ne frappez pas et que vous obtenez toujours des gris, cela vous donne quand même beaucoup d'informations puisqu'il est assez rare de trouver un mot qui n'a aucune de ces lettres.",
+  "time_range": [
+   189.46,
+   197.64
+  ]
+ },
+ {
+  "input": "But even still, that doesn't feel super systematic, because for example, it does nothing to consider the order of the letters.",
+  "model": "nmt",
+  "translatedText": "Mais même quand même, cela ne semble pas super systématique, car par exemple, cela ne fait rien pour considérer l'ordre des lettres.",
+  "time_range": [
+   197.64,
+   203.52
+  ]
+ },
+ {
+  "input": "Why type nails when I could type snail?",
+  "model": "nmt",
+  "translatedText": "Pourquoi taper ongles quand je pourrais taper escargot?",
+  "time_range": [
+   203.52,
+   206.08
+  ]
+ },
+ {
+  "input": "Is it better to have that S at the end?",
+  "model": "nmt",
+  "translatedText": "Est-il préférable d'avoir ce S à la fin?",
+  "time_range": [
+   206.08,
+   207.72
+  ]
+ },
+ {
+  "input": "I'm not really sure.",
+  "model": "nmt",
+  "translatedText": "Je ne suis pas vraiment sûr.",
+  "time_range": [
+   207.72,
+   208.72
+  ]
+ },
+ {
+  "input": "Now, a friend of mine said that he liked to open with the word weary, which kind of surprised me because it has some uncommon letters in there like the W and the Y.",
+  "model": "nmt",
+  "translatedText": "Maintenant, un de mes amis m'a dit qu'il aimait commencer avec le mot fatigué, ce qui m'a un peu surpris car il contient des lettres inhabituelles comme le W et le Y.",
+  "time_range": [
+   208.72,
+   217.16
+  ]
+ },
+ {
+  "input": "But who knows, maybe that is a better opener.",
+  "model": "nmt",
+  "translatedText": "Mais qui sait, c'est peut-être une meilleure ouverture.",
+  "time_range": [
+   217.16,
+   219.4
+  ]
+ },
+ {
+  "input": "Is there some kind of quantitative score that we can give to judge the quality of a potential guess?",
+  "model": "nmt",
+  "translatedText": "Existe-t-il une sorte de score quantitatif que nous pouvons attribuer pour juger de la qualité d’une supposition potentielle?",
+  "time_range": [
+   219.4,
+   224.92
+  ]
+ },
+ {
+  "input": "Now to set up for the way that we're going to rank possible guesses, let's go back and add a little clarity to how exactly the game is set up.",
+  "model": "nmt",
+  "translatedText": "Maintenant, pour définir la manière dont nous allons classer les suppositions possibles, revenons en arrière et ajoutons un peu de clarté à la manière exacte dont le jeu est configuré.",
+  "time_range": [
+   224.92,
+   231.8
+  ]
+ },
+ {
+  "input": "So there's a list of words that it will allow you to enter that are considered valid guesses that's just about 13,000 words long.",
+  "model": "nmt",
+  "translatedText": "Il y a donc une liste de mots qu'il vous permettra de saisir et qui sont considérés comme des suppositions valables et qui fait environ 13 000 mots.",
+  "time_range": [
+   231.8,
+   237.92
+  ]
+ },
+ {
+  "input": "But when you look at it, there's a lot of really uncommon things, things like a head or Ali and ARG, the kind of words that bring about family arguments in a game of Scrabble.",
+  "model": "nmt",
+  "translatedText": "Mais quand on y regarde, il y a beaucoup de choses vraiment inhabituelles, comme une tête ou Ali et ARG, le genre de mots qui provoquent des disputes familiales dans une partie de Scrabble.",
+  "time_range": [
+   237.92,
+   247.04
+  ]
+ },
+ {
+  "input": "But the vibe of the game is that the answer is always going to be a decently common word.",
+  "model": "nmt",
+  "translatedText": "Mais l’ambiance du jeu est que la réponse sera toujours un mot assez courant.",
+  "time_range": [
+   247.04,
+   250.6
+  ]
+ },
+ {
+  "input": "And in fact, there's another list of around 2300 words that are the possible answers.",
+  "model": "nmt",
+  "translatedText": "Et en fait, il existe une autre liste d’environ 2 300 mots qui constituent les réponses possibles.",
+  "time_range": [
+   250.6,
+   256.08
+  ]
+ },
+ {
+  "input": "And this is a human curated list, I think specifically by the game creator's girlfriend, which is kind of fun.",
+  "model": "nmt",
+  "translatedText": "Et il s'agit d'une liste organisée par des humains, je pense spécifiquement par la petite amie du créateur du jeu, ce qui est plutôt amusant.",
+  "time_range": [
+   256.08,
+   261.8
+  ]
+ },
+ {
+  "input": "But what I would like to do, our challenge for this project is to see if we can write a program solving Wordle that doesn't incorporate previous knowledge about this list.",
+  "model": "nmt",
+  "translatedText": "Mais ce que j'aimerais faire, notre défi pour ce projet est de voir si nous pouvons écrire un programme résolvant Wordle qui n'intègre pas les connaissances antérieures sur cette liste.",
+  "time_range": [
+   261.8,
+   270.72
+  ]
+ },
+ {
+  "input": "For one thing, there's plenty of pretty common five letter words that you won't find in that list.",
+  "model": "nmt",
+  "translatedText": "D’une part, il existe de nombreux mots de cinq lettres assez courants que vous ne trouverez pas dans cette liste.",
+  "time_range": [
+   270.72,
+   275.56
+  ]
+ },
+ {
+  "input": "So it would be better to write a program that's a little more resilient and would play Wordle against anyone, not just what happens to be the official website.",
+  "model": "nmt",
+  "translatedText": "Il serait donc préférable d'écrire un programme un peu plus résistant et qui permettrait de jouer à Wordle contre n'importe qui, pas seulement contre le site officiel.",
+  "time_range": [
+   275.56,
+   281.96
+  ]
+ },
+ {
+  "input": "And also the reason that we know what this list of possible answers is, is because it's visible in the source code.",
+  "model": "nmt",
+  "translatedText": "Et aussi la raison pour laquelle nous connaissons cette liste de réponses possibles, c'est parce qu'elle est visible dans le code source.",
+  "time_range": [
+   281.96,
+   287.44
+  ]
+ },
+ {
+  "input": "But the way that it's visible in the source code is in the specific order in which answers come up from day to day.",
+  "model": "nmt",
+  "translatedText": "Mais la manière dont cela est visible dans le code source dépend de l'ordre spécifique dans lequel les réponses apparaissent de jour en jour.",
+  "time_range": [
+   287.44,
+   292.84
+  ]
+ },
+ {
+  "input": "So you could always just look up what tomorrow's answer will be.",
+  "model": "nmt",
+  "translatedText": "Vous pouvez donc toujours simplement rechercher quelle sera la réponse de demain.",
+  "time_range": [
+   292.84,
+   296.4
+  ]
+ },
+ {
+  "input": "So clearly, there's some sense in which using the list is cheating.",
+  "model": "nmt",
+  "translatedText": "Il est donc clair qu'il y a un certain sens dans lequel l'utilisation de la liste constitue de la triche.",
+  "time_range": [
+   296.4,
+   299.14
+  ]
+ },
+ {
+  "input": "And what makes for a more interesting puzzle and a richer information theory lesson is to instead use some more universal data like relative word frequencies in general to capture this intuition of having a preference for more common words.",
+  "model": "nmt",
+  "translatedText": "Et ce qui rend un casse-tête plus intéressant et une leçon de théorie de l'information plus riche est d'utiliser à la place des données plus universelles comme les fréquences relatives des mots en général pour capturer cette intuition d'avoir une préférence pour des mots plus courants.",
+  "time_range": [
+   299.14,
+   311.64
+  ]
+ },
+ {
+  "input": "So of these 13,000 possibilities, how should we choose the opening guess?",
+  "model": "nmt",
+  "translatedText": "Alors, parmi ces 13 000 possibilités, comment devrions-nous choisir la première supposition?",
+  "time_range": [
+   311.64,
+   316.56
+  ]
+ },
+ {
+  "input": "For example, if my friend proposes weary, how should we analyze its quality?",
+  "model": "nmt",
+  "translatedText": "Par exemple, si mon ami propose fatigué, comment analyser sa qualité?",
+  "time_range": [
+   316.56,
+   319.96
+  ]
+ },
+ {
+  "input": "Well, the reason he said he likes that unlikely W is that he likes the long shot nature of just how good it feels if you do hit that W.",
+  "model": "nmt",
+  "translatedText": "Eh bien, la raison pour laquelle il a dit qu'il aime ce W improbable est qu'il aime la nature à long terme de la sensation de bien-être si vous frappez ce W.",
+  "time_range": [
+   319.96,
+   327.88
+  ]
+ },
+ {
+  "input": "For example, if the first pattern revealed was something like this, then it turns out there are only 58 words in this giant lexicon that match that pattern.",
+  "model": "nmt",
+  "translatedText": "Par exemple, si le premier modèle révélé ressemblait à ceci, alors il s’avère qu’il n’y a que 58 mots dans ce lexique géant qui correspondent à ce modèle.",
+  "time_range": [
+   327.88,
+   336.08
+  ]
+ },
+ {
+  "input": "So that's a huge reduction from 13,000.",
+  "model": "nmt",
+  "translatedText": "Cela représente donc une énorme réduction par rapport à 13 000.",
+  "time_range": [
+   336.08,
+   338.9
+  ]
+ },
+ {
+  "input": "But the flip side of that, of course, is that it's very uncommon to get a pattern like this.",
+  "model": "nmt",
+  "translatedText": "Mais le revers de la médaille, bien sûr, c’est qu’il est très rare d’avoir un motif comme celui-ci.",
+  "time_range": [
+   338.9,
+   343.36
+  ]
+ },
+ {
+  "input": "Specifically, if each word was equally likely to be the answer, the probability of hitting this pattern would be 58 divided by around 13,000.",
+  "model": "nmt",
+  "translatedText": "Plus précisément, si chaque mot avait la même probabilité d’être la réponse, la probabilité de trouver ce modèle serait de 58 divisée par environ 13 000.",
+  "time_range": [
+   343.36,
+   351.68
+  ]
+ },
+ {
+  "input": "Of course, they're not equally likely to be answers.",
+  "model": "nmt",
+  "translatedText": "Bien sûr, il n’est pas également probable qu’elles constituent des réponses.",
+  "time_range": [
+   351.68,
+   353.88
+  ]
+ },
+ {
+  "input": "Most of these are very obscure and even questionable words.",
+  "model": "nmt",
+  "translatedText": "La plupart de ces mots sont très obscurs, voire discutables.",
+  "time_range": [
+   353.88,
+   356.68
+  ]
+ },
+ {
+  "input": "But at least for our first pass at all of this, let's assume that they're all equally likely and then refine that a bit later.",
+  "model": "nmt",
+  "translatedText": "Mais au moins pour notre première tentative, supposons qu'ils sont tous également probables, puis affinons cela un peu plus tard.",
+  "time_range": [
+   356.68,
+   362.04
+  ]
+ },
+ {
+  "input": "The point is the pattern with a lot of information is by its very nature unlikely to occur.",
+  "model": "nmt",
+  "translatedText": "Le fait est qu’un modèle contenant beaucoup d’informations est, de par sa nature même, peu susceptible de se produire.",
+  "time_range": [
+   362.04,
+   367.36
+  ]
+ },
+ {
+  "input": "In fact, what it means to be informative is that it's unlikely.",
+  "model": "nmt",
+  "translatedText": "En fait, ce que signifie être informatif, c'est que c'est peu probable.",
+  "time_range": [
+   367.36,
+   371.92
+  ]
+ },
+ {
+  "input": "A much more probable pattern to see with this opening would be something like this, where of course there's not a W in it.",
+  "model": "nmt",
+  "translatedText": "Un modèle beaucoup plus probable à voir avec cette ouverture serait quelque chose comme ceci, où bien sûr il n'y a pas de W dedans.",
+  "time_range": [
+   371.92,
+   378.36
+  ]
+ },
+ {
+  "input": "Maybe there's an E, and maybe there's no A, there's no R, there's no Y.",
+  "model": "nmt",
+  "translatedText": "Peut-être qu'il y a un E, et peut-être qu'il n'y a pas de A, qu'il n'y a pas de R, qu'il n'y a pas de Y.",
+  "time_range": [
+   378.36,
+   382.08
+  ]
+ },
+ {
+  "input": "In this case, there are 1400 possible matches.",
+  "model": "nmt",
+  "translatedText": "Dans ce cas, il y a 1 400 correspondances possibles.",
+  "time_range": [
+   382.08,
+   384.64
+  ]
+ },
+ {
+  "input": "If all were equally likely, it works out to be a probability of about 11% that this is the pattern you would see.",
+  "model": "nmt",
+  "translatedText": "Si toutes les probabilités étaient égales, la probabilité que ce soit la tendance que vous obtiendriez serait d’environ 11 %.",
+  "time_range": [
+   384.64,
+   390.68
+  ]
+ },
+ {
+  "input": "So the most likely outcomes are also the least informative.",
+  "model": "nmt",
+  "translatedText": "Les résultats les plus probables sont donc aussi les moins informatifs.",
+  "time_range": [
+   390.68,
+   394.32
+  ]
+ },
+ {
+  "input": "To get a more global view here, let me show you the full distribution of probabilities across all of the different patterns that you might see.",
+  "model": "nmt",
+  "translatedText": "Pour avoir une vue plus globale, permettez-moi de vous montrer la répartition complète des probabilités sur tous les différents modèles que vous pourriez observer.",
+  "time_range": [
+   394.32,
+   402.0
+  ]
+ },
+ {
+  "input": "So each bar that you're looking at corresponds to a possible pattern of colors that could be revealed, of which there are 3 to the 5th possibilities, and they're organized from left to right, most common to least common.",
+  "model": "nmt",
+  "translatedText": "Ainsi, chaque barre que vous regardez correspond à un motif possible de couleurs qui pourrait être révélé, parmi lesquels il y a 3 à la 5ème possibilités, et elles sont organisées de gauche à droite, de la plus courante à la moins courante.",
+  "time_range": [
+   402.0,
+   412.96
+  ]
+ },
+ {
+  "input": "So the most common possibility here is that you get all grays.",
+  "model": "nmt",
+  "translatedText": "La possibilité la plus courante ici est donc que vous obteniez uniquement des gris.",
+  "time_range": [
+   412.96,
+   416.2
+  ]
+ },
+ {
+  "input": "That happens about 14% of the time.",
+  "model": "nmt",
+  "translatedText": "Cela se produit environ 14 % du temps.",
+  "time_range": [
+   416.2,
+   418.8
+  ]
+ },
+ {
+  "input": "And what you're hoping for when you make a guess is that you end up somewhere out in this long tail, like over here where there's only 18 possibilities for what matches this pattern that evidently look like this.",
+  "model": "nmt",
+  "translatedText": "Et ce que vous espérez lorsque vous faites une supposition, c'est que vous vous retrouviez quelque part dans cette longue queue, comme ici où il n'y a que 18 possibilités pour ce qui correspond à ce modèle qui ressemble évidemment à ceci.",
+  "time_range": [
+   418.8,
+   429.92
+  ]
+ },
+ {
+  "input": "Or if we venture a little farther to the left, you know, maybe we go all the way over here.",
+  "model": "nmt",
+  "translatedText": "Ou si nous nous aventurons un peu plus à gauche, vous savez, peut-être que nous irons jusqu'ici.",
+  "time_range": [
+   429.92,
+   434.08
+  ]
+ },
+ {
+  "input": "Okay, here's a good puzzle for you.",
+  "model": "nmt",
+  "translatedText": "D'accord, voici un bon puzzle pour vous.",
+  "time_range": [
+   434.08,
+   436.56
+  ]
+ },
+ {
+  "input": "What are the three words in the English language that start with a W, end with a Y, and have an R somewhere in them?",
+  "model": "nmt",
+  "translatedText": "Quels sont les trois mots de la langue anglaise qui commencent par un W, se terminent par un Y et contiennent un R quelque part?",
+  "time_range": [
+   436.56,
+   442.04
+  ]
+ },
+ {
+  "input": "Turns out, the answers are, let's see, wordy, wormy, and wryly.",
+  "model": "nmt",
+  "translatedText": "Il s’avère que les réponses sont, voyons, verbeuses, vermifuges et ironiques.",
+  "time_range": [
+   442.04,
+   447.56
+  ]
+ },
+ {
+  "input": "So to judge how good this word is overall, we want some kind of measure of the expected amount of information that you're going to get from this distribution.",
+  "model": "nmt",
+  "translatedText": "Donc, pour juger de la qualité globale de ce mot, nous voulons une sorte de mesure de la quantité d'informations attendue que vous allez obtenir de cette distribution.",
+  "time_range": [
+   447.56,
+   456.36
+  ]
+ },
+ {
+  "input": "If we go through each pattern and we multiply its probability of occurring times something that measures how informative it is, that can maybe give us an objective score.",
+  "model": "nmt",
+  "translatedText": "Si nous examinons chaque modèle et multiplions sa probabilité d'apparition par quelque chose qui mesure son caractère informatif, cela peut peut-être nous donner un score objectif.",
+  "time_range": [
+   456.36,
+   466.0
+  ]
+ },
+ {
+  "input": "Now your first instinct for what that something should be might be the number of matches.",
+  "model": "nmt",
+  "translatedText": "Maintenant, votre premier instinct pour savoir ce que devrait être quelque chose pourrait être le nombre de correspondances.",
+  "time_range": [
+   466.0,
+   470.28
+  ]
+ },
+ {
+  "input": "You want a lower average number of matches.",
+  "model": "nmt",
+  "translatedText": "Vous souhaitez un nombre moyen de correspondances inférieur.",
+  "time_range": [
+   470.28,
+   472.96
+  ]
+ },
+ {
+  "input": "But instead I'd like to use a more universal measurement that we often ascribe to information, and one that will be more flexible once we have a different probability assigned to each of these 13,000 words for whether or not they're actually the answer.",
+  "model": "nmt",
+  "translatedText": "Mais j'aimerais plutôt utiliser une mesure plus universelle que nous attribuons souvent à l'information, et qui sera plus flexible une fois que nous aurons une probabilité différente attribuée à chacun de ces 13 000 mots pour savoir s'ils constituent ou non la réponse.",
+  "time_range": [
+   472.96,
+   490.6
+  ]
+ },
+ {
+  "input": "The standard unit of information is the bit, which has a little bit of a funny formula, but it's really intuitive if we just look at examples.",
+  "model": "nmt",
+  "translatedText": "L'unité d'information standard est le bit, qui a une formule un peu amusante, mais qui est vraiment intuitive si l'on regarde simplement des exemples.",
+  "time_range": [
+   490.6,
+   497.8
+  ]
+ },
+ {
+  "input": "If you have an observation that cuts your space of possibilities in half, we say that it has one bit of information.",
+  "model": "nmt",
+  "translatedText": "Si vous avez une observation qui réduit de moitié votre espace des possibles, on dit qu’elle ne contient qu’un bit d’information.",
+  "time_range": [
+   497.8,
+   504.2
+  ]
+ },
+ {
+  "input": "In our example, the space of possibilities is all possible words, and it turns out about Half of the five letter words have an S, a little less than that, but about half.",
+  "model": "nmt",
+  "translatedText": "Dans notre exemple, l'espace des possibilités est constitué de tous les mots possibles, et il s'avère qu'environ la moitié des mots de cinq lettres ont un S, un peu moins que cela, mais environ la moitié.",
+  "time_range": [
+   504.2,
+   511.56
+  ]
+ },
+ {
+  "input": "So that observation would give you one bit of information.",
+  "model": "nmt",
+  "translatedText": "Cette observation vous donnerait donc une information.",
+  "time_range": [
+   511.56,
+   515.2
+  ]
+ },
+ {
+  "input": "If instead a new fact chops down that space of possibilities by a factor of four, we say that it has two bits of information.",
+  "model": "nmt",
+  "translatedText": "Si, au contraire, un nouveau fait réduit cet espace de possibilités d’un facteur quatre, nous disons qu’il contient deux éléments d’information.",
+  "time_range": [
+   515.2,
+   522.0
+  ]
+ },
+ {
+  "input": "For example, it turns out about a quarter of these words have a T.",
+  "model": "nmt",
+  "translatedText": "Par exemple, il s’avère qu’environ un quart de ces mots ont un T.",
+  "time_range": [
+   522.0,
+   525.12
+  ]
+ },
+ {
+  "input": "If the observation cuts that space by a factor of eight, we say it's three bits of information, and so on and so forth.",
+  "model": "nmt",
+  "translatedText": "Si l’observation divise cet espace par huit, nous disons qu’il s’agit de trois éléments d’information, et ainsi de suite.",
+  "time_range": [
+   525.12,
+   530.92
+  ]
+ },
+ {
+  "input": "Four bits cuts it into a 16th, five bits cuts it into a 32nd.",
+  "model": "nmt",
+  "translatedText": "Quatre bits le coupent en 16ème, cinq bits le coupent en 32ème.",
+  "time_range": [
+   530.92,
+   535.0
+  ]
+ },
+ {
+  "input": "So now you might want to pause and ask yourself, what is the formula for information for the number of bits in terms of the probability of an occurrence?",
+  "model": "nmt",
+  "translatedText": "Alors maintenant, vous voudrez peut-être faire une pause et vous demander quelle est la formule pour obtenir des informations sur le nombre de bits en termes de probabilité d'occurrence?",
+  "time_range": [
+   535.0,
+   544.52
+  ]
+ },
+ {
+  "input": "What we're saying here is that when you take one half to the number of bits, that's the same thing as the probability, which is the same thing as saying two to the power of the number of bits is one over the probability, which rearranges further to saying the information is the log base two of one divided by the probability.",
+  "model": "nmt",
+  "translatedText": "Ce que nous disons ici, c'est que lorsque vous prenez la moitié du nombre de bits, cela équivaut à la même chose que la probabilité, ce qui revient à dire que deux puissance du nombre de bits est un sur la probabilité, ce qui se réorganise en disant que l'information est la base logarithmique deux de un divisée par la probabilité.",
+  "time_range": [
+   544.52,
+   559.68
+  ]
+ },
+ {
+  "input": "And sometimes you see this with one more rearrangement still, where the information is the negative log base two of the probability.",
+  "model": "nmt",
+  "translatedText": "Et parfois, vous voyez cela avec encore un réarrangement supplémentaire, où l'information est le log négatif en base deux de la probabilité.",
+  "time_range": [
+   559.68,
+   565.68
+  ]
+ },
+ {
+  "input": "Expressed like this, it can look a little bit weird to the uninitiated, but it really is just the very intuitive idea of asking how many times you've cut down your possibilities in half.",
+  "model": "nmt",
+  "translatedText": "Exprimé ainsi, cela peut paraître un peu bizarre aux non-initiés, mais il s'agit en réalité de l'idée très intuitive de se demander combien de fois vous avez réduit de moitié vos possibilités.",
+  "time_range": [
+   565.68,
+   575.12
+  ]
+ },
+ {
+  "input": "Now if you're wondering, you know, I thought we were just playing a fun word game, why are logarithms entering the picture?",
+  "model": "nmt",
+  "translatedText": "Maintenant, si vous vous demandez, vous savez, je pensais que nous jouions juste à un jeu de mots amusant, pourquoi les logarithmes entrent-ils en scène?",
+  "time_range": [
+   575.12,
+   579.92
+  ]
+ },
+ {
+  "input": "One reason this is a nicer unit is it's just a lot easier to talk about very unlikely events, much easier to say that an observation has 20 bits of information than it is to say that the probability of such and such occurring is 0.",
+  "model": "nmt",
+  "translatedText": "L'une des raisons pour lesquelles cette unité est plus intéressante est qu'il est beaucoup plus facile de parler d'événements très improbables, beaucoup plus facile de dire qu'une observation contient 20 bits d'information que de dire que la probabilité que tel ou tel se produise est de 0.",
+  "time_range": [
+   579.92,
+   592.7851851851852
+  ]
+ },
+ {
+  "input": "0000095.",
+  "model": "nmt",
+  "translatedText": "0000095.",
+  "time_range": [
+   592.7851851851852,
+   593.48
+  ]
+ },
+ {
+  "input": "But a more substantive reason that this logarithmic expression turned out to be a very useful addition to the theory of probability is the way that information adds together.",
+  "model": "nmt",
+  "translatedText": "Mais une raison plus importante pour laquelle cette expression logarithmique s’est avérée être un complément très utile à la théorie des probabilités est la manière dont les informations s’additionnent.",
+  "time_range": [
+   593.48,
+   602.0
+  ]
+ },
+ {
+  "input": "For example, if one observation gives you two bits of information, cutting your space down by four, and then a second observation like your second guess in Wordle gives you another three bits of information, chopping you down further by another factor of eight, the two together give you five bits of information.",
+  "model": "nmt",
+  "translatedText": "Par exemple, si une observation vous donne deux bits d'information, réduisant votre espace de quatre, puis qu'une deuxième observation comme votre deuxième estimation dans Wordle vous donne trois autres bits d'information, vous réduisant encore d'un facteur huit, le deux ensemble vous donnent cinq informations.",
+  "time_range": [
+   602.0,
+   617.36
+  ]
+ },
+ {
+  "input": "In the same way that probabilities like to multiply, information likes to add.",
+  "model": "nmt",
+  "translatedText": "De la même manière que les probabilités aiment se multiplier, les informations aiment s’ajouter.",
+  "time_range": [
+   617.36,
+   621.2
+  ]
+ },
+ {
+  "input": "So as soon as we're in the realm of something like an expected value, where we're adding a bunch of numbers up, the logs make it a lot nicer to deal with.",
+  "model": "nmt",
+  "translatedText": "Ainsi, dès que nous sommes dans le domaine de quelque chose comme une valeur attendue, où nous additionnons un tas de nombres, les journaux rendent la gestion beaucoup plus agréable.",
+  "time_range": [
+   621.2,
+   628.66
+  ]
+ },
+ {
+  "input": "Let's go back to our distribution for Weary and add another little tracker on here, showing us how much information there is for each pattern.",
+  "model": "nmt",
+  "translatedText": "Revenons à notre distribution pour Weary et ajoutons un autre petit tracker ici, nous montrant la quantité d'informations disponibles pour chaque modèle.",
+  "time_range": [
+   628.66,
+   635.56
+  ]
+ },
+ {
+  "input": "The main thing I want you to notice is that the higher the probability as we get to those more likely patterns, the lower the information, the fewer bits you gain.",
+  "model": "nmt",
+  "translatedText": "La principale chose que je veux que vous remarquiez est que plus la probabilité est élevée à mesure que nous arrivons à ces modèles les plus probables, plus l'information est faible, moins vous gagnez de bits.",
+  "time_range": [
+   635.56,
+   643.5
+  ]
+ },
+ {
+  "input": "The way we measure the quality of this guess will be to take the expected value of this information, where we go through each pattern, we say how probable is it, and then we multiply that by how many bits of information do we get.",
+  "model": "nmt",
+  "translatedText": "La façon dont nous mesurons la qualité de cette supposition sera de prendre la valeur attendue de cette information, où nous examinons chaque modèle, nous disons quelle est sa probabilité, puis nous la multiplions par le nombre d'éléments d'information que nous obtenons.",
+  "time_range": [
+   643.5,
+   654.94
+  ]
+ },
+ {
+  "input": "And in the example of Weary, that turns out to be 4.",
+  "model": "nmt",
+  "translatedText": "Et dans l’exemple de Weary, cela s’avère être 4.",
+  "time_range": [
+   654.94,
+   658.1073684210526
+  ]
+ },
+ {
+  "input": "9 bits.",
+  "model": "nmt",
+  "translatedText": "9 bits.",
+  "time_range": [
+   658.1073684210526,
+   658.48
+  ]
+ },
+ {
+  "input": "So on average, the information you get from this opening guess is as good as chopping your space of possibilities in half about five times.",
+  "model": "nmt",
+  "translatedText": "Ainsi, en moyenne, les informations que vous obtenez de cette supposition d’ouverture équivaut à réduire de moitié votre espace des possibilités environ cinq fois.",
+  "time_range": [
+   658.48,
+   665.66
+  ]
+ },
+ {
+  "input": "By contrast, an example of a guess with a higher expected information value would be something like Slate.",
+  "model": "nmt",
+  "translatedText": "En revanche, un exemple de supposition avec une valeur d’information attendue plus élevée serait quelque chose comme Slate.",
+  "time_range": [
+   665.66,
+   673.22
+  ]
+ },
+ {
+  "input": "In this case you'll notice the distribution looks a lot flatter.",
+  "model": "nmt",
+  "translatedText": "Dans ce cas, vous remarquerez que la distribution semble beaucoup plus plate.",
+  "time_range": [
+   673.22,
+   676.18
+  ]
+ },
+ {
+  "input": "In particular, the most probable occurrence of all grays only has about a 6% chance of occurring, so at minimum you're getting evidently 3.",
+  "model": "nmt",
+  "translatedText": "En particulier, l'occurrence la plus probable de tous les gris n'a qu'environ 6 % de chances de se produire, donc au minimum vous en obtenez évidemment 3.",
+  "time_range": [
+   676.18,
+   684.4350000000001
+  ]
+ },
+ {
+  "input": "9 bits of information.",
+  "model": "nmt",
+  "translatedText": "9 informations.",
+  "time_range": [
+   684.4350000000001,
+   685.94
+  ]
+ },
+ {
+  "input": "But that's a minimum, more typically you'd get something better than that.",
+  "model": "nmt",
+  "translatedText": "Mais c’est un minimum, vous obtiendrez généralement quelque chose de mieux que cela.",
+  "time_range": [
+   685.94,
+   689.14
+  ]
+ },
+ {
+  "input": "And it turns out when you crunch the numbers on this one and add up all the relevant terms, the average information is about 5.",
+  "model": "nmt",
+  "translatedText": "Et il s'avère que lorsque vous analysez les chiffres sur celui-ci et additionnez tous les termes pertinents, l'information moyenne est d'environ 5.",
+  "time_range": [
+   689.14,
+   696.3331428571428
+  ]
+ },
+ {
+  "input": "8.",
+  "model": "nmt",
+  "translatedText": "8.",
+  "time_range": [
+   696.3331428571428,
+   696.42
+  ]
+ },
+ {
+  "input": "So in contrast with Weary, your space of possibilities will be about half as big after this first guess, on average.",
+  "model": "nmt",
+  "translatedText": "Ainsi, contrairement à Weary, votre espace de possibilités sera en moyenne environ deux fois plus grand après cette première hypothèse.",
+  "time_range": [
+   696.42,
+   703.94
+  ]
+ },
+ {
+  "input": "There's actually a fun story about the name for this expected value of information quantity.",
+  "model": "nmt",
+  "translatedText": "Il existe en fait une histoire amusante sur le nom de cette valeur attendue de la quantité d'informations.",
+  "time_range": [
+   703.94,
+   709.54
+  ]
+ },
+ {
+  "input": "Information theory was developed by Claude Shannon, who was working at Bell Labs in the 1940s, but he was talking about some of his yet-to-be-published ideas with John von Neumann, who was this intellectual giant of the time, very prominent in math and physics and the beginnings of what was becoming computer science.",
+  "model": "nmt",
+  "translatedText": "La théorie de l'information a été développée par Claude Shannon, qui travaillait aux Bell Labs dans les années 1940, mais il discutait de certaines de ses idées encore non publiées avec John von Neumann, qui était ce géant intellectuel de l'époque, très en vue. en mathématiques et en physique et les débuts de ce qui allait devenir l'informatique.",
+  "time_range": [
+   709.54,
+   724.18
+  ]
+ },
+ {
+  "input": "And when he mentioned that he didn't really have a good name for this expected value of information quantity, von Neumann supposedly said, so the story goes, well you should call it entropy, and for two reasons.",
+  "model": "nmt",
+  "translatedText": "Et lorsqu'il a mentionné qu'il n'avait pas vraiment un bon nom pour cette valeur attendue de la quantité d'information, von Neumann aurait dit, selon l'histoire, eh bien, vous devriez appeler cela entropie, et pour deux raisons.",
+  "time_range": [
+   724.18,
+   734.72
+  ]
+ },
+ {
+  "input": "In the first place, your uncertainty function has been used in statistical mechanics under that name, so it already has a name, and in the second place, and more important, nobody knows what entropy really is, so in a debate you'll always have the advantage.",
+  "model": "nmt",
+  "translatedText": "En premier lieu, votre fonction d'incertitude a été utilisée en mécanique statistique sous ce nom, donc elle a déjà un nom, et en deuxième lieu, et plus important encore, personne ne sait ce qu'est réellement l'entropie, donc dans un débat vous aurez toujours ont l'avantage.",
+  "time_range": [
+   734.72,
+   746.94
+  ]
+ },
+ {
+  "input": "So if the name seems a little bit mysterious, and if this story is to be believed, that's kind of by design.",
+  "model": "nmt",
+  "translatedText": "Donc, si le nom semble un peu mystérieux, et si l’on en croit cette histoire, c’est en quelque sorte intentionnel.",
+  "time_range": [
+   746.94,
+   753.42
+  ]
+ },
+ {
+  "input": "Also if you're wondering about its relation to all of that second law of thermodynamics stuff from physics, there definitely is a connection, but in its origins Shannon was just dealing with pure probability theory, and for our purposes here, when I use the word entropy, I just want you to think the expected information value of a particular guess.",
+  "model": "nmt",
+  "translatedText": "De plus, si vous vous interrogez sur sa relation avec toutes ces deuxièmes lois de la thermodynamique issues de la physique, il y a certainement un lien, mais à l'origine, Shannon ne traitait que de la théorie des probabilités pures, et pour nos besoins ici, lorsque j'utilise le mot entropie, je veux juste que vous réfléchissiez à la valeur informationnelle attendue d'une supposition particulière.",
+  "time_range": [
+   753.42,
+   770.82
+  ]
+ },
+ {
+  "input": "You can think of entropy as measuring two things simultaneously.",
+  "model": "nmt",
+  "translatedText": "Vous pouvez considérer l’entropie comme la mesure de deux choses simultanément.",
+  "time_range": [
+   770.82,
+   774.38
+  ]
+ },
+ {
+  "input": "The first one is how flat is the distribution.",
+  "model": "nmt",
+  "translatedText": "La première concerne la platitude de la distribution.",
+  "time_range": [
+   774.38,
+   777.42
+  ]
+ },
+ {
+  "input": "The closer a distribution is to uniform, the higher that entropy will be.",
+  "model": "nmt",
+  "translatedText": "Plus une distribution est proche de l’uniforme, plus cette entropie sera élevée.",
+  "time_range": [
+   777.42,
+   781.7
+  ]
+ },
+ {
+  "input": "In our case, where there are 3 to the 5th total patterns, for a uniform distribution, observing any one of them would have information log base 2 of 3 to the 5th, which happens to be 7.",
+  "model": "nmt",
+  "translatedText": "Dans notre cas, où il y a 3 modèles au total sur 5, pour une distribution uniforme, l'observation de l'un d'entre eux aurait un journal d'informations de base 2 sur 3 au 5, qui se trouve être 7.",
+  "time_range": [
+   781.7,
+   791.8586363636365
+  ]
+ },
+ {
+  "input": "92, so that is the absolute maximum that you could possibly have for this entropy.",
+  "model": "nmt",
+  "translatedText": "92, c'est donc le maximum absolu que vous pourriez avoir pour cette entropie.",
+  "time_range": [
+   791.8586363636365,
+   797.86
+  ]
+ },
+ {
+  "input": "But entropy is also kind of a measure of how many possibilities there are in the first place.",
+  "model": "nmt",
+  "translatedText": "Mais l’entropie est aussi en quelque sorte une mesure du nombre de possibilités qui existent en premier lieu.",
+  "time_range": [
+   797.86,
+   802.9
+  ]
+ },
+ {
+  "input": "For example, if you happen to have some word where there's only 16 possible patterns, and each one is equally likely, this entropy, this expected information, would be 4 bits.",
+  "model": "nmt",
+  "translatedText": "Par exemple, si vous avez un mot dans lequel il n'y a que 16 modèles possibles, et chacun est également probable, cette entropie, cette information attendue, serait de 4 bits.",
+  "time_range": [
+   802.9,
+   812.76
+  ]
+ },
+ {
+  "input": "But if you have another word where there's 64 possible patterns that could come up, and they're all equally likely, then the entropy would work out to be 6 bits.",
+  "model": "nmt",
+  "translatedText": "Mais si vous avez un autre mot où il y a 64 modèles possibles qui pourraient apparaître, et ils sont tous également probables, alors l'entropie serait de 6 bits.",
+  "time_range": [
+   812.76,
+   821.0
+  ]
+ },
+ {
+  "input": "So if you see some distribution out in the wild that has an entropy of 6 bits, it's sort of like it's saying there's as much variation and uncertainty in what's about to happen as if there were 64 equally likely outcomes.",
+  "model": "nmt",
+  "translatedText": "Donc, si vous voyez une distribution dans la nature qui a une entropie de 6 bits, c'est un peu comme si cela disait qu'il y a autant de variation et d'incertitude dans ce qui est sur le point de se produire que s'il y avait 64 résultats également probables.",
+  "time_range": [
+   821.0,
+   834.4
+  ]
+ },
+ {
+  "input": "For my first pass at the Wurtelebot, I basically had it just do this.",
+  "model": "nmt",
+  "translatedText": "Pour mon premier passage au Wurtelebot, je l'ai fait faire comme ça.",
+  "time_range": [
+   834.4,
+   838.36
+  ]
+ },
+ {
+  "input": "It goes through all of the possible guesses you could have, all 13,000 words, computes the entropy for each one, or more specifically, the entropy of the distribution across all patterns you might see, for each one, and picks the highest, since that's the one that's likely to chop down your space of possibilities as much as possible.",
+  "model": "nmt",
+  "translatedText": "Il passe en revue toutes les suppositions possibles que vous pourriez avoir, les 13 000 mots, calcule l'entropie pour chacun d'entre eux, ou plus précisément, l'entropie de la distribution à travers tous les modèles que vous pourriez voir, pour chacun d'entre eux, et choisit le plus élevé, puisque c'est celui qui est susceptible de réduire au maximum votre espace des possibles.",
+  "time_range": [
+   838.36,
+   857.2
+  ]
+ },
+ {
+  "input": "And even though I've only been talking about the first guess here, it does the same thing for the next few guesses.",
+  "model": "nmt",
+  "translatedText": "Et même si je n’ai parlé ici que de la première supposition, cela fait la même chose pour les prochaines suppositions.",
+  "time_range": [
+   857.2,
+   861.68
+  ]
+ },
+ {
+  "input": "For example, after you see some pattern on that first guess, which would restrict you to a smaller number of possible words based on what matches with that, you just play the same game with respect to that smaller set of words.",
+  "model": "nmt",
+  "translatedText": "Par exemple, après avoir vu un modèle sur cette première supposition, qui vous limiterait à un plus petit nombre de mots possibles en fonction de ce qui correspond à cela, vous jouez simplement au même jeu en ce qui concerne ce plus petit ensemble de mots.",
+  "time_range": [
+   861.68,
+   872.3
+  ]
+ },
+ {
+  "input": "For a proposed second guess, you look at the distribution of all patterns that could occur from that more restricted set of words, you search through all 13,000 possibilities, and you find the one that maximizes that entropy.",
+  "model": "nmt",
+  "translatedText": "Pour une seconde supposition proposée, vous examinez la distribution de tous les modèles qui pourraient survenir à partir de cet ensemble plus restreint de mots, vous recherchez parmi les 13 000 possibilités et vous trouvez celle qui maximise cette entropie.",
+  "time_range": [
+   872.3,
+   885.48
+  ]
+ },
+ {
+  "input": "To show you how this works in action, let me just pull up a little variant of Wurtele that I wrote that shows the highlights of this analysis in the margins.",
+  "model": "nmt",
+  "translatedText": "Pour vous montrer comment cela fonctionne en action, permettez-moi de vous présenter une petite variante de Wurtele que j'ai écrite et qui montre les points saillants de cette analyse dans les marges.",
+  "time_range": [
+   885.48,
+   894.46
+  ]
+ },
+ {
+  "input": "After doing all its entropy calculations, on the right here it's showing us which ones have the highest expected information.",
+  "model": "nmt",
+  "translatedText": "Après avoir effectué tous ses calculs d'entropie, à droite, il nous montre lesquels ont les informations attendues les plus élevées.",
+  "time_range": [
+   894.46,
+   900.34
+  ]
+ },
+ {
+  "input": "Turns out the top answer, at least at the moment, we'll refine this later, is Tares, which means, um, of course, a vetch, the most common vetch.",
+  "model": "nmt",
+  "translatedText": "Il s'avère que la première réponse, du moins pour le moment, nous affinerons cela plus tard, est Tares, ce qui signifie, euh, bien sûr, une vesce, la vesce la plus courante.",
+  "time_range": [
+   900.34,
+   911.14
+  ]
+ },
+ {
+  "input": "Each time we make a guess here, where maybe I kind of ignore its recommendations and go with slate, because I like slate, we can see how much expected information it had, but then on the right of the word here it's showing us how much actual information we got, given this particular pattern.",
+  "model": "nmt",
+  "translatedText": "Chaque fois que nous faisons une supposition ici, où peut-être j'ignore en quelque sorte ses recommandations et opte pour Slate, parce que j'aime Slate, nous pouvons voir combien d'informations attendues il contenait, mais ensuite à droite du mot ici, cela nous montre combien informations réelles que nous avons obtenues, compte tenu de ce modèle particulier.",
+  "time_range": [
+   911.14,
+   924.98
+  ]
+ },
+ {
+  "input": "So here it looks like we were a little unlucky, we were expected to get 5.",
+  "model": "nmt",
+  "translatedText": "Alors là, on dirait que nous n’avons pas eu de chance, on s’attendait à en avoir 5.",
+  "time_range": [
+   924.98,
+   927.9320879120878
+  ]
+ },
+ {
+  "input": "8, but we happened to get something with less than that.",
+  "model": "nmt",
+  "translatedText": "8, mais nous avons obtenu quelque chose avec moins que cela.",
+  "time_range": [
+   927.9320879120878,
+   930.66
+  ]
+ },
+ {
+  "input": "And then on the left side here it's showing us all of the different possible words given where we are now.",
+  "model": "nmt",
+  "translatedText": "Et puis sur le côté gauche, ici, cela nous montre tous les différents mots possibles donnés là où nous en sommes actuellement.",
+  "time_range": [
+   930.66,
+   935.86
+  ]
+ },
+ {
+  "input": "The blue bars are telling us how likely it thinks each word is, so at the moment it's assuming each word is equally likely to occur, but we'll refine that in a moment.",
+  "model": "nmt",
+  "translatedText": "Les barres bleues nous indiquent la probabilité qu'il pense à chaque mot, donc pour le moment, il suppose que chaque mot a la même probabilité d'apparaître, mais nous affinerons cela dans un instant.",
+  "time_range": [
+   935.86,
+   944.14
+  ]
+ },
+ {
+  "input": "And then this uncertainty measurement is telling us the entropy of this distribution across the possible words, which right now, because it's a uniform distribution, is just a needlessly complicated way to count the number of possibilities.",
+  "model": "nmt",
+  "translatedText": "Et puis cette mesure d'incertitude nous indique l'entropie de cette distribution parmi les mots possibles, ce qui, à l'heure actuelle, parce qu'il s'agit d'une distribution uniforme, n'est qu'une manière inutilement compliquée de compter le nombre de possibilités.",
+  "time_range": [
+   944.14,
+   955.94
+  ]
+ },
+ {
+  "input": "For example, if we were to take 2 to the power of 13.",
+  "model": "nmt",
+  "translatedText": "Par exemple, si nous prenons 2 puissance 13.",
+  "time_range": [
+   955.94,
+   959.3436363636363
+  ]
+ },
+ {
+  "input": "66, that should be around the 13,000 possibilities.",
+  "model": "nmt",
+  "translatedText": "66, cela devrait être autour des 13 000 possibilités.",
+  "time_range": [
+   959.3436363636363,
+   962.7
+  ]
+ },
+ {
+  "input": "I'm a little bit off here, but only because I'm not showing all the decimal places.",
+  "model": "nmt",
+  "translatedText": "Je suis un peu en retrait ici, mais uniquement parce que je n'affiche pas toutes les décimales.",
+  "time_range": [
+   962.7,
+   966.78
+  ]
+ },
+ {
+  "input": "At the moment that might feel redundant and like it's overly complicating things, but you'll see why it's useful to have both numbers in a minute.",
+  "model": "nmt",
+  "translatedText": "Pour le moment, cela peut sembler redondant et compliquer excessivement les choses, mais vous comprendrez pourquoi il est utile d'avoir les deux chiffres en une minute.",
+  "time_range": [
+   966.78,
+   972.78
+  ]
+ },
+ {
+  "input": "So here it looks like it's suggesting the highest entropy for our second guess is Ramen, which again just really doesn't feel like a word.",
+  "model": "nmt",
+  "translatedText": "Donc, ici, il semble que cela suggère que l'entropie la plus élevée pour notre deuxième hypothèse est Ramen, ce qui, encore une fois, ne ressemble vraiment pas à un mot.",
+  "time_range": [
+   972.78,
+   979.7
+  ]
+ },
+ {
+  "input": "So to take the moral high ground here, I'm going to go ahead and type in Rains.",
+  "model": "nmt",
+  "translatedText": "Donc, pour prendre le dessus sur le plan moral ici, je vais aller de l'avant et taper Rains.",
+  "time_range": [
+   979.7,
+   985.66
+  ]
+ },
+ {
+  "input": "And again it looks like we were a little unlucky.",
+  "model": "nmt",
+  "translatedText": "Et encore une fois, on dirait que nous n’avons pas eu de chance.",
+  "time_range": [
+   985.66,
+   987.54
+  ]
+ },
+ {
+  "input": "We were expecting 4.",
+  "model": "nmt",
+  "translatedText": "Nous en attendions 4.",
+  "time_range": [
+   987.54,
+   988.8729230769231
+  ]
+ },
+ {
+  "input": "3 bits and we only got 3.",
+  "model": "nmt",
+  "translatedText": "3 bits et nous n’en avons que 3.",
+  "time_range": [
+   988.8729230769231,
+   990.5566153846153
+  ]
+ },
+ {
+  "input": "39 bits of information.",
+  "model": "nmt",
+  "translatedText": "39 bits d'informations.",
+  "time_range": [
+   990.5566153846153,
+   992.1
+  ]
+ },
+ {
+  "input": "So that takes us down to 55 possibilities.",
+  "model": "nmt",
+  "translatedText": "Cela nous ramène donc à 55 possibilités.",
+  "time_range": [
+   992.1,
+   995.06
+  ]
+ },
+ {
+  "input": "And here maybe I'll just actually go with what it's suggesting, which is combo, whatever that means.",
+  "model": "nmt",
+  "translatedText": "Et ici, je vais peut-être simplement suivre ce que cela suggère, à savoir un combo, peu importe ce que cela signifie.",
+  "time_range": [
+   995.06,
+   1000.2
+  ]
+ },
+ {
+  "input": "And okay, this is actually a good chance for a puzzle.",
+  "model": "nmt",
+  "translatedText": "Et d'accord, c'est en fait une bonne occasion de résoudre un casse-tête.",
+  "time_range": [
+   1000.2,
+   1003.3
+  ]
+ },
+ {
+  "input": "It's telling us this pattern gives us 4.",
+  "model": "nmt",
+  "translatedText": "Cela nous dit que ce modèle nous donne 4.",
+  "time_range": [
+   1003.3,
+   1005.718
+  ]
+ },
+ {
+  "input": "7 bits of information.",
+  "model": "nmt",
+  "translatedText": "7 informations.",
+  "time_range": [
+   1005.718,
+   1007.02
+  ]
+ },
+ {
+  "input": "But over on the left, before we see that pattern, there were 5.",
+  "model": "nmt",
+  "translatedText": "Mais sur la gauche, avant de voir ce schéma, il y en avait 5.",
+  "time_range": [
+   1007.02,
+   1010.9909523809524
+  ]
+ },
+ {
+  "input": "78 bits of uncertainty.",
+  "model": "nmt",
+  "translatedText": "78 bits d'incertitude.",
+  "time_range": [
+   1010.9909523809524,
+   1012.4
+  ]
+ },
+ {
+  "input": "So as a quiz for you, what does that mean about the number of remaining possibilities?",
+  "model": "nmt",
+  "translatedText": "Alors, comme quiz pour vous, qu'est-ce que cela signifie sur le nombre de possibilités restantes?",
+  "time_range": [
+   1012.4,
+   1016.86
+  ]
+ },
+ {
+  "input": "Well, it means that we're reduced down to one bit of uncertainty, which is the same thing as saying that there's two possible answers.",
+  "model": "nmt",
+  "translatedText": "Eh bien, cela signifie que nous en sommes réduits à un peu d’incertitude, ce qui revient à dire qu’il y a deux réponses possibles.",
+  "time_range": [
+   1016.86,
+   1024.7
+  ]
+ },
+ {
+  "input": "It's a 50-50 choice.",
+  "model": "nmt",
+  "translatedText": "C'est un choix 50-50.",
+  "time_range": [
+   1024.7,
+   1026.52
+  ]
+ },
+ {
+  "input": "And from here, because you and I know which words are more common, we know that the answer should be abyss.",
+  "model": "nmt",
+  "translatedText": "Et à partir de là, parce que vous et moi savons quels mots sont les plus courants, nous savons que la réponse devrait être abyssale.",
+  "time_range": [
+   1026.52,
+   1031.22
+  ]
+ },
+ {
+  "input": "But as it's written right now, the program doesn't know that.",
+  "model": "nmt",
+  "translatedText": "Mais tel qu’il est écrit actuellement, le programme ne le sait pas.",
+  "time_range": [
+   1031.22,
+   1033.54
+  ]
+ },
+ {
+  "input": "So it just keeps going, trying to gain as much information as it can, until it's only one possibility left, and then it guesses it.",
+  "model": "nmt",
+  "translatedText": "Alors il continue, essayant d'obtenir autant d'informations que possible, jusqu'à ce qu'il ne reste plus qu'une possibilité, puis il la devine.",
+  "time_range": [
+   1033.54,
+   1040.36
+  ]
+ },
+ {
+  "input": "So obviously we need a better endgame strategy.",
+  "model": "nmt",
+  "translatedText": "Nous avons donc évidemment besoin d’une meilleure stratégie de fin de partie.",
+  "time_range": [
+   1040.36,
+   1042.7
+  ]
+ },
+ {
+  "input": "But let's say we call this version one of our wordle solver, and then we go and run some simulations to see how it does.",
+  "model": "nmt",
+  "translatedText": "Mais disons que nous appelons cette version l'un de nos solveurs de mots, puis que nous exécutons quelques simulations pour voir comment cela fonctionne.",
+  "time_range": [
+   1042.7,
+   1050.74
+  ]
+ },
+ {
+  "input": "So the way this is working is it's playing every possible wordle game.",
+  "model": "nmt",
+  "translatedText": "Donc, la façon dont cela fonctionne est de jouer à tous les jeux de mots possibles.",
+  "time_range": [
+   1050.74,
+   1054.24
+  ]
+ },
+ {
+  "input": "It's going through all of those 2315 words that are the actual wordle answers.",
+  "model": "nmt",
+  "translatedText": "Il passe en revue tous ces 2315 mots qui sont les véritables réponses aux mots.",
+  "time_range": [
+   1054.24,
+   1058.78
+  ]
+ },
+ {
+  "input": "It's basically using that as a testing set.",
+  "model": "nmt",
+  "translatedText": "Il s’agit essentiellement de l’utiliser comme ensemble de tests.",
+  "time_range": [
+   1058.78,
+   1061.34
+  ]
+ },
+ {
+  "input": "And with this naive method of not considering how common a word is, and just trying to maximize the information at each step along the way, until it gets down to one and only one choice.",
+  "model": "nmt",
+  "translatedText": "Et avec cette méthode naïve qui consiste à ne pas considérer à quel point un mot est courant et à essayer simplement de maximiser l'information à chaque étape du processus, jusqu'à ce qu'il s'agisse d'un et d'un seul choix.",
+  "time_range": [
+   1061.34,
+   1070.48
+  ]
+ },
+ {
+  "input": "By the end of the simulation, the average score works out to be about 4.",
+  "model": "nmt",
+  "translatedText": "À la fin de la simulation, le score moyen s’élève à environ 4.",
+  "time_range": [
+   1070.48,
+   1074.9127027027027
+  ]
+ },
+ {
+  "input": "124.",
+  "model": "nmt",
+  "translatedText": "124.",
+  "time_range": [
+   1074.9127027027027,
+   1075.1
+  ]
+ },
+ {
+  "input": "Which is not bad, to be honest, I kind of expected to do worse.",
+  "model": "nmt",
+  "translatedText": "Ce qui n’est pas mal, pour être honnête, je m’attendais à faire pire.",
+  "time_range": [
+   1075.1,
+   1079.78
+  ]
+ },
+ {
+  "input": "But the people who play wordle will tell you that they can usually get it in 4.",
+  "model": "nmt",
+  "translatedText": "Mais les gens qui jouent aux mots vous diront qu’ils peuvent généralement l’obtenir en 4.",
+  "time_range": [
+   1079.78,
+   1083.04
+  ]
+ },
+ {
+  "input": "The real challenge is to get as many in 3 as you can.",
+  "model": "nmt",
+  "translatedText": "Le véritable défi est d’en obtenir autant en 3 que possible.",
+  "time_range": [
+   1083.04,
+   1085.26
+  ]
+ },
+ {
+  "input": "It's a pretty big jump between the score of 4 and the score of 3.",
+  "model": "nmt",
+  "translatedText": "C'est un écart assez important entre le score de 4 et le score de 3.",
+  "time_range": [
+   1085.26,
+   1088.92
+  ]
+ },
+ {
+  "input": "The obvious low hanging fruit here is to somehow incorporate whether or not a word is common, and how exactly do we do that.",
+  "model": "nmt",
+  "translatedText": "Le fruit évident ici est d'incorporer d'une manière ou d'une autre si un mot est courant ou non, et comment faire exactement cela.",
+  "time_range": [
+   1088.92,
+   1103.16
+  ]
+ },
+ {
+  "input": "The way I approached it is to get a list of the relative frequencies for all of the words in the English language.",
+  "model": "nmt",
+  "translatedText": "La façon dont je l'ai abordé consiste à obtenir une liste des fréquences relatives de tous les mots de la langue anglaise.",
+  "time_range": [
+   1103.16,
+   1108.56
+  ]
+ },
+ {
+  "input": "And I just used Mathematica's word frequency data function, which itself pulls from the Google Books English Ngram public dataset.",
+  "model": "nmt",
+  "translatedText": "Et je viens d'utiliser la fonction de données de fréquence des mots de Mathematica, qui elle-même est extraite de l'ensemble de données publiques Google Books English Ngram.",
+  "time_range": [
+   1108.56,
+   1115.52
+  ]
+ },
+ {
+  "input": "And it's kind of fun to look at, for example if we sort it from the most common words to the least common words.",
+  "model": "nmt",
+  "translatedText": "Et c'est plutôt amusant à regarder, par exemple si nous les trions des mots les plus courants aux mots les moins courants.",
+  "time_range": [
+   1115.52,
+   1120.12
+  ]
+ },
+ {
+  "input": "Evidently these are the most common, 5 letter words in the English language.",
+  "model": "nmt",
+  "translatedText": "De toute évidence, ce sont les mots de 5 lettres les plus courants dans la langue anglaise.",
+  "time_range": [
+   1120.12,
+   1123.74
+  ]
+ },
+ {
+  "input": "Or rather, these is the 8th most common.",
+  "model": "nmt",
+  "translatedText": "Ou plutôt, c'est le 8ème plus courant.",
+  "time_range": [
+   1123.74,
+   1126.48
+  ]
+ },
+ {
+  "input": "First is which, after which there's there and there.",
+  "model": "nmt",
+  "translatedText": "Le premier est lequel, puis il y a là et là.",
+  "time_range": [
+   1126.48,
+   1129.44
+  ]
+ },
+ {
+  "input": "First itself is not first, but 9th, and it makes sense that these other words could come about more often, where those after first are after, where, and those being just a little bit less common.",
+  "model": "nmt",
+  "translatedText": "Premier en lui-même n'est pas premier, mais 9ème, et il est logique que ces autres mots apparaissent plus souvent, là où ceux qui suivent premier sont après, où et ceux-ci étant juste un peu moins courants.",
+  "time_range": [
+   1129.44,
+   1139.0
+  ]
+ },
+ {
+  "input": "Now, in using this data to model how likely each of these words is to be the final answer, it shouldn't just be proportional to the frequency.",
+  "model": "nmt",
+  "translatedText": "Désormais, en utilisant ces données pour modéliser la probabilité que chacun de ces mots soit la réponse finale, cela ne devrait pas être simplement proportionnel à la fréquence.",
+  "time_range": [
+   1139.0,
+   1147.02
+  ]
+ },
+ {
+  "input": "For example, which is given a score of 0.",
+  "model": "nmt",
+  "translatedText": "Par exemple, à qui on attribue une note de 0.",
+  "time_range": [
+   1147.02,
+   1149.5967441860466
+  ]
+ },
+ {
+  "input": "002 in this dataset, whereas the word braid is in some sense about 1000 times less likely.",
+  "model": "nmt",
+  "translatedText": "002 dans cet ensemble de données, alors que le mot tresse est en quelque sorte environ 1 000 fois moins probable.",
+  "time_range": [
+   1149.5967441860466,
+   1155.2
+  ]
+ },
+ {
+  "input": "But both of these are common enough words that they're almost certainly worth considering.",
+  "model": "nmt",
+  "translatedText": "Mais ces deux mots sont suffisamment courants pour qu’ils valent certainement la peine d’être pris en compte.",
+  "time_range": [
+   1155.2,
+   1159.4
+  ]
+ },
+ {
+  "input": "So we want more of a binary cutoff.",
+  "model": "nmt",
+  "translatedText": "Nous voulons donc davantage un seuil binaire.",
+  "time_range": [
+   1159.4,
+   1161.9
+  ]
+ },
+ {
+  "input": "The way I went about it is to imagine taking this whole sorted list of words, and then arranging it on an x-axis, and then applying the sigmoid function, which is the standard way to have a function whose output is basically binary, it's either 0 or it's 1, but there's a smoothing in between for that region of uncertainty.",
+  "model": "nmt",
+  "translatedText": "La façon dont j'ai procédé est d'imaginer prendre toute cette liste triée de mots, puis de la disposer sur un axe des x, puis d'appliquer la fonction sigmoïde, qui est la manière standard d'avoir une fonction dont la sortie est fondamentalement binaire, c'est soit 0, soit 1, mais il y a un lissage entre les deux pour cette région d'incertitude.",
+  "time_range": [
+   1161.9,
+   1178.5
+  ]
+ },
+ {
+  "input": "So essentially, the probability that I'm assigning to each word for being in the final list will be the value of the sigmoid function above wherever it sits on the x-axis.",
+  "model": "nmt",
+  "translatedText": "Donc, essentiellement, la probabilité que j'attribue à chaque mot d'être dans la liste finale sera la valeur de la fonction sigmoïde ci-dessus, quel que soit l'endroit où elle se trouve sur l'axe des x.",
+  "time_range": [
+   1178.5,
+   1189.54
+  ]
+ },
+ {
+  "input": "Now obviously this depends on a few parameters, for example how wide a space on the x-axis those words fill determines how gradually or steeply we drop off from 1 to 0, and where we situate them left to right determines the cutoff.",
+  "model": "nmt",
+  "translatedText": "Cela dépend évidemment de quelques paramètres, par exemple la largeur de l'espace sur l'axe des x que ces mots remplissent détermine la façon dont nous passons progressivement ou abruptement de 1 à 0, et l'endroit où nous les situons de gauche à droite détermine le seuil.",
+  "time_range": [
+   1189.54,
+   1203.16
+  ]
+ },
+ {
+  "input": "To be honest, the way I did this was just licking my finger and sticking it into the wind.",
+  "model": "nmt",
+  "translatedText": "Pour être honnête, j’ai simplement fait cela en me léchant le doigt et en le mettant face au vent.",
+  "time_range": [
+   1203.16,
+   1207.34
+  ]
+ },
+ {
+  "input": "I looked through the sorted list and tried to find a window where when I looked at it I figured about half of these words are more likely than not to be the final answer, and used that as the cutoff.",
+  "model": "nmt",
+  "translatedText": "J'ai parcouru la liste triée et essayé de trouver une fenêtre dans laquelle, lorsque je l'ai regardée, j'ai pensé qu'environ la moitié de ces mots étaient plus susceptibles qu'improbables d'être la réponse finale, et je l'ai utilisé comme seuil.",
+  "time_range": [
+   1207.34,
+   1217.68
+  ]
+ },
+ {
+  "input": "Once we have a distribution like this across the words, it gives us another situation where entropy becomes this really useful measurement.",
+  "model": "nmt",
+  "translatedText": "Une fois que nous avons une distribution comme celle-ci entre les mots, cela nous donne une autre situation dans laquelle l'entropie devient cette mesure vraiment utile.",
+  "time_range": [
+   1217.68,
+   1224.46
+  ]
+ },
+ {
+  "input": "For example, let's say we were playing a game and we start with my old openers, which were a feather and nails, and we end up with a situation where there's four possible words that match it.",
+  "model": "nmt",
+  "translatedText": "Par exemple, disons que nous jouons à un jeu et que nous commençons avec mes anciens premiers mots, qui étaient une plume et des ongles, et que nous nous retrouvons avec une situation où il y a quatre mots possibles qui y correspondent.",
+  "time_range": [
+   1224.46,
+   1233.76
+  ]
+ },
+ {
+  "input": "And let's say we consider them all equally likely.",
+  "model": "nmt",
+  "translatedText": "Et disons que nous les considérons tous également probables.",
+  "time_range": [
+   1233.76,
+   1236.44
+  ]
+ },
+ {
+  "input": "Let me ask you, what is the entropy of this distribution?",
+  "model": "nmt",
+  "translatedText": "Laissez-moi vous demander, quelle est l'entropie de cette distribution?",
+  "time_range": [
+   1236.44,
+   1240.0
+  ]
+ },
+ {
+  "input": "Well, the information associated with each one of these possibilities is going to be the log base 2 of 4, since each one is 1 and 4, and that's 2.",
+  "model": "nmt",
+  "translatedText": "Eh bien, les informations associées à chacune de ces possibilités seront la base log 2 sur 4, puisque chacune vaut 1 et 4, et cela fait 2.",
+  "time_range": [
+   1240.0,
+   1250.8
+  ]
+ },
+ {
+  "input": "Two bits of information, four possibilities.",
+  "model": "nmt",
+  "translatedText": "Deux informations, quatre possibilités.",
+  "time_range": [
+   1250.8,
+   1252.78
+  ]
+ },
+ {
+  "input": "All very well and good.",
+  "model": "nmt",
+  "translatedText": "Tout cela est très bien.",
+  "time_range": [
+   1252.78,
+   1254.36
+  ]
+ },
+ {
+  "input": "But what if I told you that actually there's more than four matches?",
+  "model": "nmt",
+  "translatedText": "Mais et si je vous disais qu'en réalité il y a plus de quatre matches?",
+  "time_range": [
+   1254.36,
+   1258.32
+  ]
+ },
+ {
+  "input": "In reality, when we look through the full word list, there are 16 words that match it.",
+  "model": "nmt",
+  "translatedText": "En réalité, lorsque nous parcourons la liste complète de mots, il y a 16 mots qui y correspondent.",
+  "time_range": [
+   1258.32,
+   1262.6
+  ]
+ },
+ {
+  "input": "But suppose our model puts a really low probability on those other 12 words of actually being the final answer, something like 1 in 1000 because they're really obscure.",
+  "model": "nmt",
+  "translatedText": "Mais supposons que notre modèle attribue une très faible probabilité à ces 12 autres mots d'être réellement la réponse finale, quelque chose comme 1 sur 1 000 parce qu'ils sont vraiment obscurs.",
+  "time_range": [
+   1262.6,
+   1271.44
+  ]
+ },
+ {
+  "input": "Now let me ask you, what is the entropy of this distribution?",
+  "model": "nmt",
+  "translatedText": "Maintenant, laissez-moi vous demander, quelle est l'entropie de cette distribution?",
+  "time_range": [
+   1271.44,
+   1275.48
+  ]
+ },
+ {
+  "input": "If entropy was purely measuring the number of matches here, then you might expect it to be something like the log base 2 of 16, which would be 4, two more bits of uncertainty than we had before.",
+  "model": "nmt",
+  "translatedText": "Si l'entropie mesurait uniquement le nombre de correspondances ici, alors vous pourriez vous attendre à ce qu'elle ressemble à la base logarithmique 2 sur 16, qui serait 4, soit deux bits d'incertitude de plus qu'auparavant.",
+  "time_range": [
+   1275.48,
+   1286.2
+  ]
+ },
+ {
+  "input": "But of course the actual uncertainty is not really that different from what we had before.",
+  "model": "nmt",
+  "translatedText": "Mais bien entendu, l’incertitude réelle n’est pas vraiment différente de celle que nous connaissions auparavant.",
+  "time_range": [
+   1286.2,
+   1290.32
+  ]
+ },
+ {
+  "input": "Just because there's these 12 really obscure words doesn't mean that it would be all that more surprising to learn that the final answer is charm, for example.",
+  "model": "nmt",
+  "translatedText": "Ce n'est pas parce qu'il y a ces 12 mots vraiment obscurs qu'il serait d'autant plus surprenant d'apprendre que la réponse finale est charme, par exemple.",
+  "time_range": [
+   1290.32,
+   1298.2
+  ]
+ },
+ {
+  "input": "So when you actually do the calculation here, and you add up the probability of each occurrence times the corresponding information, what you get is 2.",
+  "model": "nmt",
+  "translatedText": "Ainsi, lorsque vous effectuez réellement le calcul ici et que vous additionnez la probabilité de chaque occurrence multipliée par les informations correspondantes, vous obtenez 2.",
+  "time_range": [
+   1298.2,
+   1305.5147540983605
+  ]
+ },
+ {
+  "input": "11 bits.",
+  "model": "nmt",
+  "translatedText": "11 bits.",
+  "time_range": [
+   1305.5147540983605,
+   1305.96
+  ]
+ },
+ {
+  "input": "I'm just saying, it's basically two bits, basically those four possibilities, but there's a little more uncertainty because of all of those highly unlikely events, though if you did learn them you'd get a ton of information from it.",
+  "model": "nmt",
+  "translatedText": "Je dis juste qu'il s'agit essentiellement de deux éléments, essentiellement de ces quatre possibilités, mais il y a un peu plus d'incertitude à cause de tous ces événements hautement improbables, même si si vous les appreniez, vous en tireriez une tonne d'informations.",
+  "time_range": [
+   1305.96,
+   1317.12
+  ]
+ },
+ {
+  "input": "So zooming out, this is part of what makes Wordle such a nice example for an information theory lesson.",
+  "model": "nmt",
+  "translatedText": "Donc, en effectuant un zoom arrière, cela fait partie de ce qui fait de Wordle un si bel exemple pour une leçon de théorie de l'information.",
+  "time_range": [
+   1317.12,
+   1321.8
+  ]
+ },
+ {
+  "input": "We have these two distinct feeling applications for entropy.",
+  "model": "nmt",
+  "translatedText": "Nous avons ces deux applications distinctes de sensation pour l’entropie.",
+  "time_range": [
+   1321.8,
+   1325.28
+  ]
+ },
+ {
+  "input": "The first one telling us what's the expected information we'll get from a given guess, and the second one saying can we measure the remaining uncertainty among all of the words that we have possible.",
+  "model": "nmt",
+  "translatedText": "Le premier nous dit quelle est l'information attendue que nous obtiendrons à partir d'une supposition donnée, et le second nous dit : pouvons-nous mesurer l'incertitude restante parmi tous les mots possibles.",
+  "time_range": [
+   1325.28,
+   1336.48
+  ]
+ },
+ {
+  "input": "And I should emphasize, in that first case where we're looking at the expected information of a guess, once we have an unequal weighting to the words, that affects the entropy calculation.",
+  "model": "nmt",
+  "translatedText": "Et je dois souligner que, dans le premier cas où nous examinons les informations attendues d'une supposition, une fois que nous avons une pondération inégale des mots, cela affecte le calcul de l'entropie.",
+  "time_range": [
+   1336.48,
+   1345.0
+  ]
+ },
+ {
+  "input": "For example, let me pull up that same case we were looking at earlier of the distribution associated with Weary, but this time using a non-uniform distribution across all possible words.",
+  "model": "nmt",
+  "translatedText": "Par exemple, permettez-moi de reprendre le même cas que nous avons examiné plus tôt concernant la distribution associée à Weary, mais cette fois en utilisant une distribution non uniforme sur tous les mots possibles.",
+  "time_range": [
+   1345.0,
+   1354.56
+  ]
+ },
+ {
+  "input": "So let me see if I can find a part here that illustrates it pretty well.",
+  "model": "nmt",
+  "translatedText": "Alors laissez-moi voir si je peux trouver ici une partie qui l’illustre assez bien.",
+  "time_range": [
+   1354.56,
+   1359.36
+  ]
+ },
+ {
+  "input": "Okay, here this is pretty good.",
+  "model": "nmt",
+  "translatedText": "Ok, ici, c'est plutôt bien.",
+  "time_range": [
+   1359.36,
+   1362.48
+  ]
+ },
+ {
+  "input": "Here we have two adjacent patterns that are about equally likely, but one of them we're told has 32 possible words that match it.",
+  "model": "nmt",
+  "translatedText": "Ici, nous avons deux modèles adjacents qui sont à peu près également probables, mais l'un d'eux, nous dit-on, a 32 mots possibles qui lui correspondent.",
+  "time_range": [
+   1362.48,
+   1369.48
+  ]
+ },
+ {
+  "input": "And if we check what they are, these are those 32, which are all just very unlikely words as you scan your eyes over them.",
+  "model": "nmt",
+  "translatedText": "Et si nous vérifions ce qu’ils sont, ce sont ces 32 mots, qui ne sont que des mots très improbables lorsque vous les parcourez des yeux.",
+  "time_range": [
+   1369.48,
+   1375.6
+  ]
+ },
+ {
+  "input": "It's hard to find any that feel like plausible answers, maybe yells, but if we look at the neighboring pattern in the distribution, which is considered just about as likely, we're told that it only has 8 possible matches, so a quarter as many matches, but it's about as likely.",
+  "model": "nmt",
+  "translatedText": "Il est difficile de trouver des réponses qui semblent plausibles, peut-être des cris, mais si nous regardons le modèle voisin dans la distribution, qui est considéré comme tout aussi probable, on nous dit qu'il n'y a que 8 correspondances possibles, donc un quart comme de nombreux matches, mais c'est à peu près aussi probable.",
+  "time_range": [
+   1375.6,
+   1389.92
+  ]
+ },
+ {
+  "input": "And when we pull up those matches, we can see why.",
+  "model": "nmt",
+  "translatedText": "Et lorsque nous récupérons ces matchs, nous pouvons comprendre pourquoi.",
+  "time_range": [
+   1389.92,
+   1392.52
+  ]
+ },
+ {
+  "input": "Some of these are actual plausible answers, like ring, or wrath, or raps.",
+  "model": "nmt",
+  "translatedText": "Certaines d’entre elles sont des réponses réellement plausibles, comme la sonnerie, la colère ou les raps.",
+  "time_range": [
+   1392.52,
+   1397.84
+  ]
+ },
+ {
+  "input": "To illustrate how we incorporate all that, let me pull up version 2 of the Wordlebot here, and there are two or three main differences from the first one that we saw.",
+  "model": "nmt",
+  "translatedText": "Pour illustrer comment nous intégrons tout cela, permettez-moi d'afficher ici la version 2 de Wordlebot, et il y a deux ou trois différences principales par rapport à la première que nous avons vue.",
+  "time_range": [
+   1397.84,
+   1405.96
+  ]
+ },
+ {
+  "input": "First off, like I just said, the way that we're computing these entropies, these expected values of information, is now using the more refined distributions across the patterns that incorporates the probability that a given word would actually be the answer.",
+  "model": "nmt",
+  "translatedText": "Tout d'abord, comme je viens de le dire, la façon dont nous calculons ces entropies, ces valeurs attendues de l'information, utilise désormais des distributions plus raffinées entre les modèles qui intègrent la probabilité qu'un mot donné soit réellement la réponse.",
+  "time_range": [
+   1405.96,
+   1419.3
+  ]
+ },
+ {
+  "input": "As it happens, tears is still number 1, though the ones following are a bit different.",
+  "model": "nmt",
+  "translatedText": "Il se trouve que les larmes sont toujours au premier rang, même si les suivantes sont un peu différentes.",
+  "time_range": [
+   1419.3,
+   1424.16
+  ]
+ },
+ {
+  "input": "Second, when it ranks its top picks, it's now going to keep a model of the probability that each word is the actual answer, and it'll incorporate that into its decision, which is easier to see once we have a few guesses on the table.",
+  "model": "nmt",
+  "translatedText": "Deuxièmement, lorsqu'il classera ses meilleurs choix, il conservera désormais un modèle de probabilité que chaque mot soit la réponse réelle, et il l'intégrera dans sa décision, qui est plus facile à voir une fois que nous avons quelques suppositions sur la réponse. tableau.",
+  "time_range": [
+   1424.16,
+   1435.52
+  ]
+ },
+ {
+  "input": "Again, ignoring its recommendation because we can't let machines rule our lives.",
+  "model": "nmt",
+  "translatedText": "Encore une fois, nous ignorons sa recommandation, car nous ne pouvons pas laisser les machines diriger nos vies.",
+  "time_range": [
+   1435.52,
+   1441.12
+  ]
+ },
+ {
+  "input": "And I suppose I should mention another thing different here is over on the left, that uncertainty value, that number of bits, is no longer just redundant with the number of possible matches.",
+  "model": "nmt",
+  "translatedText": "Et je suppose que je devrais mentionner une autre chose différente ici, à gauche, que la valeur d'incertitude, ce nombre de bits, n'est plus seulement redondante avec le nombre de correspondances possibles.",
+  "time_range": [
+   1441.12,
+   1450.08
+  ]
+ },
+ {
+  "input": "Now if we pull it up and calculate 2 to the 8.",
+  "model": "nmt",
+  "translatedText": "Maintenant, si nous le retirons et calculons 2 puissance 8.",
+  "time_range": [
+   1450.08,
+   1453.4894117647057
+  ]
+ },
+ {
+  "input": "02, which is a little above 256, I guess 259, what it's saying is even though there are 526 total words that actually match this pattern, the amount of uncertainty it has is more akin to what it would be if there were 259 equally likely outcomes.",
+  "model": "nmt",
+  "translatedText": "02, qui est un peu au-dessus de 256, je suppose 259, ce qu'il dit, c'est que même s'il y a 526 mots au total qui correspondent réellement à ce modèle, le degré d'incertitude qu'il a est plus proche de ce qu'il serait s'il y avait 259 mots également probables. résultats.",
+  "time_range": [
+   1453.4894117647057,
+   1469.76
+  ]
+ },
+ {
+  "input": "You can think of it like this.",
+  "model": "nmt",
+  "translatedText": "Vous pouvez y penser comme ceci.",
+  "time_range": [
+   1469.76,
+   1471.1
+  ]
+ },
+ {
+  "input": "It knows borx is not the answer, same with yorts and zorl and zorus, so it's a little less uncertain than it was in the previous case.",
+  "model": "nmt",
+  "translatedText": "Il sait que le borx n'est pas la réponse, pareil pour les yorts, le zorl et le zorus, donc c'est un peu moins incertain que dans le cas précédent.",
+  "time_range": [
+   1471.1,
+   1477.84
+  ]
+ },
+ {
+  "input": "This number of bits will be smaller.",
+  "model": "nmt",
+  "translatedText": "Ce nombre de bits sera plus petit.",
+  "time_range": [
+   1477.84,
+   1480.22
+  ]
+ },
+ {
+  "input": "And if I keep playing the game, I'm refining this down with a couple guesses that are apropos of what I would like to explain here.",
+  "model": "nmt",
+  "translatedText": "Et si je continue à jouer au jeu, j'affine cela avec quelques suppositions qui sont à propos de ce que je voudrais expliquer ici.",
+  "time_range": [
+   1480.22,
+   1488.68
+  ]
+ },
+ {
+  "input": "By the fourth guess, if you look over at its top picks, you can see it's no longer just maximizing the entropy.",
+  "model": "nmt",
+  "translatedText": "À la quatrième hypothèse, si vous regardez ses meilleurs choix, vous pouvez voir qu'il ne s'agit plus seulement de maximiser l'entropie.",
+  "time_range": [
+   1488.68,
+   1493.8
+  ]
+ },
+ {
+  "input": "So at this point, there's technically seven possibilities, but the only ones with a meaningful chance are dorms and words.",
+  "model": "nmt",
+  "translatedText": "Donc à ce stade, il y a techniquement sept possibilités, mais les seules qui ont une chance significative sont les dortoirs et les mots.",
+  "time_range": [
+   1493.8,
+   1500.78
+  ]
+ },
+ {
+  "input": "And you can see it ranks choosing both of those above all of these other values, that strictly speaking would give more information.",
+  "model": "nmt",
+  "translatedText": "Et vous pouvez voir qu'il classe ces deux valeurs au-dessus de toutes ces autres valeurs, qui, à proprement parler, donneraient plus d'informations.",
+  "time_range": [
+   1500.78,
+   1507.56
+  ]
+ },
+ {
+  "input": "The very first time I did this, I just added up these two numbers to measure the quality of each guess, which actually worked better than you might suspect.",
+  "model": "nmt",
+  "translatedText": "La toute première fois que j'ai fait cela, j'ai simplement additionné ces deux nombres pour mesurer la qualité de chaque supposition, ce qui a en fait mieux fonctionné que vous ne le pensez.",
+  "time_range": [
+   1507.56,
+   1514.58
+  ]
+ },
+ {
+  "input": "But it really didn't feel systematic, and I'm sure there's other approaches people could take but here's the one I landed on.",
+  "model": "nmt",
+  "translatedText": "Mais cela ne semblait vraiment pas systématique, et je suis sûr qu'il existe d'autres approches que les gens pourraient adopter, mais voici celle sur laquelle j'ai atterri.",
+  "time_range": [
+   1514.58,
+   1519.88
+  ]
+ },
+ {
+  "input": "If we're considering the prospect of a next guess, like in this case words, what we really care about is the expected score of our game if we do that.",
+  "model": "nmt",
+  "translatedText": "Si nous envisageons la perspective d'une prochaine supposition, comme dans ce cas les mots, ce qui nous importe vraiment, c'est le score attendu de notre jeu si nous faisons cela.",
+  "time_range": [
+   1519.88,
+   1528.44
+  ]
+ },
+ {
+  "input": "And to calculate that expected score, we say what's the probability that words is the actual answer, which at the moment it describes 58% to.",
+  "model": "nmt",
+  "translatedText": "Et pour calculer ce score attendu, nous disons quelle est la probabilité que les mots soient la réponse réelle, ce qui est actuellement décrit à 58 %.",
+  "time_range": [
+   1528.44,
+   1536.08
+  ]
+ },
+ {
+  "input": "We say with a 58% chance, our score in this game would be 4.",
+  "model": "nmt",
+  "translatedText": "Nous disons qu'avec 58 % de chances, notre score dans ce jeu serait de 4.",
+  "time_range": [
+   1536.08,
+   1540.4
+  ]
+ },
+ {
+  "input": "And then with the probability of 1 minus that 58%, our score will be more than that 4.",
+  "model": "nmt",
+  "translatedText": "Et puis avec la probabilité de 1 moins 58 %, notre score sera supérieur à 4.",
+  "time_range": [
+   1540.4,
+   1546.24
+  ]
+ },
+ {
+  "input": "How much more we don't know, but we can estimate it based on how much uncertainty there's likely to be once we get to that point.",
+  "model": "nmt",
+  "translatedText": "Nous n’en savons pas encore plus, mais nous pouvons l’estimer en fonction du degré d’incertitude qu’il y aura probablement une fois arrivé à ce point.",
+  "time_range": [
+   1546.24,
+   1552.92
+  ]
+ },
+ {
+  "input": "Specifically, at the moment there's 1.",
+  "model": "nmt",
+  "translatedText": "Concrètement, pour le moment, il y en a 1.",
+  "time_range": [
+   1552.92,
+   1555.2277966101697
+  ]
+ },
+ {
+  "input": "44 bits of uncertainty.",
+  "model": "nmt",
+  "translatedText": "44 bits d'incertitude.",
+  "time_range": [
+   1555.2277966101697,
+   1556.6
+  ]
+ },
+ {
+  "input": "If we guess words, it's telling us the expected information we'll get is 1.",
+  "model": "nmt",
+  "translatedText": "Si nous devinons des mots, cela nous indique que l'information attendue que nous obtiendrons est 1.",
+  "time_range": [
+   1556.6,
+   1561.1313580246913
+  ]
+ },
+ {
+  "input": "27 bits.",
+  "model": "nmt",
+  "translatedText": "27 bits.",
+  "time_range": [
+   1561.1313580246913,
+   1561.56
+  ]
+ },
+ {
+  "input": "So if we guess words, this difference represents how much uncertainty we're likely to be left with after that happens.",
+  "model": "nmt",
+  "translatedText": "Donc, si nous devinons les mots, cette différence représente le degré d’incertitude qui nous restera probablement après que cela se produise.",
+  "time_range": [
+   1561.56,
+   1568.28
+  ]
+ },
+ {
+  "input": "What we need is some kind of function, which I'm calling f here, that associates this uncertainty with an expected score.",
+  "model": "nmt",
+  "translatedText": "Ce dont nous avons besoin, c'est d'une sorte de fonction, que j'appelle ici f, qui associe cette incertitude à un score attendu.",
+  "time_range": [
+   1568.28,
+   1573.88
+  ]
+ },
+ {
+  "input": "And the way it went about this was to just plot a bunch of the data from previous games based on version 1 of the bot to say hey what was the actual score after various points with certain very measurable amounts of uncertainty.",
+  "model": "nmt",
+  "translatedText": "Et la façon dont cela s'est déroulé consistait simplement à tracer un tas de données des jeux précédents basés sur la version 1 du bot pour dire quel était le score réel après différents points avec certaines quantités d'incertitude très mesurables.",
+  "time_range": [
+   1573.88,
+   1587.04
+  ]
+ },
+ {
+  "input": "For example, these data points here that are sitting above a value that's around like 8.",
+  "model": "nmt",
+  "translatedText": "Par exemple, ces points de données ici se situent au-dessus d’une valeur d’environ 8.",
+  "time_range": [
+   1587.04,
+   1591.0736363636363
+  ]
+ },
+ {
+  "input": "7 or so are saying for some games after a point at which there were 8.",
+  "model": "nmt",
+  "translatedText": "Environ 7 disent pour certains matchs après un point où il y en avait 8.",
+  "time_range": [
+   1591.0736363636363,
+   1595.4260674157304
+  ]
+ },
+ {
+  "input": "7 bits of uncertainty, it took two guesses to get the final answer.",
+  "model": "nmt",
+  "translatedText": "7 bits d'incertitude, il a fallu deux suppositions pour obtenir la réponse finale.",
+  "time_range": [
+   1595.4260674157304,
+   1599.34
+  ]
+ },
+ {
+  "input": "For other games it took three guesses, for other games it took four guesses.",
+  "model": "nmt",
+  "translatedText": "Pour les autres jeux, il fallait trois tentatives, pour les autres jeux, il fallait quatre tentatives.",
+  "time_range": [
+   1599.34,
+   1603.18
+  ]
+ },
+ {
+  "input": "If we shift over to the left here, all the points over zero are saying whenever there's zero bits of uncertainty, which is to say there's only one possibility, then the number of guesses required is always just one, which is reassuring.",
+  "model": "nmt",
+  "translatedText": "Si nous passons ici vers la gauche, tous les points au-dessus de zéro indiquent que lorsqu'il n'y a aucun élément d'incertitude, c'est-à-dire qu'il n'y a qu'une seule possibilité, alors le nombre de suppositions requis est toujours d'une seule, ce qui est rassurant.",
+  "time_range": [
+   1603.18,
+   1615.0
+  ]
+ },
+ {
+  "input": "Whenever there was one bit of uncertainty, meaning it was essentially just down to two possibilities, then sometimes it required one more guess, sometimes it required two more guesses.",
+  "model": "nmt",
+  "translatedText": "Chaque fois qu'il y avait un peu d'incertitude, ce qui signifiait qu'il ne s'agissait essentiellement que de deux possibilités, il fallait parfois une supposition supplémentaire, parfois deux suppositions supplémentaires.",
+  "time_range": [
+   1615.0,
+   1623.94
+  ]
+ },
+ {
+  "input": "And so on and so forth here.",
+  "model": "nmt",
+  "translatedText": "Et ainsi de suite, ici.",
+  "time_range": [
+   1623.94,
+   1625.98
+  ]
+ },
+ {
+  "input": "Maybe a slightly easier way to visualize this data is to bucket it together and take averages.",
+  "model": "nmt",
+  "translatedText": "Un moyen un peu plus simple de visualiser ces données consiste peut-être à les regrouper et à prendre des moyennes.",
+  "time_range": [
+   1625.98,
+   1631.02
+  ]
+ },
+ {
+  "input": "For example this bar here saying among all the points where we had one bit of uncertainty, on average the number of new guesses required was about 1.",
+  "model": "nmt",
+  "translatedText": "Par exemple, cette barre indique que parmi tous les points pour lesquels nous avions un peu d'incertitude, le nombre moyen de nouvelles suppositions requises était d'environ 1.",
+  "time_range": [
+   1631.02,
+   1642.3082758620692
+  ]
+ },
+ {
+  "input": "5.",
+  "model": "nmt",
+  "translatedText": "5.",
+  "time_range": [
+   1642.3082758620692,
+   1642.42
+  ]
+ },
+ {
+  "input": "And the bar over here saying among all of the different games where at some point the uncertainty was a little above four bits, which is like narrowing it down to 16 different possibilities, then on average it requires a little more than two guesses from that point forward.",
+  "model": "nmt",
+  "translatedText": "Et la barre ici indique que parmi tous les différents jeux, où à un moment donné l'incertitude était un peu supérieure à quatre bits, ce qui revient à la réduire à 16 possibilités différentes, alors en moyenne, cela nécessite un peu plus de deux suppositions à partir de ce point. avant.",
+  "time_range": [
+   1642.42,
+   1656.24
+  ]
+ },
+ {
+  "input": "And from here I just did a regression to fit a function that seemed reasonable to this.",
+  "model": "nmt",
+  "translatedText": "Et à partir de là, j'ai juste fait une régression pour adapter une fonction qui semblait raisonnable à cela.",
+  "time_range": [
+   1656.24,
+   1660.08
+  ]
+ },
+ {
+  "input": "And remember the whole point of doing any of that is so that we can quantify this intuition that the more information we gain from a word, the lower the expected score will be.",
+  "model": "nmt",
+  "translatedText": "Et rappelez-vous que l’intérêt de faire tout cela est de pouvoir quantifier cette intuition selon laquelle plus nous obtenons d’informations à partir d’un mot, plus le score attendu sera bas.",
+  "time_range": [
+   1660.08,
+   1669.72
+  ]
+ },
+ {
+  "input": "So with this as version 2.",
+  "model": "nmt",
+  "translatedText": "Donc avec ceci comme version 2.",
+  "time_range": [
+   1669.72,
+   1671.0438636363638
+  ]
+ },
+ {
+  "input": "0, if we go back and we run the same set of simulations, having it play against all 2315 possible wordle answers, how does it do?",
+  "model": "nmt",
+  "translatedText": "0, si nous revenons en arrière et exécutons le même ensemble de simulations, en le faisant jouer avec les 2315 réponses de mots possibles, comment cela se passe-t-il?",
+  "time_range": [
+   1671.0438636363638,
+   1679.82
+  ]
+ },
+ {
+  "input": "Well in contrast to our first version it's definitely better, which is reassuring.",
+  "model": "nmt",
+  "translatedText": "Et bien contrairement à notre première version, c'est nettement mieux, ce qui est rassurant.",
+  "time_range": [
+   1679.82,
+   1684.06
+  ]
+ },
+ {
+  "input": "All said and done the average is around 3.",
+  "model": "nmt",
+  "translatedText": "Tout compte fait, la moyenne est d’environ 3.",
+  "time_range": [
+   1684.06,
+   1686.284367816092
+  ]
+ },
+ {
+  "input": "6, although unlike the first version there are a couple times that it loses and requires more than six in this circumstance.",
+  "model": "nmt",
+  "translatedText": "6, bien que contrairement à la première version, il perd plusieurs fois et en nécessite plus de six dans ce cas.",
+  "time_range": [
+   1686.284367816092,
+   1692.82
+  ]
+ },
+ {
+  "input": "Presumably because there's times when it's making that tradeoff to actually go for the goal rather than maximizing information.",
+  "model": "nmt",
+  "translatedText": "Vraisemblablement parce qu'il y a des moments où il faut faire un compromis pour atteindre l'objectif plutôt que de maximiser l'information.",
+  "time_range": [
+   1692.82,
+   1698.98
+  ]
+ },
+ {
+  "input": "So can we do better than 3.",
+  "model": "nmt",
+  "translatedText": "Alors pouvons-nous faire mieux que 3. 6?",
+  "time_range": [
+   1698.98,
+   1702.022962962963
+  ]
+ },
+ {
+  "input": "6?",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   1702.022962962963,
+   1702.14
+  ]
+ },
+ {
+  "input": "We definitely can.",
+  "model": "nmt",
+  "translatedText": "Nous le pouvons certainement.",
+  "time_range": [
+   1702.14,
+   1703.26
+  ]
+ },
+ {
+  "input": "Now I said at the start that it's most fun to try not incorporating the true list of wordle answers into the way that it builds its model.",
+  "model": "nmt",
+  "translatedText": "Maintenant, j'ai dit au début qu'il était très amusant d'essayer de ne pas incorporer la vraie liste de réponses en mots dans la manière dont il construit son modèle.",
+  "time_range": [
+   1703.26,
+   1709.98
+  ]
+ },
+ {
+  "input": "But if we do incorporate it, the best performance I could get was around 3.",
+  "model": "nmt",
+  "translatedText": "Mais si nous l’intégrons, la meilleure performance que j’ai pu obtenir était d’environ 3.",
+  "time_range": [
+   1709.98,
+   1715.0431578947369
+  ]
+ },
+ {
+  "input": "43.",
+  "model": "nmt",
+  "translatedText": "43.",
+  "time_range": [
+   1715.0431578947369,
+   1715.18
+  ]
+ },
+ {
+  "input": "So if we try to get more sophisticated than just using word frequency data to choose this prior distribution, this 3.",
+  "model": "nmt",
+  "translatedText": "Donc, si nous essayons d'être plus sophistiqués que d'utiliser simplement les données de fréquence des mots pour choisir cette distribution a priori, cette 3.",
+  "time_range": [
+   1715.18,
+   1720.9576470588236
+  ]
+ },
+ {
+  "input": "43 probably gives a max at how good we could get with that, or at least how good I could get with that.",
+  "model": "nmt",
+  "translatedText": "43 donne probablement un maximum de la qualité que nous pourrions obtenir avec cela, ou du moins de la qualité que je pourrais obtenir avec cela.",
+  "time_range": [
+   1720.9576470588236,
+   1726.36
+  ]
+ },
+ {
+  "input": "That best performance essentially just uses the ideas that I've been talking about here, but it goes a little farther, like it does a search for the expected information two steps forward rather than just one.",
+  "model": "nmt",
+  "translatedText": "Cette meilleure performance utilise essentiellement les idées dont j'ai parlé ici, mais elle va un peu plus loin, comme si elle effectuait une recherche des informations attendues deux pas en avant plutôt qu'un seul.",
+  "time_range": [
+   1726.36,
+   1735.66
+  ]
+ },
+ {
+  "input": "Originally I was planning on talking more about that, but I realize we've actually gone quite long as it is.",
+  "model": "nmt",
+  "translatedText": "Au départ, j'avais prévu d'en parler davantage, mais je me rends compte que nous avons en fait été assez longs.",
+  "time_range": [
+   1735.66,
+   1740.58
+  ]
+ },
+ {
+  "input": "The one thing I'll say is after doing this two-step search and then running a couple sample simulations in the top candidates, so far for me at least it's looking like Crane is the best opener.",
+  "model": "nmt",
+  "translatedText": "La seule chose que je dirai, c'est qu'après avoir effectué cette recherche en deux étapes, puis exécuté quelques exemples de simulations sur les meilleurs candidats, jusqu'à présent, pour moi au moins, il semble que Crane soit le meilleur ouvreur.",
+  "time_range": [
+   1740.58,
+   1749.5
+  ]
+ },
+ {
+  "input": "Who would have guessed?",
+  "model": "nmt",
+  "translatedText": "Qui l'aurait deviné?",
+  "time_range": [
+   1749.5,
+   1751.08
+  ]
+ },
+ {
+  "input": "Also if you use the true wordle list to determine your space of possibilities, then the uncertainty you start with is a little over 11 bits.",
+  "model": "nmt",
+  "translatedText": "De plus, si vous utilisez la vraie liste de mots pour déterminer votre espace de possibilités, alors l'incertitude avec laquelle vous commencez est d'un peu plus de 11 bits.",
+  "time_range": [
+   1751.08,
+   1758.16
+  ]
+ },
+ {
+  "input": "And it turns out, just from a brute force search, the maximum possible expected information after the first two guesses is around 10 bits.",
+  "model": "nmt",
+  "translatedText": "Et il s'avère que, rien qu'à partir d'une recherche par force brute, le maximum d'informations attendues après les deux premières suppositions est d'environ 10 bits.",
+  "time_range": [
+   1758.16,
+   1766.58
+  ]
+ },
+ {
+  "input": "Which suggests that best case scenario, after your first two guesses, with perfectly optimal play, you'll be left with around one bit of uncertainty.",
+  "model": "nmt",
+  "translatedText": "Ce qui suggère que dans le meilleur des cas, après vos deux premières suppositions, avec un jeu parfaitement optimal, il vous restera environ un peu d'incertitude.",
+  "time_range": [
+   1766.58,
+   1775.22
+  ]
+ },
+ {
+  "input": "Which is the same as being down to two possible guesses.",
+  "model": "nmt",
+  "translatedText": "Ce qui revient à se limiter à deux suppositions possibles.",
+  "time_range": [
+   1775.22,
+   1777.4
+  ]
+ },
+ {
+  "input": "So I think it's fair and probably pretty conservative to say that you could never possibly write an algorithm that gets this average as low as 3, because with the words available to you, there's simply not room to get enough information after only two steps to be able to guarantee the answer in the third slot every single time without fail.",
+  "model": "nmt",
+  "translatedText": "Je pense donc qu'il est juste et probablement assez conservateur de dire que vous ne pourrez jamais écrire un algorithme qui abaisse cette moyenne à 3, car avec les mots dont vous disposez, il n'y a tout simplement pas de place pour obtenir suffisamment d'informations après seulement deux étapes. capable de garantir la réponse dans le troisième créneau à chaque fois sans faute.",
+  "time_range": [
+   1777.4,
+   1790.46
+  ]
+ }
+]

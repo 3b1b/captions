@@ -1,0 +1,686 @@
+[
+ {
+  "input": "Here, we tackle backpropagation, the core algorithm behind how neural networks learn.",
+  "model": "nmt",
+  "translatedText": "在这里，我们讨论反向传播，这是神经网络学习背后的核心算法。",
+  "time_range": [
+   0.0,
+   9.64
+  ]
+ },
+ {
+  "input": "After a quick recap for where we are, the first thing I'll do is an intuitive walkthrough for what the algorithm is actually doing, without any reference to the formulas.",
+  "model": "nmt",
+  "translatedText": "快速回顾一下我们的情况后，我要做的第一件事是直 观地演练算法实际在做什么，而不参考任何公式。",
+  "time_range": [
+   9.64,
+   17.4
+  ]
+ },
+ {
+  "input": "Then, for those of you who do want to dive into the math, the next video goes into the calculus underlying all this.",
+  "model": "nmt",
+  "translatedText": "然后，对于那些确实想深入研究数学的人，下 一个视频将介绍所有这一切背后的微积分。",
+  "time_range": [
+   17.4,
+   24.04
+  ]
+ },
+ {
+  "input": "If you watched the last two videos, or if you're just jumping in with the appropriate background, you know what a neural network is, and how it feeds forward information.",
+  "model": "nmt",
+  "translatedText": "如果您观看了最后两个视频，或者只是了解了适当的背景 ，您就会知道什么是神经网络，以及它如何前馈信息。",
+  "time_range": [
+   24.04,
+   31.08
+  ]
+ },
+ {
+  "input": "Here, we're doing the classic example of recognizing handwritten digits whose pixel values get fed into the first layer of the network with 784 neurons, and I've been showing a network with two hidden layers having just 16 neurons each, and an output layer of 10 neurons, indicating which digit the network is choosing as its answer.",
+  "model": "nmt",
+  "translatedText": "在这里，我们正在做识别手写数字的经典示例，其像素值被输入到具 有 784 个神经元的网络的第一层，并且我已经展示了一个具有 两个隐藏层的网络，每个隐藏层只有 16 个神经元，以及一个输 出由 10 个神经元组成的层，指示网络选择哪个数字作为答案。",
+  "time_range": [
+   31.08,
+   49.52
+  ]
+ },
+ {
+  "input": "I'm also expecting you to understand gradient descent, as described in the last video, and how what we mean by learning is that we want to find which weights and biases minimize a certain cost function.",
+  "model": "nmt",
+  "translatedText": "我还希望您理解梯度下降，如上一个视频中所 述，以及我们所说的学习的意思是我们想要 找到哪些权重和偏差最小化某个成本函数。",
+  "time_range": [
+   49.52,
+   62.08
+  ]
+ },
+ {
+  "input": "As a quick reminder, for the cost of a single training example, you take the output the network gives, along with the output you wanted it to give, and add up the squares of the differences between each component.",
+  "model": "nmt",
+  "translatedText": "快速提醒一下，对于单个训练示例的成本，您 可以获取网络提供的输出以及您希望其提供的 输出，并将每个组件之间的差异的平方相加。",
+  "time_range": [
+   62.08,
+   75.56
+  ]
+ },
+ {
+  "input": "Doing this for all of your tens of thousands of training examples and averaging the results, this gives you the total cost of the network.",
+  "model": "nmt",
+  "translatedText": "对所有数万个训练示例执行此操作并对结 果进行平均，即可得出网络的总成本。",
+  "time_range": [
+   75.56,
+   83.04
+  ]
+ },
+ {
+  "input": "As if that's not enough to think about, as described in the last video, the thing that we're looking for is the negative gradient of this cost function, which tells you how you need to change all of the weights and biases, all of these connections, so as to most efficiently decrease the cost.",
+  "model": "nmt",
+  "translatedText": "好像这还不够考虑，正如上一个视频中所描述 的，我们正在寻找的是这个成本函数的负梯度 ，它告诉你需要如何改变所有的权重和偏差， 所有的这些连接，从而最有效地降低成本。",
+  "time_range": [
+   83.04,
+   103.08
+  ]
+ },
+ {
+  "input": "Backpropagation, the topic of this video, is an algorithm for computing that crazy complicated gradient.",
+  "model": "nmt",
+  "translatedText": "本视频的主题反向传播是一种用 于计算疯狂复杂梯度的算法。",
+  "time_range": [
+   103.08,
+   109.6
+  ]
+ },
+ {
+  "input": "The one idea from the last video that I really want you to hold firmly in your mind right now is that because thinking of the gradient vector as a direction in 13,000 dimensions is, to put it lightly, beyond the scope of our imaginations, there's another way you can think about it.",
+  "model": "nmt",
+  "translatedText": "上一个视频中我真正希望您现在牢牢记住的一 个想法是，因为将梯度向量视为 13,00 0 维中的方向，简单地说，超出了我们的想 象范围，所以还有另一个想法你可以这样想。",
+  "time_range": [
+   109.6,
+   124.62
+  ]
+ },
+ {
+  "input": "The magnitude of each component here is telling you how sensitive the cost function is to each weight and bias.",
+  "model": "nmt",
+  "translatedText": "这里每个分量的大小告诉您成本函 数对每个权重和偏差的敏感程度。",
+  "time_range": [
+   124.62,
+   131.82
+  ]
+ },
+ {
+  "input": "For example, let's say you go through the process I'm about to describe, and compute the negative gradient, and the component associated with the weight on this edge here comes out to be 3.",
+  "model": "nmt",
+  "translatedText": "例如，假设您经历了我将要描述的过程，并计 算负梯度，与此边缘上的权重相关的分量为 3。",
+  "time_range": [
+   131.82,
+   141.21139534883721
+  ]
+ },
+ {
+  "input": "2, while the component associated with this edge here comes out as 0.",
+  "model": "nmt",
+  "translatedText": "2，而与此边相关的分量在这里显示为 0。 1.",
+  "time_range": [
+   141.21139534883721,
+   146.85697674418606
+  ]
+ },
+ {
+  "input": "1.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   146.85697674418606,
+   146.94
+  ]
+ },
+ {
+  "input": "The way you would interpret that is that the cost of the function is 32 times more sensitive to changes in that first weight, so if you were to wiggle that value a little bit, it's going to cause some change to the cost, and that change is 32 times greater than what the same wiggle to that second weight would give.",
+  "model": "nmt",
+  "translatedText": "您的解释方式是，函数的成本对第一个权重的变化 敏感度是原来的 32 倍，因此，如果您稍微调 整该值，就会导致成本发生一些变化，而这种变化 比同样摆动第二个重量时产生的力大 32 倍。",
+  "time_range": [
+   146.94,
+   165.58
+  ]
+ },
+ {
+  "input": "Personally, when I was first learning about backpropagation, I think the most confusing aspect was just the notation and index chasing of it all.",
+  "model": "nmt",
+  "translatedText": "就我个人而言，当我第一次学习反向传播时，我认 为最令人困惑的方面就是它的符号和索引追逐。",
+  "time_range": [
+   165.58,
+   175.82
+  ]
+ },
+ {
+  "input": "But once you unwrap what each part of this algorithm is really doing, each individual effect it's having is actually pretty intuitive, it's just that there's a lot of little adjustments getting layered on top of each other.",
+  "model": "nmt",
+  "translatedText": "但是，一旦你解开这个算法的每个部分的真正 作用，它所产生的每个单独的效果实际上都 非常直观，只是有很多小的调整相互叠加。",
+  "time_range": [
+   175.82,
+   187.74
+  ]
+ },
+ {
+  "input": "So I'm going to start things off here with a complete disregard for the notation, and just step through the effects each training example has on the weights and biases.",
+  "model": "nmt",
+  "translatedText": "因此，我将从这里开始，完全忽略符号，并逐 步了解每个训练示例对权重和偏差的影响。",
+  "time_range": [
+   187.74,
+   197.38
+  ]
+ },
+ {
+  "input": "Because the cost function involves averaging a certain cost per example over all the tens of thousands of training examples, the way we adjust the weights and biases for a single gradient descent step also depends on every single example.",
+  "model": "nmt",
+  "translatedText": "由于成本函数涉及对所有数以万计的训练示例中每个 示例的特定成本进行平均，因此我们调整单个梯度 下降步骤的权重和偏差的方式也取决于每个示例。",
+  "time_range": [
+   197.38,
+   211.74
+  ]
+ },
+ {
+  "input": "Or rather, in principle it should, but for computational efficiency we'll do a little trick later to keep you from needing to hit every single example for every step.",
+  "model": "nmt",
+  "translatedText": "或者更确切地说，原则上应该如此，但为了计算效率，我们稍 后会做一些小技巧，以防止您需要为每个步骤击中每个示例。",
+  "time_range": [
+   211.74,
+   219.86
+  ]
+ },
+ {
+  "input": "In other cases, right now, all we're going to do is focus our attention on one single example, this image of a 2.",
+  "model": "nmt",
+  "translatedText": "在其他情况下，现在我们要做的就是将注意力 集中在一个例子上，即这张 2 的图像。",
+  "time_range": [
+   219.86,
+   226.78
+  ]
+ },
+ {
+  "input": "What effect should this one training example have on how the weights and biases get adjusted?",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   226.78,
+   231.74
+  ]
+ },
+ {
+  "input": "Let's say we're at a point where the network is not well trained yet, so the activations in the output are going to look pretty random, maybe something like 0.",
+  "model": "nmt",
+  "translatedText": "这一训练示例对权重和偏差的调整有何影响？ 假设我们正处于网络尚未经过良好训练的阶段，因此输出 中的激活看起来相当随机，可能类似于 0。 5, 0.",
+  "time_range": [
+   231.74,
+   240.51697674418605
+  ]
+ },
+ {
+  "input": "5, 0.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   240.51697674418605,
+   240.77651162790698
+  ]
+ },
+ {
+  "input": "8, 0.",
+  "model": "nmt",
+  "translatedText": "8, 0.",
+  "time_range": [
+   240.77651162790698,
+   241.03604651162792
+  ]
+ },
+ {
+  "input": "2, on and on.",
+  "model": "nmt",
+  "translatedText": "2 、不断地。",
+  "time_range": [
+   241.03604651162792,
+   242.78
+  ]
+ },
+ {
+  "input": "We can't directly change those activations, we only have influence on the weights and biases, but it's helpful to keep track of which adjustments we wish should take place to that output layer.",
+  "model": "nmt",
+  "translatedText": "我们不能直接改变这些激活，我们只能 影响权重和偏差，但是跟踪我们希望对 该输出层进行哪些调整是有帮助的。",
+  "time_range": [
+   242.78,
+   253.34
+  ]
+ },
+ {
+  "input": "And since we want it to classify the image as a 2, we want that third value to get nudged up while all the others get nudged down.",
+  "model": "nmt",
+  "translatedText": "由于我们希望它将图像分类为 2，因此我们希望 第三个值向上移动，而所有其他值都向下移动。",
+  "time_range": [
+   253.34,
+   261.7
+  ]
+ },
+ {
+  "input": "Moreover, the sizes of these nudges should be proportional to how far away each current value is from its target value.",
+  "model": "nmt",
+  "translatedText": "此外，这些微调的大小应与每个当 前值与其目标值的距离成正比。",
+  "time_range": [
+   261.7,
+   270.22
+  ]
+ },
+ {
+  "input": "For example, the increase to that number 2 neuron's activation is in a sense more important than the decrease to the number 8 neuron, which is already pretty close to where it should be.",
+  "model": "nmt",
+  "translatedText": "例如，从某种意义上说，增加 2 号神 经元的激活比减少 8 号神经元的激活 更重要，后者已经非常接近应有的位置。",
+  "time_range": [
+   270.22,
+   282.06
+  ]
+ },
+ {
+  "input": "So zooming in further, let's focus just on this one neuron, the one whose activation we wish to increase.",
+  "model": "nmt",
+  "translatedText": "因此，进一步放大，让我们只关注这 个神经元，我们希望增加其激活。",
+  "time_range": [
+   282.06,
+   287.9
+  ]
+ },
+ {
+  "input": "Remember, that activation is defined as a certain weighted sum of all the activations in the previous layer, plus a bias, which is all then plugged into something like the sigmoid squishification function, or a ReLU.",
+  "model": "nmt",
+  "translatedText": "请记住，激活被定义为前一层中所有激活的特定加 权总和，加上偏差，然后将其全部插入 sigm oid 压缩函数或 ReLU 之类的函数中。",
+  "time_range": [
+   287.9,
+   301.9
+  ]
+ },
+ {
+  "input": "So there are three different avenues that can team up together to help increase that activation.",
+  "model": "nmt",
+  "translatedText": "因此，可以通过三种不同的途 径联合起来帮助提高激活率。",
+  "time_range": [
+   301.9,
+   308.06
+  ]
+ },
+ {
+  "input": "You can increase the bias, you can increase the weights, and you can change the activations from the previous layer.",
+  "model": "nmt",
+  "translatedText": "您可以增加偏差，可以增加权重 ，并且可以更改上一层的激活。",
+  "time_range": [
+   308.06,
+   315.3
+  ]
+ },
+ {
+  "input": "Focusing on how the weights should be adjusted, notice how the weights actually have differing levels of influence.",
+  "model": "nmt",
+  "translatedText": "重点关注如何调整权重，注意权重 实际上如何具有不同程度的影响。",
+  "time_range": [
+   315.3,
+   321.46
+  ]
+ },
+ {
+  "input": "The connections with the brightest neurons from the preceding layer have the biggest effect since those weights are multiplied by larger activation values.",
+  "model": "nmt",
+  "translatedText": "与前一层最亮神经元的连接具有最大的影 响，因为这些权重乘以较大的激活值。",
+  "time_range": [
+   321.46,
+   331.42
+  ]
+ },
+ {
+  "input": "So if you were to increase one of those weights, it actually has a stronger influence on the ultimate cost function than increasing the weights of connections with dimmer neurons, at least as far as this one training example is concerned.",
+  "model": "nmt",
+  "translatedText": "因此，如果您要增加其中一个权重，它实际上对 最终成本函数的影响比增加与较暗神经元的连接 权重更大，至少就这一训练示例而言是这样。",
+  "time_range": [
+   331.42,
+   344.02
+  ]
+ },
+ {
+  "input": "Remember, when we talk about gradient descent, we don't just care about whether each component should get nudged up or down, we care about which ones give you the most bang for your buck.",
+  "model": "nmt",
+  "translatedText": "请记住，当我们谈论梯度下降时，我们不仅仅 关心每个组件是否应该向上或向下推动，我 们关心哪些组件可以为您带来最大的收益。",
+  "time_range": [
+   344.02,
+   354.02
+  ]
+ },
+ {
+  "input": "This, by the way, is at least somewhat reminiscent of a theory in neuroscience for how biological networks of neurons learn, Hebbian theory, often summed up in the phrase, neurons that fire together wire together.",
+  "model": "nmt",
+  "translatedText": "顺便说一句，这至少在某种程度上让人想起神经科学 中关于神经元生物网络如何学习的理论，赫布理论， 通常用短语来概括：一起放电的神经元连接在一起。",
+  "time_range": [
+   354.02,
+   366.94
+  ]
+ },
+ {
+  "input": "Here, the biggest increases to weights, the biggest strengthening of connections, happens between neurons which are the most active and the ones which we wish to become more active.",
+  "model": "nmt",
+  "translatedText": "在这里，权重的最大增加、连接的最 大加强发生在最活跃的神经元和我 们希望变得更活跃的神经元之间。",
+  "time_range": [
+   366.94,
+   378.1
+  ]
+ },
+ {
+  "input": "In a sense, the neurons that are firing while seeing a 2 get more strongly linked to those firing when thinking about it.",
+  "model": "nmt",
+  "translatedText": "从某种意义上说，看到 2 时放电的神经元与思 考 2 时放电的神经元之间的联系更加紧密。",
+  "time_range": [
+   378.1,
+   385.44
+  ]
+ },
+ {
+  "input": "To be clear, I'm not in a position to make statements one way or another about whether artificial networks of neurons behave anything like biological brains, and this fires together wire together idea comes with a couple meaningful asterisks, but taken as a very loose analogy, I find it interesting to note.",
+  "model": "nmt",
+  "translatedText": "需要明确的是，我无法以某种方式对神经元的人 工网络是否表现得像生物大脑做出陈述，这种 将电线连接在一起的想法带有几个有意义的星号 ，但被视为非常松散的类比，我觉得很有趣。",
+  "time_range": [
+   385.44,
+   401.76
+  ]
+ },
+ {
+  "input": "Anyway, the third way we can help increase this neuron's activation is by changing all the activations in the previous layer.",
+  "model": "nmt",
+  "translatedText": "无论如何，我们可以帮助增加该神经元激活 的第三种方法是更改前一层中的所有激活。",
+  "time_range": [
+   401.76,
+   409.36
+  ]
+ },
+ {
+  "input": "Namely, if everything connected to that digit 2 neuron with a positive weight got brighter, and if everything connected with a negative weight got dimmer, then that digit 2 neuron would become more active.",
+  "model": "nmt",
+  "translatedText": "也就是说，如果与具有正权值的数字 2 神经元相连的 所有东西都变得更亮，而与负权值连接的所有东西都变得 更暗，那么那个数字 2 神经元就会变得更加活跃。",
+  "time_range": [
+   409.36,
+   422.68
+  ]
+ },
+ {
+  "input": "And similar to the weight changes, you're going to get the most bang for your buck by seeking changes that are proportional to the size of the corresponding weights.",
+  "model": "nmt",
+  "translatedText": "与权重变化类似，通过寻求与相应权重大 小成比例的变化，您将获得最大的收益。",
+  "time_range": [
+   422.68,
+   430.84
+  ]
+ },
+ {
+  "input": "Now of course, we cannot directly influence those activations, we only have control over the weights and biases.",
+  "model": "nmt",
+  "translatedText": "当然，现在我们不能直接影响这些 激活，我们只能控制权重和偏差。",
+  "time_range": [
+   430.84,
+   438.32
+  ]
+ },
+ {
+  "input": "But just as with the last layer, it's helpful to keep a note of what those desired changes are.",
+  "model": "nmt",
+  "translatedText": "但就像最后一层一样，记下这 些所需的更改会很有帮助。",
+  "time_range": [
+   438.32,
+   443.96
+  ]
+ },
+ {
+  "input": "But keep in mind, zooming out one step here, this is only what that digit 2 output neuron wants.",
+  "model": "nmt",
+  "translatedText": "但请记住，这里缩小一步，这只是 数字 2 输出神经元想要的。",
+  "time_range": [
+   443.96,
+   450.04
+  ]
+ },
+ {
+  "input": "Remember, we also want all the other neurons in the last layer to become less active, and each of those other output neurons has its own thoughts about what should happen to that second to last layer.",
+  "model": "nmt",
+  "translatedText": "请记住，我们还希望最后一层中的所有其他神经 元变得不那么活跃，并且每个其他输出神经元对 于倒数第二层应该发生什么都有自己的想法。",
+  "time_range": [
+   450.04,
+   463.2
+  ]
+ },
+ {
+  "input": "So the desire of this digit 2 neuron is added together with the desires of all the other output neurons for what should happen to this second to last layer, again in proportion to the corresponding weights, and in proportion to how much each of those neurons needs to change.",
+  "model": "nmt",
+  "translatedText": "因此，这个数字 2 神经元的愿望与所有 其他输出神经元的愿望相加，以决定倒数第 二层应该发生什么，同样与相应的权重成比 例，并与每个神经元需要多少成比例改变。",
+  "time_range": [
+   463.2,
+   481.74
+  ]
+ },
+ {
+  "input": "This right here is where the idea of propagating backwards comes in.",
+  "model": "nmt",
+  "translatedText": "这就是向后传播的想法出现的地方。",
+  "time_range": [
+   481.74,
+   485.94
+  ]
+ },
+ {
+  "input": "By adding together all these desired effects, you basically get a list of nudges that you want to happen to this second to last layer.",
+  "model": "nmt",
+  "translatedText": "通过将所有这些所需的效果添加在一起，您基本上 会得到一个您想要在倒数第二层发生的微调列表。",
+  "time_range": [
+   485.94,
+   494.3
+  ]
+ },
+ {
+  "input": "And once you have those, you can recursively apply the same process to the relevant weights and biases that determine those values, repeating the same process I just walked through and moving backwards through the network.",
+  "model": "nmt",
+  "translatedText": "一旦有了这些，您就可以递归地将相同的过程 应用于确定这些值的相关权重和偏差，重复我 刚刚走过的相同过程并在网络中向后移动。",
+  "time_range": [
+   494.3,
+   509.18
+  ]
+ },
+ {
+  "input": "And zooming out a bit further, remember that this is all just how a single training example wishes to nudge each one of those weights and biases.",
+  "model": "nmt",
+  "translatedText": "再缩小一点，请记住，这只是单个训练示例希 望推动这些权重和偏差中的每一个的方式。",
+  "time_range": [
+   509.18,
+   517.52
+  ]
+ },
+ {
+  "input": "If we only listened to what that 2 wanted, the network would ultimately be incentivized just to classify all images as a 2.",
+  "model": "nmt",
+  "translatedText": "如果我们只听 2 想要的内容，网络 最终会被激励将所有图像分类为 2。",
+  "time_range": [
+   517.52,
+   524.14
+  ]
+ },
+ {
+  "input": "So what you do is go through this same backprop routine for every other training example, recording how each of them would like to change the weights and biases, and average together those desired changes.",
+  "model": "nmt",
+  "translatedText": "因此，您要做的就是对每个其他训练示例执行 相同的反向传播例程，记录每个示例如何更改 权重和偏差，并将这些所需的更改一起平均。",
+  "time_range": [
+   524.14,
+   542.3
+  ]
+ },
+ {
+  "input": "This collection here of the averaged nudges to each weight and bias is, loosely speaking, the negative gradient of the cost function referenced in the last video, or at least something proportional to it.",
+  "model": "nmt",
+  "translatedText": "宽松地说，这里对每个权重和偏差的平均微 调的集合是上一个视频中引用的成本函数的 负梯度，或者至少是与之成比例的东西。",
+  "time_range": [
+   542.3,
+   554.36
+  ]
+ },
+ {
+  "input": "I say loosely speaking only because I have yet to get quantitatively precise about those nudges, but if you understood every change I just referenced, why some are proportionally bigger than others, and how they all need to be added together, you understand the mechanics for what backpropagation is actually doing.",
+  "model": "nmt",
+  "translatedText": "我之所以说粗略地说，只是因为我还没有对这些推动进行 量化精确，但如果你理解我刚才提到的每一个变化，为 什么有些变化比其他变化更大，以及它们如何需要加在一 起，你就会理解其中的机制反向传播实际上在做什么。",
+  "time_range": [
+   554.36,
+   574.1
+  ]
+ },
+ {
+  "input": "By the way, in practice, it takes computers an extremely long time to add up the influence of every training example every gradient descent step.",
+  "model": "nmt",
+  "translatedText": "顺便说一句，在实践中，计算机需要花费很长时间才 能将每个梯度下降步骤的每个训练示例的影响相加。",
+  "time_range": [
+   574.1,
+   583.12
+  ]
+ },
+ {
+  "input": "So here's what's commonly done instead.",
+  "model": "nmt",
+  "translatedText": "所以这就是通常所做的事情。",
+  "time_range": [
+   583.12,
+   585.54
+  ]
+ },
+ {
+  "input": "You randomly shuffle your training data and divide it into a whole bunch of mini-batches, let's say each one having 100 training examples.",
+  "model": "nmt",
+  "translatedText": "您随机打乱训练数据并将其分成一大堆小批量， 假设每个小批量都有 100 个训练示例。",
+  "time_range": [
+   585.54,
+   593.38
+  ]
+ },
+ {
+  "input": "Then you compute a step according to the mini-batch.",
+  "model": "nmt",
+  "translatedText": "然后根据小批量计算步骤。",
+  "time_range": [
+   593.38,
+   596.98
+  ]
+ },
+ {
+  "input": "It's not the actual gradient of the cost function, which depends on all of the training data, not this tiny subset, so it's not the most efficient step downhill, but each mini-batch does give you a pretty good approximation, and more importantly it gives you a significant computational speedup.",
+  "model": "nmt",
+  "translatedText": "它不是成本函数的实际梯度，它取决于所有训练数 据，而不是这个微小的子集，所以它不是最有效的 下坡步骤，但每个小批量确实给你一个非常好的近 似值，更重要的是它为您带来显着的计算加速。",
+  "time_range": [
+   596.98,
+   612.9
+  ]
+ },
+ {
+  "input": "If you were to plot the trajectory of your network under the relevant cost surface, it would be a little more like a drunk man stumbling aimlessly down a hill but taking quick steps, rather than a carefully calculating man determining the exact downhill direction of each step before taking a very slow and careful step in that direction.",
+  "model": "nmt",
+  "translatedText": "如果你要在相关成本面下绘制网络的轨迹，那么它更 像是一个醉汉漫无目的地跌跌撞撞地下山，但步伐很 快，而不是一个仔细计算的人确定每一步的确切下坡 方向然后朝着这个方向迈出非常缓慢而谨慎的一步。",
+  "time_range": [
+   612.9,
+   631.62
+  ]
+ },
+ {
+  "input": "This technique is referred to as stochastic gradient descent.",
+  "model": "nmt",
+  "translatedText": "该技术称为随机梯度下降。",
+  "time_range": [
+   631.62,
+   635.2
+  ]
+ },
+ {
+  "input": "There's a lot going on here, so let's just sum it up for ourselves, shall we?",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   635.2,
+   640.4
+  ]
+ },
+ {
+  "input": "Backpropagation is the algorithm for determining how a single training example would like to nudge the weights and biases, not just in terms of whether they should go up or down, but in terms of what relative proportions to those changes cause the most rapid decrease to the cost.",
+  "model": "nmt",
+  "translatedText": "这里发生了很多事情，所以让我们自己总结一下，好吗？ 反向传播是一种算法，用于确定单个训练示 例如何推动权重和偏差，不仅在于它们是 否应该上升或下降，还在于这些变化的相 对比例导致权重和偏差最快下降。 成本。",
+  "time_range": [
+   640.4,
+   656.24
+  ]
+ },
+ {
+  "input": "A true gradient descent step would involve doing this for all your tens and thousands of training examples and averaging the desired changes you get, but that's computationally slow, so instead you randomly subdivide the data into mini-batches and compute each step with respect to a mini-batch.",
+  "model": "nmt",
+  "translatedText": "真正的梯度下降步骤将涉及对所有数以万计的 训练示例执行此操作，并对获得的所需变化 进行平均，但这在计算上很慢，因此您可以 将数据随机细分为小批量，并根据小批量。",
+  "time_range": [
+   656.24,
+   674.0
+  ]
+ },
+ {
+  "input": "Repeatedly going through all the mini-batches and making these adjustments, you will converge towards a local minimum of the cost function, which is to say your network will end up doing a really good job on the training examples.",
+  "model": "nmt",
+  "translatedText": "反复检查所有小批量并进行这些调整，您将 收敛到成本函数的局部最小值，也就是说您 的网络最终将在训练示例上做得非常好。",
+  "time_range": [
+   674.0,
+   687.54
+  ]
+ },
+ {
+  "input": "So with all of that said, every line of code that would go into implementing backprop actually corresponds with something you have now seen, at least in informal terms.",
+  "model": "nmt",
+  "translatedText": "综上所述，用于实现反向传播的每一行代码实际上都与您 现在所看到的内容相对应，至少在非正式术语中是这样。",
+  "time_range": [
+   687.54,
+   697.68
+  ]
+ },
+ {
+  "input": "But sometimes knowing what the math does is only half the battle, and just representing the damn thing is where it gets all muddled and confusing.",
+  "model": "nmt",
+  "translatedText": "但有时知道数学的作用只是成功的一半，仅仅 代表该死的东西就会让一切变得混乱和混乱。",
+  "time_range": [
+   697.68,
+   704.78
+  ]
+ },
+ {
+  "input": "So, for those of you who do want to go deeper, the next video goes through the same ideas that were just presented here, but in terms of the underlying calculus, which should hopefully make it a little more familiar as you see the topic in other resources.",
+  "model": "nmt",
+  "translatedText": "因此，对于那些确实想要深入了解的人，下一个视频将 介绍与此处刚刚介绍的相同的想法，但就基本微积分而 言，这应该会让您在看到主题时更加熟悉。 其他资源。",
+  "time_range": [
+   704.78,
+   717.46
+  ]
+ },
+ {
+  "input": "Before that, one thing worth emphasizing is that for this algorithm to work, and this goes for all sorts of machine learning beyond just neural networks, you need a lot of training data.",
+  "model": "nmt",
+  "translatedText": "在此之前，值得强调的一件事是，要使该算 法发挥作用，并且这适用于神经网络之外的 各种机器学习，您需要大量的训练数据。",
+  "time_range": [
+   717.46,
+   726.84
+  ]
+ },
+ {
+  "input": "In our case, one thing that makes handwritten digits such a nice example is that there exists the MNIST database, with so many examples that have been labeled by humans.",
+  "model": "nmt",
+  "translatedText": "在我们的例子中，手写数字成为如此好的例子的原因之一是 MNIST 数据库的存在，其中有很多由人类标记的例子。",
+  "time_range": [
+   726.84,
+   735.38
+  ]
+ },
+ {
+  "input": "So a common challenge that those of you working in machine learning will be familiar with is just getting the labeled training data you actually need, whether that's having people label tens of thousands of images, or whatever other data type you might be dealing with.",
+  "model": "nmt",
+  "translatedText": "因此，从事机器学习工作的人所熟悉的一个常见挑战是 获取实际需要的标记训练数据，无论是让人标记数以 万计的图像，还是您可能处理的任何其他数据类型。",
+  "time_range": [
+   735.38,
+   742.88
+  ]
+ }
+]

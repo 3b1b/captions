@@ -1,0 +1,686 @@
+[
+ {
+  "input": "Here, we tackle backpropagation, the core algorithm behind how neural networks learn.",
+  "model": "nmt",
+  "translatedText": "Qui affrontiamo la backpropagation, l’algoritmo fondamentale alla base del modo in cui le reti neurali apprendono.",
+  "time_range": [
+   0.0,
+   9.64
+  ]
+ },
+ {
+  "input": "After a quick recap for where we are, the first thing I'll do is an intuitive walkthrough for what the algorithm is actually doing, without any reference to the formulas.",
+  "model": "nmt",
+  "translatedText": "Dopo un breve riepilogo della situazione attuale, la prima cosa che farò sarà una guida intuitiva su cosa sta effettivamente facendo l&#39;algoritmo, senza alcun riferimento alle formule.",
+  "time_range": [
+   9.64,
+   17.4
+  ]
+ },
+ {
+  "input": "Then, for those of you who do want to dive into the math, the next video goes into the calculus underlying all this.",
+  "model": "nmt",
+  "translatedText": "Quindi, per quelli di voi che vogliono tuffarsi nella matematica, il prossimo video approfondirà i calcoli alla base di tutto questo.",
+  "time_range": [
+   17.4,
+   24.04
+  ]
+ },
+ {
+  "input": "If you watched the last two videos, or if you're just jumping in with the appropriate background, you know what a neural network is, and how it feeds forward information.",
+  "model": "nmt",
+  "translatedText": "Se hai guardato gli ultimi due video o se stai semplicemente entrando nel merito con il background appropriato, sai cos&#39;è una rete neurale e come trasmette informazioni.",
+  "time_range": [
+   24.04,
+   31.08
+  ]
+ },
+ {
+  "input": "Here, we're doing the classic example of recognizing handwritten digits whose pixel values get fed into the first layer of the network with 784 neurons, and I've been showing a network with two hidden layers having just 16 neurons each, and an output layer of 10 neurons, indicating which digit the network is choosing as its answer.",
+  "model": "nmt",
+  "translatedText": "Qui stiamo facendo il classico esempio di riconoscimento di cifre scritte a mano i cui valori di pixel vengono immessi nel primo strato della rete con 784 neuroni, e ho mostrato una rete con due strati nascosti con solo 16 neuroni ciascuno e un output strato di 10 neuroni, che indica quale cifra la rete sceglie come risposta.",
+  "time_range": [
+   31.08,
+   49.52
+  ]
+ },
+ {
+  "input": "I'm also expecting you to understand gradient descent, as described in the last video, and how what we mean by learning is that we want to find which weights and biases minimize a certain cost function.",
+  "model": "nmt",
+  "translatedText": "Mi aspetto anche che tu comprenda la discesa del gradiente, come descritta nell&#39;ultimo video, e come ciò che intendiamo per apprendimento è che vogliamo scoprire quali pesi e pregiudizi minimizzano una determinata funzione di costo.",
+  "time_range": [
+   49.52,
+   62.08
+  ]
+ },
+ {
+  "input": "As a quick reminder, for the cost of a single training example, you take the output the network gives, along with the output you wanted it to give, and add up the squares of the differences between each component.",
+  "model": "nmt",
+  "translatedText": "Come rapido promemoria, per il costo di un singolo esempio di formazione, prendi l&#39;output fornito dalla rete, insieme all&#39;output che volevi che fornisse, e somma i quadrati delle differenze tra ciascun componente.",
+  "time_range": [
+   62.08,
+   75.56
+  ]
+ },
+ {
+  "input": "Doing this for all of your tens of thousands of training examples and averaging the results, this gives you the total cost of the network.",
+  "model": "nmt",
+  "translatedText": "Facendo questo per tutte le decine di migliaia di esempi di formazione e calcolando la media dei risultati, si ottiene il costo totale della rete.",
+  "time_range": [
+   75.56,
+   83.04
+  ]
+ },
+ {
+  "input": "As if that's not enough to think about, as described in the last video, the thing that we're looking for is the negative gradient of this cost function, which tells you how you need to change all of the weights and biases, all of these connections, so as to most efficiently decrease the cost.",
+  "model": "nmt",
+  "translatedText": "Come se ciò non bastasse, come descritto nell&#39;ultimo video, la cosa che stiamo cercando è il gradiente negativo di questa funzione di costo, che ti dice come devi cambiare tutti i pesi e i bias, tutti queste connessioni, in modo da ridurre nel modo più efficiente i costi.",
+  "time_range": [
+   83.04,
+   103.08
+  ]
+ },
+ {
+  "input": "Backpropagation, the topic of this video, is an algorithm for computing that crazy complicated gradient.",
+  "model": "nmt",
+  "translatedText": "La propagazione inversa, l&#39;argomento di questo video, è un algoritmo per calcolare quel gradiente follemente complicato.",
+  "time_range": [
+   103.08,
+   109.6
+  ]
+ },
+ {
+  "input": "The one idea from the last video that I really want you to hold firmly in your mind right now is that because thinking of the gradient vector as a direction in 13,000 dimensions is, to put it lightly, beyond the scope of our imaginations, there's another way you can think about it.",
+  "model": "nmt",
+  "translatedText": "L&#39;idea dell&#39;ultimo video che voglio davvero che tu tenga saldamente in mente in questo momento è che, poiché pensare al vettore gradiente come una direzione in 13. 000 dimensioni è, per dirla alla leggera, oltre la portata della nostra immaginazione, ce n&#39;è un&#39;altra modo in cui puoi pensarci.",
+  "time_range": [
+   109.6,
+   124.62
+  ]
+ },
+ {
+  "input": "The magnitude of each component here is telling you how sensitive the cost function is to each weight and bias.",
+  "model": "nmt",
+  "translatedText": "L&#39;entità di ciascun componente qui indica quanto la funzione di costo sia sensibile a ciascun peso e bias.",
+  "time_range": [
+   124.62,
+   131.82
+  ]
+ },
+ {
+  "input": "For example, let's say you go through the process I'm about to describe, and compute the negative gradient, and the component associated with the weight on this edge here comes out to be 3.",
+  "model": "nmt",
+  "translatedText": "Per esempio, diciamo che segui il processo che sto per descrivere, e calcoli il gradiente negativo, e il componente associato al peso su questo bordo qui risulta essere 3.",
+  "time_range": [
+   131.82,
+   141.21139534883721
+  ]
+ },
+ {
+  "input": "2, while the component associated with this edge here comes out as 0.",
+  "model": "nmt",
+  "translatedText": "2, mentre la componente associata a questo bordo qui risulta essere 0. 1.",
+  "time_range": [
+   141.21139534883721,
+   146.85697674418606
+  ]
+ },
+ {
+  "input": "1.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   146.85697674418606,
+   146.94
+  ]
+ },
+ {
+  "input": "The way you would interpret that is that the cost of the function is 32 times more sensitive to changes in that first weight, so if you were to wiggle that value a little bit, it's going to cause some change to the cost, and that change is 32 times greater than what the same wiggle to that second weight would give.",
+  "model": "nmt",
+  "translatedText": "Il modo in cui lo interpreteresti è che il costo della funzione è 32 volte più sensibile ai cambiamenti nel primo peso, quindi se dovessi spostare un po&#39; quel valore, causerebbe qualche cambiamento nel costo, e quel cambiamento è 32 volte maggiore di quanto darebbe la stessa oscillazione a quel secondo peso.",
+  "time_range": [
+   146.94,
+   165.58
+  ]
+ },
+ {
+  "input": "Personally, when I was first learning about backpropagation, I think the most confusing aspect was just the notation and index chasing of it all.",
+  "model": "nmt",
+  "translatedText": "Personalmente, quando ho appreso per la prima volta della propagazione inversa, penso che l&#39;aspetto più confuso fosse proprio la notazione e l&#39;inseguimento dell&#39;indice di tutto ciò.",
+  "time_range": [
+   165.58,
+   175.82
+  ]
+ },
+ {
+  "input": "But once you unwrap what each part of this algorithm is really doing, each individual effect it's having is actually pretty intuitive, it's just that there's a lot of little adjustments getting layered on top of each other.",
+  "model": "nmt",
+  "translatedText": "Ma una volta che scopri cosa sta realmente facendo ogni parte di questo algoritmo, ogni singolo effetto che sta avendo è in realtà piuttosto intuitivo, è solo che ci sono molti piccoli aggiustamenti che si sovrappongono l&#39;uno sull&#39;altro.",
+  "time_range": [
+   175.82,
+   187.74
+  ]
+ },
+ {
+  "input": "So I'm going to start things off here with a complete disregard for the notation, and just step through the effects each training example has on the weights and biases.",
+  "model": "nmt",
+  "translatedText": "Quindi inizierò qui ignorando completamente la notazione e passerò semplicemente in rassegna gli effetti che ogni esempio di allenamento ha sui pesi e sui bias.",
+  "time_range": [
+   187.74,
+   197.38
+  ]
+ },
+ {
+  "input": "Because the cost function involves averaging a certain cost per example over all the tens of thousands of training examples, the way we adjust the weights and biases for a single gradient descent step also depends on every single example.",
+  "model": "nmt",
+  "translatedText": "Poiché la funzione di costo implica la media di un certo costo per esempio su tutte le decine di migliaia di esempi di addestramento, il modo in cui regoliamo i pesi e i bias per un singolo passaggio di discesa del gradiente dipende anche da ogni singolo esempio.",
+  "time_range": [
+   197.38,
+   211.74
+  ]
+ },
+ {
+  "input": "Or rather, in principle it should, but for computational efficiency we'll do a little trick later to keep you from needing to hit every single example for every step.",
+  "model": "nmt",
+  "translatedText": "O meglio, in linea di principio dovrebbe, ma per efficienza computazionale faremo un piccolo trucchetto più avanti per evitare di dover colpire ogni singolo esempio per ogni passaggio.",
+  "time_range": [
+   211.74,
+   219.86
+  ]
+ },
+ {
+  "input": "In other cases, right now, all we're going to do is focus our attention on one single example, this image of a 2.",
+  "model": "nmt",
+  "translatedText": "In altri casi, per ora, tutto ciò che faremo è concentrare la nostra attenzione su un singolo esempio, questa immagine di un 2.",
+  "time_range": [
+   219.86,
+   226.78
+  ]
+ },
+ {
+  "input": "What effect should this one training example have on how the weights and biases get adjusted?",
+  "model": "nmt",
+  "translatedText": "Che effetto dovrebbe avere questo esempio di formazione sul modo in cui i pesi e i pregiudizi vengono adeguati?",
+  "time_range": [
+   226.78,
+   231.74
+  ]
+ },
+ {
+  "input": "Let's say we're at a point where the network is not well trained yet, so the activations in the output are going to look pretty random, maybe something like 0.",
+  "model": "nmt",
+  "translatedText": "Diciamo che siamo a un punto in cui la rete non è ancora ben addestrata, quindi le attivazioni nell&#39;output sembreranno piuttosto casuali, forse qualcosa come 0.",
+  "time_range": [
+   231.74,
+   240.51697674418605
+  ]
+ },
+ {
+  "input": "5, 0.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   240.51697674418605,
+   240.77651162790698
+  ]
+ },
+ {
+  "input": "8, 0.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   240.77651162790698,
+   241.03604651162792
+  ]
+ },
+ {
+  "input": "2, on and on.",
+  "model": "nmt",
+  "translatedText": "5, 0. 8, 0. 2, e così via.",
+  "time_range": [
+   241.03604651162792,
+   242.78
+  ]
+ },
+ {
+  "input": "We can't directly change those activations, we only have influence on the weights and biases, but it's helpful to keep track of which adjustments we wish should take place to that output layer.",
+  "model": "nmt",
+  "translatedText": "Non possiamo modificare direttamente tali attivazioni, abbiamo solo influenza sui pesi e sui pregiudizi, ma è utile tenere traccia di quali aggiustamenti desideriamo vengano apportati a quel livello di output.",
+  "time_range": [
+   242.78,
+   253.34
+  ]
+ },
+ {
+  "input": "And since we want it to classify the image as a 2, we want that third value to get nudged up while all the others get nudged down.",
+  "model": "nmt",
+  "translatedText": "E poiché vogliamo che classifichi l&#39;immagine come 2, vogliamo che il terzo valore venga spostato verso l&#39;alto mentre tutti gli altri vengano spostati verso il basso.",
+  "time_range": [
+   253.34,
+   261.7
+  ]
+ },
+ {
+  "input": "Moreover, the sizes of these nudges should be proportional to how far away each current value is from its target value.",
+  "model": "nmt",
+  "translatedText": "Inoltre, le dimensioni di questi nudge dovrebbero essere proporzionali alla distanza di ciascun valore corrente dal suo valore target.",
+  "time_range": [
+   261.7,
+   270.22
+  ]
+ },
+ {
+  "input": "For example, the increase to that number 2 neuron's activation is in a sense more important than the decrease to the number 8 neuron, which is already pretty close to where it should be.",
+  "model": "nmt",
+  "translatedText": "Ad esempio, l&#39;aumento dell&#39;attivazione del neurone numero 2 è in un certo senso più importante della diminuzione dell&#39;attivazione del neurone numero 8, che è già abbastanza vicino a dove dovrebbe essere.",
+  "time_range": [
+   270.22,
+   282.06
+  ]
+ },
+ {
+  "input": "So zooming in further, let's focus just on this one neuron, the one whose activation we wish to increase.",
+  "model": "nmt",
+  "translatedText": "Quindi, ingrandendo ulteriormente, concentriamoci solo su questo neurone, quello di cui desideriamo aumentare l&#39;attivazione.",
+  "time_range": [
+   282.06,
+   287.9
+  ]
+ },
+ {
+  "input": "Remember, that activation is defined as a certain weighted sum of all the activations in the previous layer, plus a bias, which is all then plugged into something like the sigmoid squishification function, or a ReLU.",
+  "model": "nmt",
+  "translatedText": "Ricorda, che l&#39;attivazione è definita come una certa somma ponderata di tutte le attivazioni nel livello precedente, più un bias, che viene poi collegato a qualcosa come la funzione di schiacciamento sigmoide o ReLU.",
+  "time_range": [
+   287.9,
+   301.9
+  ]
+ },
+ {
+  "input": "So there are three different avenues that can team up together to help increase that activation.",
+  "model": "nmt",
+  "translatedText": "Quindi ci sono tre diverse strade che possono collaborare per contribuire ad aumentare tale attivazione.",
+  "time_range": [
+   301.9,
+   308.06
+  ]
+ },
+ {
+  "input": "You can increase the bias, you can increase the weights, and you can change the activations from the previous layer.",
+  "model": "nmt",
+  "translatedText": "È possibile aumentare il bias, aumentare i pesi e modificare le attivazioni dal livello precedente.",
+  "time_range": [
+   308.06,
+   315.3
+  ]
+ },
+ {
+  "input": "Focusing on how the weights should be adjusted, notice how the weights actually have differing levels of influence.",
+  "model": "nmt",
+  "translatedText": "Concentrandosi su come dovrebbero essere adeguati i pesi, si noti come i pesi abbiano effettivamente diversi livelli di influenza.",
+  "time_range": [
+   315.3,
+   321.46
+  ]
+ },
+ {
+  "input": "The connections with the brightest neurons from the preceding layer have the biggest effect since those weights are multiplied by larger activation values.",
+  "model": "nmt",
+  "translatedText": "Le connessioni con i neuroni più luminosi dello strato precedente hanno l&#39;effetto maggiore poiché questi pesi vengono moltiplicati per valori di attivazione maggiori.",
+  "time_range": [
+   321.46,
+   331.42
+  ]
+ },
+ {
+  "input": "So if you were to increase one of those weights, it actually has a stronger influence on the ultimate cost function than increasing the weights of connections with dimmer neurons, at least as far as this one training example is concerned.",
+  "model": "nmt",
+  "translatedText": "Quindi, se dovessi aumentare uno di questi pesi, in realtà avrebbe un&#39;influenza maggiore sulla funzione di costo finale rispetto all&#39;aumento dei pesi delle connessioni con neuroni più deboli, almeno per quanto riguarda questo esempio di allenamento.",
+  "time_range": [
+   331.42,
+   344.02
+  ]
+ },
+ {
+  "input": "Remember, when we talk about gradient descent, we don't just care about whether each component should get nudged up or down, we care about which ones give you the most bang for your buck.",
+  "model": "nmt",
+  "translatedText": "Ricorda, quando parliamo di discesa del gradiente, non ci interessa solo se ciascun componente debba essere spostato verso l&#39;alto o verso il basso, ci interessa anche quale ti dà il massimo rapporto qualità-prezzo.",
+  "time_range": [
+   344.02,
+   354.02
+  ]
+ },
+ {
+  "input": "This, by the way, is at least somewhat reminiscent of a theory in neuroscience for how biological networks of neurons learn, Hebbian theory, often summed up in the phrase, neurons that fire together wire together.",
+  "model": "nmt",
+  "translatedText": "Questo, tra l&#39;altro, ricorda almeno in qualche modo una teoria delle neuroscienze su come le reti biologiche di neuroni apprendono, la teoria hebbiana, spesso riassunta nella frase, i neuroni che si attivano insieme si collegano insieme.",
+  "time_range": [
+   354.02,
+   366.94
+  ]
+ },
+ {
+  "input": "Here, the biggest increases to weights, the biggest strengthening of connections, happens between neurons which are the most active and the ones which we wish to become more active.",
+  "model": "nmt",
+  "translatedText": "Qui i maggiori aumenti di peso, il maggiore rafforzamento delle connessioni, avviene tra i neuroni che sono più attivi e quelli che desideriamo diventino più attivi.",
+  "time_range": [
+   366.94,
+   378.1
+  ]
+ },
+ {
+  "input": "In a sense, the neurons that are firing while seeing a 2 get more strongly linked to those firing when thinking about it.",
+  "model": "nmt",
+  "translatedText": "In un certo senso, i neuroni che si attivano mentre vedono un 2 si collegano più fortemente a quelli che si attivano quando ci si pensa.",
+  "time_range": [
+   378.1,
+   385.44
+  ]
+ },
+ {
+  "input": "To be clear, I'm not in a position to make statements one way or another about whether artificial networks of neurons behave anything like biological brains, and this fires together wire together idea comes with a couple meaningful asterisks, but taken as a very loose analogy, I find it interesting to note.",
+  "model": "nmt",
+  "translatedText": "Per essere chiari, non sono nella posizione di fare affermazioni in un modo o nell&#39;altro sul fatto che le reti artificiali di neuroni si comportino in qualche modo come i cervelli biologici, e questa idea di &quot;fuochi insieme, collegamenti insieme&quot; viene fornita con un paio di asterischi significativi, ma presa come un&#39;idea molto vaga. analogia, trovo interessante notare.",
+  "time_range": [
+   385.44,
+   401.76
+  ]
+ },
+ {
+  "input": "Anyway, the third way we can help increase this neuron's activation is by changing all the activations in the previous layer.",
+  "model": "nmt",
+  "translatedText": "Comunque, il terzo modo in cui possiamo contribuire ad aumentare l&#39;attivazione di questo neurone è modificando tutte le attivazioni dello strato precedente.",
+  "time_range": [
+   401.76,
+   409.36
+  ]
+ },
+ {
+  "input": "Namely, if everything connected to that digit 2 neuron with a positive weight got brighter, and if everything connected with a negative weight got dimmer, then that digit 2 neuron would become more active.",
+  "model": "nmt",
+  "translatedText": "Vale a dire, se tutto ciò che è collegato a quel neurone della cifra 2 con un peso positivo diventasse più luminoso, e se tutto ciò che è connesso con un peso negativo diventasse più fioco, allora quel neurone della cifra 2 diventerebbe più attivo.",
+  "time_range": [
+   409.36,
+   422.68
+  ]
+ },
+ {
+  "input": "And similar to the weight changes, you're going to get the most bang for your buck by seeking changes that are proportional to the size of the corresponding weights.",
+  "model": "nmt",
+  "translatedText": "E in modo simile alle variazioni di peso, otterrai il massimo dal tuo investimento cercando cambiamenti proporzionali alla dimensione dei pesi corrispondenti.",
+  "time_range": [
+   422.68,
+   430.84
+  ]
+ },
+ {
+  "input": "Now of course, we cannot directly influence those activations, we only have control over the weights and biases.",
+  "model": "nmt",
+  "translatedText": "Ora, ovviamente, non possiamo influenzare direttamente tali attivazioni, abbiamo solo il controllo sui pesi e sui pregiudizi.",
+  "time_range": [
+   430.84,
+   438.32
+  ]
+ },
+ {
+  "input": "But just as with the last layer, it's helpful to keep a note of what those desired changes are.",
+  "model": "nmt",
+  "translatedText": "Ma proprio come con l&#39;ultimo livello, è utile tenere nota di quali sono i cambiamenti desiderati.",
+  "time_range": [
+   438.32,
+   443.96
+  ]
+ },
+ {
+  "input": "But keep in mind, zooming out one step here, this is only what that digit 2 output neuron wants.",
+  "model": "nmt",
+  "translatedText": "Ma tieni presente che, rimpicciolendo di un passo qui, questo è solo ciò che vuole quel neurone di output della cifra 2.",
+  "time_range": [
+   443.96,
+   450.04
+  ]
+ },
+ {
+  "input": "Remember, we also want all the other neurons in the last layer to become less active, and each of those other output neurons has its own thoughts about what should happen to that second to last layer.",
+  "model": "nmt",
+  "translatedText": "Ricorda, vogliamo anche che tutti gli altri neuroni nell&#39;ultimo strato diventino meno attivi e ciascuno di questi altri neuroni in uscita abbia i propri pensieri su cosa dovrebbe accadere a quel penultimo strato.",
+  "time_range": [
+   450.04,
+   463.2
+  ]
+ },
+ {
+  "input": "So the desire of this digit 2 neuron is added together with the desires of all the other output neurons for what should happen to this second to last layer, again in proportion to the corresponding weights, and in proportion to how much each of those neurons needs to change.",
+  "model": "nmt",
+  "translatedText": "Quindi il desiderio di questo neurone della cifra 2 viene sommato insieme ai desideri di tutti gli altri neuroni di output per ciò che dovrebbe accadere a questo penultimo strato, sempre in proporzione ai pesi corrispondenti e in proporzione a quanto ciascuno di questi neuroni ha bisogno cambiare.",
+  "time_range": [
+   463.2,
+   481.74
+  ]
+ },
+ {
+  "input": "This right here is where the idea of propagating backwards comes in.",
+  "model": "nmt",
+  "translatedText": "È proprio qui che entra in gioco l&#39;idea della propagazione all&#39;indietro.",
+  "time_range": [
+   481.74,
+   485.94
+  ]
+ },
+ {
+  "input": "By adding together all these desired effects, you basically get a list of nudges that you want to happen to this second to last layer.",
+  "model": "nmt",
+  "translatedText": "Sommando insieme tutti questi effetti desiderati, ottieni sostanzialmente un elenco di solleciti che vuoi che si verifichino su questo penultimo livello.",
+  "time_range": [
+   485.94,
+   494.3
+  ]
+ },
+ {
+  "input": "And once you have those, you can recursively apply the same process to the relevant weights and biases that determine those values, repeating the same process I just walked through and moving backwards through the network.",
+  "model": "nmt",
+  "translatedText": "E una volta che li hai, puoi applicare ricorsivamente lo stesso processo ai pesi e ai pregiudizi rilevanti che determinano quei valori, ripetendo lo stesso processo che ho appena seguito e andando all&#39;indietro attraverso la rete.",
+  "time_range": [
+   494.3,
+   509.18
+  ]
+ },
+ {
+  "input": "And zooming out a bit further, remember that this is all just how a single training example wishes to nudge each one of those weights and biases.",
+  "model": "nmt",
+  "translatedText": "E zoomando ancora un po’, ricorda che questo è proprio il modo in cui un singolo esempio di formazione desidera spingere ciascuno di quei pesi e pregiudizi.",
+  "time_range": [
+   509.18,
+   517.52
+  ]
+ },
+ {
+  "input": "If we only listened to what that 2 wanted, the network would ultimately be incentivized just to classify all images as a 2.",
+  "model": "nmt",
+  "translatedText": "Se ascoltassimo solo ciò che vogliono quei 2, la rete alla fine sarebbe incentivata solo a classificare tutte le immagini come 2.",
+  "time_range": [
+   517.52,
+   524.14
+  ]
+ },
+ {
+  "input": "So what you do is go through this same backprop routine for every other training example, recording how each of them would like to change the weights and biases, and average together those desired changes.",
+  "model": "nmt",
+  "translatedText": "Quindi quello che fai è seguire la stessa routine di backprop per ogni altro esempio di allenamento, registrando come ciascuno di loro vorrebbe modificare i pesi e i bias e fare una media insieme dei cambiamenti desiderati.",
+  "time_range": [
+   524.14,
+   542.3
+  ]
+ },
+ {
+  "input": "This collection here of the averaged nudges to each weight and bias is, loosely speaking, the negative gradient of the cost function referenced in the last video, or at least something proportional to it.",
+  "model": "nmt",
+  "translatedText": "Questa raccolta qui degli scostamenti medi per ciascun peso e bias è, in parole povere, il gradiente negativo della funzione di costo a cui si fa riferimento nell&#39;ultimo video, o almeno qualcosa di proporzionale ad esso.",
+  "time_range": [
+   542.3,
+   554.36
+  ]
+ },
+ {
+  "input": "I say loosely speaking only because I have yet to get quantitatively precise about those nudges, but if you understood every change I just referenced, why some are proportionally bigger than others, and how they all need to be added together, you understand the mechanics for what backpropagation is actually doing.",
+  "model": "nmt",
+  "translatedText": "Dico in termini approssimativi solo perché devo ancora ottenere una precisione quantitativa su questi stimoli, ma se hai capito ogni cambiamento a cui ho appena fatto riferimento, perché alcuni sono proporzionalmente più grandi di altri e come devono essere sommati tutti insieme, capirai i meccanismi per cosa sta effettivamente facendo la backpropagation.",
+  "time_range": [
+   554.36,
+   574.1
+  ]
+ },
+ {
+  "input": "By the way, in practice, it takes computers an extremely long time to add up the influence of every training example every gradient descent step.",
+  "model": "nmt",
+  "translatedText": "In pratica, però, i computer impiegano molto tempo per sommare l&#39;influenza di ogni esempio di allenamento e di ogni fase di discesa del gradiente.",
+  "time_range": [
+   574.1,
+   583.12
+  ]
+ },
+ {
+  "input": "So here's what's commonly done instead.",
+  "model": "nmt",
+  "translatedText": "Quindi ecco cosa viene fatto comunemente invece.",
+  "time_range": [
+   583.12,
+   585.54
+  ]
+ },
+ {
+  "input": "You randomly shuffle your training data and divide it into a whole bunch of mini-batches, let's say each one having 100 training examples.",
+  "model": "nmt",
+  "translatedText": "Mescoli casualmente i tuoi dati di allenamento e li dividi in un sacco di mini-lotti, diciamo ognuno con 100 esempi di allenamento.",
+  "time_range": [
+   585.54,
+   593.38
+  ]
+ },
+ {
+  "input": "Then you compute a step according to the mini-batch.",
+  "model": "nmt",
+  "translatedText": "Quindi calcoli un passaggio in base al mini-batch.",
+  "time_range": [
+   593.38,
+   596.98
+  ]
+ },
+ {
+  "input": "It's not the actual gradient of the cost function, which depends on all of the training data, not this tiny subset, so it's not the most efficient step downhill, but each mini-batch does give you a pretty good approximation, and more importantly it gives you a significant computational speedup.",
+  "model": "nmt",
+  "translatedText": "Non è il gradiente effettivo della funzione di costo, che dipende da tutti i dati di addestramento, non da questo piccolo sottoinsieme, quindi non è il passo più efficiente in discesa, ma ogni mini-batch fornisce un&#39;approssimazione abbastanza buona e, cosa più importante, ti dà una notevole accelerazione computazionale.",
+  "time_range": [
+   596.98,
+   612.9
+  ]
+ },
+ {
+  "input": "If you were to plot the trajectory of your network under the relevant cost surface, it would be a little more like a drunk man stumbling aimlessly down a hill but taking quick steps, rather than a carefully calculating man determining the exact downhill direction of each step before taking a very slow and careful step in that direction.",
+  "model": "nmt",
+  "translatedText": "Se dovessi tracciare la traiettoria della tua rete sotto la superficie di costo rilevante, sarebbe un po’ più simile a un uomo ubriaco che inciampa senza meta giù da una collina ma fa passi rapidi, piuttosto che a un uomo che calcola attentamente e determina l’esatta direzione in discesa di ogni passo. prima di fare un passo molto lento e cauto in quella direzione.",
+  "time_range": [
+   612.9,
+   631.62
+  ]
+ },
+ {
+  "input": "This technique is referred to as stochastic gradient descent.",
+  "model": "nmt",
+  "translatedText": "Questa tecnica è detta discesa del gradiente stocastico.",
+  "time_range": [
+   631.62,
+   635.2
+  ]
+ },
+ {
+  "input": "There's a lot going on here, so let's just sum it up for ourselves, shall we?",
+  "model": "nmt",
+  "translatedText": "C&#39;è molto da fare qui, quindi riassumiamolo per noi stessi, va bene?",
+  "time_range": [
+   635.2,
+   640.4
+  ]
+ },
+ {
+  "input": "Backpropagation is the algorithm for determining how a single training example would like to nudge the weights and biases, not just in terms of whether they should go up or down, but in terms of what relative proportions to those changes cause the most rapid decrease to the cost.",
+  "model": "nmt",
+  "translatedText": "La backpropagation è l&#39;algoritmo per determinare come un singolo esempio di training vorrebbe spostare i pesi e i bias, non solo in termini di se dovrebbero aumentare o diminuire, ma in termini di quali proporzioni relative a tali cambiamenti causano la diminuzione più rapida del valore costo.",
+  "time_range": [
+   640.4,
+   656.24
+  ]
+ },
+ {
+  "input": "A true gradient descent step would involve doing this for all your tens and thousands of training examples and averaging the desired changes you get, but that's computationally slow, so instead you randomly subdivide the data into mini-batches and compute each step with respect to a mini-batch.",
+  "model": "nmt",
+  "translatedText": "Un vero passaggio di discesa del gradiente implicherebbe eseguire questa operazione per tutte le decine e migliaia di esempi di addestramento e calcolare la media delle modifiche desiderate ottenute, ma è un processo lento dal punto di vista computazionale, quindi invece si suddividono casualmente i dati in mini-batch e si calcola ogni passaggio rispetto a un mini-lotto.",
+  "time_range": [
+   656.24,
+   674.0
+  ]
+ },
+ {
+  "input": "Repeatedly going through all the mini-batches and making these adjustments, you will converge towards a local minimum of the cost function, which is to say your network will end up doing a really good job on the training examples.",
+  "model": "nmt",
+  "translatedText": "Esaminando ripetutamente tutti i mini-batch e apportando queste modifiche, convergerai verso un minimo locale della funzione di costo, vale a dire che la tua rete finirà per fare un ottimo lavoro sugli esempi di formazione.",
+  "time_range": [
+   674.0,
+   687.54
+  ]
+ },
+ {
+  "input": "So with all of that said, every line of code that would go into implementing backprop actually corresponds with something you have now seen, at least in informal terms.",
+  "model": "nmt",
+  "translatedText": "Quindi, detto tutto ciò, ogni riga di codice utilizzata per implementare il backprop corrisponde effettivamente a qualcosa che hai visto ora, almeno in termini informali.",
+  "time_range": [
+   687.54,
+   697.68
+  ]
+ },
+ {
+  "input": "But sometimes knowing what the math does is only half the battle, and just representing the damn thing is where it gets all muddled and confusing.",
+  "model": "nmt",
+  "translatedText": "Ma a volte sapere cosa fa la matematica è solo metà della battaglia, e solo rappresentare quella dannata cosa è dove tutto diventa confuso e confuso.",
+  "time_range": [
+   697.68,
+   704.78
+  ]
+ },
+ {
+  "input": "So, for those of you who do want to go deeper, the next video goes through the same ideas that were just presented here, but in terms of the underlying calculus, which should hopefully make it a little more familiar as you see the topic in other resources.",
+  "model": "nmt",
+  "translatedText": "Quindi, per quelli di voi che vogliono andare più in profondità, il prossimo video analizza le stesse idee appena presentate qui, ma in termini di calcolo sottostante, che si spera dovrebbe renderlo un po&#39; più familiare vedendo l&#39;argomento in altre risorse.",
+  "time_range": [
+   704.78,
+   717.46
+  ]
+ },
+ {
+  "input": "Before that, one thing worth emphasizing is that for this algorithm to work, and this goes for all sorts of machine learning beyond just neural networks, you need a lot of training data.",
+  "model": "nmt",
+  "translatedText": "Prima di ciò, una cosa che vale la pena sottolineare è che affinché questo algoritmo funzioni, e questo vale per tutti i tipi di apprendimento automatico oltre alle sole reti neurali, sono necessari molti dati di addestramento.",
+  "time_range": [
+   717.46,
+   726.84
+  ]
+ },
+ {
+  "input": "In our case, one thing that makes handwritten digits such a nice example is that there exists the MNIST database, with so many examples that have been labeled by humans.",
+  "model": "nmt",
+  "translatedText": "Nel nostro caso, una cosa che rende le cifre scritte a mano un esempio così carino è che esiste il database MNIST, con così tanti esempi che sono stati etichettati dagli esseri umani.",
+  "time_range": [
+   726.84,
+   735.38
+  ]
+ },
+ {
+  "input": "So a common challenge that those of you working in machine learning will be familiar with is just getting the labeled training data you actually need, whether that's having people label tens of thousands of images, or whatever other data type you might be dealing with.",
+  "model": "nmt",
+  "translatedText": "Quindi una sfida comune con cui quelli di voi che lavorano nell&#39;apprendimento automatico avranno familiarità è semplicemente ottenere i dati di addestramento etichettati di cui avete effettivamente bisogno, sia che si tratti di far etichettare decine di migliaia di immagini o qualsiasi altro tipo di dati con cui potreste avere a che fare.",
+  "time_range": [
+   735.38,
+   742.88
+  ]
+ }
+]

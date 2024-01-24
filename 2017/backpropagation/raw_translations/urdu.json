@@ -1,0 +1,686 @@
+[
+ {
+  "input": "Here, we tackle backpropagation, the core algorithm behind how neural networks learn.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   0.0,
+   9.64
+  ]
+ },
+ {
+  "input": "After a quick recap for where we are, the first thing I'll do is an intuitive walkthrough for what the algorithm is actually doing, without any reference to the formulas.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   9.64,
+   17.4
+  ]
+ },
+ {
+  "input": "Then, for those of you who do want to dive into the math, the next video goes into the calculus underlying all this.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   17.4,
+   24.04
+  ]
+ },
+ {
+  "input": "If you watched the last two videos, or if you're just jumping in with the appropriate background, you know what a neural network is, and how it feeds forward information.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   24.04,
+   31.08
+  ]
+ },
+ {
+  "input": "Here, we're doing the classic example of recognizing handwritten digits whose pixel values get fed into the first layer of the network with 784 neurons, and I've been showing a network with two hidden layers having just 16 neurons each, and an output layer of 10 neurons, indicating which digit the network is choosing as its answer.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   31.08,
+   49.52
+  ]
+ },
+ {
+  "input": "I'm also expecting you to understand gradient descent, as described in the last video, and how what we mean by learning is that we want to find which weights and biases minimize a certain cost function.",
+  "model": "nmt",
+  "translatedText": "یہاں، ہم بیک پروپیگیشن سے نمٹتے ہیں، جو کہ نیورل نیٹ ورکس کے سیکھنے کے پیچھے بنیادی الگورتھم ہے۔ ہم کہاں ہیں اس کی ایک فوری بازیافت کے بعد، سب سے پہلے میں جو کروں گا وہ یہ ہے کہ الگورتھم اصل میں کیا کر رہا ہے، فارمولوں کے حوالے کے بغیر ایک بدیہی واک تھرو۔ پھر، آپ میں سے ان لوگوں کے لیے جو ریاضی میں غوطہ لگانا چاہتے ہیں، اگلی ویڈیو ان سب کے بنیادی حساب کتاب میں جاتی ہے۔ اگر آپ نے آخری دو ویڈیوز دیکھی ہیں، یا اگر آپ مناسب پس منظر کے ساتھ کود رہے ہیں، تو آپ کو معلوم ہوگا کہ نیورل نیٹ ورک کیا ہے، اور یہ معلومات کو آگے کیسے بڑھاتا ہے۔ یہاں، ہم ہاتھ سے لکھے ہوئے ہندسوں کو پہچاننے کی بہترین مثال پیش کر رہے ہیں جن کی پکسل ویلیوز نیٹ ورک کی پہلی پرت میں 784 نیورونز کے ساتھ مل جاتی ہیں، اور میں ایک ایسا نیٹ ورک دکھا رہا ہوں جس میں دو پوشیدہ پرتیں ہیں جن میں سے ہر ایک میں صرف 16 نیوران ہیں، اور ایک آؤٹ پٹ۔ 10 نیوران کی پرت، جس سے ظاہر ہوتا ہے کہ نیٹ ورک اپنے جواب کے طور پر کون سا ہندسہ منتخب کر رہا ہے۔ میں آپ سے یہ بھی توقع کر رہا ہوں کہ آپ تدریجی نزول کو سمجھیں گے، جیسا کہ پچھلی ویڈیو میں بیان کیا گیا ہے، اور سیکھنے سے ہمارا کیا مطلب ہے کہ ہم یہ تلاش کرنا چاہتے ہیں کہ کون سے وزن اور تعصب کسی خاص لاگت کو کم کرتے ہیں۔ فوری یاد دہانی کے طور پر، کسی ایک تربیتی مثال کی لاگت کے لیے، آپ نیٹ ورک کی طرف سے دیا جانے والا آؤٹ پٹ لیتے ہیں، اس آؤٹ پٹ کے ساتھ جو آپ اسے دینا چاہتے تھے، اور ہر جزو کے درمیان فرق کے مربعوں کو شامل کرتے ہیں۔ آپ کی دسیوں ہزار تربیتی مثالوں کے لیے یہ کرنا اور نتائج کا اوسط، یہ آپ کو نیٹ ورک کی کل لاگت فراہم کرتا ہے۔ گویا اس کے بارے میں سوچنا کافی نہیں ہے، جیسا کہ پچھلی ویڈیو میں بیان کیا گیا ہے، ہم جس چیز کی تلاش کر رہے ہیں وہ اس لاگت کے فنکشن کا منفی میلان ہے، جو آپ کو بتاتا ہے کہ آپ کو تمام وزن اور تعصبات کو کیسے تبدیل کرنے کی ضرورت ہے۔ یہ کنکشن، تاکہ سب سے زیادہ مؤثر طریقے سے لاگت کو کم کیا جا سکے.",
+  "time_range": [
+   49.52,
+   62.08
+  ]
+ },
+ {
+  "input": "As a quick reminder, for the cost of a single training example, you take the output the network gives, along with the output you wanted it to give, and add up the squares of the differences between each component.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   62.08,
+   75.56
+  ]
+ },
+ {
+  "input": "Doing this for all of your tens of thousands of training examples and averaging the results, this gives you the total cost of the network.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   75.56,
+   83.04
+  ]
+ },
+ {
+  "input": "As if that's not enough to think about, as described in the last video, the thing that we're looking for is the negative gradient of this cost function, which tells you how you need to change all of the weights and biases, all of these connections, so as to most efficiently decrease the cost.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   83.04,
+   103.08
+  ]
+ },
+ {
+  "input": "Backpropagation, the topic of this video, is an algorithm for computing that crazy complicated gradient.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   103.08,
+   109.6
+  ]
+ },
+ {
+  "input": "The one idea from the last video that I really want you to hold firmly in your mind right now is that because thinking of the gradient vector as a direction in 13,000 dimensions is, to put it lightly, beyond the scope of our imaginations, there's another way you can think about it.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   109.6,
+   124.62
+  ]
+ },
+ {
+  "input": "The magnitude of each component here is telling you how sensitive the cost function is to each weight and bias.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   124.62,
+   131.82
+  ]
+ },
+ {
+  "input": "For example, let's say you go through the process I'm about to describe, and compute the negative gradient, and the component associated with the weight on this edge here comes out to be 3.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   131.82,
+   141.21139534883721
+  ]
+ },
+ {
+  "input": "2, while the component associated with this edge here comes out as 0.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   141.21139534883721,
+   146.85697674418606
+  ]
+ },
+ {
+  "input": "1.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   146.85697674418606,
+   146.94
+  ]
+ },
+ {
+  "input": "The way you would interpret that is that the cost of the function is 32 times more sensitive to changes in that first weight, so if you were to wiggle that value a little bit, it's going to cause some change to the cost, and that change is 32 times greater than what the same wiggle to that second weight would give.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   146.94,
+   165.58
+  ]
+ },
+ {
+  "input": "Personally, when I was first learning about backpropagation, I think the most confusing aspect was just the notation and index chasing of it all.",
+  "model": "nmt",
+  "translatedText": "بیک پروپیگیشن، اس ویڈیو کا موضوع، اس پاگل پیچیدہ میلان کی کمپیوٹنگ کے لیے ایک الگورتھم ہے۔ پچھلی ویڈیو کا ایک خیال جو میں واقعی میں چاہتا ہوں کہ آپ ابھی اپنے ذہن میں مضبوطی سے رکھیں وہ یہ ہے کہ 13,000 جہتوں میں ایک سمت کے طور پر گریڈیئنٹ ویکٹر کے بارے میں سوچنا، اسے ہلکے سے ڈالنا ہے، ہمارے تخیلات کے دائرہ سے باہر، ایک اور بات ہے۔ جس طرح سے آپ اس کے بارے میں سوچ سکتے ہیں۔ یہاں ہر جزو کی وسعت آپ کو بتا رہی ہے کہ لاگت کا فنکشن ہر وزن اور تعصب کے لیے کتنا حساس ہے۔ مثال کے طور پر، ہم کہتے ہیں کہ آپ اس عمل سے گزرتے ہیں جس کو میں بیان کرنے جا رہا ہوں، اور منفی میلان کی گنتی کریں، اور یہاں اس کنارے پر وزن سے وابستہ جزو 3 نکلتا ہے۔ 2، جب کہ اس کنارے سے وابستہ جزو یہاں 0 کے طور پر نکلتا ہے۔ 1۔ جس طرح سے آپ اس کی تشریح کریں گے وہ یہ ہے کہ فنکشن کی لاگت اس پہلے وزن میں ہونے والی تبدیلیوں کے مقابلے میں 32 گنا زیادہ حساس ہے، لہذا اگر آپ اس قدر کو تھوڑا سا ہلائیں گے، تو اس سے لاگت میں کچھ تبدیلی آئے گی، اور وہ تبدیلی اس سے 32 گنا زیادہ ہے جو اس دوسرے وزن کو ایک ہی ہلچل دے گا۔ ذاتی طور پر، جب میں پہلی بار بیک پروپیگیشن کے بارے میں سیکھ رہا تھا، میرے خیال میں سب سے زیادہ مبہم پہلو صرف ان سب کا تعاقب کرنے کا اشارہ اور انڈیکس تھا۔ لیکن ایک بار جب آپ اس الگورتھم کا ہر ایک حصہ واقعی کیا کر رہا ہے اسے کھول دیں، اس کا ہر انفرادی اثر درحقیقت کافی بدیہی ہوتا ہے، یہ صرف اتنا ہے کہ ایک دوسرے کے اوپر بہت سی ایڈجسٹمنٹ ہوتی ہے۔ لہذا میں یہاں اشارے کو مکمل نظر انداز کرنے کے ساتھ چیزوں کو شروع کرنے جا رہا ہوں، اور ہر تربیتی مثال کے وزن اور تعصبات پر ہونے والے اثرات کے ذریعے صرف قدم اٹھاؤں گا۔ چونکہ لاگت کے فنکشن میں تمام دسیوں ہزار تربیتی مثالوں کے مقابلے میں فی مثال ایک خاص لاگت کا اوسط شامل ہوتا ہے، اس لیے جس طرح سے ہم ایک گریڈینٹ ڈیسنٹ قدم کے لیے وزن اور تعصبات کو ایڈجسٹ کرتے ہیں وہ بھی ہر ایک مثال پر منحصر ہے۔ یا اس کے بجائے، اصولی طور پر یہ ہونا چاہیے، لیکن کمپیوٹیشنل کارکردگی کے لیے ہم بعد میں ایک چھوٹی سی تدبیر کریں گے تاکہ آپ کو ہر قدم کے لیے ہر ایک مثال کو مارنے کی ضرورت نہ پڑے۔ دوسرے معاملات میں، ابھی، ہم صرف ایک ہی مثال پر توجہ مرکوز کرنے جا رہے ہیں، یہ 2 کی تصویر۔ اس ایک تربیتی مثال پر کیا اثر ہونا چاہیے کہ وزن اور تعصبات کو کیسے ایڈجسٹ کیا جاتا ہے؟ ہم کہتے ہیں کہ ہم اس مقام پر ہیں جہاں نیٹ ورک ابھی تک اچھی طرح سے تربیت یافتہ نہیں ہے، لہذا آؤٹ پٹ میں ایکٹیویشنز کافی بے ترتیب نظر آنے والی ہیں، شاید کچھ 0 جیسا۔ 5، 0۔ 8، 0۔ 2، پر اور پر.",
+  "time_range": [
+   165.58,
+   175.82
+  ]
+ },
+ {
+  "input": "But once you unwrap what each part of this algorithm is really doing, each individual effect it's having is actually pretty intuitive, it's just that there's a lot of little adjustments getting layered on top of each other.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   175.82,
+   187.74
+  ]
+ },
+ {
+  "input": "So I'm going to start things off here with a complete disregard for the notation, and just step through the effects each training example has on the weights and biases.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   187.74,
+   197.38
+  ]
+ },
+ {
+  "input": "Because the cost function involves averaging a certain cost per example over all the tens of thousands of training examples, the way we adjust the weights and biases for a single gradient descent step also depends on every single example.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   197.38,
+   211.74
+  ]
+ },
+ {
+  "input": "Or rather, in principle it should, but for computational efficiency we'll do a little trick later to keep you from needing to hit every single example for every step.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   211.74,
+   219.86
+  ]
+ },
+ {
+  "input": "In other cases, right now, all we're going to do is focus our attention on one single example, this image of a 2.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   219.86,
+   226.78
+  ]
+ },
+ {
+  "input": "What effect should this one training example have on how the weights and biases get adjusted?",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   226.78,
+   231.74
+  ]
+ },
+ {
+  "input": "Let's say we're at a point where the network is not well trained yet, so the activations in the output are going to look pretty random, maybe something like 0.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   231.74,
+   240.51697674418605
+  ]
+ },
+ {
+  "input": "5, 0.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   240.51697674418605,
+   240.77651162790698
+  ]
+ },
+ {
+  "input": "8, 0.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   240.77651162790698,
+   241.03604651162792
+  ]
+ },
+ {
+  "input": "2, on and on.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   241.03604651162792,
+   242.78
+  ]
+ },
+ {
+  "input": "We can't directly change those activations, we only have influence on the weights and biases, but it's helpful to keep track of which adjustments we wish should take place to that output layer.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   242.78,
+   253.34
+  ]
+ },
+ {
+  "input": "And since we want it to classify the image as a 2, we want that third value to get nudged up while all the others get nudged down.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   253.34,
+   261.7
+  ]
+ },
+ {
+  "input": "Moreover, the sizes of these nudges should be proportional to how far away each current value is from its target value.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   261.7,
+   270.22
+  ]
+ },
+ {
+  "input": "For example, the increase to that number 2 neuron's activation is in a sense more important than the decrease to the number 8 neuron, which is already pretty close to where it should be.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   270.22,
+   282.06
+  ]
+ },
+ {
+  "input": "So zooming in further, let's focus just on this one neuron, the one whose activation we wish to increase.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   282.06,
+   287.9
+  ]
+ },
+ {
+  "input": "Remember, that activation is defined as a certain weighted sum of all the activations in the previous layer, plus a bias, which is all then plugged into something like the sigmoid squishification function, or a ReLU.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   287.9,
+   301.9
+  ]
+ },
+ {
+  "input": "So there are three different avenues that can team up together to help increase that activation.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   301.9,
+   308.06
+  ]
+ },
+ {
+  "input": "You can increase the bias, you can increase the weights, and you can change the activations from the previous layer.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   308.06,
+   315.3
+  ]
+ },
+ {
+  "input": "Focusing on how the weights should be adjusted, notice how the weights actually have differing levels of influence.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   315.3,
+   321.46
+  ]
+ },
+ {
+  "input": "The connections with the brightest neurons from the preceding layer have the biggest effect since those weights are multiplied by larger activation values.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   321.46,
+   331.42
+  ]
+ },
+ {
+  "input": "So if you were to increase one of those weights, it actually has a stronger influence on the ultimate cost function than increasing the weights of connections with dimmer neurons, at least as far as this one training example is concerned.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   331.42,
+   344.02
+  ]
+ },
+ {
+  "input": "Remember, when we talk about gradient descent, we don't just care about whether each component should get nudged up or down, we care about which ones give you the most bang for your buck.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   344.02,
+   354.02
+  ]
+ },
+ {
+  "input": "This, by the way, is at least somewhat reminiscent of a theory in neuroscience for how biological networks of neurons learn, Hebbian theory, often summed up in the phrase, neurons that fire together wire together.",
+  "model": "nmt",
+  "translatedText": "ہم ان ایکٹیویشنز کو براہ راست تبدیل نہیں کر سکتے، ہم صرف وزن اور تعصبات پر اثر انداز ہوتے ہیں، لیکن یہ ٹریک رکھنے میں مددگار ہے کہ ہم اس آؤٹ پٹ پرت میں کونسی ایڈجسٹمنٹ کرنا چاہتے ہیں۔ اور چونکہ ہم چاہتے ہیں کہ یہ تصویر کو 2 کے طور پر درجہ بندی کرے، اس لیے ہم چاہتے ہیں کہ اس تیسری قدر کو دھکیل دیا جائے جب کہ باقی تمام نیچے دھکیل دی جائیں۔ مزید یہ کہ، ان nudges کے سائز متناسب ہونے چاہئیں کہ ہر موجودہ قدر اپنی ہدف کی قدر سے کتنی دور ہے۔ مثال کے طور پر، اس نمبر 2 کے نیوران کی ایکٹیویشن میں اضافہ ایک لحاظ سے نمبر 8 کے نیوران میں کمی سے زیادہ اہم ہے، جو پہلے ہی اس کے کافی قریب ہے جہاں اسے ہونا چاہیے۔ تو مزید زوم کرتے ہوئے، آئیے صرف اس ایک نیوران پر توجہ مرکوز کریں، جس کی ایکٹیویشن کو ہم بڑھانا چاہتے ہیں۔ یاد رکھیں، اس ایکٹیویشن کی تعریف پچھلی پرت میں تمام ایکٹیویشنز کی ایک خاص وزنی رقم کے طور پر کی جاتی ہے، نیز ایک تعصب، جو پھر سب کچھ جیسے سگمائیڈ اسکویشیفیکیشن فنکشن، یا ایک ReLU میں پلگ ان ہوتا ہے۔ اس لیے تین مختلف راستے ہیں جو اس ایکٹیویشن کو بڑھانے میں مدد کے لیے مل کر ٹیم بنا سکتے ہیں۔ آپ تعصب کو بڑھا سکتے ہیں، آپ وزن بڑھا سکتے ہیں، اور آپ پچھلی پرت سے ایکٹیویشن کو تبدیل کر سکتے ہیں۔ اس بات پر توجہ مرکوز کرتے ہوئے کہ وزن کو کس طرح ایڈجسٹ کیا جانا چاہئے، اس بات پر توجہ دیں کہ اصل میں وزن کے اثر کی مختلف سطحیں ہیں۔ پچھلی پرت کے روشن ترین نیوران کے ساتھ رابطے سب سے زیادہ اثر رکھتے ہیں کیونکہ ان وزنوں کو بڑی ایکٹیویشن اقدار سے ضرب دیا جاتا ہے۔ لہذا اگر آپ ان وزنوں میں سے کسی ایک کو بڑھانا چاہتے ہیں، تو اس کا اصل لاگت کے فنکشن پر مدھم نیوران کے ساتھ رابطوں کے وزن کو بڑھانے کے مقابلے میں زیادہ مضبوط اثر پڑتا ہے، کم از کم جہاں تک اس ایک تربیتی مثال کا تعلق ہے۔ یاد رکھیں، جب ہم تدریجی نزول کے بارے میں بات کرتے ہیں، تو ہم صرف اس بات کی پرواہ نہیں کرتے ہیں کہ آیا ہر ایک جز کو اوپر یا نیچے کیا جانا چاہیے، ہمیں اس بات کی پرواہ ہے کہ کون سا آپ کو آپ کے پیسے کے لیے سب سے زیادہ دھچکا دیتا ہے۔ یہ، ویسے، کم از کم کسی حد تک نیورو سائنس میں ایک نظریہ کی یاد دلاتا ہے کہ نیوران کے حیاتیاتی نیٹ ورک کس طرح سیکھتے ہیں، ہیبیئن تھیوری، جس کا خلاصہ اکثر اس جملے میں کیا جاتا ہے، نیوران جو ایک دوسرے کے ساتھ تار لگاتے ہیں۔ یہاں، وزن میں سب سے بڑا اضافہ، کنکشن کی سب سے بڑی مضبوطی، نیوران کے درمیان ہوتی ہے جو سب سے زیادہ فعال ہیں اور جن کو ہم زیادہ فعال بنانا چاہتے ہیں۔ ایک لحاظ سے، نیوران جو 2 کو دیکھتے ہوئے فائرنگ کر رہے ہیں، اس کے بارے میں سوچتے ہوئے فائرنگ کرنے والوں سے زیادہ مضبوطی سے جڑ جاتے ہیں۔ واضح طور پر، میں اس پوزیشن میں نہیں ہوں کہ میں کسی نہ کسی طرح اس بارے میں بیان دے سکوں کہ آیا نیوران کے مصنوعی نیٹ ورک حیاتیاتی دماغوں کی طرح کچھ بھی برتاؤ کرتے ہیں، اور یہ ایک دوسرے کے ساتھ فائر کرتا ہے یہ خیال ایک دو معنی خیز ستارے کے ساتھ آتا ہے، لیکن ایک بہت ہی ڈھیلے کے طور پر لیا جاتا ہے۔ مشابہت، مجھے یہ نوٹ کرنا دلچسپ لگتا ہے۔ بہرحال، تیسرا طریقہ جس سے ہم اس نیوران کی ایکٹیویشن کو بڑھانے میں مدد کر سکتے ہیں وہ ہے پچھلی پرت میں موجود تمام ایکٹیویشن کو تبدیل کر کے۔ یعنی، اگر مثبت وزن کے ساتھ اس ہندسے 2 کے نیورون سے جڑی ہر چیز روشن ہو جائے، اور اگر منفی وزن کے ساتھ جڑی ہوئی ہر چیز مدھم ہو جائے، تو وہ ہندسہ 2 نیورون زیادہ فعال ہو جائے گا۔ اور وزن میں ہونے والی تبدیلیوں کی طرح، آپ ان تبدیلیوں کو تلاش کرکے جو متعلقہ وزن کے سائز کے متناسب ہوں، اپنے پیسے کے لیے سب سے زیادہ فائدہ اٹھانے والے ہیں۔ اب یقیناً، ہم ان سرگرمیوں پر براہ راست اثر انداز نہیں ہو سکتے، ہمارا صرف وزن اور تعصبات پر کنٹرول ہے۔ لیکن بالکل اسی طرح جیسے آخری پرت کے ساتھ، اس بات کو نوٹ کرنا مددگار ہے کہ وہ مطلوبہ تبدیلیاں کیا ہیں۔ لیکن ذہن میں رکھیں، یہاں ایک قدم کو زوم آؤٹ کرتے ہوئے، یہ وہی ہے جو ہندسہ 2 آؤٹ پٹ نیوران چاہتا ہے۔ یاد رکھیں، ہم یہ بھی چاہتے ہیں کہ آخری تہہ میں موجود دیگر تمام نیوران کم فعال ہو جائیں، اور ان دوسرے آؤٹ پٹ نیورونز میں سے ہر ایک کے اپنے خیالات ہیں کہ اس دوسری سے آخری تہہ کا کیا ہونا چاہیے۔ لہذا اس ہندسے 2 نیورون کی خواہش کو دوسرے تمام آؤٹ پٹ نیوران کی خواہشات کے ساتھ شامل کیا جاتا ہے کہ اس دوسری سے آخری تہہ کا کیا ہونا چاہئے، دوبارہ اسی وزن کے تناسب سے، اور اس تناسب میں کہ ان میں سے ہر ایک نیوران کو کتنی ضرورت ہے۔ بدلنا.",
+  "time_range": [
+   354.02,
+   366.94
+  ]
+ },
+ {
+  "input": "Here, the biggest increases to weights, the biggest strengthening of connections, happens between neurons which are the most active and the ones which we wish to become more active.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   366.94,
+   378.1
+  ]
+ },
+ {
+  "input": "In a sense, the neurons that are firing while seeing a 2 get more strongly linked to those firing when thinking about it.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   378.1,
+   385.44
+  ]
+ },
+ {
+  "input": "To be clear, I'm not in a position to make statements one way or another about whether artificial networks of neurons behave anything like biological brains, and this fires together wire together idea comes with a couple meaningful asterisks, but taken as a very loose analogy, I find it interesting to note.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   385.44,
+   401.76
+  ]
+ },
+ {
+  "input": "Anyway, the third way we can help increase this neuron's activation is by changing all the activations in the previous layer.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   401.76,
+   409.36
+  ]
+ },
+ {
+  "input": "Namely, if everything connected to that digit 2 neuron with a positive weight got brighter, and if everything connected with a negative weight got dimmer, then that digit 2 neuron would become more active.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   409.36,
+   422.68
+  ]
+ },
+ {
+  "input": "And similar to the weight changes, you're going to get the most bang for your buck by seeking changes that are proportional to the size of the corresponding weights.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   422.68,
+   430.84
+  ]
+ },
+ {
+  "input": "Now of course, we cannot directly influence those activations, we only have control over the weights and biases.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   430.84,
+   438.32
+  ]
+ },
+ {
+  "input": "But just as with the last layer, it's helpful to keep a note of what those desired changes are.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   438.32,
+   443.96
+  ]
+ },
+ {
+  "input": "But keep in mind, zooming out one step here, this is only what that digit 2 output neuron wants.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   443.96,
+   450.04
+  ]
+ },
+ {
+  "input": "Remember, we also want all the other neurons in the last layer to become less active, and each of those other output neurons has its own thoughts about what should happen to that second to last layer.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   450.04,
+   463.2
+  ]
+ },
+ {
+  "input": "So the desire of this digit 2 neuron is added together with the desires of all the other output neurons for what should happen to this second to last layer, again in proportion to the corresponding weights, and in proportion to how much each of those neurons needs to change.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   463.2,
+   481.74
+  ]
+ },
+ {
+  "input": "This right here is where the idea of propagating backwards comes in.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   481.74,
+   485.94
+  ]
+ },
+ {
+  "input": "By adding together all these desired effects, you basically get a list of nudges that you want to happen to this second to last layer.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   485.94,
+   494.3
+  ]
+ },
+ {
+  "input": "And once you have those, you can recursively apply the same process to the relevant weights and biases that determine those values, repeating the same process I just walked through and moving backwards through the network.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   494.3,
+   509.18
+  ]
+ },
+ {
+  "input": "And zooming out a bit further, remember that this is all just how a single training example wishes to nudge each one of those weights and biases.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   509.18,
+   517.52
+  ]
+ },
+ {
+  "input": "If we only listened to what that 2 wanted, the network would ultimately be incentivized just to classify all images as a 2.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   517.52,
+   524.14
+  ]
+ },
+ {
+  "input": "So what you do is go through this same backprop routine for every other training example, recording how each of them would like to change the weights and biases, and average together those desired changes.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   524.14,
+   542.3
+  ]
+ },
+ {
+  "input": "This collection here of the averaged nudges to each weight and bias is, loosely speaking, the negative gradient of the cost function referenced in the last video, or at least something proportional to it.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   542.3,
+   554.36
+  ]
+ },
+ {
+  "input": "I say loosely speaking only because I have yet to get quantitatively precise about those nudges, but if you understood every change I just referenced, why some are proportionally bigger than others, and how they all need to be added together, you understand the mechanics for what backpropagation is actually doing.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   554.36,
+   574.1
+  ]
+ },
+ {
+  "input": "By the way, in practice, it takes computers an extremely long time to add up the influence of every training example every gradient descent step.",
+  "model": "nmt",
+  "translatedText": "یہ وہ جگہ ہے جہاں پیچھے کی طرف تبلیغ کرنے کا خیال آتا ہے۔ ان تمام مطلوبہ اثرات کو ایک ساتھ شامل کرنے سے، آپ کو بنیادی طور پر ان nudges کی فہرست ملتی ہے جو آپ اس دوسری سے آخری پرت کے ساتھ ہونا چاہتے ہیں۔ اور ایک بار جب آپ کے پاس یہ ہو جائیں، تو آپ اسی عمل کو متعلقہ وزن اور تعصبات پر بار بار لاگو کر سکتے ہیں جو ان اقدار کا تعین کرتے ہیں، اسی عمل کو دہراتے ہوئے جس سے میں ابھی گزرا ہوں اور نیٹ ورک کے ذریعے پیچھے کی طرف بڑھتے ہیں۔ اور تھوڑا سا آگے بڑھاتے ہوئے، یاد رکھیں کہ یہ سب کچھ اس طرح ہے جس طرح ایک واحد تربیتی مثال ان وزنوں اور تعصبات میں سے ہر ایک کو دھکیلنا چاہتی ہے۔ اگر ہم صرف وہی بات سنتے ہیں جو وہ 2 چاہتا ہے، تو نیٹ ورک کو بالآخر صرف تمام تصاویر کو 2 کے طور پر درجہ بندی کرنے کی ترغیب دی جائے گی۔ لہذا آپ کیا کرتے ہیں ہر دوسری تربیتی مثال کے لیے اسی بیک پروپ روٹین سے گزرنا ہے، یہ ریکارڈ کرنا ہے کہ ان میں سے ہر ایک کس طرح وزن اور تعصبات کو تبدیل کرنا چاہے گا، اور ان مطلوبہ تبدیلیوں کو ایک ساتھ اوسط کریں۔ یہاں ہر ایک وزن اور تعصب کے لیے اوسط nudges کا یہ مجموعہ ہے، ڈھیلے انداز میں، آخری ویڈیو میں حوالہ کردہ لاگت کے فنکشن کا منفی میلان، یا کم از کم اس کے متناسب کچھ۔ میں صرف اس لیے کہتا ہوں کہ میں نے ان نکات کے بارے میں ابھی تک مقداری طور پر درستگی حاصل کرنا ہے، لیکن اگر آپ ہر اس تبدیلی کو سمجھتے ہیں جس کا میں نے ابھی حوالہ دیا ہے، کیوں کہ کچھ متناسب طور پر دوسروں کے مقابلے میں بڑے کیوں ہیں، اور ان سب کو ایک ساتھ جوڑنے کی ضرورت کیسے ہے، آپ میکانکس کو سمجھتے ہیں۔ بیک پروپیگیشن دراصل کیا کر رہی ہے۔ ویسے، عملی طور پر، کمپیوٹرز کو ہر تربیتی مثال کے ہر تدریجی نزول قدم کے اثر و رسوخ کو شامل کرنے میں بہت زیادہ وقت لگتا ہے۔ تو یہاں وہ ہے جو اس کے بجائے عام طور پر کیا جاتا ہے۔ آپ تصادفی طور پر اپنے تربیتی ڈیٹا کو تبدیل کرتے ہیں اور اسے منی بیچوں کے پورے گروپ میں تقسیم کرتے ہیں، آئیے کہتے ہیں کہ ہر ایک کے پاس 100 تربیتی مثالیں ہیں۔ پھر آپ منی بیچ کے مطابق ایک قدم کی گنتی کریں۔ یہ لاگت کے فنکشن کا اصل میلان نہیں ہے، جس کا انحصار تمام تربیتی اعداد و شمار پر ہے، نہ کہ اس چھوٹے سب سیٹ پر، اس لیے یہ نیچے کی طرف سب سے زیادہ موثر قدم نہیں ہے، لیکن ہر منی بیچ آپ کو بہت اچھا تخمینہ فراہم کرتا ہے، اور اس سے بھی اہم بات یہ ہے۔ آپ کو ایک اہم کمپیوٹیشنل اسپیڈ اپ دیتا ہے۔ اگر آپ متعلقہ لاگت کی سطح کے نیچے اپنے نیٹ ورک کی رفتار کی منصوبہ بندی کرتے ہیں، تو یہ کچھ زیادہ ہی ایسا ہو گا جیسے ایک نشے میں دھت آدمی کسی پہاڑی سے نیچے کی ٹھوکریں کھا رہا ہو لیکن تیز قدم اٹھاتا ہو، بجائے اس کے کہ کوئی احتیاط سے حساب کرنے والا آدمی ہر قدم کے نیچے کی سمت کا تعین کر رہا ہو۔ اس سمت میں بہت سست اور محتاط قدم اٹھانے سے پہلے۔ اس تکنیک کو اسٹاکسٹک گریڈینٹ ڈیسنٹ کہا جاتا ہے۔ یہاں بہت کچھ ہو رہا ہے، تو آئیے اس کا خلاصہ خود کریں، کیا ہم؟ بیک پروپیگیشن اس بات کا تعین کرنے کے لیے الگورتھم ہے کہ کس طرح ایک واحد تربیتی مثال وزن اور تعصبات کو دھکیلنا چاہتی ہے، نہ صرف اس لحاظ سے کہ آیا انہیں اوپر جانا چاہیے یا نیچے، بلکہ اس لحاظ سے کہ ان تبدیلیوں کے لیے کون سے نسبتی تناسب سب سے زیادہ تیزی سے کمی کا باعث بنتے ہیں۔ لاگت.",
+  "time_range": [
+   574.1,
+   583.12
+  ]
+ },
+ {
+  "input": "So here's what's commonly done instead.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   583.12,
+   585.54
+  ]
+ },
+ {
+  "input": "You randomly shuffle your training data and divide it into a whole bunch of mini-batches, let's say each one having 100 training examples.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   585.54,
+   593.38
+  ]
+ },
+ {
+  "input": "Then you compute a step according to the mini-batch.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   593.38,
+   596.98
+  ]
+ },
+ {
+  "input": "It's not the actual gradient of the cost function, which depends on all of the training data, not this tiny subset, so it's not the most efficient step downhill, but each mini-batch does give you a pretty good approximation, and more importantly it gives you a significant computational speedup.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   596.98,
+   612.9
+  ]
+ },
+ {
+  "input": "If you were to plot the trajectory of your network under the relevant cost surface, it would be a little more like a drunk man stumbling aimlessly down a hill but taking quick steps, rather than a carefully calculating man determining the exact downhill direction of each step before taking a very slow and careful step in that direction.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   612.9,
+   631.62
+  ]
+ },
+ {
+  "input": "This technique is referred to as stochastic gradient descent.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   631.62,
+   635.2
+  ]
+ },
+ {
+  "input": "There's a lot going on here, so let's just sum it up for ourselves, shall we?",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   635.2,
+   640.4
+  ]
+ },
+ {
+  "input": "Backpropagation is the algorithm for determining how a single training example would like to nudge the weights and biases, not just in terms of whether they should go up or down, but in terms of what relative proportions to those changes cause the most rapid decrease to the cost.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   640.4,
+   656.24
+  ]
+ },
+ {
+  "input": "A true gradient descent step would involve doing this for all your tens and thousands of training examples and averaging the desired changes you get, but that's computationally slow, so instead you randomly subdivide the data into mini-batches and compute each step with respect to a mini-batch.",
+  "model": "nmt",
+  "translatedText": "ایک حقیقی تدریجی نزول کے قدم میں آپ کی تمام دسیوں اور ہزاروں تربیتی مثالوں کے لیے ایسا کرنا اور آپ کو حاصل ہونے والی مطلوبہ تبدیلیوں کا اوسط شامل کرنا شامل ہے، لیکن یہ حسابی طور پر سست ہے، اس لیے اس کے بجائے آپ ڈیٹا کو تصادفی طور پر چھوٹے بیچوں میں تقسیم کریں اور ہر قدم کی گنتی کریں منی بیچ.",
+  "time_range": [
+   656.24,
+   674.0
+  ]
+ },
+ {
+  "input": "Repeatedly going through all the mini-batches and making these adjustments, you will converge towards a local minimum of the cost function, which is to say your network will end up doing a really good job on the training examples.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   674.0,
+   687.54
+  ]
+ },
+ {
+  "input": "So with all of that said, every line of code that would go into implementing backprop actually corresponds with something you have now seen, at least in informal terms.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   687.54,
+   697.68
+  ]
+ },
+ {
+  "input": "But sometimes knowing what the math does is only half the battle, and just representing the damn thing is where it gets all muddled and confusing.",
+  "model": "nmt",
+  "translatedText": "بار بار تمام چھوٹے بیچوں سے گزرتے ہوئے اور یہ ایڈجسٹمنٹ کرتے ہوئے، آپ مقامی کم از کم لاگت کے فنکشن کی طرف بڑھیں گے، جس کا مطلب یہ ہے کہ آپ کا نیٹ ورک تربیتی مثالوں پر واقعی ایک اچھا کام کرے گا۔ تو اس سب کے ساتھ کہا، کوڈ کی ہر سطر جو بیک پروپ کو لاگو کرنے میں جائے گی درحقیقت اس چیز سے مطابقت رکھتی ہے جو آپ نے اب دیکھی ہے، کم از کم غیر رسمی شرائط میں۔ لیکن بعض اوقات یہ جاننا کہ ریاضی کیا کرتا ہے صرف آدھی جنگ ہے، اور صرف اس لات کی نمائندگی کرنا وہ جگہ ہے جہاں یہ سب گڑبڑ اور الجھن میں پڑ جاتا ہے۔ لہذا، آپ میں سے ان لوگوں کے لیے جو مزید گہرائی میں جانا چاہتے ہیں، اگلی ویڈیو انہی خیالات سے گزرتی ہے جو ابھی یہاں پیش کیے گئے تھے، لیکن بنیادی حساب کتاب کے لحاظ سے، جس سے امید ہے کہ اس موضوع کو دیکھتے ہی اسے تھوڑا سا واقف کرانا چاہیے۔ دیگر وسائل.",
+  "time_range": [
+   697.68,
+   704.78
+  ]
+ },
+ {
+  "input": "So, for those of you who do want to go deeper, the next video goes through the same ideas that were just presented here, but in terms of the underlying calculus, which should hopefully make it a little more familiar as you see the topic in other resources.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   704.78,
+   717.46
+  ]
+ },
+ {
+  "input": "Before that, one thing worth emphasizing is that for this algorithm to work, and this goes for all sorts of machine learning beyond just neural networks, you need a lot of training data.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   717.46,
+   726.84
+  ]
+ },
+ {
+  "input": "In our case, one thing that makes handwritten digits such a nice example is that there exists the MNIST database, with so many examples that have been labeled by humans.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   726.84,
+   735.38
+  ]
+ },
+ {
+  "input": "So a common challenge that those of you working in machine learning will be familiar with is just getting the labeled training data you actually need, whether that's having people label tens of thousands of images, or whatever other data type you might be dealing with.",
+  "model": "nmt",
+  "translatedText": "",
+  "time_range": [
+   735.38,
+   742.88
+  ]
+ }
+]
