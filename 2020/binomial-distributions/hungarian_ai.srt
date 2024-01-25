@@ -1,0 +1,744 @@
+1
+00:00:00,000 --> 00:00:03,200
+Ön online vásárol egy terméket, és három különböző eladót lát.
+
+2
+00:00:03,200 --> 00:00:06,560
+Mindannyian ugyanazt a terméket kínálják lényegében azonos áron.
+
+3
+00:00:06,560 --> 00:00:11,040
+Egyikük 100%-ban pozitív értékelést kapott, de csak 10 értékelést kapott.
+
+4
+00:00:11,040 --> 00:00:15,040
+Egy másik 96%-os pozitív értékelést kapott, összesen 50 értékeléssel.
+
+5
+00:00:15,040 --> 00:00:20,080
+És még egy másik 93%-os pozitív értékelést kapott, de összesen 200 értékelést kapott.
+
+6
+00:00:20,080 --> 00:00:21,200
+Melyikből érdemes venni?
+
+7
+00:00:21,200 --> 00:00:25,893
+Azt hiszem, mindannyiunkban megvan az az ösztön,
+
+8
+00:00:25,893 --> 00:00:33,520
+hogy minél több adatot látunk, az nagyobb bizalmat ad egy adott értékelésben.
+
+9
+00:00:33,520 --> 00:00:36,020
+Kicsit gyanakvóak vagyunk a 100%-os értékelések láttán,
+
+10
+00:00:36,020 --> 00:00:38,884
+mivel ezek leggyakrabban nagyon kevés értékelésből származnak,
+
+11
+00:00:38,884 --> 00:00:41,885
+ami valószínűbbé teszi, hogy a dolgok másképp alakulhattak volna,
+
+12
+00:00:41,885 --> 00:00:43,840
+és alacsonyabb értékelést kaphattak volna.
+
+13
+00:00:43,840 --> 00:00:46,240
+De hogyan lehet ezt az intuíciót kvantitatívvá tenni?
+
+14
+00:00:46,240 --> 00:00:50,244
+Mi a racionális módszer a több adatból nyert bizalom és
+
+15
+00:00:50,244 --> 00:00:54,320
+az alacsonyabb abszolút százalék közötti kompromisszumra?
+
+16
+00:00:54,320 --> 00:00:59,699
+Ez a konkrét példa enyhe módosítása annak, amit John Cook adott kiváló blogbejegyzésében,
+
+17
+00:00:59,699 --> 00:01:02,480
+A Bayesian Review of Amazon Resellers címmel.
+
+18
+00:01:02,480 --> 00:01:04,415
+Számodra és nekem ez egy csodálatos ürügy arra,
+
+19
+00:01:04,415 --> 00:01:08,080
+hogy beleássunk néhány alapvető témát a valószínűségszámítás és a statisztika területén.
+
+20
+00:01:08,080 --> 00:01:11,360
+Ahhoz pedig, hogy ezeket a témákat valóban megfelelően lefedjük, időbe telik.
+
+21
+00:01:11,360 --> 00:01:14,453
+Tehát azt fogom tenni, hogy ezt három videóra bontom,
+
+22
+00:01:14,453 --> 00:01:17,896
+ahol ebben az elsőben felállítunk egy modellt a helyzetre,
+
+23
+00:01:17,896 --> 00:01:20,640
+és először a binomiális eloszlásról beszélünk.
+
+24
+00:01:20,640 --> 00:01:23,972
+A második a Bayes-frissítés ötleteivel és a folyamatos értékek
+
+25
+00:01:23,972 --> 00:01:27,040
+feletti valószínűségekkel való munkavégzéssel foglalkozik.
+
+26
+00:01:27,040 --> 00:01:31,127
+A harmadikban pedig egy béta disztribúcióként ismert dolgot fogunk megnézni,
+
+27
+00:01:31,127 --> 00:01:35,377
+és előhúzunk egy kis pythont, hogy elemezzük a rendelkezésünkre álló adatokat,
+
+28
+00:01:35,377 --> 00:01:39,680
+és különböző válaszokat kapjunk attól függően, hogy mit szeretne optimalizálni.
+
+29
+00:01:39,680 --> 00:01:43,333
+Nos, hogy megdobjak egy csontot, mielőtt belemerülnénk a matematikába,
+
+30
+00:01:43,333 --> 00:01:47,040
+hadd mutassam meg, mi lesz az egyik válasz, mivel elragadóan egyszerű.
+
+31
+00:01:47,040 --> 00:01:51,698
+Amikor egy online értékelést lát, valami ehhez hasonló 10-ből 10, akkor úgy tesz,
+
+32
+00:01:51,698 --> 00:01:55,840
+mintha lenne még két vélemény, az egyik pozitív, a másik pedig negatív.
+
+33
+00:01:55,840 --> 00:02:01,615
+Ebben az esetben ez azt jelenti, hogy úgy tesz, mintha 12-ből 11 lenne, ami 91-et adna.
+
+34
+00:02:01,615 --> 00:02:01,760
+7%.
+
+35
+00:02:01,760 --> 00:02:08,080
+Ez a szám mutatja annak valószínűségét, hogy jó tapasztalata lesz az eladóval.
+
+36
+00:02:08,080 --> 00:02:13,102
+Tehát 50 vélemény esetén, ahol 48 pozitív és 2 negatív, úgy tesz,
+
+37
+00:02:13,102 --> 00:02:19,283
+mintha valóban 49 pozitív és 3 negatív lenne, ami 52-ből 49-et vagy 94-et adna.
+
+38
+00:02:19,283 --> 00:02:20,560
+2%.
+
+39
+00:02:20,560 --> 00:02:25,520
+Ez annak a valószínűsége, hogy jó tapasztalatokat szerez a második eladóval.
+
+40
+00:02:25,520 --> 00:02:29,003
+Ha ugyanezt a játékot játssza a harmadik eladónkkal,
+
+41
+00:02:29,003 --> 00:02:33,156
+aki 200 értékelést kapott, 187-et kap a 202-ből, vagyis 92-t.
+
+42
+00:02:33,156 --> 00:02:34,960
+6%.
+
+43
+00:02:34,960 --> 00:02:39,520
+Tehát e szabály szerint a legjobb megoldás az, ha a 2-es eladót választja.
+
+44
+00:02:39,520 --> 00:02:43,361
+Ezt Laplace utódlási szabályaként ismerik, a 18. századra nyúlik vissza. Ahhoz,
+
+45
+00:02:43,361 --> 00:02:46,425
+hogy megértsük, milyen feltételezések állnak ennek hátterében,
+
+46
+00:02:46,425 --> 00:02:50,218
+és hogy ezeknek a feltételezéseknek vagy a mögöttes célnak a megváltoztatása
+
+47
+00:02:50,218 --> 00:02:54,400
+hogyan változtathatja meg döntését, valóban végig kell mennünk. az összes matematikát.
+
+48
+00:02:54,400 --> 00:03:00,800
+Szóval minden további nélkül merüljünk bele.
+
+49
+00:03:00,800 --> 00:03:06,960
+1. lépés: pontosan hogyan modellezzük a helyzetet, és pontosan mit szeretne optimalizálni?
+
+50
+00:03:06,960 --> 00:03:10,774
+Az egyik lehetőség az, hogy úgy gondoljuk, hogy minden eladó véletlenszerű
+
+51
+00:03:10,774 --> 00:03:14,080
+tapasztalatokat produkál, amelyek vagy pozitívak, vagy negatívak,
+
+52
+00:03:14,080 --> 00:03:17,691
+és hogy minden eladónak van valamiféle állandó mögöttes valószínűsége,
+
+53
+00:03:17,691 --> 00:03:21,760
+hogy jó élményt adjon, amit sikerességi aránynak fogunk nevezni, vagy S. rövid.
+
+54
+00:03:21,760 --> 00:03:25,520
+Az egész kihívás az, hogy nem ismerjük S.
+
+55
+00:03:25,520 --> 00:03:28,454
+Ha az első 100%-os értékelést látja 10 értékeléssel,
+
+56
+00:03:28,454 --> 00:03:31,840
+az nem jelenti azt, hogy a mögöttes sikerességi arány 100%.
+
+57
+00:03:31,840 --> 00:03:34,800
+Nagyon jó lehet, hogy valami 95%.
+
+58
+00:03:34,800 --> 00:03:38,201
+És csak a szemléltetés kedvéért, hadd futtassak le egy kis szimulációt,
+
+59
+00:03:38,201 --> 00:03:41,889
+ahol kiválasztok egy véletlen számot 0 és 1 között, és ha az kisebb, mint 0.
+
+60
+00:03:41,889 --> 00:03:48,960
+95, pozitív véleményként rögzítem, ellenkező esetben negatív véleményként rögzítem.
+
+61
+00:03:48,960 --> 00:03:53,644
+Most tegye ezt 10-szer egymás után, majd készítsen még 10-et,
+
+62
+00:03:53,644 --> 00:03:58,098
+és még 10-et, és még 10-et, és így tovább, hogy megtudja,
+
+63
+00:03:58,098 --> 00:04:03,780
+milyen 10 értékelés sorozata van egy eladónál, akinek ez a sikeraránya 0.
+
+64
+00:04:03,780 --> 00:04:05,600
+95-ösnek nézne ki.
+
+65
+00:04:05,600 --> 00:04:09,920
+Ezek közül jó néhány, 60% körül, 10-ből 10-et ad.
+
+66
+00:04:09,920 --> 00:04:13,474
+Tehát az általunk látott adatok teljesen hihetőnek tűnnek,
+
+67
+00:04:13,474 --> 00:04:15,680
+ha az eladó valódi sikeraránya 95%.
+
+68
+00:04:15,680 --> 00:04:18,720
+Vagy talán tényleg 90%, vagy 99%.
+
+69
+00:04:18,720 --> 00:04:21,440
+Az egész kihívás az, hogy egyszerűen nem tudjuk.
+
+70
+00:04:21,440 --> 00:04:25,785
+Ami a célt illeti, tegyük fel, hogy egyszerűen csak maximalizálni szeretné a pozitív
+
+71
+00:04:25,785 --> 00:04:30,080
+tapasztalatok valószínűségét, annak ellenére, hogy nem biztos ebben a sikerarányban.
+
+72
+00:04:30,080 --> 00:04:31,360
+Szóval gondolj erre itt.
+
+73
+00:04:31,360 --> 00:04:35,297
+Sok különböző lehetséges sikerarányunk van minden eladónál,
+
+74
+00:04:35,297 --> 00:04:39,434
+tetszőleges szám 0-tól 1-ig, és mondanunk kell valamit arról,
+
+75
+00:04:39,434 --> 00:04:45,040
+hogy ezek a sikerarányok mennyire valószínűek, egyfajta valószínűségi valószínűség.
+
+76
+00:04:45,040 --> 00:04:49,165
+Ellentétben az olyan gamifikált példákkal, mint például az érmefeldobás és a
+
+77
+00:04:49,165 --> 00:04:53,826
+kockafeldobás, és azokkal a dolgokkal, amelyeket egy bevezető valószínűségi osztályban
+
+78
+00:04:53,826 --> 00:04:58,326
+látunk, ahol hosszú távú gyakoriságot feltételezünk, például 1 felet vagy 1 hatodot,
+
+79
+00:04:58,326 --> 00:05:02,880
+itt a bizonytalanság van a maga a hosszú távú frekvencia, ami sokkal erősebb kétség.
+
+80
+00:05:02,880 --> 00:05:05,823
+Azt is hangsúlyoznom kell, hogy ez a fajta beállítás sok-
+
+81
+00:05:05,823 --> 00:05:08,250
+sok olyan helyzetre vonatkozik a való világban,
+
+82
+00:05:08,250 --> 00:05:12,640
+amikor korlátozott adatok alapján kell ítéletet hozni egy véletlenszerű folyamatról.
+
+83
+00:05:12,640 --> 00:05:16,501
+Tegyük fel például, hogy egy autókat gyártó gyárat hoz létre,
+
+84
+00:05:16,501 --> 00:05:21,440
+és a 100 autós kezdeti teszt során kettő közülük valamilyen problémával küzd.
+
+85
+00:05:21,440 --> 00:05:25,238
+Ha azt tervezi, hogy felpörgeti a dolgokat, hogy egymillió autót gyártson,
+
+86
+00:05:25,238 --> 00:05:28,473
+mit hajlandó magabiztosan elmondani arról, hogy összesen hány
+
+87
+00:05:28,473 --> 00:05:31,040
+autóban lesz olyan probléma, amelyet kezelni kell?
+
+88
+00:05:31,040 --> 00:05:38,560
+Nem mintha a teszt garantálná, hogy a valódi hibaarány 2%, de mit mond pontosan?
+
+89
+00:05:38,560 --> 00:05:40,800
+Első kihívásként hadd kérdezzem meg ezt.
+
+90
+00:05:40,800 --> 00:05:46,188
+Ha varázsütésre tudná egy adott eladó valódi sikerarányát, mondjuk ez 95%
+
+91
+00:05:46,188 --> 00:05:51,356
+, hogyan számítaná ki annak a valószínűségét, hogy mondjuk 10 pozitív
+
+92
+00:05:51,356 --> 00:05:57,040
+véleményt és 0 negatív véleményt, vagy 48 és 2 vagy 186 és 14 értékelést lát?
+
+93
+00:05:57,040 --> 00:05:59,899
+Más szóval, mekkora a valószínűsége annak, hogy az
+
+94
+00:05:59,899 --> 00:06:03,040
+adatokat feltételezett sikerességi arány mellett látjuk?
+
+95
+00:06:03,040 --> 00:06:08,942
+Egy pillanattal ezelőtt valami ilyesmit mutattam be neked egy szimulációval,
+
+96
+00:06:08,942 --> 00:06:15,078
+10 véletlenszerű áttekintést generálva, és egy kis programozással ezt sokszor
+
+97
+00:06:15,078 --> 00:06:21,680
+megtehetnéd, hisztogramot építeni, hogy megértsd, hogyan is néz ki ez a disztribúció.
+
+98
+00:06:21,680 --> 00:06:26,012
+Hasonlóképpen szimulálhat 50 véleményből álló készleteket, és megtudhatja,
+
+99
+00:06:26,012 --> 00:06:29,760
+mennyire valószínű, hogy 48 pozitív és 2 negatív véleményt lát.
+
+100
+00:06:29,760 --> 00:06:31,760
+Látod, ez a szép dolog a valószínűségben.
+
+101
+00:06:31,760 --> 00:06:35,236
+Egy kis programozás szinte mindig lehetővé teszi, hogy csaljon egy kicsit,
+
+102
+00:06:35,236 --> 00:06:37,680
+és a szimulációval idő előtt megnézze, mi a válasz.
+
+103
+00:06:37,680 --> 00:06:41,571
+Például néhány százezer, 50 véleményből álló minta után 95%
+
+104
+00:06:41,571 --> 00:06:45,068
+-os sikerarányt feltételezve körülbelül 26-nak tűnik.
+
+105
+00:06:45,068 --> 00:06:49,120
+1%-uk 50-ből 48 értékelést adna nekünk.
+
+106
+00:06:49,120 --> 00:06:52,800
+Szerencsére ebben az esetben a pontos képlet egyáltalán nem rossz.
+
+107
+00:06:52,800 --> 00:06:57,600
+Így néz ki annak a valószínűsége, hogy 50-ből pontosan 48-at látunk.
+
+108
+00:06:57,600 --> 00:07:03,365
+Ezt az első kifejezést úgy ejtik, hogy 50 válasszon 48-at, és ez azt jelenti,
+
+109
+00:07:03,365 --> 00:07:09,280
+hogy összesen hány módon lehet elfoglalni 50 helyet, és ebből 48-at kitölteni.
+
+110
+00:07:09,280 --> 00:07:14,249
+Például lehet, hogy 48 jó értékeléssel kezdi és 2 rossz véleményét fejezi be,
+
+111
+00:07:14,249 --> 00:07:18,960
+vagy 47 jó értékeléssel kezdi, majd rossz lesz, jó rossz, és így tovább.
+
+112
+00:07:18,960 --> 00:07:24,933
+Elvileg, ha az 50-ből 48 kitöltésének minden lehetséges módját felsorolnánk,
+
+113
+00:07:24,933 --> 00:07:31,379
+ezeknek a mintáknak a száma összesen 50 válassz 48-at, ami ebben az esetben 1225-
+
+114
+00:07:31,379 --> 00:07:32,480
+nek felel meg.
+
+115
+00:07:32,480 --> 00:07:34,160
+Mit szorozunk meg ezzel a számmal?
+
+116
+00:07:34,160 --> 00:07:38,503
+Nos, ez e minták bármelyikének valószínűsége, ami annak a valószínűsége,
+
+117
+00:07:38,503 --> 00:07:42,001
+hogy egyetlen pozitív értékelés négyzetesen megemelkedik
+
+118
+00:07:42,001 --> 00:07:45,440
+egyetlen negatív értékelés valószínűségének 48-szorosára.
+
+119
+00:07:45,440 --> 00:07:50,055
+Lényeges, hogy feltételezzük, hogy minden értékelés független az előzőtől,
+
+120
+00:07:50,055 --> 00:07:53,298
+így az összes valószínűséget így összeszorozhatjuk,
+
+121
+00:07:53,298 --> 00:07:57,103
+és a rendelkezésünkre álló számokkal, ha kiértékeli, 0 lesz.
+
+122
+00:07:57,103 --> 00:08:02,000
+261, ami megegyezik azzal, amit empirikusan láttunk a szimuláció során.
+
+123
+00:08:02,000 --> 00:08:08,478
+Ezt a 48-at is lecserélheti egy másik értékre, és kiszámíthatja annak valószínűségét,
+
+124
+00:08:08,478 --> 00:08:14,880
+hogy bármilyen más pozitív véleményt lát, ismét egy adott sikerarányt feltételezve.
+
+125
+00:08:14,880 --> 00:08:20,118
+Amit egyébként most nézel, azt a szakmában binomiális eloszlásként ismerik,
+
+126
+00:08:20,118 --> 00:08:23,680
+ami az egyik legalapvetőbb valószínűségi eloszlás.
+
+127
+00:08:23,680 --> 00:08:28,578
+Ez akkor jelenik meg, amikor valami érmefeldobás, véletlenszerű esemény történik,
+
+128
+00:08:28,578 --> 00:08:33,294
+amely kétféleképpen mehet végbe, és néhányszor megismétli, és tudni szeretné,
+
+129
+00:08:33,294 --> 00:08:36,560
+hogy milyen valószínűséggel kap különböző összegeket.
+
+130
+00:08:36,560 --> 00:08:39,135
+Céljainkra ez a képlet megadja annak valószínűségét,
+
+131
+00:08:39,135 --> 00:08:42,354
+hogy az adatokat feltételezett sikerességi arány mellett látjuk,
+
+132
+00:08:42,354 --> 00:08:45,523
+amit végső soron valamilyen módon szeretnénk felhasználni arra,
+
+133
+00:08:45,523 --> 00:08:49,436
+hogy ítéletet hozzunk az ellenkezőjéről, a sikerességi arány valószínűségéről
+
+134
+00:08:49,436 --> 00:08:51,120
+a látott rögzített adatok alapján.
+
+135
+00:08:51,120 --> 00:08:54,560
+Ezek összefüggenek, de határozottan különböznek egymástól.
+
+136
+00:08:54,560 --> 00:08:58,958
+Ha többet akarunk ebbe az irányba, játsszuk el ezt az s értéket,
+
+137
+00:08:58,958 --> 00:09:04,320
+és nézzük meg, mi történik, ha különböző számokra változtatjuk 0 és 1 között.
+
+138
+00:09:04,320 --> 00:09:08,008
+Az általa létrehozott binomiális eloszlás valahogy úgy néz ki,
+
+139
+00:09:08,008 --> 00:09:11,280
+mint ez a halom, amely az s-szer 50 köré összpontosul.
+
+140
+00:09:11,280 --> 00:09:15,016
+A számunkra fontos értéket, annak valószínűségét,
+
+141
+00:09:15,016 --> 00:09:19,440
+hogy 50-ből 48-at látunk, ez a kiemelt 48. sáv képviseli.
+
+142
+00:09:19,440 --> 00:09:22,266
+Tehát rajzoljunk egy második diagramot az aljára,
+
+143
+00:09:22,266 --> 00:09:25,440
+amely azt mutatja, hogy ez az érték hogyan függ s-től.
+
+144
+00:09:25,440 --> 00:09:26,904
+Amikor s egyenlő 0-val.
+
+145
+00:09:26,904 --> 00:09:30,640
+96, ez az érték olyan magas, mint valaha.
+
+146
+00:09:30,640 --> 00:09:35,607
+És ennek logikusnak kell lennie, mert ha azt a 96%-os áttekintést nézzük,
+
+147
+00:09:35,607 --> 00:09:41,120
+akkor a legvalószínűbbnek kell lennie, ha a valódi mögöttes sikerarány 96% volt.
+
+148
+00:09:41,120 --> 00:09:45,622
+Ahogy s növekszik, ez valahogy kimerül, és 0-ra megy, ahogy s közeledik 1-hez,
+
+149
+00:09:45,622 --> 00:09:48,855
+mivel valakinek, akinek tökéletes a sikerességi aránya,
+
+150
+00:09:48,855 --> 00:09:51,280
+soha nem lesz ez a két negatív értékelés.
+
+151
+00:09:51,280 --> 00:09:56,800
+Továbbá, ahogy balra halad, elég gyorsan megközelíti a 0-t.
+
+152
+00:09:56,800 --> 00:09:59,590
+Mire eléri az s értéket 0.
+
+153
+00:09:59,590 --> 00:10:06,160
+8, 50-ből 48-at véletlenül kapni rendkívül ritka, ezerből egy alkalommal fordulna elő.
+
+154
+00:10:06,160 --> 00:10:11,252
+Ez az alul található rajz remek kezdete annak, hogy kvantitatívabb leírást kapjunk arról,
+
+155
+00:10:11,252 --> 00:10:14,400
+hogy mely s értékek többé-kevésbé valószínűnek tűnnek.
+
+156
+00:10:14,400 --> 00:10:17,771
+Képletként leírva szeretném, ha emlékezne arra,
+
+157
+00:10:17,771 --> 00:10:21,572
+hogy a sikerarány s függvényében a görbe úgy néz ki,
+
+158
+00:10:21,572 --> 00:10:26,162
+mint néhány állandó s a pozitív vélemények számának szorzata 1
+
+159
+00:10:26,162 --> 00:10:28,960
+mínusz s a negatív vélemények számával.
+
+160
+00:10:28,960 --> 00:10:33,952
+Elvileg, ha több adatunk lenne, például 480 pozitív vélemény és 20 negatív vélemény,
+
+161
+00:10:33,952 --> 00:10:37,280
+az eredményül kapott diagram továbbra is 0 körül állna.
+
+162
+00:10:37,280 --> 00:10:40,080
+96, de kisebb és koncentráltabb lenne.
+
+163
+00:10:40,080 --> 00:10:45,360
+Egy jó gyakorlat most az lenne, ha megnéznéd, el tudnád-e magyarázni, miért van ez így.
+
+164
+00:10:45,360 --> 00:10:50,000
+Van azonban egy elhúzódó kérdés, hogy valójában mit is kezdjünk ezekkel a görbékkel.
+
+165
+00:10:50,000 --> 00:10:53,255
+Úgy értem, az a célunk, hogy kiszámítsuk annak valószínűségét,
+
+166
+00:10:53,255 --> 00:10:56,720
+hogy Önnek jó tapasztalatai vannak ezzel az eladóval, mit tegyen?
+
+167
+00:10:56,720 --> 00:11:02,066
+Naivan azt gondolhatnánk, hogy a valószínűség 96%, hiszen itt van a grafikon csúcsa,
+
+168
+00:11:02,066 --> 00:11:05,440
+ami bizonyos értelemben a legvalószínűbb sikerarány.
+
+169
+00:11:05,440 --> 00:11:08,400
+De gondoljon arra a példára, ahol 10-ből 10 pozitív.
+
+170
+00:11:08,400 --> 00:11:14,880
+Ebben az esetben az egész binomiális képlet leegyszerűsödik s-re a 10-es hatványra.
+
+171
+00:11:14,880 --> 00:11:18,271
+Annak a valószínűsége, hogy 10 egymást követő jó értékelést látunk,
+
+172
+00:11:18,271 --> 00:11:21,360
+annak a valószínűsége, hogy az egyiket a 10. helyre emeljük.
+
+173
+00:11:21,360 --> 00:11:23,850
+Minél közelebb van a valódi sikerarány az 1-hez,
+
+174
+00:11:23,850 --> 00:11:27,120
+annál nagyobb a valószínűsége annak, hogy 10-ből 10-et kapunk.
+
+175
+00:11:27,120 --> 00:11:32,320
+Az alján lévő cselekményünk csak növekszik, ahogy s közeledik 1-hez.
+
+176
+00:11:32,320 --> 00:11:36,811
+De még ha s egyenlő 1-gyel, az az érték, amely maximalizálja ezt a valószínűséget,
+
+177
+00:11:36,811 --> 00:11:40,317
+biztosan nem érezné jól magát, ha azt mondaná, hogy Önnek 100%-
+
+178
+00:11:40,317 --> 00:11:43,440
+os valószínűséggel jó tapasztalata van ezzel az eladóval.
+
+179
+00:11:43,440 --> 00:11:47,237
+Talán úgy gondolja, hogy ehelyett valamiféle tömegközéppontot
+
+180
+00:11:47,237 --> 00:11:51,280
+kellene keresnünk ennek a gráfnak, és ez teljesen jó úton haladna.
+
+181
+00:11:51,280 --> 00:11:56,035
+Először azonban el kell magyaráznunk, hogyan vegyük ezt a kifejezést az általunk látott
+
+182
+00:11:56,035 --> 00:12:00,196
+adatok valószínűségére, ha s értéket kapunk, és hogyan kapjuk meg az s érték
+
+183
+00:12:00,196 --> 00:12:04,249
+valószínűségét, azt a dolgot, amelyet valójában nem ismerünk, mivel adatok,
+
+184
+00:12:04,249 --> 00:12:05,600
+amit valójában ismerünk.
+
+185
+00:12:05,600 --> 00:12:10,480
+És ehhez beszélnünk kell Bayes-szabályról, valamint a valószínűségi sűrűségfüggvényekről.
+
+186
+00:12:10,480 --> 00:12:10,480
+Azokért a 2. részben találkozunk.
+
