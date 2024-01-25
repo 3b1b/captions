@@ -6,4 +6,4 @@ You can offer edits directly in the browser by navigating to the relevant file, 
 
 Once a pull request has been merged, it will get uploaded to the relevant video on YouTube.
 
-The existing caption files whose titles are of the form "{language}_ai.srt" were generated with an automatic translation tool, so they could potentially benefit from a native speaker to look it over and ensure it's natural.
+The existing caption files whose titles are of the form "auto_generated.srt" were generated with an automatic translation tool, so they could potentially benefit from a native speaker to look it over and ensure it's natural.
