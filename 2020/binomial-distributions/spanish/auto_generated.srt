@@ -15,7 +15,7 @@ Uno de ellos tiene una valoración 100% positiva, pero con sólo 10 valoraciones
 Otro tiene una calificación positiva del 96%, con 50 reseñas en total.
 
 5
-00:00:15,040 --> 00:00:19,440
+00:00:15,040 --> 00:00:20,080
 Y otro más tiene una calificación positiva del 93%, pero con 200 reseñas en total.
 
 6
@@ -23,718 +23,734 @@ Y otro más tiene una calificación positiva del 93%, pero con 200 reseñas en t
 ¿A cuál deberías comprarle?
 
 7
-00:00:21,200 --> 00:00:31,120
-Creo que todos tenemos el instinto de que cuantos más
+00:00:21,200 --> 00:00:27,517
+Creo que todos tenemos el instinto de que cuantos más datos
 
 8
-00:00:31,120 --> 00:00:33,520
-datos vemos, más confianza nos da una calificación determinada.
+00:00:27,517 --> 00:00:33,520
+vemos, más confianza nos da una calificación determinada.
 
 9
-00:00:33,520 --> 00:00:36,160
+00:00:33,520 --> 00:00:36,852
 Sospechamos un poco de ver calificaciones del 100%, ya que la mayoría de las veces
 
 10
-00:00:36,160 --> 00:00:39,360
-provienen de una pequeña cantidad de reseñas, lo que hace que parezca más plausible que
+00:00:36,852 --> 00:00:40,225
+provienen de una pequeña cantidad de reseñas, lo que hace que parezca más plausible
 
 11
-00:00:39,360 --> 00:00:43,840
-las cosas podrían haber ido de otra manera y haber otorgado una calificación más baja.
+00:00:40,225 --> 00:00:43,840
+que las cosas podrían haber ido de otra manera y haber otorgado una calificación más baja.
 
 12
 00:00:43,840 --> 00:00:46,240
 Pero, ¿cómo se hace que esa intuición sea cuantitativa?
 
 13
-00:00:46,240 --> 00:00:50,240
+00:00:46,240 --> 00:00:50,134
 ¿Cuál es la forma racional de razonar sobre el equilibrio entre la
 
 14
-00:00:50,240 --> 00:00:53,200
+00:00:50,134 --> 00:00:54,320
 confianza obtenida con más datos versus el porcentaje absoluto más bajo?
 
 15
-00:00:54,320 --> 00:00:58,640
+00:00:54,320 --> 00:00:58,294
 Este ejemplo en particular es una ligera modificación de uno que John Cook
 
 16
-00:00:58,640 --> 00:01:02,480
+00:00:58,294 --> 00:01:02,480
 dio en su excelente publicación de blog, A Bayesian Review of Amazon Resellers.
 
 17
-00:01:02,480 --> 00:01:08,080
-Para usted y para mí, es una excusa maravillosa para profundizar en algunos temas centrales de probabilidad y estadística.
+00:01:02,480 --> 00:01:05,463
+Para usted y para mí, es una excusa maravillosa para profundizar
 
 18
+00:01:05,463 --> 00:01:08,080
+en algunos temas centrales de probabilidad y estadística.
+
+19
 00:01:08,080 --> 00:01:11,360
 Y para cubrir realmente estos temas adecuadamente, se necesita tiempo.
 
-19
-00:01:11,360 --> 00:01:14,240
-Entonces, lo que voy a hacer es dividir esto en
-
 20
-00:01:14,240 --> 00:01:17,280
-tres videos, donde en el primero configuraremos un modelo para
+00:01:11,360 --> 00:01:15,559
+Entonces, lo que voy a hacer es dividir esto en tres videos, donde en el primero
 
 21
-00:01:17,280 --> 00:01:20,160
-la situación y comenzaremos hablando sobre la distribución binomial.
+00:01:15,559 --> 00:01:20,173
+configuraremos un modelo para la situación y comenzaremos hablando sobre la distribución
 
 22
-00:01:20,640 --> 00:01:23,600
-El segundo aportará ideas sobre la actualización bayesiana
+00:01:20,173 --> 00:01:20,640
+binomial.
 
 23
-00:01:23,600 --> 00:01:27,040
-y cómo trabajar con probabilidades sobre valores continuos.
+00:01:20,640 --> 00:01:23,840
+El segundo aportará ideas sobre la actualización bayesiana
 
 24
-00:01:27,040 --> 00:01:30,720
-Y en el tercero, veremos algo conocido como distribución beta, utilizaremos un
+00:01:23,840 --> 00:01:27,040
+y cómo trabajar con probabilidades sobre valores continuos.
 
 25
-00:01:30,720 --> 00:01:33,520
-pequeño Python para analizar los datos que tenemos y llegaremos a
+00:01:27,040 --> 00:01:31,426
+Y en el tercero, veremos algo conocido como distribución beta, utilizaremos
 
 26
-00:01:33,520 --> 00:01:37,600
-varias respuestas diferentes dependiendo de qué es lo que desea optimizar.
+00:01:31,426 --> 00:01:35,812
+un pequeño Python para analizar los datos que tenemos y llegaremos a varias
 
 27
-00:01:39,680 --> 00:01:42,400
-Ahora, para darles una idea antes de sumergirnos en todas las matemáticas, permítanme
+00:01:35,812 --> 00:01:39,680
+respuestas diferentes dependiendo de qué es lo que desea optimizar.
 
 28
-00:01:42,400 --> 00:01:47,040
-mostrarles cuál resulta ser una de las respuestas, ya que es deliciosamente simple.
+00:01:39,680 --> 00:01:43,425
+Ahora, para darles una idea antes de sumergirnos en todas las matemáticas, permítanme
 
 29
-00:01:47,040 --> 00:01:50,800
-Cuando ves una calificación en línea, algo así
+00:01:43,425 --> 00:01:47,040
+mostrarles cuál resulta ser una de las respuestas, ya que es deliciosamente simple.
 
 30
-00:01:50,800 --> 00:01:53,440
-como 10 sobre 10, finges que hubo dos
+00:01:47,040 --> 00:01:51,266
+Cuando ves una calificación en línea, algo así como 10 sobre
 
 31
-00:01:53,440 --> 00:01:55,840
-reseñas más, una positiva y otra negativa.
+00:01:51,266 --> 00:01:55,840
+10, finges que hubo dos reseñas más, una positiva y otra negativa.
 
 32
-00:01:55,840 --> 00:02:01,760
-En este caso, eso significa que pretendes que es 11 de 12, lo que daría 91. 7%.
+00:01:55,840 --> 00:02:01,615
+En este caso, eso significa que pretendes que es 11 de 12, lo que daría 91.
 
 33
-00:02:01,760 --> 00:02:06,320
-Este número es tu probabilidad de tener una buena experiencia con ese vendedor.
+00:02:01,615 --> 00:02:01,760
+7%.
 
 34
-00:02:08,080 --> 00:02:12,080
-Entonces, en el caso de 50 reseñas, donde tienes 48 positivas y
+00:02:01,760 --> 00:02:08,080
+Este número es tu probabilidad de tener una buena experiencia con ese vendedor.
 
 35
-00:02:12,080 --> 00:02:16,160
-2 negativas, pretendes que en realidad son 49 positivas y 3
+00:02:08,080 --> 00:02:13,951
+Entonces, en el caso de 50 reseñas, donde tienes 48 positivas y 2 negativas, pretendes
 
 36
-00:02:16,160 --> 00:02:19,440
-negativas, lo que te daría 49 de 52, o 94. 2%.
+00:02:13,951 --> 00:02:19,283
+que en realidad son 49 positivas y 3 negativas, lo que te daría 49 de 52, o 94.
 
 37
-00:02:20,560 --> 00:02:23,920
-Esa es tu probabilidad de tener una buena experiencia con el segundo vendedor.
+00:02:19,283 --> 00:02:20,560
+2%.
 
 38
-00:02:25,520 --> 00:02:29,040
-Al jugar el mismo juego con nuestro tercer vendedor, que
+00:02:20,560 --> 00:02:25,520
+Esa es tu probabilidad de tener una buena experiencia con el segundo vendedor.
 
 39
-00:02:29,040 --> 00:02:33,440
-tuvo 200 reseñas, obtienes 187 de 202, o 92. 6%.
+00:02:25,520 --> 00:02:29,527
+Al jugar el mismo juego con nuestro tercer vendedor,
 
 40
-00:02:34,960 --> 00:02:38,720
-Entonces, de acuerdo con esta regla, significaría que lo mejor que puede hacer es optar por el vendedor número 2.
+00:02:29,527 --> 00:02:33,156
+que tuvo 200 reseñas, obtienes 187 de 202, o 92.
 
 41
-00:02:39,520 --> 00:02:44,000
-Esto es algo conocido como regla de sucesión de Laplace y se
+00:02:33,156 --> 00:02:34,960
+6%.
 
 42
-00:02:44,000 --> 00:02:46,880
-remonta al siglo XVIII. Para comprender qué suposiciones subyacen a esto
+00:02:34,960 --> 00:02:37,260
+Entonces, de acuerdo con esta regla, significaría que lo
 
 43
-00:02:46,880 --> 00:02:52,320
-y cómo cambiar esas suposiciones o su objetivo subyacente puede cambiar
+00:02:37,260 --> 00:02:39,520
+mejor que puede hacer es optar por el vendedor número 2.
 
 44
-00:02:52,320 --> 00:02:54,400
-la elección que hace, realmente necesitamos pasar por todas las matemáticas.
+00:02:39,520 --> 00:02:43,160
+Esto es algo conocido como regla de sucesión de Laplace y se remonta
 
 45
-00:02:54,400 --> 00:02:56,240
-Así que sin más preámbulos, profundicemos.
+00:02:43,160 --> 00:02:46,960
+al siglo XVIII. Para comprender qué suposiciones subyacen a esto y cómo
 
 46
-00:03:00,800 --> 00:03:03,920
-Paso 1, ¿cómo estamos modelando exactamente la situación
+00:02:46,960 --> 00:02:50,548
+cambiar esas suposiciones o su objetivo subyacente puede cambiar la
 
 47
-00:03:03,920 --> 00:03:06,160
-y qué es exactamente lo que desea optimizar?
+00:02:50,548 --> 00:02:54,400
+elección que hace, realmente necesitamos pasar por todas las matemáticas.
 
 48
-00:03:06,960 --> 00:03:10,640
-Una opción es pensar que cada vendedor produce experiencias aleatorias que
+00:02:54,400 --> 00:03:00,800
+Así que sin más preámbulos, profundicemos.
 
 49
-00:03:10,640 --> 00:03:12,560
-son positivas o negativas, y que cada vendedor tiene algún
+00:03:00,800 --> 00:03:03,666
+Paso 1, ¿cómo estamos modelando exactamente la
 
 50
-00:03:12,560 --> 00:03:18,080
-tipo de probabilidad subyacente constante de brindar una buena experiencia,
+00:03:03,666 --> 00:03:06,960
+situación y qué es exactamente lo que desea optimizar?
 
 51
-00:03:18,080 --> 00:03:21,200
-lo que llamaremos tasa de éxito, o S para corto.
+00:03:06,960 --> 00:03:12,065
+Una opción es pensar que cada vendedor produce experiencias aleatorias que son positivas
 
 52
-00:03:21,760 --> 00:03:23,920
-Todo el desafío es que no conocemos a S.
+00:03:12,065 --> 00:03:17,056
+o negativas, y que cada vendedor tiene algún tipo de probabilidad subyacente constante
 
 53
-00:03:25,520 --> 00:03:28,640
-Cuando ve esa primera calificación del 100% con 10 reseñas, eso
+00:03:17,056 --> 00:03:21,760
+de brindar una buena experiencia, lo que llamaremos tasa de éxito, o S para corto.
 
 54
-00:03:28,640 --> 00:03:31,040
-no significa que la tasa de éxito subyacente sea del 100%.
+00:03:21,760 --> 00:03:25,520
+Todo el desafío es que no conocemos a S.
 
 55
-00:03:31,840 --> 00:03:33,920
-Bien podría ser algo así como el 95%.
+00:03:25,520 --> 00:03:28,628
+Cuando ve esa primera calificación del 100% con 10 reseñas,
 
 56
-00:03:34,800 --> 00:03:37,520
-Y sólo para ilustrar, permítanme ejecutar una pequeña simulación, donde elijo
+00:03:28,628 --> 00:03:31,840
+eso no significa que la tasa de éxito subyacente sea del 100%.
 
 57
-00:03:37,520 --> 00:03:40,400
-un número aleatorio entre 0 y 1, y si es
+00:03:31,840 --> 00:03:34,800
+Bien podría ser algo así como el 95%.
 
 58
-00:03:40,400 --> 00:03:44,480
-menor que 0. 95, la registraré como una reseña positiva;
+00:03:34,800 --> 00:03:38,371
+Y sólo para ilustrar, permítanme ejecutar una pequeña simulación,
 
 59
-00:03:44,480 --> 00:03:47,280
-de lo contrario, la registraré como una reseña negativa.
+00:03:38,371 --> 00:03:41,889
+donde elijo un número aleatorio entre 0 y 1, y si es menor que 0.
 
 60
-00:03:48,960 --> 00:03:50,640
-Ahora haga esto 10 veces seguidas y
+00:03:41,889 --> 00:03:45,424
+95, la registraré como una reseña positiva; de lo
 
 61
-00:03:52,080 --> 00:03:53,280
-luego haga 10 más, 10 más,
+00:03:45,424 --> 00:03:48,960
+contrario, la registraré como una reseña negativa.
 
 62
-00:03:54,240 --> 00:03:55,040
-10 más, y así sucesivamente, para tener
+00:03:48,960 --> 00:03:53,874
+Ahora haga esto 10 veces seguidas y luego haga 10 más, 10 más,
 
 63
-00:03:56,240 --> 00:03:57,200
-una idea de qué secuencias de
+00:03:53,874 --> 00:03:59,100
+10 más, y así sucesivamente, para tener una idea de qué secuencias
 
 64
-00:03:57,200 --> 00:03:57,920
-10 reseñas tiene un vendedor con
+00:03:59,100 --> 00:04:03,780
+de 10 reseñas tiene un vendedor con esta tasa de éxito de 0.
 
 65
-00:03:57,920 --> 00:04:03,920
-esta tasa de éxito de 0. 95
+00:04:03,780 --> 00:04:05,600
+95 tendería a parecerse.
 
 66
-00:04:03,920 --> 00:04:04,880
-tendería a parecerse.
-
-67
 00:04:05,600 --> 00:04:09,920
 Un buen número de ellos, en realidad alrededor del 60%, dan un 10 sobre 10.
 
+67
+00:04:09,920 --> 00:04:12,944
+Entonces, los datos que vemos parecen perfectamente plausibles
+
 68
-00:04:09,920 --> 00:04:14,640
-Entonces, los datos que vemos parecen perfectamente plausibles si la verdadera tasa de éxito del vendedor fuera del 95%.
+00:04:12,944 --> 00:04:15,680
+si la verdadera tasa de éxito del vendedor fuera del 95%.
 
 69
-00:04:15,680 --> 00:04:18,160
+00:04:15,680 --> 00:04:18,720
 O tal vez sea realmente el 90% o el 99%.
 
 70
-00:04:18,720 --> 00:04:20,560
+00:04:18,720 --> 00:04:21,440
 Todo el desafío es que simplemente no lo sabemos.
 
 71
-00:04:21,440 --> 00:04:26,720
-En cuanto al objetivo, digamos que simplemente desea maximizar su probabilidad de tener una
+00:04:21,440 --> 00:04:25,786
+En cuanto al objetivo, digamos que simplemente desea maximizar su probabilidad de
 
 72
-00:04:26,720 --> 00:04:28,880
-experiencia positiva, a pesar de no estar seguro de esta tasa de éxito.
+00:04:25,786 --> 00:04:30,080
+tener una experiencia positiva, a pesar de no estar seguro de esta tasa de éxito.
 
 73
 00:04:30,080 --> 00:04:31,360
 Así que piensa en esto aquí.
 
 74
-00:04:31,360 --> 00:04:36,960
-Tenemos muchas tasas de éxito posibles diferentes para cada vendedor, cualquier número desde
+00:04:31,360 --> 00:04:36,036
+Tenemos muchas tasas de éxito posibles diferentes para cada vendedor, cualquier
 
 75
-00:04:36,960 --> 00:04:41,200
-0 hasta 1, y necesitamos decir algo sobre la probabilidad de cada
+00:04:36,036 --> 00:04:40,655
+número desde 0 hasta 1, y necesitamos decir algo sobre la probabilidad de cada
 
 76
-00:04:41,200 --> 00:04:43,920
+00:04:40,655 --> 00:04:45,040
 una de estas tasas de éxito, una especie de probabilidad de probabilidades.
 
 77
-00:04:45,040 --> 00:04:48,480
-A diferencia de los ejemplos más ludificados, como los lanzamientos de monedas y
+00:04:45,040 --> 00:04:49,512
+A diferencia de los ejemplos más ludificados, como los lanzamientos de monedas y dados,
 
 78
-00:04:48,480 --> 00:04:51,120
-dados, y el tipo de cosas que se ven en una clase de
+00:04:49,512 --> 00:04:53,934
+y el tipo de cosas que se ven en una clase de introducción a la probabilidad, donde se
 
 79
-00:04:51,120 --> 00:04:55,840
-introducción a la probabilidad, donde se supone una frecuencia de largo plazo, como
+00:04:53,934 --> 00:04:58,254
+supone una frecuencia de largo plazo, como 1 mitad o 1 sexto, lo que tenemos aquí es
 
 80
-00:04:55,840 --> 00:05:00,080
-1 mitad o 1 sexto, lo que tenemos aquí es incertidumbre sobre la
+00:04:58,254 --> 00:05:02,473
+incertidumbre sobre la frecuencia de largo plazo, que es un tipo de duda mucho más
 
 81
-00:05:00,080 --> 00:05:02,000
-frecuencia de largo plazo, que es un tipo de duda mucho más potente.
+00:05:02,473 --> 00:05:02,880
+potente.
 
 82
-00:05:02,880 --> 00:05:08,160
-También debo enfatizar que este tipo de configuración es relevante para muchas, muchas situaciones en el mundo
+00:05:02,880 --> 00:05:06,039
+También debo enfatizar que este tipo de configuración es relevante
 
 83
-00:05:08,160 --> 00:05:11,680
-real donde es necesario emitir un juicio sobre un proceso aleatorio a partir de datos limitados.
+00:05:06,039 --> 00:05:09,245
+para muchas, muchas situaciones en el mundo real donde es necesario
 
 84
-00:05:12,640 --> 00:05:16,240
-Por ejemplo, digamos que estás montando una fábrica que produce automóviles y en una
+00:05:09,245 --> 00:05:12,640
+emitir un juicio sobre un proceso aleatorio a partir de datos limitados.
 
 85
-00:05:16,240 --> 00:05:20,720
-prueba inicial de 100 automóviles, dos de ellos tienen algún tipo de problema.
+00:05:12,640 --> 00:05:17,013
+Por ejemplo, digamos que estás montando una fábrica que produce automóviles y en
 
 86
-00:05:21,440 --> 00:05:24,960
-Si planea acelerar las cosas para producir un millón de automóviles, ¿qué está dispuesto
+00:05:17,013 --> 00:05:21,440
+una prueba inicial de 100 automóviles, dos de ellos tienen algún tipo de problema.
 
 87
-00:05:24,960 --> 00:05:30,480
-a decir con confianza sobre cuántos automóviles en total tendrán problemas que deben abordarse?
+00:05:21,440 --> 00:05:24,361
+Si planea acelerar las cosas para producir un millón de
 
 88
-00:05:31,040 --> 00:05:34,160
-No es que la prueba garantice que la verdadera tasa
+00:05:24,361 --> 00:05:27,544
+automóviles, ¿qué está dispuesto a decir con confianza sobre
 
 89
-00:05:34,960 --> 00:05:36,480
-de error sea del 2%, pero ¿qué dice exactamente?
+00:05:27,544 --> 00:05:31,040
+cuántos automóviles en total tendrán problemas que deben abordarse?
 
 90
+00:05:31,040 --> 00:05:34,950
+No es que la prueba garantice que la verdadera tasa
+
+91
+00:05:34,950 --> 00:05:38,560
+de error sea del 2%, pero ¿qué dice exactamente?
+
+92
 00:05:38,560 --> 00:05:40,800
 Como primer desafío, déjame preguntarte esto.
 
-91
-00:05:40,800 --> 00:05:45,200
-Si supieras mágicamente la verdadera tasa de éxito de un vendedor determinado, digamos
-
-92
-00:05:46,080 --> 00:05:49,680
-que es del 95%, ¿cómo calcularías la probabilidad de ver, digamos, 10 reseñas
-
 93
-00:05:49,680 --> 00:05:56,160
-positivas y 0 críticas negativas, o 48 y 2, o 186 y 14?
+00:05:40,800 --> 00:05:46,631
+Si supieras mágicamente la verdadera tasa de éxito de un vendedor determinado,
 
 94
-00:05:57,040 --> 00:06:02,000
-En otras palabras, ¿cuál es la probabilidad de ver los datos dada una tasa de éxito supuesta?
+00:05:46,631 --> 00:05:52,168
+digamos que es del 95%, ¿cómo calcularías la probabilidad de ver, digamos,
 
 95
-00:06:03,040 --> 00:06:08,240
-Hace un momento, les mostré algo como esto con una simulación, generando 10
+00:05:52,168 --> 00:05:57,040
+10 reseñas positivas y 0 críticas negativas, o 48 y 2, o 186 y 14?
 
 96
-00:06:08,240 --> 00:06:11,280
-revisiones aleatorias, y con un poco de programación, podrían hacerlo muchas veces, construyendo
+00:05:57,040 --> 00:06:00,072
+En otras palabras, ¿cuál es la probabilidad de
 
 97
-00:06:11,280 --> 00:06:14,640
-un histograma para tener una idea de cómo se ve esta distribución.
+00:06:00,072 --> 00:06:03,040
+ver los datos dada una tasa de éxito supuesta?
 
 98
-00:06:21,680 --> 00:06:24,400
-Del mismo modo, podría simular conjuntos de 50 reseñas y tener una
+00:06:03,040 --> 00:06:08,967
+Hace un momento, les mostré algo como esto con una simulación, generando 10
 
 99
-00:06:24,400 --> 00:06:29,120
-idea de la probabilidad de ver 48 positivas y 2 negativas.
+00:06:08,967 --> 00:06:14,972
+revisiones aleatorias, y con un poco de programación, podrían hacerlo muchas
 
 100
+00:06:14,972 --> 00:06:21,680
+veces, construyendo un histograma para tener una idea de cómo se ve esta distribución.
+
+101
+00:06:21,680 --> 00:06:25,752
+Del mismo modo, podría simular conjuntos de 50 reseñas y tener
+
+102
+00:06:25,752 --> 00:06:29,760
+una idea de la probabilidad de ver 48 positivas y 2 negativas.
+
+103
 00:06:29,760 --> 00:06:31,760
 Verás, esto es lo bueno de la probabilidad.
 
-101
-00:06:31,760 --> 00:06:34,560
-Un poco de programación casi siempre puede permitirte hacer un poco
-
-102
-00:06:34,560 --> 00:06:37,680
-de trampa y ver cuál es la respuesta de antemano simulándola.
-
-103
-00:06:37,680 --> 00:06:41,200
-Por ejemplo, después de unos cientos de miles de muestras de
-
 104
-00:06:41,200 --> 00:06:42,880
-50 reseñas, suponiendo que la tasa de éxito sea del 95%,
+00:06:31,760 --> 00:06:34,651
+Un poco de programación casi siempre puede permitirte hacer un
 
 105
-00:06:43,680 --> 00:06:48,160
-parece unas 26. El 1% de ellos nos daría esta valoración de 48 sobre 50.
+00:06:34,651 --> 00:06:37,680
+poco de trampa y ver cuál es la respuesta de antemano simulándola.
 
 106
+00:06:37,680 --> 00:06:41,235
+Por ejemplo, después de unos cientos de miles de muestras de 50
+
+107
+00:06:41,235 --> 00:06:45,068
+reseñas, suponiendo que la tasa de éxito sea del 95%, parece unas 26.
+
+108
+00:06:45,068 --> 00:06:49,120
+El 1% de ellos nos daría esta valoración de 48 sobre 50.
+
+109
 00:06:49,120 --> 00:06:52,800
 Por suerte, en este caso una fórmula exacta no está nada mal.
 
-107
-00:06:52,800 --> 00:06:56,560
+110
+00:06:52,800 --> 00:06:57,600
 La probabilidad de ver exactamente 48 de 50 se ve así.
 
-108
-00:06:57,600 --> 00:07:00,960
-Este primer término se pronuncia 50 elige 48 y
-
-109
-00:07:00,960 --> 00:07:04,960
-representa el número total de formas en que podrías
-
-110
-00:07:06,000 --> 00:07:07,600
-tomar 50 espacios y completar 48 de ellos.
-
 111
-00:07:09,280 --> 00:07:13,520
-Por ejemplo, tal vez comiences con 48 buenas críticas y termines con 2 malas críticas, o tal
+00:06:57,600 --> 00:07:03,232
+Este primer término se pronuncia 50 elige 48 y representa el número
 
 112
-00:07:13,520 --> 00:07:18,400
-vez comiences con 47 buenas críticas y luego todo sea malo, bueno, malo, y así sucesivamente.
+00:07:03,232 --> 00:07:09,280
+total de formas en que podrías tomar 50 espacios y completar 48 de ellos.
 
 113
-00:07:18,960 --> 00:07:22,080
-En principio, si tuviera que enumerar todas las formas
+00:07:09,280 --> 00:07:12,662
+Por ejemplo, tal vez comiences con 48 buenas críticas y termines
 
 114
-00:07:22,080 --> 00:07:24,800
-posibles de llenar 48 de 50 espacios de esta
+00:07:12,662 --> 00:07:16,045
+con 2 malas críticas, o tal vez comiences con 47 buenas críticas
 
 115
-00:07:24,800 --> 00:07:28,480
-manera, el número total de estos patrones es 50,
+00:07:16,045 --> 00:07:18,960
+y luego todo sea malo, bueno, malo, y así sucesivamente.
 
 116
-00:07:28,480 --> 00:07:31,840
-elija 48, que en este caso resulta ser 1225.
+00:07:18,960 --> 00:07:23,443
+En principio, si tuviera que enumerar todas las formas posibles
 
 117
+00:07:23,443 --> 00:07:27,856
+de llenar 48 de 50 espacios de esta manera, el número total de
+
+118
+00:07:27,856 --> 00:07:32,480
+estos patrones es 50, elija 48, que en este caso resulta ser 1225.
+
+119
 00:07:32,480 --> 00:07:34,160
 ¿Qué multiplicamos por esta cuenta?
 
-118
-00:07:34,160 --> 00:07:37,120
-Bueno, es la probabilidad de cualquiera de estos patrones, que es
-
-119
-00:07:37,120 --> 00:07:41,440
-la probabilidad de una sola reseña positiva elevada a 48
-
 120
-00:07:41,440 --> 00:07:44,800
-veces la probabilidad de una sola reseña negativa al cuadrado.
+00:07:34,160 --> 00:07:37,757
+Bueno, es la probabilidad de cualquiera de estos patrones,
 
 121
-00:07:45,440 --> 00:07:49,120
-Lo crucial es que asumimos que cada revisión es independiente de la anterior,
+00:07:37,757 --> 00:07:41,476
+que es la probabilidad de una sola reseña positiva elevada a
 
 122
-00:07:49,120 --> 00:07:51,920
-por lo que podemos multiplicar todas las probabilidades de esta manera, y
+00:07:41,476 --> 00:07:45,440
+48 veces la probabilidad de una sola reseña negativa al cuadrado.
 
 123
-00:07:52,480 --> 00:07:57,360
-con los números que tenemos, cuando lo evalúas, resulta ser 0. 261,
+00:07:45,440 --> 00:07:49,146
+Lo crucial es que asumimos que cada revisión es independiente de la
 
 124
-00:07:57,360 --> 00:08:00,160
-que coincide con lo que acabamos de ver empíricamente con la simulación.
+00:07:49,146 --> 00:07:52,906
+anterior, por lo que podemos multiplicar todas las probabilidades de
 
 125
-00:08:02,000 --> 00:08:04,960
-También puede reemplazar este 48 con algún otro valor y
+00:07:52,906 --> 00:07:57,103
+esta manera, y con los números que tenemos, cuando lo evalúas, resulta ser 0.
 
 126
-00:08:04,960 --> 00:08:08,640
-calcular la probabilidad de ver cualquier otro número de
+00:07:57,103 --> 00:08:02,000
+261, que coincide con lo que acabamos de ver empíricamente con la simulación.
 
 127
-00:08:09,200 --> 00:08:11,280
-reseñas positivas, asumiendo nuevamente una tasa de éxito determinada.
+00:08:02,000 --> 00:08:06,574
+También puede reemplazar este 48 con algún otro valor y calcular
 
 128
-00:08:14,880 --> 00:08:16,960
-Por cierto, lo que estamos viendo ahora se
+00:08:06,574 --> 00:08:10,516
+la probabilidad de ver cualquier otro número de reseñas
 
 129
-00:08:16,960 --> 00:08:20,000
-conoce en el negocio como distribución binomial, una
+00:08:10,516 --> 00:08:14,880
+positivas, asumiendo nuevamente una tasa de éxito determinada.
 
 130
-00:08:20,000 --> 00:08:23,680
-de las distribuciones de probabilidad más fundamentales.
+00:08:14,880 --> 00:08:19,627
+Por cierto, lo que estamos viendo ahora se conoce en el negocio como distribución
 
 131
-00:08:23,680 --> 00:08:26,480
-Aparece cada vez que tienes algo como lanzar una moneda al aire, un
+00:08:19,627 --> 00:08:23,680
+binomial, una de las distribuciones de probabilidad más fundamentales.
 
 132
-00:08:26,480 --> 00:08:31,040
-evento aleatorio que puede ocurrir de dos maneras, y lo repites varias veces,
+00:08:23,680 --> 00:08:27,973
+Aparece cada vez que tienes algo como lanzar una moneda al aire, un evento
 
 133
-00:08:31,040 --> 00:08:35,120
-y lo que quieres saber es la probabilidad de obtener varios totales diferentes.
+00:08:27,973 --> 00:08:32,323
+aleatorio que puede ocurrir de dos maneras, y lo repites varias veces, y lo
 
 134
-00:08:36,560 --> 00:08:41,120
-Para nuestros propósitos, esta fórmula nos da la probabilidad de ver los
+00:08:32,323 --> 00:08:36,560
+que quieres saber es la probabilidad de obtener varios totales diferentes.
 
 135
-00:08:41,120 --> 00:08:43,360
-datos dada una tasa de éxito supuesta, que en última instancia queremos
+00:08:36,560 --> 00:08:40,213
+Para nuestros propósitos, esta fórmula nos da la probabilidad de ver
 
 136
-00:08:43,360 --> 00:08:47,360
-usar de alguna manera para hacer juicios sobre lo contrario, la probabilidad
+00:08:40,213 --> 00:08:43,760
+los datos dada una tasa de éxito supuesta, que en última instancia
 
 137
-00:08:47,360 --> 00:08:51,120
-de una tasa de éxito dadas los datos fijos que vemos.
+00:08:43,760 --> 00:08:47,466
+queremos usar de alguna manera para hacer juicios sobre lo contrario,
 
 138
-00:08:51,120 --> 00:08:53,440
-Estos están relacionados, pero definitivamente son distintos.
+00:08:47,466 --> 00:08:51,120
+la probabilidad de una tasa de éxito dadas los datos fijos que vemos.
 
 139
-00:08:54,560 --> 00:08:57,920
-Para ir más en esa dirección, juguemos con este valor de s y
+00:08:51,120 --> 00:08:54,560
+Estos están relacionados, pero definitivamente son distintos.
 
 140
-00:08:57,920 --> 00:09:02,080
-veamos qué sucede cuando lo cambiamos a diferentes números entre 0 y 1.
+00:08:54,560 --> 00:08:59,587
+Para ir más en esa dirección, juguemos con este valor de s y veamos
 
 141
-00:09:04,320 --> 00:09:08,320
-La distribución binomial que produce se parece a esta pila que
+00:08:59,587 --> 00:09:04,320
+qué sucede cuando lo cambiamos a diferentes números entre 0 y 1.
 
 142
-00:09:08,320 --> 00:09:10,720
-está centrada alrededor de lo que sea s multiplicado por 50.
+00:09:04,320 --> 00:09:07,658
+La distribución binomial que produce se parece a esta pila
 
 143
-00:09:11,280 --> 00:09:15,760
-El valor que nos importa, la probabilidad de ver 48 de
+00:09:07,658 --> 00:09:11,280
+que está centrada alrededor de lo que sea s multiplicado por 50.
 
 144
-00:09:15,760 --> 00:09:18,640
-50 reseñas, está representado por esta barra número 48 resaltada.
+00:09:11,280 --> 00:09:15,224
+El valor que nos importa, la probabilidad de ver 48 de 50
 
 145
-00:09:19,440 --> 00:09:24,480
-Entonces, dibujemos un segundo gráfico en la parte inferior, que represente cómo ese valor depende de s.
+00:09:15,224 --> 00:09:19,440
+reseñas, está representado por esta barra número 48 resaltada.
 
 146
-00:09:25,440 --> 00:09:30,640
-Cuando s es igual a 0. 96, ese valor es el más alto que jamás alcanzará.
+00:09:19,440 --> 00:09:22,382
+Entonces, dibujemos un segundo gráfico en la parte
 
 147
-00:09:30,640 --> 00:09:34,640
-Y esto debería tener sentido, porque cuando nos fijamos en esa revisión del 96%,
+00:09:22,382 --> 00:09:25,440
+inferior, que represente cómo ese valor depende de s.
 
 148
-00:09:35,440 --> 00:09:39,280
-lo más probable sería que la verdadera tasa de éxito subyacente fuera del 96%.
+00:09:25,440 --> 00:09:26,904
+Cuando s es igual a 0.
 
 149
-00:09:41,120 --> 00:09:46,480
-A medida que s aumenta, se agota y llega a 0 a medida que s se acerca
+00:09:26,904 --> 00:09:30,640
+96, ese valor es el más alto que jamás alcanzará.
 
 150
-00:09:46,480 --> 00:09:50,400
-a 1, ya que alguien con una tasa de éxito perfecta nunca tendría esas dos críticas negativas.
+00:09:30,640 --> 00:09:35,978
+Y esto debería tener sentido, porque cuando nos fijamos en esa revisión del 96%,
 
 151
-00:09:51,280 --> 00:09:54,400
-Además, a medida que te mueves hacia la izquierda, se acerca a 0 con bastante rapidez.
+00:09:35,978 --> 00:09:41,120
+lo más probable sería que la verdadera tasa de éxito subyacente fuera del 96%.
 
 152
-00:09:56,800 --> 00:09:59,760
-Cuando llegues a s es igual a 0. 8,
+00:09:41,120 --> 00:09:46,231
+A medida que s aumenta, se agota y llega a 0 a medida que s se acerca a 1, ya que
 
 153
-00:09:59,760 --> 00:10:03,280
-obtener 48 de 50 reseñas por casualidad es
+00:09:46,231 --> 00:09:51,280
+alguien con una tasa de éxito perfecta nunca tendría esas dos críticas negativas.
 
 154
-00:10:03,280 --> 00:10:05,040
-extremadamente raro, sucedería una entre mil veces.
+00:09:51,280 --> 00:09:56,800
+Además, a medida que te mueves hacia la izquierda, se acerca a 0 con bastante rapidez.
 
 155
-00:10:06,160 --> 00:10:10,320
-Este gráfico que tenemos en la parte inferior es un excelente comienzo para obtener
+00:09:56,800 --> 00:09:59,590
+Cuando llegues a s es igual a 0.
 
 156
-00:10:10,320 --> 00:10:13,360
-una descripción más cuantitativa de qué valores de s parecen más o menos plausibles.
+00:09:59,590 --> 00:10:02,706
+8, obtener 48 de 50 reseñas por casualidad es
 
 157
-00:10:14,400 --> 00:10:19,280
-Escrito como una fórmula, lo que quiero que recuerdes es que, en función de la
+00:10:02,706 --> 00:10:06,160
+extremadamente raro, sucedería una entre mil veces.
 
 158
-00:10:19,280 --> 00:10:24,960
-tasa de éxito, s, la curva parece una constante multiplicada por s para el número
+00:10:06,160 --> 00:10:10,280
+Este gráfico que tenemos en la parte inferior es un excelente comienzo para obtener
 
 159
-00:10:24,960 --> 00:10:28,000
-de reseñas positivas multiplicada por 1 menos s para el número de reseñas negativas.
+00:10:10,280 --> 00:10:14,400
+una descripción más cuantitativa de qué valores de s parecen más o menos plausibles.
 
 160
-00:10:28,960 --> 00:10:34,560
-En principio, si tuviéramos más datos, como 480 reseñas positivas y
+00:10:14,400 --> 00:10:19,094
+Escrito como una fórmula, lo que quiero que recuerdes es que, en función de la
 
 161
-00:10:34,560 --> 00:10:37,440
-20 críticas negativas, la gráfica resultante seguiría centrada en 0. 96,
+00:10:19,094 --> 00:10:23,968
+tasa de éxito, s, la curva parece una constante multiplicada por s para el número
 
 162
-00:10:37,440 --> 00:10:39,520
-pero sería más pequeño y más concentrado.
+00:10:23,968 --> 00:10:28,960
+de reseñas positivas multiplicada por 1 menos s para el número de reseñas negativas.
 
 163
-00:10:40,080 --> 00:10:44,160
-Un buen ejercicio ahora sería ver si pudiera explicar por qué es así.
+00:10:28,960 --> 00:10:33,120
+En principio, si tuviéramos más datos, como 480 reseñas positivas y
 
 164
-00:10:45,360 --> 00:10:49,440
-Sin embargo, persiste la pregunta de qué hacer realmente con estas curvas.
+00:10:33,120 --> 00:10:37,280
+20 críticas negativas, la gráfica resultante seguiría centrada en 0.
 
 165
-00:10:50,000 --> 00:10:54,880
-Quiero decir, nuestro objetivo es calcular la probabilidad de que
+00:10:37,280 --> 00:10:40,080
+96, pero sería más pequeño y más concentrado.
 
 166
-00:10:54,880 --> 00:10:55,600
-tengas una buena experiencia con este vendedor, entonces, ¿qué haces?
+00:10:40,080 --> 00:10:45,360
+Un buen ejercicio ahora sería ver si pudiera explicar por qué es así.
 
 167
-00:10:56,720 --> 00:10:59,760
-Ingenuamente, se podría pensar que la probabilidad es del 96%, ya que ahí es donde está
+00:10:45,360 --> 00:10:50,000
+Sin embargo, persiste la pregunta de qué hacer realmente con estas curvas.
 
 168
-00:11:00,400 --> 00:11:05,440
-el pico del gráfico, que en cierto sentido es la tasa de éxito más probable.
+00:10:50,000 --> 00:10:53,285
+Quiero decir, nuestro objetivo es calcular la probabilidad de que
 
 169
+00:10:53,285 --> 00:10:56,720
+tengas una buena experiencia con este vendedor, entonces, ¿qué haces?
+
+170
+00:10:56,720 --> 00:11:01,133
+Ingenuamente, se podría pensar que la probabilidad es del 96%, ya que ahí es donde
+
+171
+00:11:01,133 --> 00:11:05,440
+está el pico del gráfico, que en cierto sentido es la tasa de éxito más probable.
+
+172
 00:11:05,440 --> 00:11:08,400
 Pero pensemos en el ejemplo con 10 de 10 positivos.
 
-170
-00:11:08,400 --> 00:11:13,200
+173
+00:11:08,400 --> 00:11:14,880
 En ese caso, toda la fórmula binomial se simplifica para ser s elevado a 10.
 
-171
-00:11:14,880 --> 00:11:17,840
-La probabilidad de ver 10 buenas críticas consecutivas es la
-
-172
-00:11:17,840 --> 00:11:20,640
-probabilidad de ver una de ellas elevada al décimo.
-
-173
-00:11:21,360 --> 00:11:26,560
-Cuanto más cerca esté la verdadera tasa de éxito de 1, mayor será la probabilidad de ver un 10 sobre 10.
-
 174
-00:11:27,120 --> 00:11:30,880
-Nuestra gráfica en la parte inferior solo aumenta cuando s se acerca a 1.
+00:11:14,880 --> 00:11:18,062
+La probabilidad de ver 10 buenas críticas consecutivas
 
 175
-00:11:32,320 --> 00:11:36,560
-Pero incluso si s igual a 1 es el valor que maximiza
+00:11:18,062 --> 00:11:21,360
+es la probabilidad de ver una de ellas elevada al décimo.
 
 176
-00:11:36,560 --> 00:11:40,240
-esta probabilidad, seguramente no te sentirías cómodo diciendo que personalmente tienes un
+00:11:21,360 --> 00:11:24,240
+Cuanto más cerca esté la verdadera tasa de éxito de
 
 177
-00:11:40,240 --> 00:11:42,480
-100% de probabilidad de tener una buena experiencia con este vendedor.
+00:11:24,240 --> 00:11:27,120
+1, mayor será la probabilidad de ver un 10 sobre 10.
 
 178
-00:11:43,440 --> 00:11:48,240
-Tal vez pienses que deberíamos buscar algún tipo de centro de masa
+00:11:27,120 --> 00:11:32,320
+Nuestra gráfica en la parte inferior solo aumenta cuando s se acerca a 1.
 
 179
-00:11:48,240 --> 00:11:50,240
-de este gráfico, y eso estaría absolutamente en el camino correcto.
+00:11:32,320 --> 00:11:36,061
+Pero incluso si s igual a 1 es el valor que maximiza esta probabilidad,
 
 180
-00:11:51,280 --> 00:11:54,800
-Sin embargo, primero debemos explicar cómo tomar esta expresión para la probabilidad
+00:11:36,061 --> 00:11:39,802
+seguramente no te sentirías cómodo diciendo que personalmente tienes un
 
 181
-00:11:54,800 --> 00:11:58,720
-de los datos que estamos viendo dado un valor de s,
+00:11:39,802 --> 00:11:43,440
+100% de probabilidad de tener una buena experiencia con este vendedor.
 
 182
-00:11:58,720 --> 00:12:02,720
-y obtener la probabilidad para un valor de s, lo que
+00:11:43,440 --> 00:11:47,360
+Tal vez pienses que deberíamos buscar algún tipo de centro de masa
 
 183
-00:12:02,720 --> 00:12:04,800
-en realidad no sabemos, dada la datos, lo que realmente sabemos.
+00:11:47,360 --> 00:11:51,280
+de este gráfico, y eso estaría absolutamente en el camino correcto.
 
 184
-00:12:05,600 --> 00:12:09,920
-Y eso requiere que hablemos de la regla de Bayes y también de las funciones de densidad de probabilidad.
+00:11:51,280 --> 00:11:56,072
+Sin embargo, primero debemos explicar cómo tomar esta expresión para la probabilidad
 
 185
-00:12:10,480 --> 00:12:13,040
+00:11:56,072 --> 00:12:00,751
+de los datos que estamos viendo dado un valor de s, y obtener la probabilidad para
+
+186
+00:12:00,751 --> 00:12:05,600
+un valor de s, lo que en realidad no sabemos, dada la datos, lo que realmente sabemos.
+
+187
+00:12:05,600 --> 00:12:07,993
+Y eso requiere que hablemos de la regla de Bayes y
+
+188
+00:12:07,993 --> 00:12:10,480
+también de las funciones de densidad de probabilidad.
+
+189
+00:12:10,480 --> 00:12:10,480
 Para esos, nos vemos en la parte 2.
 
