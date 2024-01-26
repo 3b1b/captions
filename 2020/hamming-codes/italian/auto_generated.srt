@@ -7,1030 +7,1070 @@ Presumo che tutti qui provengano dalla parte 1.
 Stavamo parlando dei codici di Hamming, un modo per creare un blocco di dati in cui
 
 3
-00:00:06,888 --> 00:00:10,433
-la maggior parte dei bit porta un messaggio significativo, mentre alcuni altri
+00:00:06,888 --> 00:00:09,536
+la maggior parte dei bit porta un messaggio significativo,
 
 4
-00:00:10,433 --> 00:00:14,382
-agiscono come una sorta di ridondanza, in modo tale che se qualche bit viene invertito,
+00:00:09,536 --> 00:00:12,183
+mentre alcuni altri agiscono come una sorta di ridondanza,
 
 5
-00:00:14,382 --> 00:00:17,926
-o un messaggio bit o un bit di ridondanza, qualsiasi cosa in questo blocco, un
+00:00:12,183 --> 00:00:14,382
+in modo tale che se qualche bit viene invertito,
 
 6
-00:00:17,926 --> 00:00:21,920
-ricevitore sarà in grado di identificare che si è verificato un errore e come risolverlo.
+00:00:14,382 --> 00:00:17,792
+o un messaggio bit o un bit di ridondanza, qualsiasi cosa in questo blocco,
 
 7
+00:00:17,792 --> 00:00:21,426
+un ricevitore sarà in grado di identificare che si è verificato un errore e come
+
+8
+00:00:21,426 --> 00:00:21,920
+risolverlo.
+
+9
 00:00:21,920 --> 00:00:25,922
 L&#39;idea di base presentata era come utilizzare più controlli
 
-8
+10
 00:00:25,922 --> 00:00:29,800
 di parità per eseguire la ricerca binaria fino all&#39;errore.
 
-9
+11
 00:00:29,800 --> 00:00:32,610
 In quel video l&#39;obiettivo era rendere i codici
 
-10
+12
 00:00:32,610 --> 00:00:35,420
 di Hamming il più pratici e riscopribili possibile.
 
-11
+13
 00:00:35,420 --> 00:00:38,224
 Ma quando inizi a pensare di implementarlo effettivamente,
 
-12
+14
 00:00:38,224 --> 00:00:41,029
 sia nel software che nell&#39;hardware, l&#39;inquadratura
 
-13
+15
 00:00:41,029 --> 00:00:44,120
 potrebbe effettivamente sminuire l&#39;eleganza di questi codici.
 
-14
+16
 00:00:44,120 --> 00:00:47,466
 Potresti pensare di dover scrivere un algoritmo che tenga traccia di
 
-15
-00:00:47,466 --> 00:00:50,861
-tutte le possibili posizioni degli errori e divida quel gruppo a metà
-
-16
-00:00:50,861 --> 00:00:54,160
-ad ogni controllo, ma in realtà è molto, molto più semplice di così.
-
 17
+00:00:47,466 --> 00:00:51,783
+tutte le possibili posizioni degli errori e divida quel gruppo a metà ad ogni controllo,
+
+18
+00:00:51,783 --> 00:00:54,160
+ma in realtà è molto, molto più semplice di così.
+
+19
 00:00:54,160 --> 00:00:57,740
 Se leggi le risposte ai quattro controlli di parità che abbiamo fatto
 
-18
-00:00:57,740 --> 00:01:01,116
-nell&#39;ultimo video, tutte come 1 e 0 invece che sì e no, viene
-
-19
-00:01:01,116 --> 00:01:04,800
-letteralmente precisata la posizione dell&#39;errore in formato binario.
-
 20
+00:00:57,740 --> 00:01:00,810
+nell&#39;ultimo video, tutte come 1 e 0 invece che sì e no,
+
+21
+00:01:00,810 --> 00:01:04,800
+viene letteralmente precisata la posizione dell&#39;errore in formato binario.
+
+22
 00:01:04,800 --> 00:01:08,793
 Ad esempio, il numero 7 in binario assomiglia a 0111,
 
-21
+23
 00:01:08,793 --> 00:01:12,640
 il che significa essenzialmente che è 4 più 2 più 1.
 
-22
-00:01:12,640 --> 00:01:17,237
-E notate dove si trova la posizione 7, influenza il primo dei
-
-23
-00:01:17,237 --> 00:01:22,280
-nostri gruppi di parità, il secondo e il terzo, ma non l&#39;ultimo.
-
 24
+00:01:12,640 --> 00:01:19,091
+E notate dove si trova la posizione 7, influenza il primo dei nostri gruppi di parità,
+
+25
+00:01:19,091 --> 00:01:22,280
+il secondo e il terzo, ma non l&#39;ultimo.
+
+26
 00:01:22,280 --> 00:01:25,225
 Quindi leggere i risultati di questi quattro controlli dal
 
-25
+27
 00:01:25,225 --> 00:01:28,520
 basso verso l’alto effettivamente spiega la posizione dell’errore.
 
-26
-00:01:28,520 --> 00:01:32,904
-Non c&#39;è niente di speciale nell&#39;esempio 7, funziona in generale e questo rende
-
-27
-00:01:32,904 --> 00:01:37,440
-la logica per implementare l&#39;intero schema nell&#39;hardware incredibilmente semplice.
-
 28
-00:01:37,440 --> 00:01:41,773
-Ora se vuoi vedere perché avviene questa magia, prendi queste
+00:01:28,520 --> 00:01:31,090
+Non c&#39;è niente di speciale nell&#39;esempio 7,
 
 29
-00:01:41,773 --> 00:01:46,037
-16 etichette di indice per le nostre posizioni, ma invece di
+00:01:31,090 --> 00:01:35,272
+funziona in generale e questo rende la logica per implementare l&#39;intero schema
 
 30
-00:01:46,037 --> 00:01:50,720
-scriverle in base 10, scriviamole tutte in binario, da 0000 a 1111.
+00:01:35,272 --> 00:01:37,440
+nell&#39;hardware incredibilmente semplice.
 
 31
+00:01:37,440 --> 00:01:40,794
+Ora se vuoi vedere perché avviene questa magia,
+
+32
+00:01:40,794 --> 00:01:45,128
+prendi queste 16 etichette di indice per le nostre posizioni,
+
+33
+00:01:45,128 --> 00:01:50,720
+ma invece di scriverle in base 10, scriviamole tutte in binario, da 0000 a 1111.
+
+34
 00:01:50,720 --> 00:01:54,270
 Mentre rimettiamo queste etichette binarie nelle loro scatole,
 
-32
+35
 00:01:54,270 --> 00:01:58,440
 lasciatemi sottolineare che sono distinte dai dati effettivamente inviati.
 
-33
+36
 00:01:58,440 --> 00:02:01,249
 Non sono altro che un&#39;etichetta concettuale per aiutare
 
-34
+37
 00:02:01,249 --> 00:02:04,200
 te e me a capire da dove provengono i quattro gruppi di parità.
 
-35
+38
 00:02:04,200 --> 00:02:08,550
 L&#39;eleganza di avere tutto ciò che stiamo guardando descritto in binario è forse
 
-36
+39
 00:02:08,550 --> 00:02:13,160
 indebolita dalla confusione di avere tutto ciò che stiamo guardando descritto in binario.
 
-37
+40
 00:02:13,160 --> 00:02:15,040
 Ne vale la pena, però.
 
-38
-00:02:15,040 --> 00:02:19,564
-Concentra la tua attenzione solo sull&#39;ultima parte di tutte queste
-
-39
-00:02:19,564 --> 00:02:24,280
-etichette, quindi evidenzia le posizioni in cui l&#39;ultima parte è un 1.
-
-40
-00:02:24,280 --> 00:02:28,267
-Ciò che otteniamo è il primo dei nostri quattro gruppi di parità, il che
-
 41
-00:02:28,267 --> 00:02:32,364
-significa che puoi interpretare il primo controllo come se chiedessi, ehi,
+00:02:15,040 --> 00:02:20,265
+Concentra la tua attenzione solo sull&#39;ultima parte di tutte queste etichette,
 
 42
-00:02:32,364 --> 00:02:36,680
-se c&#39;è un errore, l&#39;ultimo bit nella posizione di quell&#39;errore è 1?
+00:02:20,265 --> 00:02:24,280
+quindi evidenzia le posizioni in cui l&#39;ultima parte è un 1.
 
 43
+00:02:24,280 --> 00:02:27,885
+Ciò che otteniamo è il primo dei nostri quattro gruppi di parità,
+
+44
+00:02:27,885 --> 00:02:32,091
+il che significa che puoi interpretare il primo controllo come se chiedessi,
+
+45
+00:02:32,091 --> 00:02:36,680
+ehi, se c&#39;è un errore, l&#39;ultimo bit nella posizione di quell&#39;errore è 1?
+
+46
 00:02:36,680 --> 00:02:41,655
 Allo stesso modo, se ti concentri sul penultimo bit ed evidenzi tutte le
 
-44
+47
 00:02:41,655 --> 00:02:47,040
 posizioni in cui è un 1, ottieni il secondo gruppo di parità dal nostro schema.
 
-45
+48
 00:02:47,040 --> 00:02:51,529
 In altre parole, il secondo controllo chiede, ehi, di nuovo io,
 
-46
+49
 00:02:51,529 --> 00:02:56,160
 se c&#39;è un errore, il penultimo bit di quella posizione è un 1?
 
-47
+50
 00:02:56,160 --> 00:02:57,160
 E così via.
 
-48
-00:02:57,160 --> 00:03:03,640
-Il terzo controllo di parità copre ogni posizione il cui terzultimo bit è attivato, e
-
-49
-00:03:03,640 --> 00:03:10,120
-l&#39;ultimo copre le ultime otto posizioni, quelle il cui bit di ordine più alto è 1.
-
-50
-00:03:10,120 --> 00:03:14,835
-Tutto quello che abbiamo fatto prima equivale a rispondere a queste quattro
-
 51
-00:03:14,835 --> 00:03:19,800
-domande, che a sua volta equivale a descrivere una posizione in formato binario.
+00:02:57,160 --> 00:03:03,489
+Il terzo controllo di parità copre ogni posizione il cui terzultimo bit è attivato,
 
 52
+00:03:03,489 --> 00:03:10,120
+e l&#39;ultimo copre le ultime otto posizioni, quelle il cui bit di ordine più alto è 1.
+
+53
+00:03:10,120 --> 00:03:15,394
+Tutto quello che abbiamo fatto prima equivale a rispondere a queste quattro domande,
+
+54
+00:03:15,394 --> 00:03:19,800
+che a sua volta equivale a descrivere una posizione in formato binario.
+
+55
 00:03:19,800 --> 00:03:22,080
 Spero che questo renda più chiare due cose.
 
-53
+56
 00:03:22,080 --> 00:03:24,516
 Il primo è come generalizzare sistematicamente alle
 
-54
+57
 00:03:24,516 --> 00:03:27,140
 dimensioni dei blocchi che sono potenze maggiori di due.
 
-55
+58
 00:03:27,140 --> 00:03:30,891
 Se sono necessari più bit per descrivere ciascuna posizione,
 
-56
+59
 00:03:30,891 --> 00:03:34,765
 ad esempio sei bit per descrivere 64 punti, ciascuno di questi
 
-57
+60
 00:03:34,765 --> 00:03:38,640
 bit fornisce uno dei gruppi di parità che dobbiamo controllare.
 
-58
+61
 00:03:38,640 --> 00:03:41,131
 Quelli di voi che hanno guardato il puzzle sulla scacchiera che ho realizzato
 
-59
+62
 00:03:41,131 --> 00:03:43,400
 con Matt Parker potrebbero trovare tutto questo estremamente familiare.
 
-60
+63
 00:03:43,400 --> 00:03:46,640
 È la stessa logica di base, ma risolve un problema
 
-61
+64
 00:03:46,640 --> 00:03:49,880
 diverso e applicata a una scacchiera da 64 caselle.
 
-62
+65
 00:03:49,880 --> 00:03:54,042
 La seconda cosa che spero venga chiarita è perché i nostri bit di parità
 
-63
+66
 00:03:54,042 --> 00:03:58,320
 si trovano nelle posizioni che sono potenze di due, ad esempio 1, 2, 4 e 8.
 
-64
+67
 00:03:58,320 --> 00:04:03,640
 Queste sono le posizioni la cui rappresentazione binaria ha un solo bit attivato.
 
-65
+68
 00:04:03,640 --> 00:04:08,030
 Ciò significa che ciascuno di questi bit di parità si trova
 
-66
+69
 00:04:08,030 --> 00:04:12,640
 all&#39;interno di uno e solo uno dei quattro gruppi di parità.
 
-67
-00:04:12,640 --> 00:04:19,187
-Puoi vedere questo anche in esempi più grandi, dove non importa quanto
+70
+00:04:12,640 --> 00:04:20,663
+Puoi vedere questo anche in esempi più grandi, dove non importa quanto diventi grande,
 
-68
-00:04:19,187 --> 00:04:25,920
-diventi grande, ogni bit di parità tocca comodamente solo uno dei gruppi.
+71
+00:04:20,663 --> 00:04:25,920
+ogni bit di parità tocca comodamente solo uno dei gruppi.
 
-69
+72
 00:04:25,920 --> 00:04:29,425
 Una volta compreso che questi controlli di parità su cui abbiamo concentrato gran
 
-70
+73
 00:04:29,425 --> 00:04:32,846
 parte del nostro tempo non sono altro che un modo intelligente per precisare la
 
-71
+74
 00:04:32,846 --> 00:04:36,437
 posizione di un errore in binario, allora possiamo stabilire una connessione con un
 
-72
-00:04:36,437 --> 00:04:39,943
-modo diverso di pensare all&#39;hamming codici, uno che è probabilmente molto più
-
-73
-00:04:39,943 --> 00:04:43,492
-semplice ed elegante e che può essere sostanzialmente scritto con una singola riga
-
-74
-00:04:43,492 --> 00:04:43,920
-di codice.
-
 75
+00:04:36,437 --> 00:04:38,490
+modo diverso di pensare all&#39;hamming codici,
+
+76
+00:04:38,490 --> 00:04:42,252
+uno che è probabilmente molto più semplice ed elegante e che può essere sostanzialmente
+
+77
+00:04:42,252 --> 00:04:43,920
+scritto con una singola riga di codice.
+
+78
 00:04:43,920 --> 00:04:46,200
 Si basa sulla funzione XOR.
 
-76
+79
 00:04:46,200 --> 00:04:50,960
 XOR, per quelli di voi che non lo sanno, sta per esclusivo o.
 
-77
-00:04:50,960 --> 00:04:55,580
-Quando prendi lo XOR di due bit, restituirà 1 se uno di questi
+80
+00:04:50,960 --> 00:04:56,753
+Quando prendi lo XOR di due bit, restituirà 1 se uno di questi bit è attivato,
 
-78
-00:04:55,580 --> 00:05:00,200
-bit è attivato, ma non se entrambi sono attivati o disattivati.
+81
+00:04:56,753 --> 00:05:00,200
+ma non se entrambi sono attivati o disattivati.
 
-79
+82
 00:05:00,200 --> 00:05:03,760
 Detto diversamente, è la parità di questi due bit.
 
-80
+83
 00:05:03,760 --> 00:05:07,840
 Essendo una persona matematica, preferisco pensarlo come addizione mod 2.
 
-81
-00:05:07,840 --> 00:05:10,892
-Parliamo comunemente anche dello XOR di due diverse stringhe di
+84
+00:05:07,840 --> 00:05:11,130
+Parliamo comunemente anche dello XOR di due diverse stringhe di bit,
 
-82
-00:05:10,892 --> 00:05:14,040
-bit, che fondamentalmente esegue questo componente per componente.
+85
+00:05:11,130 --> 00:05:14,040
+che fondamentalmente esegue questo componente per componente.
 
-83
+86
 00:05:14,040 --> 00:05:16,280
 È come un&#39;addizione, ma dove non porti mai.
 
-84
+87
 00:05:16,280 --> 00:05:20,008
 Ancora una volta, i più inclini alla matematica potrebbero preferire
 
-85
+88
 00:05:20,008 --> 00:05:23,520
 pensare a questo come addizionare due vettori e ridurre il mod 2.
 
-86
+89
 00:05:23,520 --> 00:05:27,664
 Se apri un po&#39; di Python in questo momento e applichi l&#39;operazione
 
-87
-00:05:27,664 --> 00:05:31,421
-di accento circonflesso tra due numeri interi, questo è ciò che sta
+90
+00:05:27,664 --> 00:05:31,918
+di accento circonflesso tra due numeri interi, questo è ciò che sta facendo,
 
-88
-00:05:31,421 --> 00:05:35,400
-facendo, ma alle rappresentazioni in bit di quei numeri sotto il cofano.
+91
+00:05:31,918 --> 00:05:35,400
+ma alle rappresentazioni in bit di quei numeri sotto il cofano.
 
-89
+92
 00:05:35,400 --> 00:05:40,584
 Il punto chiave per te e me è che prendere lo XOR di molte stringhe di
 
-90
+93
 00:05:40,584 --> 00:05:46,062
 bit diverse è effettivamente un modo per calcolare le parodie di un gruppo
 
-91
+94
 00:05:46,062 --> 00:05:51,320
 di gruppi separati, come nel caso delle colonne, tutto in un colpo solo.
 
-92
+95
 00:05:51,320 --> 00:05:54,207
 Questo ci offre un modo piuttosto elegante di pensare ai controlli
 
-93
+96
 00:05:54,207 --> 00:05:56,922
 di parità multipli del nostro algoritmo di codice Hamming come
 
-94
+97
 00:05:56,922 --> 00:05:59,680
 se fossero tutti raggruppati insieme in un&#39;unica operazione.
 
-95
+98
 00:05:59,680 --> 00:06:02,800
 Anche se a prima vista sembra molto diverso.
 
-96
-00:06:02,800 --> 00:06:08,407
-Annota specificamente le 16 posizioni in binario, come avevamo prima, e ora
-
-97
-00:06:08,407 --> 00:06:14,014
-evidenzia le posizioni in cui il bit del messaggio è impostato su 1, quindi
-
-98
-00:06:14,014 --> 00:06:19,400
-raccogli queste posizioni in un&#39;unica grande colonna e prendi lo XOR.
-
 99
+00:06:02,800 --> 00:06:07,964
+Annota specificamente le 16 posizioni in binario, come avevamo prima,
+
+100
+00:06:07,964 --> 00:06:13,497
+e ora evidenzia le posizioni in cui il bit del messaggio è impostato su 1,
+
+101
+00:06:13,497 --> 00:06:19,400
+quindi raccogli queste posizioni in un&#39;unica grande colonna e prendi lo XOR.
+
+102
 00:06:19,400 --> 00:06:24,030
 Probabilmente puoi immaginare che i 4 bit che si trovano in fondo come risultato
 
-100
-00:06:24,030 --> 00:06:28,432
-sono gli stessi dei 4 controlli di parità che abbiamo imparato a conoscere e
-
-101
-00:06:28,432 --> 00:06:32,720
-ad amare, ma prenditi un momento per pensare davvero al perché esattamente.
-
-102
-00:06:32,720 --> 00:06:37,133
-Quest&#39;ultima colonna, ad esempio, conta tutte le posizioni il cui ultimo
-
 103
-00:06:37,133 --> 00:06:41,374
-bit è 1, ma siamo già limitati solo alle posizioni evidenziate, quindi in
+00:06:24,030 --> 00:06:29,004
+sono gli stessi dei 4 controlli di parità che abbiamo imparato a conoscere e ad amare,
 
 104
-00:06:41,374 --> 00:06:45,960
-realtà conta quante posizioni evidenziate provengono dal primo gruppo di parità.
+00:06:29,004 --> 00:06:32,720
+ma prenditi un momento per pensare davvero al perché esattamente.
 
 105
+00:06:32,720 --> 00:06:37,649
+Quest&#39;ultima colonna, ad esempio, conta tutte le posizioni il cui ultimo bit è 1,
+
+106
+00:06:37,649 --> 00:06:40,801
+ma siamo già limitati solo alle posizioni evidenziate,
+
+107
+00:06:40,801 --> 00:06:45,960
+quindi in realtà conta quante posizioni evidenziate provengono dal primo gruppo di parità.
+
+108
 00:06:45,960 --> 00:06:48,520
 Ha senso?
 
-106
+109
 00:06:48,520 --> 00:06:52,581
 Allo stesso modo, la colonna successiva conta quante posizioni
 
-107
+110
 00:06:52,581 --> 00:06:56,320
 ci sono nel secondo gruppo di parità, le posizioni il cui
 
-108
+111
 00:06:56,320 --> 00:07:00,640
 penultimo bit è 1 e che sono anch&#39;esse evidenziate, e così via.
 
-109
+112
 00:07:00,640 --> 00:07:04,779
 In realtà è solo un piccolo cambiamento di prospettiva
 
-110
+113
 00:07:04,779 --> 00:07:07,640
 sulla stessa cosa che stavamo facendo.
 
-111
+114
 00:07:07,640 --> 00:07:10,000
 E quindi sai dove andrà da qui.
 
-112
+115
 00:07:10,000 --> 00:07:14,782
 Il mittente è responsabile della commutazione di alcuni bit di
 
-113
+116
 00:07:14,782 --> 00:07:19,640
 parità speciali per assicurarsi che la somma corrisponda a 0000.
 
-114
+117
 00:07:19,640 --> 00:07:22,588
 Ora, una volta ottenuto questo risultato, questo ci dà un modo
 
-115
+118
 00:07:22,588 --> 00:07:25,537
 davvero carino di pensare al motivo per cui questi quattro bit
 
-116
+119
 00:07:25,537 --> 00:07:28,720
 risultanti in basso indicano direttamente la posizione di un errore.
 
-117
+120
 00:07:28,720 --> 00:07:32,720
 Diciamo che qualche bit in questo blocco viene commutato da 0 a 1.
 
-118
-00:07:32,720 --> 00:07:38,833
-Ciò significa che la posizione di quel bit verrà ora inclusa nello XOR totale, che
+121
+00:07:32,720 --> 00:07:38,539
+Ciò significa che la posizione di quel bit verrà ora inclusa nello XOR totale,
 
-119
-00:07:38,833 --> 00:07:44,800
-cambia la somma da 0 a questo nuovo valore incluso, la posizione dell&#39;errore.
+122
+00:07:38,539 --> 00:07:44,800
+che cambia la somma da 0 a questo nuovo valore incluso, la posizione dell&#39;errore.
 
-120
+123
 00:07:44,800 --> 00:07:47,325
 In modo leggermente meno ovvio, lo stesso vale se
 
-121
+124
 00:07:47,325 --> 00:07:49,800
 si verifica un errore che modifica un 1 in uno 0.
 
-122
-00:07:49,800 --> 00:07:54,543
-Vedi, se aggiungi una stringa di bit due volte, è come non averla
+125
+00:07:49,800 --> 00:07:55,190
+Vedi, se aggiungi una stringa di bit due volte, è come non averla affatto,
 
-123
-00:07:54,543 --> 00:07:59,000
-affatto, fondamentalmente perché in questo mondo 1 più 1 fa 0.
+126
+00:07:55,190 --> 00:07:59,000
+fondamentalmente perché in questo mondo 1 più 1 fa 0.
 
-124
+127
 00:07:59,000 --> 00:08:02,072
 Quindi aggiungere una copia di questa posizione
 
-125
+128
 00:08:02,072 --> 00:08:05,400
 alla somma totale ha lo stesso effetto di spostarla.
 
-126
+129
 00:08:05,400 --> 00:08:09,403
 E questo effetto, ancora una volta, è che il risultato
 
-127
+130
 00:08:09,403 --> 00:08:13,480
 totale qui in basso indica la posizione dell&#39;errore.
 
-128
+131
 00:08:13,480 --> 00:08:17,679
 Per illustrare quanto sia elegante, lasciatemi mostrare quella riga di codice Python a
 
-129
+132
 00:08:17,679 --> 00:08:21,589
 cui ho fatto riferimento prima, che catturerà quasi tutta la logica sul lato del
 
-130
+133
 00:08:21,589 --> 00:08:22,120
 ricevitore.
 
-131
-00:08:22,120 --> 00:08:27,369
-Inizieremo creando un array casuale di 16 1 e 0 per simulare il blocco di dati, e gli
-
-132
-00:08:27,369 --> 00:08:32,862
-darò i bit del nome, ma ovviamente in pratica questo sarebbe qualcosa che riceviamo da un
-
-133
-00:08:32,862 --> 00:08:38,172
-mittente, e invece di essendo casuale trasporterebbe 11 bit di dati insieme a 5 bit di
-
 134
-00:08:38,172 --> 00:08:38,600
-parità.
+00:08:22,120 --> 00:08:27,002
+Inizieremo creando un array casuale di 16 1 e 0 per simulare il blocco di dati,
 
 135
+00:08:27,002 --> 00:08:32,496
+e gli darò i bit del nome, ma ovviamente in pratica questo sarebbe qualcosa che riceviamo
+
+136
+00:08:32,496 --> 00:08:37,989
+da un mittente, e invece di essendo casuale trasporterebbe 11 bit di dati insieme a 5 bit
+
+137
+00:08:37,989 --> 00:08:38,600
+di parità.
+
+138
 00:08:38,600 --> 00:08:43,525
 Se chiamo la funzione enumerateBits, ciò che fa è accoppiare ciascuno
 
-136
+139
 00:08:43,525 --> 00:08:48,240
 di quei bit con un indice corrispondente, in questo caso da 0 a 15.
 
-137
-00:08:48,240 --> 00:08:52,700
-Quindi, se poi creiamo un elenco che scorre su tutte queste coppie, coppie
-
-138
-00:08:52,700 --> 00:08:57,399
-che assomigliano a i, e poi tiriamo fuori solo il valore i, solo l&#39;indice,
-
-139
-00:08:57,399 --> 00:09:01,920
-beh non è così eccitante, recuperiamo semplicemente quegli indici da 0 a 15.
-
 140
-00:09:01,920 --> 00:09:07,556
-Ma se aggiungiamo la condizione di farlo solo se bit, ovvero se quel bit è un 1 e
+00:08:48,240 --> 00:08:52,284
+Quindi, se poi creiamo un elenco che scorre su tutte queste coppie,
 
 141
-00:09:07,556 --> 00:09:13,400
-non uno 0, allora estrarrà solo le posizioni in cui il bit corrispondente è attivato.
+00:08:52,284 --> 00:08:56,269
+coppie che assomigliano a i, e poi tiriamo fuori solo il valore i,
 
 142
+00:08:56,269 --> 00:09:00,908
+solo l&#39;indice, beh non è così eccitante, recuperiamo semplicemente quegli
+
+143
+00:09:00,908 --> 00:09:01,920
+indici da 0 a 15.
+
+144
+00:09:01,920 --> 00:09:05,632
+Ma se aggiungiamo la condizione di farlo solo se bit,
+
+145
+00:09:05,632 --> 00:09:11,337
+ovvero se quel bit è un 1 e non uno 0, allora estrarrà solo le posizioni in cui il
+
+146
+00:09:11,337 --> 00:09:13,400
+bit corrispondente è attivato.
+
+147
 00:09:13,400 --> 00:09:20,720
 In questo caso sembra che quelle posizioni siano 0, 4, 6, 9, ecc.
 
-143
+148
 00:09:20,720 --> 00:09:25,718
 Quello che vogliamo è raccogliere insieme tutte quelle posizioni,
 
-144
+149
 00:09:25,718 --> 00:09:29,960
 le posizioni dei bit che sono accesi, e poi XOR insieme.
 
-145
+150
 00:09:29,960 --> 00:09:33,960
 Per fare ciò in Python, lasciatemi prima importare un paio di funzioni utili.
 
-146
+151
 00:09:33,960 --> 00:09:36,653
 In questo modo possiamo chiamare reduce() su questo
 
-147
+152
 00:09:36,653 --> 00:09:39,140
 elenco e utilizzare la funzione XOR per ridurlo.
 
-148
-00:09:39,140 --> 00:09:42,051
-Questo sostanzialmente si fa strada attraverso
+153
+00:09:39,140 --> 00:09:42,919
+Questo sostanzialmente si fa strada attraverso l&#39;elenco,
 
-149
-00:09:42,051 --> 00:09:44,840
-l&#39;elenco, portando XOR lungo il percorso.
+154
+00:09:42,919 --> 00:09:44,840
+portando XOR lungo il percorso.
 
-150
+155
 00:09:44,840 --> 00:09:48,264
 Se preferisci, puoi scrivere esplicitamente la
 
-151
+156
 00:09:48,264 --> 00:09:52,200
 funzione XOR senza doverla importare da nessuna parte.
 
-152
-00:09:52,200 --> 00:09:57,285
-Quindi al momento sembra che se lo facciamo sul nostro blocco casuale
+157
+00:09:52,200 --> 00:09:58,084
+Quindi al momento sembra che se lo facciamo sul nostro blocco casuale di 16 bit,
 
-153
-00:09:57,285 --> 00:10:02,080
-di 16 bit, restituisce 9, che ha la rappresentazione binaria 1001.
+158
+00:09:58,084 --> 00:10:02,080
+restituisce 9, che ha la rappresentazione binaria 1001.
 
-154
+159
 00:10:02,080 --> 00:10:06,005
 Non lo faremo qui, ma potresti scrivere una funzione in cui il mittente utilizza
 
-155
-00:10:06,005 --> 00:10:09,785
-quella rappresentazione binaria per impostare i quattro bit di parità secondo
+160
+00:10:06,005 --> 00:10:10,318
+quella rappresentazione binaria per impostare i quattro bit di parità secondo necessità,
 
-156
-00:10:09,785 --> 00:10:13,516
-necessità, portando infine questo blocco a uno stato in cui l&#39;esecuzione
+161
+00:10:10,318 --> 00:10:14,001
+portando infine questo blocco a uno stato in cui l&#39;esecuzione di questa
 
-157
-00:10:13,516 --> 00:10:17,200
-di questa riga di codice sull&#39;elenco completo dei bit restituisce uno 0.
+162
+00:10:14,001 --> 00:10:17,200
+riga di codice sull&#39;elenco completo dei bit restituisce uno 0.
 
-158
+163
 00:10:17,200 --> 00:10:20,200
 Questo sarebbe considerato un blocco ben preparato.
 
-159
-00:10:20,200 --> 00:10:23,684
-La cosa interessante è che se attiviamo uno qualsiasi dei bit in
+164
+00:10:20,200 --> 00:10:24,488
+La cosa interessante è che se attiviamo uno qualsiasi dei bit in questo elenco,
 
-160
-00:10:23,684 --> 00:10:27,115
-questo elenco, simulando un errore casuale dovuto al rumore, se
+165
+00:10:24,488 --> 00:10:28,884
+simulando un errore casuale dovuto al rumore, se esegui la stessa riga di codice,
 
-161
-00:10:27,115 --> 00:10:30,600
-esegui la stessa riga di codice, viene stampato quell&#39;errore.
+166
+00:10:28,884 --> 00:10:30,600
+viene stampato quell&#39;errore.
 
-162
+167
 00:10:30,600 --> 00:10:31,920
 Non è carino?
 
-163
-00:10:31,920 --> 00:10:37,483
-Potresti prendere questo blocco all&#39;improvviso, eseguire questa singola riga su di
+168
+00:10:31,920 --> 00:10:35,245
+Potresti prendere questo blocco all&#39;improvviso,
 
-164
-00:10:37,483 --> 00:10:42,920
-esso e sputerà automaticamente la posizione di un errore o uno 0 se non ce n&#39;era.
+169
+00:10:35,245 --> 00:10:40,681
+eseguire questa singola riga su di esso e sputerà automaticamente la posizione di un
 
-165
+170
+00:10:40,681 --> 00:10:42,920
+errore o uno 0 se non ce n&#39;era.
+
+171
 00:10:42,920 --> 00:10:45,520
 E qui non c&#39;è niente di speciale nella taglia 16.
 
-166
+172
 00:10:45,520 --> 00:10:52,280
 La stessa riga di codice funzionerebbe se avessi un elenco di, diciamo, 256 bit.
 
-167
-00:10:52,280 --> 00:10:56,674
-Inutile dire che c&#39;è più codice da scrivere qui, come eseguire il controllo
-
-168
-00:10:56,674 --> 00:11:01,014
-della meta parità per rilevare errori a 2 bit, ma l&#39;idea è che quasi tutta
-
-169
-00:11:01,014 --> 00:11:05,080
-la logica di base del nostro schema si riduce a una singola riduzione XOR.
-
-170
-00:11:05,080 --> 00:11:09,655
-Ora, a seconda della tua dimestichezza con il binario, gli XOR e il software in
-
-171
-00:11:09,655 --> 00:11:14,630
-generale, potresti trovare questa prospettiva un po&#39; confusa, o molto più elegante
-
-172
-00:11:14,630 --> 00:11:19,320
-e semplice da chiederti perché non l&#39;abbiamo iniziata dall&#39;inizio -andare.
-
 173
+00:10:52,280 --> 00:10:55,191
+Inutile dire che c&#39;è più codice da scrivere qui,
+
+174
+00:10:55,191 --> 00:10:59,256
+come eseguire il controllo della meta parità per rilevare errori a 2 bit,
+
+175
+00:10:59,256 --> 00:11:03,541
+ma l&#39;idea è che quasi tutta la logica di base del nostro schema si riduce
+
+176
+00:11:03,541 --> 00:11:05,080
+a una singola riduzione XOR.
+
+177
+00:11:05,080 --> 00:11:10,226
+Ora, a seconda della tua dimestichezza con il binario, gli XOR e il software in generale,
+
+178
+00:11:10,226 --> 00:11:13,429
+potresti trovare questa prospettiva un po&#39; confusa,
+
+179
+00:11:13,429 --> 00:11:17,947
+o molto più elegante e semplice da chiederti perché non l&#39;abbiamo iniziata
+
+180
+00:11:17,947 --> 00:11:19,320
+dall&#39;inizio -andare.
+
+181
 00:11:19,320 --> 00:11:23,354
 In parole povere, la prospettiva del controllo di parità multipla è più facile da pensare
 
-174
-00:11:23,354 --> 00:11:27,210
-quando si implementano i codici Hamming nell&#39;hardware in modo molto diretto, e la
+182
+00:11:23,354 --> 00:11:26,986
+quando si implementano i codici Hamming nell&#39;hardware in modo molto diretto,
 
-175
-00:11:27,210 --> 00:11:31,155
-prospettiva XOR è più facile da pensare quando lo si fa nel software, da un livello più
+183
+00:11:26,986 --> 00:11:30,348
+e la prospettiva XOR è più facile da pensare quando lo si fa nel software,
 
-176
-00:11:31,155 --> 00:11:31,380
-alto.
+184
+00:11:30,348 --> 00:11:31,380
+da un livello più alto.
 
-177
+185
 00:11:31,380 --> 00:11:35,191
 Il primo è più semplice da eseguire a mano e penso che svolga un lavoro
 
-178
+186
 00:11:35,191 --> 00:11:39,161
 migliore instillando l&#39;intuizione fondamentale alla base di tutto ciò,
 
-179
+187
 00:11:39,161 --> 00:11:43,079
 ovvero che l&#39;informazione richiesta per individuare un singolo errore
 
-180
+188
 00:11:43,079 --> 00:11:46,943
 è correlata al registro della dimensione del blocco , o in altre parole,
 
-181
+189
 00:11:46,943 --> 00:11:51,020
 cresce un po&#39; alla volta man mano che la dimensione del blocco raddoppia.
 
-182
+190
 00:11:51,020 --> 00:11:53,664
 Il fatto rilevante qui è che tali informazioni corrispondono
 
-183
+191
 00:11:53,664 --> 00:11:56,440
 direttamente alla quantità di ridondanza di cui abbiamo bisogno.
 
-184
+192
 00:11:56,440 --> 00:12:00,004
 Questo è proprio ciò che va contro la reazione istintiva della maggior parte delle
 
-185
+193
 00:12:00,004 --> 00:12:03,826
 persone quando pensano per la prima volta a rendere un messaggio resistente agli errori,
 
-186
+194
 00:12:03,826 --> 00:12:07,520
 mentre di solito copiare l&#39;intero messaggio è il primo istinto che viene in mente.
 
-187
+195
 00:12:07,520 --> 00:12:11,226
 E poi, a proposito, c&#39;è tutto questo altro modo in cui a volte vedi presentati
 
-188
+196
 00:12:11,226 --> 00:12:14,800
 i codici Hamming, dove moltiplichi il messaggio per un&#39;unica grande matrice.
 
-189
-00:12:14,800 --> 00:12:20,012
-È carino perché lo collega alla più ampia famiglia di codici lineari, ma penso
+197
+00:12:14,800 --> 00:12:19,419
+È carino perché lo collega alla più ampia famiglia di codici lineari,
 
-190
-00:12:20,012 --> 00:12:25,160
-che non dia quasi alcuna intuizione sulla sua provenienza o su come si adatta.
+198
+00:12:19,419 --> 00:12:25,160
+ma penso che non dia quasi alcuna intuizione sulla sua provenienza o su come si adatta.
 
-191
+199
 00:12:25,160 --> 00:12:28,728
 E parlando di ridimensionamento, potresti notare che l&#39;efficienza di
 
-192
+200
 00:12:28,728 --> 00:12:32,200
 questo schema migliora solo quando aumentiamo la dimensione del blocco.
 
-193
+201
 00:12:32,200 --> 00:12:37,955
 Ad esempio, abbiamo visto che con 256 bit si utilizza solo il 3% di quello
 
-194
+202
 00:12:37,955 --> 00:12:43,480
 spazio per la ridondanza e da lì in poi le cose continuano a migliorare.
 
-195
-00:12:43,480 --> 00:12:46,311
-Man mano che il numero di bit di parità cresce uno per
+203
+00:12:43,480 --> 00:12:46,568
+Man mano che il numero di bit di parità cresce uno per uno,
 
-196
-00:12:46,311 --> 00:12:49,040
-uno, la dimensione del blocco continua a raddoppiare.
+204
+00:12:46,568 --> 00:12:49,040
+la dimensione del blocco continua a raddoppiare.
 
-197
+205
 00:12:49,040 --> 00:12:53,197
 E se lo porti all&#39;estremo, potresti avere un blocco con, diciamo,
 
-198
+206
 00:12:53,197 --> 00:12:57,176
 un milione di bit, dove giocheresti letteralmente a 20 domande con
 
-199
+207
 00:12:57,176 --> 00:13:00,800
 i tuoi controlli di parità, e utilizza solo 21 bit di parità.
 
-200
+208
 00:13:00,800 --> 00:13:04,687
 E se fai un passo indietro e pensi a guardare un milione di
 
-201
+209
 00:13:04,687 --> 00:13:08,640
 bit e individuare un singolo errore, sembra davvero pazzesco.
 
-202
-00:13:08,640 --> 00:13:13,446
-Il problema, ovviamente, è che con un blocco più grande, la probabilità di vedere più di
+210
+00:13:08,640 --> 00:13:11,718
+Il problema, ovviamente, è che con un blocco più grande,
 
-203
-00:13:13,446 --> 00:13:17,982
-uno o due bit di errore aumenta, e i codici di Hamming non gestiscono nulla oltre a
+211
+00:13:11,718 --> 00:13:15,228
+la probabilità di vedere più di uno o due bit di errore aumenta,
 
-204
-00:13:17,982 --> 00:13:18,360
-questo.
+212
+00:13:15,228 --> 00:13:18,360
+e i codici di Hamming non gestiscono nulla oltre a questo.
 
-205
+213
 00:13:18,360 --> 00:13:22,385
 Quindi, in pratica, quello che vorresti è trovare la dimensione giusta in
 
-206
+214
 00:13:22,385 --> 00:13:26,520
 modo che la probabilità di troppi capovolgimenti di bit non sia troppo alta.
 
-207
-00:13:26,520 --> 00:13:31,131
-Inoltre, in pratica, gli errori tendono a verificarsi in piccoli blocchi, il che
+215
+00:13:26,520 --> 00:13:30,733
+Inoltre, in pratica, gli errori tendono a verificarsi in piccoli blocchi,
 
-208
-00:13:31,131 --> 00:13:35,857
-rovinerebbe completamente un singolo blocco, quindi una tattica comune per aiutare
+216
+00:13:30,733 --> 00:13:33,694
+il che rovinerebbe completamente un singolo blocco,
 
-209
-00:13:35,857 --> 00:13:40,811
-a distribuire un&#39;ondata di errori su molti blocchi diversi è quella di intrecciare
+217
+00:13:33,694 --> 00:13:38,533
+quindi una tattica comune per aiutare a distribuire un&#39;ondata di errori su molti
 
-210
-00:13:40,811 --> 00:13:45,480
-questi blocchi, in questo modo, prima che vengano eliminati. inviato o archiviato.
+218
+00:13:38,533 --> 00:13:42,633
+blocchi diversi è quella di intrecciare questi blocchi, in questo modo,
 
-211
+219
+00:13:42,633 --> 00:13:45,480
+prima che vengano eliminati. inviato o archiviato.
+
+220
 00:13:45,480 --> 00:13:48,922
 D&#39;altra parte, gran parte di questo è reso completamente discutibile
 
-212
-00:13:48,922 --> 00:13:52,647
-da codici più moderni, come l&#39;algoritmo Reed-Solomon molto più comunemente
+221
+00:13:48,922 --> 00:13:52,977
+da codici più moderni, come l&#39;algoritmo Reed-Solomon molto più comunemente usato,
 
-213
-00:13:52,647 --> 00:13:56,137
-usato, che gestisce gli errori di burst particolarmente bene e può essere
+222
+00:13:52,977 --> 00:13:56,561
+che gestisce gli errori di burst particolarmente bene e può essere regolato
 
-214
-00:13:56,137 --> 00:13:59,580
-regolato per essere resiliente a un numero maggiore di errori per blocco.
+223
+00:13:56,561 --> 00:13:59,580
+per essere resiliente a un numero maggiore di errori per blocco.
 
-215
+224
 00:13:59,580 --> 00:14:03,000
 Ma questo è un argomento per un&#39;altra volta.
 
-216
-00:14:03,000 --> 00:14:06,992
-Nel suo libro The Art of Doing Science and Engineering, Hamming è meravigliosamente
+225
+00:14:03,000 --> 00:14:05,661
+Nel suo libro The Art of Doing Science and Engineering,
 
-217
-00:14:06,992 --> 00:14:10,700
-sincero riguardo a quanto tortuosa sia stata la sua scoperta di questo codice.
+226
+00:14:05,661 --> 00:14:09,464
+Hamming è meravigliosamente sincero riguardo a quanto tortuosa sia stata la sua
 
-218
+227
+00:14:09,464 --> 00:14:10,700
+scoperta di questo codice.
+
+228
 00:14:10,700 --> 00:14:13,883
 Per prima cosa ha provato tutti i tipi di schemi diversi che prevedevano
 
-219
+229
 00:14:13,883 --> 00:14:17,591
 l&#39;organizzazione dei pezzi in parti di un reticolo dimensionale superiore e cose
 
-220
+230
 00:14:17,591 --> 00:14:18,420
 strane come questa.
 
-221
+231
 00:14:18,420 --> 00:14:21,844
 L&#39;idea che potrebbe essere possibile ottenere controlli di parità per
 
-222
+232
 00:14:21,844 --> 00:14:25,547
 cospirare in un modo che espliciti la posizione di un errore è venuta a Hamming
 
-223
-00:14:25,547 --> 00:14:29,064
-solo quando ha fatto un passo indietro dopo una serie di altre analisi e ha
+233
+00:14:25,547 --> 00:14:29,481
+solo quando ha fatto un passo indietro dopo una serie di altre analisi e ha chiesto,
 
-224
-00:14:29,064 --> 00:14:32,860
-chiesto, okay, qual è il modo più efficiente che potrei forse si tratta di questo?
+234
+00:14:29,481 --> 00:14:32,860
+okay, qual è il modo più efficiente che potrei forse si tratta di questo?
 
-225
+235
 00:14:32,860 --> 00:14:35,841
 È stato anche sincero nel sottolineare quanto fosse importante
 
-226
-00:14:35,841 --> 00:14:38,774
-che i controlli di parità fossero già nella sua mente, il che
+236
+00:14:35,841 --> 00:14:38,443
+che i controlli di parità fossero già nella sua mente,
 
-227
-00:14:38,774 --> 00:14:42,040
-sarebbe stato molto meno comune negli anni ’40 di quanto lo sia oggi.
+237
+00:14:38,443 --> 00:14:42,040
+il che sarebbe stato molto meno comune negli anni ’40 di quanto lo sia oggi.
 
-228
+238
 00:14:42,040 --> 00:14:46,069
 Ci sono circa una mezza dozzina di volte in questo libro in cui fa riferimento
 
-229
+239
 00:14:46,069 --> 00:14:49,640
 alla citazione di Louis Pasteur, la fortuna aiuta una mente preparata.
 
-230
-00:14:49,640 --> 00:14:52,471
-Le idee intelligenti spesso sembrano ingannevolmente semplici
+240
+00:14:49,640 --> 00:14:53,293
+Le idee intelligenti spesso sembrano ingannevolmente semplici col senno di poi,
 
-231
-00:14:52,471 --> 00:14:55,120
-col senno di poi, il che le rende facili da sottovalutare.
+241
+00:14:53,293 --> 00:14:55,120
+il che le rende facili da sottovalutare.
 
-232
+242
 00:14:55,120 --> 00:14:58,622
 In questo momento la mia sincera speranza è che i codici di Hamming,
 
-233
+243
 00:14:58,622 --> 00:15:01,820
 o almeno la possibilità di tali codici, ti sembrino quasi ovvi.
 
-234
-00:15:01,820 --> 00:15:05,111
-Ma non dovresti illuderti pensando che in realtà
+244
+00:15:01,820 --> 00:15:05,917
+Ma non dovresti illuderti pensando che in realtà siano ovvi,
 
-235
-00:15:05,111 --> 00:15:08,000
-siano ovvi, perché sicuramente non lo sono.
+245
+00:15:05,917 --> 00:15:08,000
+perché sicuramente non lo sono.
 
-236
+246
 00:15:08,000 --> 00:15:11,824
 Parte del motivo per cui le idee intelligenti sembrano ingannevolmente facili è che
 
-237
-00:15:11,824 --> 00:15:15,830
-vediamo sempre e solo il risultato finale, ripulendo ciò che era disordinato, senza mai
+247
+00:15:11,824 --> 00:15:15,375
+vediamo sempre e solo il risultato finale, ripulendo ciò che era disordinato,
 
-238
-00:15:15,830 --> 00:15:19,745
-menzionare tutte le svolte sbagliate, sottovalutando quanto vasto sia lo spazio delle
+248
+00:15:15,375 --> 00:15:17,560
+senza mai menzionare tutte le svolte sbagliate,
 
-239
-00:15:19,745 --> 00:15:23,661
-possibilità esplorabili all&#39;inizio di un problema. processo di risoluzione, tutto
+249
+00:15:17,560 --> 00:15:21,521
+sottovalutando quanto vasto sia lo spazio delle possibilità esplorabili all&#39;inizio
 
-240
-00:15:23,661 --> 00:15:23,980
-questo.
+250
+00:15:21,521 --> 00:15:23,980
+di un problema. processo di risoluzione, tutto questo.
 
-241
+251
 00:15:23,980 --> 00:15:25,280
 Ma questo è vero in generale.
 
-242
+252
 00:15:25,280 --> 00:15:28,079
 Penso che per alcune invenzioni speciali ci sia una
 
-243
+253
 00:15:28,079 --> 00:15:31,040
 seconda ragione più profonda per cui le sottovalutiamo.
 
-244
+254
 00:15:31,040 --> 00:15:33,867
 Pensare all&#39;informazione in termini di bit si era effettivamente
 
-245
-00:15:33,867 --> 00:15:36,695
-consolidato in una teoria completa solo nel 1948, con l&#39;articolo
+255
+00:15:33,867 --> 00:15:35,916
+consolidato in una teoria completa solo nel 1948,
 
-246
-00:15:36,695 --> 00:15:39,400
-fondamentale di Claude Shannon sulla teoria dell&#39;informazione.
+256
+00:15:35,916 --> 00:15:39,400
+con l&#39;articolo fondamentale di Claude Shannon sulla teoria dell&#39;informazione.
 
-247
+257
 00:15:39,400 --> 00:15:41,440
 Ciò avvenne essenzialmente in concomitanza con il
 
-248
+258
 00:15:41,440 --> 00:15:43,440
 momento in cui Hamming sviluppò il suo algoritmo.
 
-249
-00:15:43,440 --> 00:15:47,013
-Si trattava dello stesso documento fondamentale che mostrava, in un certo
+259
+00:15:43,440 --> 00:15:47,351
+Si trattava dello stesso documento fondamentale che mostrava, in un certo senso,
 
-250
-00:15:47,013 --> 00:15:50,394
-senso, che una correzione efficiente degli errori è sempre possibile,
+260
+00:15:47,351 --> 00:15:50,394
+che una correzione efficiente degli errori è sempre possibile,
 
-251
+261
 00:15:50,394 --> 00:15:53,920
 non importa quanto sia alta la probabilità di bit flip, almeno in teoria.
 
-252
-00:15:53,920 --> 00:15:58,339
-Shannon e Hamming, tra l&#39;altro, condividevano un ufficio ai Bell Labs, nonostante
+262
+00:15:53,920 --> 00:15:57,774
+Shannon e Hamming, tra l&#39;altro, condividevano un ufficio ai Bell Labs,
 
-253
-00:15:58,339 --> 00:16:02,400
-lavorassero su cose molto diverse, il che qui non sembra certo una coincidenza.
+263
+00:15:57,774 --> 00:16:02,400
+nonostante lavorassero su cose molto diverse, il che qui non sembra certo una coincidenza.
 
-254
+264
 00:16:02,400 --> 00:16:06,010
 Andiamo avanti velocemente di diversi decenni e, al giorno d&#39;oggi,
 
-255
+265
 00:16:06,010 --> 00:16:09,570
 molti di noi sono così immersi nel pensare a frammenti e informazioni
 
-256
+266
 00:16:09,570 --> 00:16:13,080
 che è facile trascurare quanto fosse distinto questo modo di pensare.
 
-257
+267
 00:16:13,080 --> 00:16:14,701
 Ironicamente, le idee che plasmano più profondamente il modo in
 
-258
+268
 00:16:14,701 --> 00:16:16,222
 cui pensa una generazione futura finiranno per apparire più
 
-259
+269
 00:16:16,222 --> 00:16:17,920
 semplici a quella generazione futura di quanto non siano in realtà.
 

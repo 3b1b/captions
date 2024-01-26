@@ -1,2344 +1,2388 @@
 1
-00:00:00,000 --> 00:00:03,289
-Das Spiel Wurdle ist in den letzten ein, zwei Monaten ziemlich viral gegangen, und da ich
+00:00:00,000 --> 00:00:02,887
+Das Spiel Wurdle ist in den letzten ein, zwei Monaten ziemlich viral gegangen,
 
 2
-00:00:03,289 --> 00:00:06,505
-nie eine Gelegenheit für eine Mathematikstunde ausgelassen habe, kommt mir der Gedanke,
+00:00:02,887 --> 00:00:05,664
+und da ich nie eine Gelegenheit für eine Mathematikstunde ausgelassen habe,
 
 3
-00:00:06,505 --> 00:00:09,209
-dass dieses Spiel ein sehr gutes zentrales Beispiel in einer Lektion über
+00:00:05,664 --> 00:00:08,734
+kommt mir der Gedanke, dass dieses Spiel ein sehr gutes zentrales Beispiel in einer
 
 4
-00:00:09,209 --> 00:00:12,352
-Informationstheorie und insbesondere Informationstheorie darstellt ein Thema, das als
+00:00:08,734 --> 00:00:11,804
+Lektion über Informationstheorie und insbesondere Informationstheorie darstellt ein
 
 5
-00:00:12,352 --> 00:00:13,120
-Entropie bekannt ist.
+00:00:11,804 --> 00:00:13,120
+Thema, das als Entropie bekannt ist.
 
 6
-00:00:13,120 --> 00:00:16,525
-Sehen Sie, wie viele Leute wurde auch ich in das Rätsel hineingezogen, und
+00:00:13,120 --> 00:00:16,343
+Sehen Sie, wie viele Leute wurde auch ich in das Rätsel hineingezogen,
 
 7
-00:00:16,525 --> 00:00:19,930
-wie viele Programmierer wurde auch ich in den Versuch hineingezogen, einen
+00:00:16,343 --> 00:00:19,658
+und wie viele Programmierer wurde auch ich in den Versuch hineingezogen,
 
 8
-00:00:19,930 --> 00:00:23,200
-Algorithmus zu schreiben, der das Spiel so optimal wie möglich abspielt.
+00:00:19,658 --> 00:00:23,200
+einen Algorithmus zu schreiben, der das Spiel so optimal wie möglich abspielt.
 
 9
 00:00:23,200 --> 00:00:25,983
 Und ich dachte, ich würde hier einfach mit Ihnen einige meiner
 
 10
-00:00:25,983 --> 00:00:28,810
-Prozesse besprechen und einige der darin enthaltenen Mathematik
+00:00:25,983 --> 00:00:29,252
+Prozesse besprechen und einige der darin enthaltenen Mathematik erklären,
 
 11
-00:00:28,810 --> 00:00:32,080
-erklären, da der gesamte Algorithmus auf dieser Idee der Entropie basiert.
+00:00:29,252 --> 00:00:32,080
+da der gesamte Algorithmus auf dieser Idee der Entropie basiert.
 
 12
 00:00:32,080 --> 00:00:42,180
 Das Wichtigste zuerst: Falls Sie noch nichts davon gehört haben: Was ist Wurdle?
 
 13
-00:00:42,180 --> 00:00:45,234
-Und um hier zwei Fliegen mit einer Klappe zu schlagen, während wir die Spielregeln
+00:00:42,180 --> 00:00:44,204
+Und um hier zwei Fliegen mit einer Klappe zu schlagen,
 
 14
-00:00:45,234 --> 00:00:48,141
-durchgehen, möchte ich auch eine Vorschau darauf geben, wohin wir damit gehen,
+00:00:44,204 --> 00:00:47,295
+während wir die Spielregeln durchgehen, möchte ich auch eine Vorschau darauf geben,
 
 15
-00:00:48,141 --> 00:00:51,380
-nämlich einen kleinen Algorithmus zu entwickeln, der das Spiel im Grunde für uns spielt.
+00:00:47,295 --> 00:00:49,944
+wohin wir damit gehen, nämlich einen kleinen Algorithmus zu entwickeln,
 
 16
-00:00:51,380 --> 00:00:53,620
-Obwohl ich das heutige Wurdle noch nicht gemacht habe, ist es
+00:00:49,944 --> 00:00:51,380
+der das Spiel im Grunde für uns spielt.
 
 17
-00:00:53,620 --> 00:00:55,860
-der 4. Februar und wir werden sehen, wie sich der Bot schlägt.
+00:00:51,380 --> 00:00:53,367
+Obwohl ich das heutige Wurdle noch nicht gemacht habe,
 
 18
-00:00:55,860 --> 00:00:58,342
-Das Ziel von Wurdle ist es, ein geheimnisvolles Wort mit fünf Buchstaben
+00:00:53,367 --> 00:00:55,860
+ist es der 4. Februar und wir werden sehen, wie sich der Bot schlägt.
 
 19
-00:00:58,342 --> 00:01:00,860
-zu erraten, und Sie haben sechs verschiedene Möglichkeiten, es zu erraten.
+00:00:55,860 --> 00:00:58,751
+Das Ziel von Wurdle ist es, ein geheimnisvolles Wort mit fünf Buchstaben zu erraten,
 
 20
+00:00:58,751 --> 00:01:00,860
+und Sie haben sechs verschiedene Möglichkeiten, es zu erraten.
+
+21
 00:01:00,860 --> 00:01:05,240
 Beispielsweise schlägt mein Wurdle-Bot vor, dass ich mit dem Ratekran beginne.
 
-21
-00:01:05,240 --> 00:01:07,807
-Jedes Mal, wenn Sie eine Vermutung anstellen, erhalten Sie
-
 22
-00:01:07,807 --> 00:01:10,940
-Informationen darüber, wie nah Ihre Vermutung an der wahren Antwort ist.
+00:01:05,240 --> 00:01:08,807
+Jedes Mal, wenn Sie eine Vermutung anstellen, erhalten Sie Informationen darüber,
 
 23
+00:01:08,807 --> 00:01:10,940
+wie nah Ihre Vermutung an der wahren Antwort ist.
+
+24
 00:01:10,940 --> 00:01:14,540
 Hier sagt mir das graue Kästchen, dass die eigentliche Antwort kein C enthält.
 
-24
+25
 00:01:14,540 --> 00:01:16,479
 Das gelbe Kästchen sagt mir, dass es ein R gibt,
 
-25
+26
 00:01:16,479 --> 00:01:18,340
 aber es befindet sich nicht an dieser Position.
 
-26
+27
 00:01:18,340 --> 00:01:22,820
 Das grüne Kästchen sagt mir, dass das geheime Wort ein A hat und an dritter Stelle steht.
 
-27
+28
 00:01:22,820 --> 00:01:24,300
 Und dann gibt es kein N und kein E.
 
-28
+29
 00:01:24,300 --> 00:01:27,420
 Lassen Sie mich einfach hineingehen und dem Wurdle-Bot diese Informationen mitteilen.
 
-29
+30
 00:01:27,420 --> 00:01:31,500
 Wir fingen mit dem Kranich an, wir bekamen Grau, Gelb, Grün, Grau, Grau.
 
-30
-00:01:31,500 --> 00:01:33,513
-Machen Sie sich keine Sorgen wegen all der Daten, die gerade
-
 31
-00:01:33,513 --> 00:01:35,460
-angezeigt werden, ich werde das zu gegebener Zeit erklären.
+00:01:31,500 --> 00:01:33,150
+Machen Sie sich keine Sorgen wegen all der Daten,
 
 32
+00:01:33,150 --> 00:01:35,460
+die gerade angezeigt werden, ich werde das zu gegebener Zeit erklären.
+
+33
 00:01:35,460 --> 00:01:39,700
 Aber sein Top-Vorschlag für unsere zweite Wahl ist shtick.
 
-33
-00:01:39,700 --> 00:01:42,718
-Und Ihre Vermutung muss tatsächlich ein Wort mit fünf Buchstaben sein, aber wie
-
 34
-00:01:42,718 --> 00:01:45,700
-Sie sehen werden, ist es ziemlich großzügig, was Sie tatsächlich erraten lässt.
+00:01:39,700 --> 00:01:42,379
+Und Ihre Vermutung muss tatsächlich ein Wort mit fünf Buchstaben sein,
 
 35
+00:01:42,379 --> 00:01:45,700
+aber wie Sie sehen werden, ist es ziemlich großzügig, was Sie tatsächlich erraten lässt.
+
+36
 00:01:45,700 --> 00:01:48,860
 In diesem Fall versuchen wir es mit shtick.
 
-36
+37
 00:01:48,860 --> 00:01:50,260
 Und gut, es sieht ziemlich gut aus.
 
-37
-00:01:50,260 --> 00:01:52,413
-Wir drücken das S und das H, damit wir die ersten
-
 38
-00:01:52,413 --> 00:01:54,740
-drei Buchstaben kennen und wissen, dass es ein R gibt.
+00:01:50,260 --> 00:01:53,921
+Wir drücken das S und das H, damit wir die ersten drei Buchstaben kennen und wissen,
 
 39
+00:01:53,921 --> 00:01:54,740
+dass es ein R gibt.
+
+40
 00:01:54,740 --> 00:01:59,740
 Und so wird es wie SHA irgendetwas R oder SHA R irgendetwas sein.
 
-40
-00:01:59,740 --> 00:02:02,364
-Und es sieht so aus, als ob der Wurdle-Bot weiß, dass es
-
 41
-00:02:02,364 --> 00:02:05,220
-nur auf zwei Möglichkeiten ankommt: entweder Shard oder Sharp.
+00:01:59,740 --> 00:02:01,996
+Und es sieht so aus, als ob der Wurdle-Bot weiß,
 
 42
-00:02:05,220 --> 00:02:08,198
-Das ist im Moment eine Art Streit zwischen ihnen, also denke ich, dass
+00:02:01,996 --> 00:02:05,220
+dass es nur auf zwei Möglichkeiten ankommt: entweder Shard oder Sharp.
 
 43
-00:02:08,198 --> 00:02:11,260
-es wahrscheinlich nur, weil es alphabetisch ist, mit Shard zusammenhängt.
+00:02:05,220 --> 00:02:07,988
+Das ist im Moment eine Art Streit zwischen ihnen, also denke ich,
 
 44
+00:02:07,988 --> 00:02:11,260
+dass es wahrscheinlich nur, weil es alphabetisch ist, mit Shard zusammenhängt.
+
+45
 00:02:11,260 --> 00:02:13,000
 Hurra, ist die eigentliche Antwort.
 
-45
+46
 00:02:13,000 --> 00:02:14,660
 Also haben wir es in drei geschafft.
 
-46
-00:02:14,660 --> 00:02:17,765
-Wenn Sie sich fragen, ob das etwas nützt: Ich habe jemanden
-
 47
-00:02:17,765 --> 00:02:20,820
-sagen hören, dass bei Wurdle vier Par und drei Birdie sind.
+00:02:14,660 --> 00:02:18,438
+Wenn Sie sich fragen, ob das etwas nützt: Ich habe jemanden sagen hören,
 
 48
+00:02:18,438 --> 00:02:20,820
+dass bei Wurdle vier Par und drei Birdie sind.
+
+49
 00:02:20,820 --> 00:02:22,960
 Was meiner Meinung nach eine ziemlich treffende Analogie ist.
 
-49
-00:02:22,960 --> 00:02:25,455
-Um vier zu erreichen, muss man konstant sein Spiel
-
 50
-00:02:25,455 --> 00:02:27,560
-halten, aber verrückt ist das sicher nicht.
+00:02:22,960 --> 00:02:25,847
+Um vier zu erreichen, muss man konstant sein Spiel halten,
 
 51
+00:02:25,847 --> 00:02:27,560
+aber verrückt ist das sicher nicht.
+
+52
 00:02:27,560 --> 00:02:30,000
 Aber wenn man es in drei Teilen bekommt, fühlt es sich einfach großartig an.
 
-52
+53
 00:02:30,000 --> 00:02:33,060
 Wenn Sie also Lust darauf haben, möchte ich hier einfach meinen
 
-53
+54
 00:02:33,060 --> 00:02:36,600
 Denkprozess von Anfang an besprechen, wie ich an den Wurdle-Bot herangehe.
 
-54
+55
 00:02:36,600 --> 00:02:38,183
 Und wie ich schon sagte, es ist eigentlich ein
 
-55
+56
 00:02:38,183 --> 00:02:39,800
 Vorwand für eine Lektion in Informationstheorie.
 
-56
+57
 00:02:39,800 --> 00:02:48,560
 Das Hauptziel besteht darin, zu erklären, was Information und was Entropie ist.
 
-57
-00:02:48,560 --> 00:02:51,044
-Mein erster Gedanke bei der Annäherung an dieses Thema war, einen Blick auf die
-
 58
-00:02:51,044 --> 00:02:53,560
-relative Häufigkeit verschiedener Buchstaben in der englischen Sprache zu werfen.
+00:02:48,560 --> 00:02:50,423
+Mein erster Gedanke bei der Annäherung an dieses Thema war,
 
 59
-00:02:53,560 --> 00:02:56,634
-Also dachte ich: Okay, gibt es eine Eröffnungsschätzung oder
+00:02:50,423 --> 00:02:53,000
+einen Blick auf die relative Häufigkeit verschiedener Buchstaben in der englischen
 
 60
-00:02:56,634 --> 00:02:59,960
-ein Eröffnungspaar, das viele dieser häufigsten Buchstaben trifft?
+00:02:53,000 --> 00:02:53,560
+Sprache zu werfen.
 
 61
+00:02:53,560 --> 00:02:57,641
+Also dachte ich: Okay, gibt es eine Eröffnungsschätzung oder ein Eröffnungspaar,
+
+62
+00:02:57,641 --> 00:02:59,960
+das viele dieser häufigsten Buchstaben trifft?
+
+63
 00:02:59,960 --> 00:03:03,780
 Und eines, das mir sehr gefiel, war die Arbeit mit anderen gefolgt von Nägeln.
 
-62
-00:03:03,780 --> 00:03:05,945
-Der Gedanke ist, dass wenn man einen Buchstaben trifft, man einen
-
-63
-00:03:05,945 --> 00:03:07,980
-grünen oder einen gelben bekommt, das fühlt sich immer gut an.
-
 64
+00:03:03,780 --> 00:03:05,617
+Der Gedanke ist, dass wenn man einen Buchstaben trifft,
+
+65
+00:03:05,617 --> 00:03:07,980
+man einen grünen oder einen gelben bekommt, das fühlt sich immer gut an.
+
+66
 00:03:07,980 --> 00:03:09,460
 Es fühlt sich an, als würden Sie Informationen erhalten.
 
-65
-00:03:09,460 --> 00:03:12,265
-Aber selbst wenn Sie in diesen Fällen nicht klicken und immer Grautöne
-
-66
-00:03:12,265 --> 00:03:14,913
-erhalten, erhalten Sie dennoch viele Informationen, da es ziemlich
-
 67
-00:03:14,913 --> 00:03:17,640
-selten ist, ein Wort zu finden, das keinen dieser Buchstaben enthält.
+00:03:09,460 --> 00:03:12,660
+Aber selbst wenn Sie in diesen Fällen nicht klicken und immer Grautöne erhalten,
 
 68
-00:03:17,640 --> 00:03:20,536
-Aber auch das fühlt sich nicht besonders systematisch an, weil es
+00:03:12,660 --> 00:03:15,387
+erhalten Sie dennoch viele Informationen, da es ziemlich selten ist,
 
 69
-00:03:20,536 --> 00:03:23,520
-beispielsweise nichts mit der Reihenfolge der Buchstaben zu tun hat.
+00:03:15,387 --> 00:03:17,640
+ein Wort zu finden, das keinen dieser Buchstaben enthält.
 
 70
+00:03:17,640 --> 00:03:20,185
+Aber auch das fühlt sich nicht besonders systematisch an,
+
+71
+00:03:20,185 --> 00:03:23,520
+weil es beispielsweise nichts mit der Reihenfolge der Buchstaben zu tun hat.
+
+72
 00:03:23,520 --> 00:03:26,080
 Warum Nägel tippen, wenn ich Schnecke tippen könnte?
 
-71
+73
 00:03:26,080 --> 00:03:27,720
 Ist es besser, das S am Ende zu haben?
 
-72
+74
 00:03:27,720 --> 00:03:28,720
 Ich bin mir nicht wirklich sicher.
 
-73
-00:03:28,720 --> 00:03:31,671
-Nun sagte ein Freund von mir, dass er gerne mit dem Wort „müde“
-
-74
-00:03:31,671 --> 00:03:34,392
-beginnt, was mich irgendwie überraschte, weil darin einige
-
 75
-00:03:34,392 --> 00:03:37,160
-ungewöhnliche Buchstaben wie das W und das Y enthalten sind.
+00:03:28,720 --> 00:03:32,086
+Nun sagte ein Freund von mir, dass er gerne mit dem Wort „müde“ beginnt,
 
 76
+00:03:32,086 --> 00:03:35,038
+was mich irgendwie überraschte, weil darin einige ungewöhnliche
+
+77
+00:03:35,038 --> 00:03:37,160
+Buchstaben wie das W und das Y enthalten sind.
+
+78
 00:03:37,160 --> 00:03:39,400
 Aber wer weiß, vielleicht ist das ein besserer Auftakt.
 
-77
+79
 00:03:39,400 --> 00:03:42,059
 Gibt es eine Art quantitative Bewertung, mit der wir
 
-78
+80
 00:03:42,059 --> 00:03:44,920
 die Qualität einer möglichen Vermutung beurteilen können?
 
-79
-00:03:44,920 --> 00:03:47,371
-Um nun die Art und Weise festzulegen, wie wir mögliche Vermutungen
-
-80
-00:03:47,371 --> 00:03:49,677
-einordnen werden, gehen wir noch einmal zurück und bringen ein
-
 81
-00:03:49,677 --> 00:03:51,800
-wenig Klarheit darüber, wie das Spiel genau aufgebaut ist.
+00:03:44,920 --> 00:03:48,030
+Um nun die Art und Weise festzulegen, wie wir mögliche Vermutungen einordnen werden,
 
 82
+00:03:48,030 --> 00:03:50,555
+gehen wir noch einmal zurück und bringen ein wenig Klarheit darüber,
+
+83
+00:03:50,555 --> 00:03:51,800
+wie das Spiel genau aufgebaut ist.
+
+84
 00:03:51,800 --> 00:03:54,794
 Es gibt also eine Liste von Wörtern, die Sie eingeben können und die
 
-83
+85
 00:03:54,794 --> 00:03:57,920
 als gültige Vermutungen gelten und die nur etwa 13.000 Wörter lang sind.
 
-84
-00:03:57,920 --> 00:04:00,770
-Aber wenn man es sich anschaut, sieht man da eine Menge wirklich
-
-85
-00:04:00,770 --> 00:04:03,795
-ungewöhnlicher Dinge, Dinge wie einen Kopf oder Ali und ARG, die Art
-
 86
-00:04:03,795 --> 00:04:07,040
-von Wörtern, die bei einem Scrabble-Spiel Familienstreitigkeiten auslösen.
+00:03:57,920 --> 00:04:01,734
+Aber wenn man es sich anschaut, sieht man da eine Menge wirklich ungewöhnlicher Dinge,
 
 87
+00:04:01,734 --> 00:04:04,365
+Dinge wie einen Kopf oder Ali und ARG, die Art von Wörtern,
+
+88
+00:04:04,365 --> 00:04:07,040
+die bei einem Scrabble-Spiel Familienstreitigkeiten auslösen.
+
+89
 00:04:07,040 --> 00:04:08,820
 Aber die Atmosphäre des Spiels ist, dass die Antwort
 
-88
+90
 00:04:08,820 --> 00:04:10,600
 immer ein einigermaßen gebräuchliches Wort sein wird.
 
-89
-00:04:10,600 --> 00:04:13,313
-Und tatsächlich gibt es noch eine weitere Liste mit
-
-90
-00:04:13,313 --> 00:04:16,080
-rund 2300 Wörtern, die mögliche Antworten darstellen.
-
 91
-00:04:16,080 --> 00:04:19,025
-Und das ist eine von Menschen kuratierte Liste, ich glaube, speziell
+00:04:10,600 --> 00:04:14,305
+Und tatsächlich gibt es noch eine weitere Liste mit rund 2300 Wörtern,
 
 92
-00:04:19,025 --> 00:04:21,800
-von der Freundin des Spieleentwicklers, was irgendwie Spaß macht.
+00:04:14,305 --> 00:04:16,080
+die mögliche Antworten darstellen.
 
 93
-00:04:21,800 --> 00:04:24,640
-Aber was ich gerne tun würde, unsere Herausforderung für dieses
+00:04:16,080 --> 00:04:18,641
+Und das ist eine von Menschen kuratierte Liste, ich glaube,
 
 94
-00:04:24,640 --> 00:04:27,436
-Projekt besteht darin, zu sehen, ob wir ein Programm schreiben
+00:04:18,641 --> 00:04:21,800
+speziell von der Freundin des Spieleentwicklers, was irgendwie Spaß macht.
 
 95
-00:04:27,436 --> 00:04:30,720
-können, das Wordle löst, das keine Vorkenntnisse über diese Liste enthält.
+00:04:21,800 --> 00:04:25,660
+Aber was ich gerne tun würde, unsere Herausforderung für dieses Projekt besteht darin,
 
 96
-00:04:30,720 --> 00:04:33,053
-Zum einen gibt es viele ziemlich gebräuchliche Wörter
+00:04:25,660 --> 00:04:28,545
+zu sehen, ob wir ein Programm schreiben können, das Wordle löst,
 
 97
-00:04:33,053 --> 00:04:35,560
-mit fünf Buchstaben, die Sie in dieser Liste nicht finden.
+00:04:28,545 --> 00:04:30,720
+das keine Vorkenntnisse über diese Liste enthält.
 
 98
-00:04:35,560 --> 00:04:37,579
-Daher wäre es besser, ein Programm zu schreiben, das etwas
+00:04:30,720 --> 00:04:33,961
+Zum einen gibt es viele ziemlich gebräuchliche Wörter mit fünf Buchstaben,
 
 99
-00:04:37,579 --> 00:04:39,632
-widerstandsfähiger ist und Wordle gegen jeden spielen kann,
+00:04:33,961 --> 00:04:35,560
+die Sie in dieser Liste nicht finden.
 
 100
+00:04:35,560 --> 00:04:37,237
+Daher wäre es besser, ein Programm zu schreiben,
+
+101
+00:04:37,237 --> 00:04:39,632
+das etwas widerstandsfähiger ist und Wordle gegen jeden spielen kann,
+
+102
 00:04:39,632 --> 00:04:41,960
 nicht nur gegen das, was zufällig auf der offiziellen Website steht.
 
-101
-00:04:41,960 --> 00:04:44,642
-Und wir kennen diese Liste möglicher Antworten
-
-102
-00:04:44,642 --> 00:04:47,440
-auch deshalb, weil sie im Quellcode sichtbar ist.
-
 103
-00:04:47,440 --> 00:04:50,178
-Aber die Art und Weise, wie es im Quellcode sichtbar ist, liegt in der
+00:04:41,960 --> 00:04:45,442
+Und wir kennen diese Liste möglicher Antworten auch deshalb,
 
 104
-00:04:50,178 --> 00:04:52,840
-spezifischen Reihenfolge, in der die Antworten von Tag zu Tag kommen.
+00:04:45,442 --> 00:04:47,440
+weil sie im Quellcode sichtbar ist.
 
 105
+00:04:47,440 --> 00:04:49,677
+Aber die Art und Weise, wie es im Quellcode sichtbar ist,
+
+106
+00:04:49,677 --> 00:04:52,840
+liegt in der spezifischen Reihenfolge, in der die Antworten von Tag zu Tag kommen.
+
+107
 00:04:52,840 --> 00:04:56,400
 Sie können also jederzeit nachschauen, wie die Antwort morgen lautet.
 
-106
+108
 00:04:56,400 --> 00:04:59,140
 Es ist also klar, dass die Verwendung der Liste in gewisser Weise Betrug ist.
 
-107
+109
 00:04:59,140 --> 00:05:02,096
 Und was zu einem interessanteren Rätsel und einer reichhaltigeren
 
-108
+110
 00:05:02,096 --> 00:05:05,053
 Informationstheorie-Lektion führt, ist stattdessen die Verwendung
 
-109
-00:05:05,053 --> 00:05:07,876
-einiger universellerer Daten wie relativer Worthäufigkeiten im
-
-110
-00:05:07,876 --> 00:05:11,640
-Allgemeinen, um die Intuition einer Vorliebe für gebräuchlichere Wörter zu erfassen.
-
 111
+00:05:05,053 --> 00:05:08,458
+einiger universellerer Daten wie relativer Worthäufigkeiten im Allgemeinen,
+
+112
+00:05:08,458 --> 00:05:11,640
+um die Intuition einer Vorliebe für gebräuchlichere Wörter zu erfassen.
+
+113
 00:05:11,640 --> 00:05:16,560
 Wie sollten wir also aus diesen 13.000 Möglichkeiten den Eröffnungstipp wählen?
 
-112
-00:05:16,560 --> 00:05:18,354
-Wenn mein Freund beispielsweise müde einen Heiratsantrag
-
-113
-00:05:18,354 --> 00:05:19,960
-macht, wie sollten wir dessen Qualität analysieren?
-
 114
+00:05:16,560 --> 00:05:18,574
+Wenn mein Freund beispielsweise müde einen Heiratsantrag macht,
+
+115
+00:05:18,574 --> 00:05:19,960
+wie sollten wir dessen Qualität analysieren?
+
+116
 00:05:19,960 --> 00:05:23,795
 Nun, der Grund, warum er sagte, dass er dieses unwahrscheinliche W mag, ist,
 
-115
+117
 00:05:23,795 --> 00:05:27,880
 dass ihm die Weitsicht gefällt, wie gut es sich anfühlt, wenn man dieses W trifft.
 
-116
+118
 00:05:27,880 --> 00:05:30,409
 Wenn zum Beispiel das erste Muster, das aufgedeckt wurde,
 
-117
+119
 00:05:30,409 --> 00:05:33,157
 ungefähr so aussah, dann stellt sich heraus, dass es in diesem
 
-118
+120
 00:05:33,157 --> 00:05:36,080
 riesigen Lexikon nur 58 Wörter gibt, die diesem Muster entsprechen.
 
-119
+121
 00:05:36,080 --> 00:05:38,900
 Das ist also eine enorme Reduzierung gegenüber 13.000.
 
-120
-00:05:38,900 --> 00:05:41,217
-Aber die Kehrseite davon ist natürlich, dass es sehr
-
-121
-00:05:41,217 --> 00:05:43,360
-ungewöhnlich ist, ein solches Muster zu erhalten.
-
 122
-00:05:43,360 --> 00:05:47,520
-Wenn jedes Wort mit gleicher Wahrscheinlichkeit die Antwort wäre, wäre die
+00:05:38,900 --> 00:05:42,004
+Aber die Kehrseite davon ist natürlich, dass es sehr ungewöhnlich ist,
 
 123
-00:05:47,520 --> 00:05:51,680
-Wahrscheinlichkeit, dieses Muster zu treffen, 58 geteilt durch etwa 13.000.
+00:05:42,004 --> 00:05:43,360
+ein solches Muster zu erhalten.
 
 124
+00:05:43,360 --> 00:05:47,020
+Wenn jedes Wort mit gleicher Wahrscheinlichkeit die Antwort wäre,
+
+125
+00:05:47,020 --> 00:05:51,680
+wäre die Wahrscheinlichkeit, dieses Muster zu treffen, 58 geteilt durch etwa 13.000.
+
+126
 00:05:51,680 --> 00:05:52,933
 Natürlich ist es nicht gleichermaßen wahrscheinlich,
 
-125
+127
 00:05:52,933 --> 00:05:53,880
 dass es sich dabei um Antworten handelt.
 
-126
+128
 00:05:53,880 --> 00:05:56,680
 Die meisten davon sind sehr obskure und sogar fragwürdige Wörter.
 
-127
-00:05:56,680 --> 00:05:59,397
-Aber zumindest für unseren ersten Versuch gehen wir davon aus, dass sie
-
-128
-00:05:59,397 --> 00:06:02,040
-alle gleich wahrscheinlich sind, und verfeinern das dann etwas später.
-
 129
-00:06:02,040 --> 00:06:04,675
-Der Punkt ist, dass es von Natur aus unwahrscheinlich
+00:05:56,680 --> 00:05:59,058
+Aber zumindest für unseren ersten Versuch gehen wir davon aus,
 
 130
-00:06:04,675 --> 00:06:07,360
-ist, dass ein Muster mit vielen Informationen auftritt.
+00:05:59,058 --> 00:06:02,040
+dass sie alle gleich wahrscheinlich sind, und verfeinern das dann etwas später.
 
 131
+00:06:02,040 --> 00:06:04,919
+Der Punkt ist, dass es von Natur aus unwahrscheinlich ist,
+
+132
+00:06:04,919 --> 00:06:07,360
+dass ein Muster mit vielen Informationen auftritt.
+
+133
 00:06:07,360 --> 00:06:11,920
 Tatsächlich bedeutet es, informativ zu sein, dass es unwahrscheinlich ist.
 
-132
-00:06:11,920 --> 00:06:15,323
-Ein viel wahrscheinlicheres Muster, das man bei dieser Eröffnung
-
-133
-00:06:15,323 --> 00:06:18,360
-sehen könnte, wäre so etwas, wo natürlich kein W drin ist.
-
 134
+00:06:11,920 --> 00:06:16,056
+Ein viel wahrscheinlicheres Muster, das man bei dieser Eröffnung sehen könnte,
+
+135
+00:06:16,056 --> 00:06:18,360
+wäre so etwas, wo natürlich kein W drin ist.
+
+136
 00:06:18,360 --> 00:06:22,080
 Vielleicht gibt es ein E, vielleicht gibt es kein A, es gibt kein R, es gibt kein Y.
 
-135
+137
 00:06:22,080 --> 00:06:24,640
 In diesem Fall gibt es 1400 mögliche Übereinstimmungen.
 
-136
+138
 00:06:24,640 --> 00:06:27,780
 Wenn alle gleich wahrscheinlich wären, errechnet sich eine Wahrscheinlichkeit
 
-137
+139
 00:06:27,780 --> 00:06:30,680
 von etwa 11 %, dass es sich um das Muster handelt, das Sie sehen würden.
 
-138
+140
 00:06:30,680 --> 00:06:34,320
 Daher sind die wahrscheinlichsten Ergebnisse auch die am wenigsten aussagekräftigen.
 
-139
-00:06:34,320 --> 00:06:36,749
-Um hier einen umfassenderen Überblick zu erhalten, möchte ich
-
-140
-00:06:36,749 --> 00:06:39,257
-Ihnen die vollständige Verteilung der Wahrscheinlichkeiten über
-
 141
-00:06:39,257 --> 00:06:42,000
-alle verschiedenen Muster hinweg zeigen, die Sie möglicherweise sehen.
+00:06:34,320 --> 00:06:36,318
+Um hier einen umfassenderen Überblick zu erhalten,
 
 142
+00:06:36,318 --> 00:06:39,061
+möchte ich Ihnen die vollständige Verteilung der Wahrscheinlichkeiten
+
+143
+00:06:39,061 --> 00:06:42,000
+über alle verschiedenen Muster hinweg zeigen, die Sie möglicherweise sehen.
+
+144
 00:06:42,000 --> 00:06:45,782
 Jeder Balken, den Sie betrachten, entspricht also einem möglichen Farbmuster,
 
-143
-00:06:45,782 --> 00:06:49,419
-das aufgedeckt werden könnte, von denen es 3 bis 5 Möglichkeiten gibt, und
-
-144
-00:06:49,419 --> 00:06:52,960
-sie sind von links nach rechts geordnet, am häufigsten bis am seltensten.
-
 145
+00:06:45,782 --> 00:06:49,225
+das aufgedeckt werden könnte, von denen es 3 bis 5 Möglichkeiten gibt,
+
+146
+00:06:49,225 --> 00:06:52,960
+und sie sind von links nach rechts geordnet, am häufigsten bis am seltensten.
+
+147
 00:06:52,960 --> 00:06:56,200
 Die häufigste Möglichkeit besteht hier also darin, dass Sie nur Grautöne erhalten.
 
-146
+148
 00:06:56,200 --> 00:06:58,800
 Das passiert in etwa 14 % der Fälle.
 
-147
-00:06:58,800 --> 00:07:02,579
-Und wenn Sie eine Vermutung anstellen, hoffen Sie, dass Sie irgendwo
-
-148
-00:07:02,579 --> 00:07:06,414
-in diesem langen Schwanz landen, wie hier, wo es nur 18 Möglichkeiten
-
 149
-00:07:06,414 --> 00:07:09,920
-gibt, was zu diesem Muster passt und offensichtlich so aussieht.
+00:06:58,800 --> 00:07:01,593
+Und wenn Sie eine Vermutung anstellen, hoffen Sie,
 
 150
+00:07:01,593 --> 00:07:04,935
+dass Sie irgendwo in diesem langen Schwanz landen, wie hier,
+
+151
+00:07:04,935 --> 00:07:08,440
+wo es nur 18 Möglichkeiten gibt, was zu diesem Muster passt und
+
+152
+00:07:08,440 --> 00:07:09,920
+offensichtlich so aussieht.
+
+153
 00:07:09,920 --> 00:07:12,065
 Oder wenn wir uns etwas weiter nach links wagen,
 
-151
+154
 00:07:12,065 --> 00:07:14,080
 wissen Sie, vielleicht kommen wir bis hierher.
 
-152
+155
 00:07:14,080 --> 00:07:16,560
 Okay, hier ist ein gutes Rätsel für dich.
 
-153
-00:07:16,560 --> 00:07:19,348
-Welche drei Wörter in der englischen Sprache beginnen mit
+156
+00:07:16,560 --> 00:07:19,780
+Welche drei Wörter in der englischen Sprache beginnen mit einem W,
 
-154
-00:07:19,348 --> 00:07:22,040
-einem W, enden mit einem Y und enthalten irgendwo ein R?
+157
+00:07:19,780 --> 00:07:22,040
+enden mit einem Y und enthalten irgendwo ein R?
 
-155
+158
 00:07:22,040 --> 00:07:27,560
 Es stellt sich heraus, dass die Antworten, mal sehen, wortreich, wurmig und ironisch sind.
 
-156
-00:07:27,560 --> 00:07:31,879
-Um zu beurteilen, wie gut dieses Wort insgesamt ist, benötigen wir eine Art Maß
+159
+00:07:27,560 --> 00:07:30,421
+Um zu beurteilen, wie gut dieses Wort insgesamt ist,
 
-157
-00:07:31,879 --> 00:07:36,360
-für die erwartete Menge an Informationen, die Sie von dieser Distribution erhalten.
+160
+00:07:30,421 --> 00:07:34,146
+benötigen wir eine Art Maß für die erwartete Menge an Informationen,
 
-158
+161
+00:07:34,146 --> 00:07:36,360
+die Sie von dieser Distribution erhalten.
+
+162
 00:07:36,360 --> 00:07:40,039
 Wenn wir jedes Muster durchgehen und seine Auftrittswahrscheinlichkeit
 
-159
+163
 00:07:40,039 --> 00:07:43,149
 mit etwas multiplizieren, das misst, wie informativ es ist,
 
-160
+164
 00:07:43,149 --> 00:07:46,000
 kann uns das vielleicht eine objektive Bewertung geben.
 
-161
+165
 00:07:46,000 --> 00:07:48,117
 Ihr erster Instinkt dafür, was das sein sollte,
 
-162
+166
 00:07:48,117 --> 00:07:50,280
 könnte nun die Anzahl der Übereinstimmungen sein.
 
-163
+167
 00:07:50,280 --> 00:07:52,960
 Sie möchten eine geringere durchschnittliche Anzahl von Übereinstimmungen.
 
-164
-00:07:52,960 --> 00:07:58,953
-Aber stattdessen möchte ich ein universelleres Maß verwenden, das wir oft Informationen
-
-165
-00:07:58,953 --> 00:08:04,674
-zuschreiben, und eines, das flexibler ist, wenn wir jedem dieser 13.000 Wörter eine
-
-166
-00:08:04,674 --> 00:08:10,600
-andere Wahrscheinlichkeit dafür zuordnen, ob es tatsächlich die Antwort ist oder nicht.
-
-167
-00:08:10,600 --> 00:08:14,327
-Die Standardinformationseinheit ist das Bit, dessen Formel etwas komisch
-
 168
-00:08:14,327 --> 00:08:17,800
-ist, aber wirklich intuitiv ist, wenn wir uns nur Beispiele ansehen.
+00:07:52,960 --> 00:07:57,182
+Aber stattdessen möchte ich ein universelleres Maß verwenden,
 
 169
-00:08:17,800 --> 00:08:21,165
-Wenn Sie eine Beobachtung haben, die Ihren Möglichkeitenraum
+00:07:57,182 --> 00:08:01,882
+das wir oft Informationen zuschreiben, und eines, das flexibler ist,
 
 170
-00:08:21,165 --> 00:08:24,200
-halbiert, sagen wir, dass sie eine Information enthält.
+00:08:01,882 --> 00:08:07,535
+wenn wir jedem dieser 13.000 Wörter eine andere Wahrscheinlichkeit dafür zuordnen,
 
 171
-00:08:24,200 --> 00:08:26,478
-In unserem Beispiel besteht der Raum der Möglichkeiten aus allen
+00:08:07,535 --> 00:08:10,600
+ob es tatsächlich die Antwort ist oder nicht.
 
 172
-00:08:26,478 --> 00:08:28,966
-möglichen Wörtern, und es stellt sich heraus, dass etwa die Hälfte der
+00:08:10,600 --> 00:08:14,582
+Die Standardinformationseinheit ist das Bit, dessen Formel etwas komisch ist,
 
 173
-00:08:28,966 --> 00:08:31,560
-Wörter mit fünf Buchstaben ein S hat, etwas weniger, aber etwa die Hälfte.
+00:08:14,582 --> 00:08:17,800
+aber wirklich intuitiv ist, wenn wir uns nur Beispiele ansehen.
 
 174
+00:08:17,800 --> 00:08:21,717
+Wenn Sie eine Beobachtung haben, die Ihren Möglichkeitenraum halbiert,
+
+175
+00:08:21,717 --> 00:08:24,200
+sagen wir, dass sie eine Information enthält.
+
+176
+00:08:24,200 --> 00:08:27,144
+In unserem Beispiel besteht der Raum der Möglichkeiten aus allen möglichen Wörtern,
+
+177
+00:08:27,144 --> 00:08:30,298
+und es stellt sich heraus, dass etwa die Hälfte der Wörter mit fünf Buchstaben ein S hat,
+
+178
+00:08:30,298 --> 00:08:31,560
+etwas weniger, aber etwa die Hälfte.
+
+179
 00:08:31,560 --> 00:08:35,200
 Diese Beobachtung würde Ihnen also eine kleine Information geben.
 
-175
+180
 00:08:35,200 --> 00:08:38,482
 Wenn stattdessen eine neue Tatsache den Raum der Möglichkeiten um den
 
-176
+181
 00:08:38,482 --> 00:08:42,000
 Faktor vier verkleinert, sagen wir, dass sie zwei Informationsbits enthält.
 
-177
+182
 00:08:42,000 --> 00:08:45,120
 Es stellt sich beispielsweise heraus, dass etwa ein Viertel dieser Wörter ein T hat.
 
-178
+183
 00:08:45,120 --> 00:08:48,078
 Wenn die Beobachtung diesen Raum um den Faktor acht verkleinert, sagen wir,
 
-179
+184
 00:08:48,078 --> 00:08:50,920
 dass es sich um drei Informationsbits handelt, und so weiter und so fort.
 
-180
+185
 00:08:50,920 --> 00:08:55,000
 Vier Bits zerschneiden es in ein Sechzehntel, fünf Bits zerschneiden es in ein 32tel.
 
-181
-00:08:55,000 --> 00:08:59,439
-Jetzt möchten Sie vielleicht innehalten und sich fragen: Wie lautet die Formel für
+186
+00:08:55,000 --> 00:08:58,048
+Jetzt möchten Sie vielleicht innehalten und sich fragen:
 
-182
-00:08:59,439 --> 00:09:03,931
-Informationen über die Anzahl der Bits im Hinblick auf die Wahrscheinlichkeit eines
+187
+00:08:58,048 --> 00:09:02,594
+Wie lautet die Formel für Informationen über die Anzahl der Bits im Hinblick auf die
 
-183
-00:09:03,931 --> 00:09:04,520
-Auftretens?
+188
+00:09:02,594 --> 00:09:04,520
+Wahrscheinlichkeit eines Auftretens?
 
-184
+189
 00:09:04,520 --> 00:09:07,720
 Was wir hier sagen ist, dass wenn man die Hälfte der Anzahl der Bits hochnimmt,
 
-185
-00:09:07,720 --> 00:09:10,640
-das dasselbe ist wie die Wahrscheinlichkeit, was dasselbe ist, als würde
-
-186
-00:09:10,640 --> 00:09:13,800
-man sagen, dass zwei hoch die Anzahl der Bits eins über der Wahrscheinlichkeit
-
-187
-00:09:13,800 --> 00:09:16,520
-ist, was ordnet sich weiter um und sagt, dass die Informationen die
-
-188
-00:09:16,520 --> 00:09:19,680
-logarithmische Basis zwei von eins dividiert durch die Wahrscheinlichkeit sind.
-
-189
-00:09:19,680 --> 00:09:22,621
-Und manchmal sieht man das noch bei einer weiteren Neuordnung, bei der die
-
 190
-00:09:22,621 --> 00:09:25,680
-Information die negative logarithmische Basis zwei der Wahrscheinlichkeit ist.
+00:09:07,720 --> 00:09:11,080
+das dasselbe ist wie die Wahrscheinlichkeit, was dasselbe ist, als würde man sagen,
 
 191
-00:09:25,680 --> 00:09:30,028
-So ausgedrückt, mag es für den Uneingeweihten etwas seltsam aussehen, aber es ist
+00:09:11,080 --> 00:09:14,000
+dass zwei hoch die Anzahl der Bits eins über der Wahrscheinlichkeit ist,
 
 192
-00:09:30,028 --> 00:09:34,430
-eigentlich nur die sehr intuitive Idee, zu fragen, wie oft man seine Möglichkeiten
+00:09:14,000 --> 00:09:17,120
+was ordnet sich weiter um und sagt, dass die Informationen die logarithmische
 
 193
-00:09:34,430 --> 00:09:35,120
-halbiert hat.
+00:09:17,120 --> 00:09:19,680
+Basis zwei von eins dividiert durch die Wahrscheinlichkeit sind.
 
 194
-00:09:35,120 --> 00:09:37,520
-Wenn Sie sich jetzt fragen: Ich dachte, wir spielen nur ein
+00:09:19,680 --> 00:09:22,150
+Und manchmal sieht man das noch bei einer weiteren Neuordnung,
 
 195
-00:09:37,520 --> 00:09:39,920
-lustiges Wortspiel, warum kommen dann Logarithmen ins Spiel?
+00:09:22,150 --> 00:09:25,680
+bei der die Information die negative logarithmische Basis zwei der Wahrscheinlichkeit ist.
 
 196
-00:09:39,920 --> 00:09:43,032
-Ein Grund dafür, dass dies eine schönere Einheit ist, ist, dass es einfach
+00:09:25,680 --> 00:09:29,392
+So ausgedrückt, mag es für den Uneingeweihten etwas seltsam aussehen,
 
 197
-00:09:43,032 --> 00:09:46,228
-viel einfacher ist, über sehr unwahrscheinliche Ereignisse zu sprechen, viel
+00:09:29,392 --> 00:09:32,733
+aber es ist eigentlich nur die sehr intuitive Idee, zu fragen,
 
 198
-00:09:46,228 --> 00:09:49,382
-einfacher zu sagen, dass eine Beobachtung 20 Bits an Informationen enthält,
+00:09:32,733 --> 00:09:35,120
+wie oft man seine Möglichkeiten halbiert hat.
 
 199
-00:09:49,382 --> 00:09:52,785
-als zu sagen, dass die Wahrscheinlichkeit, dass dieses oder jenes eintritt, 0 ist.
+00:09:35,120 --> 00:09:38,320
+Wenn Sie sich jetzt fragen: Ich dachte, wir spielen nur ein lustiges Wortspiel,
 
 200
-00:09:52,785 --> 00:09:53,480
-0000095.
+00:09:38,320 --> 00:09:39,920
+warum kommen dann Logarithmen ins Spiel?
 
 201
+00:09:39,920 --> 00:09:42,435
+Ein Grund dafür, dass dies eine schönere Einheit ist, ist,
+
+202
+00:09:42,435 --> 00:09:46,188
+dass es einfach viel einfacher ist, über sehr unwahrscheinliche Ereignisse zu sprechen,
+
+203
+00:09:46,188 --> 00:09:49,642
+viel einfacher zu sagen, dass eine Beobachtung 20 Bits an Informationen enthält,
+
+204
+00:09:49,642 --> 00:09:53,480
+als zu sagen, dass die Wahrscheinlichkeit, dass dieses oder jenes eintritt, 0 ist.0000095.
+
+205
 00:09:53,480 --> 00:09:56,445
 Aber ein substanziellerer Grund dafür, dass sich dieser logarithmische
 
-202
-00:09:56,445 --> 00:09:59,327
-Ausdruck als sehr nützliche Ergänzung zur Wahrscheinlichkeitstheorie
-
-203
-00:09:59,327 --> 00:10:02,000
-erwies, ist die Art und Weise, wie Informationen addiert werden.
-
-204
-00:10:02,000 --> 00:10:05,679
-Wenn Ihnen beispielsweise eine Beobachtung zwei Informationsbits liefert, wodurch Ihr
-
-205
-00:10:05,679 --> 00:10:09,530
-Platz um vier reduziert wird, und wenn Ihnen dann eine zweite Beobachtung wie Ihre zweite
-
 206
-00:10:09,530 --> 00:10:13,380
-Schätzung in Wordle weitere drei Informationsbits liefert, wodurch Sie noch einmal um den
+00:09:56,445 --> 00:09:59,661
+Ausdruck als sehr nützliche Ergänzung zur Wahrscheinlichkeitstheorie erwies,
 
 207
-00:10:13,380 --> 00:10:16,761
-Faktor acht reduziert werden, dann ist das der Fall zwei zusammen ergeben fünf
+00:09:59,661 --> 00:10:02,000
+ist die Art und Weise, wie Informationen addiert werden.
 
 208
-00:10:16,761 --> 00:10:17,360
-Informationen.
+00:10:02,000 --> 00:10:05,166
+Wenn Ihnen beispielsweise eine Beobachtung zwei Informationsbits liefert,
 
 209
+00:10:05,166 --> 00:10:09,016
+wodurch Ihr Platz um vier reduziert wird, und wenn Ihnen dann eine zweite Beobachtung wie
+
+210
+00:10:09,016 --> 00:10:12,054
+Ihre zweite Schätzung in Wordle weitere drei Informationsbits liefert,
+
+211
+00:10:12,054 --> 00:10:14,664
+wodurch Sie noch einmal um den Faktor acht reduziert werden,
+
+212
+00:10:14,664 --> 00:10:17,360
+dann ist das der Fall zwei zusammen ergeben fünf Informationen.
+
+213
 00:10:17,360 --> 00:10:19,520
 So wie sich Wahrscheinlichkeiten gerne vervielfachen,
 
-210
+214
 00:10:19,520 --> 00:10:21,200
 fügen sich auch Informationen gerne hinzu.
 
-211
-00:10:21,200 --> 00:10:25,024
-Sobald wir uns also im Bereich eines erwarteten Werts befinden, bei dem wir eine
+215
+00:10:21,200 --> 00:10:24,221
+Sobald wir uns also im Bereich eines erwarteten Werts befinden,
 
-212
-00:10:25,024 --> 00:10:28,660
-Reihe von Zahlen addieren, ist der Umgang mit den Protokollen viel einfacher.
+216
+00:10:24,221 --> 00:10:27,951
+bei dem wir eine Reihe von Zahlen addieren, ist der Umgang mit den Protokollen
 
-213
+217
+00:10:27,951 --> 00:10:28,660
+viel einfacher.
+
+218
 00:10:28,660 --> 00:10:32,149
 Kehren wir zu unserer Verteilung für Weary zurück und fügen hier einen weiteren kleinen
 
-214
+219
 00:10:32,149 --> 00:10:35,560
 Tracker hinzu, der uns zeigt, wie viele Informationen für jedes Muster vorhanden sind.
 
-215
-00:10:35,560 --> 00:10:38,073
-Ich möchte Sie vor allem darauf aufmerksam machen, dass je höher die
+220
+00:10:35,560 --> 00:10:37,417
+Ich möchte Sie vor allem darauf aufmerksam machen,
 
-216
-00:10:38,073 --> 00:10:40,622
-Wahrscheinlichkeit ist, wenn wir zu diesen wahrscheinlicheren Mustern
+221
+00:10:37,417 --> 00:10:40,331
+dass je höher die Wahrscheinlichkeit ist, wenn wir zu diesen wahrscheinlicheren
 
-217
-00:10:40,622 --> 00:10:43,500
-gelangen, je niedriger die Informationen sind, desto weniger Bits gewinnen Sie.
+222
+00:10:40,331 --> 00:10:43,500
+Mustern gelangen, je niedriger die Informationen sind, desto weniger Bits gewinnen Sie.
 
-218
+223
 00:10:43,500 --> 00:10:47,086
 Wir messen die Qualität dieser Vermutung, indem wir den erwarteten Wert dieser
 
-219
-00:10:47,086 --> 00:10:50,854
-Informationen nehmen, indem wir jedes Muster durchgehen, sagen, wie wahrscheinlich
-
-220
-00:10:50,854 --> 00:10:54,940
-es ist, und diesen dann mit der Anzahl der Informationen multiplizieren, die wir erhalten.
-
-221
-00:10:54,940 --> 00:10:58,107
-Und im Beispiel von Weary sind es 4.
-
-222
-00:10:58,107 --> 00:10:58,480
-9 Bit.
-
-223
-00:10:58,480 --> 00:11:01,959
-Im Durchschnitt sind die Informationen, die Sie aus dieser Eröffnungsvermutung
-
 224
-00:11:01,959 --> 00:11:05,660
-erhalten, so gut, als würden Sie Ihren Raum an Möglichkeiten etwa fünfmal halbieren.
+00:10:47,086 --> 00:10:49,991
+Informationen nehmen, indem wir jedes Muster durchgehen, sagen,
 
 225
+00:10:49,991 --> 00:10:53,441
+wie wahrscheinlich es ist, und diesen dann mit der Anzahl der Informationen
+
+226
+00:10:53,441 --> 00:10:54,940
+multiplizieren, die wir erhalten.
+
+227
+00:10:54,940 --> 00:10:58,480
+Und im Beispiel von Weary sind es 4.9 Bit.
+
+228
+00:10:58,480 --> 00:11:02,400
+Im Durchschnitt sind die Informationen, die Sie aus dieser Eröffnungsvermutung erhalten,
+
+229
+00:11:02,400 --> 00:11:05,660
+so gut, als würden Sie Ihren Raum an Möglichkeiten etwa fünfmal halbieren.
+
+230
 00:11:05,660 --> 00:11:09,377
 Im Gegensatz dazu wäre ein Beispiel für eine Schätzung mit
 
-226
+231
 00:11:09,377 --> 00:11:13,220
 einem höheren erwarteten Informationswert so etwas wie Slate.
 
-227
+232
 00:11:13,220 --> 00:11:16,180
 In diesem Fall werden Sie feststellen, dass die Verteilung viel flacher aussieht.
 
-228
-00:11:16,180 --> 00:11:20,334
-Insbesondere beträgt die Eintrittswahrscheinlichkeit des wahrscheinlichsten
+233
+00:11:16,180 --> 00:11:20,753
+Insbesondere beträgt die Eintrittswahrscheinlichkeit des wahrscheinlichsten aller
 
-229
-00:11:20,334 --> 00:11:24,435
-aller Grautöne nur etwa 6 %, Sie erhalten also offensichtlich mindestens 3.
+234
+00:11:20,753 --> 00:11:25,159
+Grautöne nur etwa 6 %, Sie erhalten also offensichtlich mindestens 3.9 Bits an
 
-230
-00:11:24,435 --> 00:11:25,940
-9 Bits an Informationen.
+235
+00:11:25,159 --> 00:11:25,940
+Informationen.
 
-231
+236
 00:11:25,940 --> 00:11:29,140
 Aber das ist ein Minimum, normalerweise bekommt man etwas Besseres.
 
-232
-00:11:29,140 --> 00:11:32,865
-Und es stellt sich heraus, dass die durchschnittliche Information, wenn man die Zahlen
+237
+00:11:29,140 --> 00:11:32,009
+Und es stellt sich heraus, dass die durchschnittliche Information,
 
-233
-00:11:32,865 --> 00:11:36,333
-zu diesem Thema auswertet und alle relevanten Begriffe addiert, bei etwa 5 liegt.
+238
+00:11:32,009 --> 00:11:35,606
+wenn man die Zahlen zu diesem Thema auswertet und alle relevanten Begriffe addiert,
 
-234
-00:11:36,333 --> 00:11:36,420
-8.
+239
+00:11:35,606 --> 00:11:36,420
+bei etwa 5 liegt.8.
 
-235
+240
 00:11:36,420 --> 00:11:40,036
 Im Gegensatz zu Weary wird Ihr Spielraum an Möglichkeiten also
 
-236
+241
 00:11:40,036 --> 00:11:43,940
 nach dieser ersten Vermutung im Durchschnitt etwa halb so groß sein.
 
-237
+242
 00:11:43,940 --> 00:11:46,549
 Es gibt tatsächlich eine lustige Geschichte zum
 
-238
+243
 00:11:46,549 --> 00:11:49,540
 Namen für diesen erwarteten Wert der Informationsmenge.
 
-239
-00:11:49,540 --> 00:11:53,320
-Die Informationstheorie wurde von Claude Shannon entwickelt, der in den 1940er Jahren
+244
+00:11:49,540 --> 00:11:52,221
+Die Informationstheorie wurde von Claude Shannon entwickelt,
 
-240
-00:11:53,320 --> 00:11:57,277
-an den Bell Labs arbeitete, aber er sprach über einige seiner noch nicht veröffentlichten
+245
+00:11:52,221 --> 00:11:54,551
+der in den 1940er Jahren an den Bell Labs arbeitete,
 
-241
-00:11:57,277 --> 00:12:00,750
-Ideen mit John von Neumann, dem damals prominenten intellektuellen Giganten in
+246
+00:11:54,551 --> 00:11:58,508
+aber er sprach über einige seiner noch nicht veröffentlichten Ideen mit John von Neumann,
 
-242
-00:12:00,750 --> 00:12:04,180
-Mathematik und Physik und die Anfänge dessen, was später zur Informatik wurde.
+247
+00:11:58,508 --> 00:12:02,069
+dem damals prominenten intellektuellen Giganten in Mathematik und Physik und die
 
-243
+248
+00:12:02,069 --> 00:12:04,180
+Anfänge dessen, was später zur Informatik wurde.
+
+249
 00:12:04,180 --> 00:12:07,799
 Und als er erwähnte, dass er keinen wirklich guten Namen für diesen
 
-244
-00:12:07,799 --> 00:12:11,153
-erwarteten Wert der Informationsmenge hatte, sagte von Neumann
+250
+00:12:07,799 --> 00:12:11,738
+erwarteten Wert der Informationsmenge hatte, sagte von Neumann angeblich,
 
-245
-00:12:11,153 --> 00:12:14,720
-angeblich, man sollte es Entropie nennen, und das aus zwei Gründen.
+251
+00:12:11,738 --> 00:12:14,720
+man sollte es Entropie nennen, und das aus zwei Gründen.
 
-246
+252
 00:12:14,720 --> 00:12:17,796
 Erstens wurde Ihre Unsicherheitsfunktion in der statistischen Mechanik
 
-247
-00:12:17,796 --> 00:12:20,743
-unter diesem Namen verwendet, sie hat also bereits einen Namen, und
+253
+00:12:17,796 --> 00:12:20,570
+unter diesem Namen verwendet, sie hat also bereits einen Namen,
 
-248
-00:12:20,743 --> 00:12:23,950
-zweitens, und was noch wichtiger ist, weiß niemand, was Entropie wirklich
+254
+00:12:20,570 --> 00:12:24,166
+und zweitens, und was noch wichtiger ist, weiß niemand, was Entropie wirklich ist,
 
-249
-00:12:23,950 --> 00:12:26,940
-ist, also werden Sie es in einer Debatte immer tun den Vorteil haben.
+255
+00:12:24,166 --> 00:12:26,940
+also werden Sie es in einer Debatte immer tun den Vorteil haben.
 
-250
+256
 00:12:26,940 --> 00:12:30,050
 Wenn der Name also etwas mysteriös erscheint und man dieser
 
-251
+257
 00:12:30,050 --> 00:12:33,420
 Geschichte Glauben schenken darf, dann ist das sozusagen Absicht.
 
-252
+258
 00:12:33,420 --> 00:12:37,130
 Auch wenn Sie sich über seine Beziehung zu all dem zweiten Hauptsatz der Thermodynamik
 
-253
-00:12:37,130 --> 00:12:40,414
-aus der Physik wundern, gibt es definitiv einen Zusammenhang, aber in seinen
+259
+00:12:37,130 --> 00:12:39,774
+aus der Physik wundern, gibt es definitiv einen Zusammenhang,
 
-254
-00:12:40,414 --> 00:12:43,996
-Ursprüngen beschäftigte sich Shannon nur mit der reinen Wahrscheinlichkeitstheorie,
+260
+00:12:39,774 --> 00:12:42,802
+aber in seinen Ursprüngen beschäftigte sich Shannon nur mit der reinen
 
-255
-00:12:43,996 --> 00:12:47,408
-und für unsere Zwecke hier, wenn ich das verwende Beim Wort Entropie möchte ich
+261
+00:12:42,802 --> 00:12:45,190
+Wahrscheinlichkeitstheorie, und für unsere Zwecke hier,
 
-256
-00:12:47,408 --> 00:12:50,820
-Ihnen nur den erwarteten Informationswert einer bestimmten Vermutung vorstellen.
+262
+00:12:45,190 --> 00:12:48,474
+wenn ich das verwende Beim Wort Entropie möchte ich Ihnen nur den erwarteten
 
-257
+263
+00:12:48,474 --> 00:12:50,820
+Informationswert einer bestimmten Vermutung vorstellen.
+
+264
 00:12:50,820 --> 00:12:54,380
 Man kann sich Entropie als die gleichzeitige Messung zweier Dinge vorstellen.
 
-258
+265
 00:12:54,380 --> 00:12:57,420
 Die erste Frage ist, wie flach die Verteilung ist.
 
-259
+266
 00:12:57,420 --> 00:13:01,700
 Je näher eine Verteilung an der Gleichmäßigkeit liegt, desto höher ist die Entropie.
 
-260
-00:13:01,700 --> 00:13:04,973
-In unserem Fall, in dem es insgesamt 3 bis 5 Muster gibt, würde die
+267
+00:13:01,700 --> 00:13:04,888
+In unserem Fall, in dem es insgesamt 3 bis 5 Muster gibt,
 
-261
-00:13:04,973 --> 00:13:08,344
-Beobachtung eines beliebigen Musters für eine gleichmäßige Verteilung
+268
+00:13:04,888 --> 00:13:08,680
+würde die Beobachtung eines beliebigen Musters für eine gleichmäßige
 
-262
-00:13:08,344 --> 00:13:11,858
-die Informationsprotokollbasis 2 von 3 bis 5 ergeben, was zufällig 7 ist.
+269
+00:13:08,680 --> 00:13:12,253
+Verteilung die Informationsprotokollbasis 2 von 3 bis 5 ergeben,
 
-263
-00:13:11,858 --> 00:13:17,860
-92, das ist also das absolute Maximum, das man für diese Entropie erreichen könnte.
+270
+00:13:12,253 --> 00:13:15,441
+was zufällig 7 ist.92, das ist also das absolute Maximum,
 
-264
+271
+00:13:15,441 --> 00:13:17,860
+das man für diese Entropie erreichen könnte.
+
+272
 00:13:17,860 --> 00:13:22,900
 Aber die Entropie ist auch eine Art Maß dafür, wie viele Möglichkeiten es überhaupt gibt.
 
-265
+273
 00:13:22,900 --> 00:13:26,042
 Wenn Sie beispielsweise ein Wort haben, bei dem es nur 16
 
-266
-00:13:26,042 --> 00:13:29,238
-mögliche Muster gibt und jedes davon gleich wahrscheinlich
+274
+00:13:26,042 --> 00:13:29,509
+mögliche Muster gibt und jedes davon gleich wahrscheinlich ist,
 
-267
-00:13:29,238 --> 00:13:32,760
-ist, beträgt diese Entropie, diese erwartete Information, 4 Bits.
+275
+00:13:29,509 --> 00:13:32,760
+beträgt diese Entropie, diese erwartete Information, 4 Bits.
 
-268
+276
 00:13:32,760 --> 00:13:36,674
 Aber wenn Sie ein anderes Wort haben, bei dem 64 mögliche Muster auftauchen
 
-269
+277
 00:13:36,674 --> 00:13:41,000
 könnten und alle gleich wahrscheinlich sind, dann würde die Entropie 6 Bit betragen.
 
-270
-00:13:41,000 --> 00:13:45,382
-Wenn Sie also irgendwo in freier Wildbahn eine Verteilung sehen, die eine Entropie von
+278
+00:13:41,000 --> 00:13:44,274
+Wenn Sie also irgendwo in freier Wildbahn eine Verteilung sehen,
 
-271
-00:13:45,382 --> 00:13:49,412
-6 Bit hat, dann ist das so, als ob das so wäre, als ob es so viel Variation und
+279
+00:13:44,274 --> 00:13:47,800
+die eine Entropie von 6 Bit hat, dann ist das so, als ob das so wäre,
 
-272
-00:13:49,412 --> 00:13:53,593
-Ungewissheit darüber gibt, was passieren wird, als ob es 64 gleich wahrscheinliche
+280
+00:13:47,800 --> 00:13:51,780
+als ob es so viel Variation und Ungewissheit darüber gibt, was passieren wird,
 
-273
-00:13:53,593 --> 00:13:54,400
-Ergebnisse gäbe.
+281
+00:13:51,780 --> 00:13:54,400
+als ob es 64 gleich wahrscheinliche Ergebnisse gäbe.
 
-274
+282
 00:13:54,400 --> 00:13:58,360
 Bei meinem ersten Durchgang beim Wurtelebot ließ ich es im Grunde einfach so machen.
 
-275
-00:13:58,360 --> 00:14:03,096
-Es geht alle möglichen Vermutungen durch, alle 13.000 Wörter, berechnet die Entropie für
-
-276
-00:14:03,096 --> 00:14:07,726
-jedes einzelne, oder genauer gesagt, die Entropie der Verteilung über alle Muster, die
-
-277
-00:14:07,726 --> 00:14:12,410
-Sie möglicherweise sehen, für jedes einzelne und wählt das höchste aus, denn das ist so
-
-278
-00:14:12,410 --> 00:14:17,200
-diejenige, die Ihren Raum an Möglichkeiten wahrscheinlich so weit wie möglich einschränkt.
-
-279
-00:14:17,200 --> 00:14:19,403
-Und obwohl ich hier nur über die erste Vermutung gesprochen
-
-280
-00:14:19,403 --> 00:14:21,680
-habe, gilt das Gleiche auch für die nächsten paar Vermutungen.
-
-281
-00:14:21,680 --> 00:14:25,220
-Wenn Sie beispielsweise bei dieser ersten Vermutung ein Muster erkennen, das Sie auf
-
-282
-00:14:25,220 --> 00:14:28,843
-eine kleinere Anzahl möglicher Wörter beschränkt, je nachdem, was damit übereinstimmt,
-
 283
-00:14:28,843 --> 00:14:32,300
-spielen Sie einfach dasselbe Spiel mit Bezug auf diese kleinere Gruppe von Wörtern.
+00:13:58,360 --> 00:14:01,659
+Es geht alle möglichen Vermutungen durch, alle 13.000 Wörter,
 
 284
-00:14:32,300 --> 00:14:36,459
-Für eine vorgeschlagene zweite Vermutung betrachten Sie die Verteilung aller
+00:14:01,659 --> 00:14:05,065
+berechnet die Entropie für jedes einzelne, oder genauer gesagt,
 
 285
-00:14:36,459 --> 00:14:40,672
-Muster, die aus dieser eingeschränkteren Menge von Wörtern auftreten könnten,
+00:14:05,065 --> 00:14:09,110
+die Entropie der Verteilung über alle Muster, die Sie möglicherweise sehen,
 
 286
-00:14:40,672 --> 00:14:45,480
-durchsuchen alle 13.000 Möglichkeiten und finden diejenige, die diese Entropie maximiert.
+00:14:09,110 --> 00:14:12,995
+für jedes einzelne und wählt das höchste aus, denn das ist so diejenige,
 
 287
-00:14:45,480 --> 00:14:48,381
-Um Ihnen zu zeigen, wie das in der Praxis funktioniert, möchte
+00:14:12,995 --> 00:14:17,200
+die Ihren Raum an Möglichkeiten wahrscheinlich so weit wie möglich einschränkt.
 
 288
-00:14:48,381 --> 00:14:51,282
-ich einfach eine kleine Variante von Wurtele aufrufen, die ich
+00:14:17,200 --> 00:14:19,623
+Und obwohl ich hier nur über die erste Vermutung gesprochen habe,
 
 289
-00:14:51,282 --> 00:14:54,460
-geschrieben habe und die am Rand die Höhepunkte dieser Analyse zeigt.
+00:14:19,623 --> 00:14:21,680
+gilt das Gleiche auch für die nächsten paar Vermutungen.
 
 290
-00:14:54,460 --> 00:14:57,378
-Nachdem wir alle Entropieberechnungen durchgeführt haben, zeigt es
+00:14:21,680 --> 00:14:24,720
+Wenn Sie beispielsweise bei dieser ersten Vermutung ein Muster erkennen,
 
 291
-00:14:57,378 --> 00:15:00,340
-uns hier rechts, welche die höchsten erwarteten Informationen haben.
+00:14:24,720 --> 00:14:27,802
+das Sie auf eine kleinere Anzahl möglicher Wörter beschränkt, je nachdem,
 
 292
-00:15:00,340 --> 00:15:05,894
-Es stellt sich heraus, dass die beste Antwort, zumindest im Moment, wir werden das später
+00:14:27,802 --> 00:14:31,508
+was damit übereinstimmt, spielen Sie einfach dasselbe Spiel mit Bezug auf diese kleinere
 
 293
-00:15:05,894 --> 00:15:11,140
-verfeinern, Tares ist, was, ähm, natürlich, eine Wicke bedeutet, die häufigste Wicke.
+00:14:31,508 --> 00:14:32,300
+Gruppe von Wörtern.
 
 294
-00:15:11,140 --> 00:15:14,172
-Jedes Mal, wenn wir hier eine Vermutung anstellen, bei der ich vielleicht die
+00:14:32,300 --> 00:14:36,891
+Für eine vorgeschlagene zweite Vermutung betrachten Sie die Verteilung aller Muster,
 
 295
-00:15:14,172 --> 00:15:17,476
-Empfehlungen ignoriere und mich für Slate entscheide, weil ich Slate mag, können wir
+00:14:36,891 --> 00:14:41,752
+die aus dieser eingeschränkteren Menge von Wörtern auftreten könnten, durchsuchen alle 13.
 
 296
-00:15:17,476 --> 00:15:20,820
-sehen, wie viele erwartete Informationen es hatte, aber rechts vom Wort wird uns dann
+00:14:41,752 --> 00:14:45,480
+000 Möglichkeiten und finden diejenige, die diese Entropie maximiert.
 
 297
-00:15:20,820 --> 00:15:24,085
-angezeigt, wie viele Tatsächliche Informationen, die wir aufgrund dieses besonderen
+00:14:45,480 --> 00:14:48,058
+Um Ihnen zu zeigen, wie das in der Praxis funktioniert,
 
 298
-00:15:24,085 --> 00:15:24,980
-Musters erhalten haben.
+00:14:48,058 --> 00:14:50,914
+möchte ich einfach eine kleine Variante von Wurtele aufrufen,
 
 299
-00:15:24,980 --> 00:15:26,382
-Hier sieht es also so aus, als hätten wir etwas
+00:14:50,914 --> 00:14:54,460
+die ich geschrieben habe und die am Rand die Höhepunkte dieser Analyse zeigt.
 
 300
-00:15:26,382 --> 00:15:27,932
-Pech gehabt, man hatte erwartet, dass wir 5 bekommen.
+00:14:54,460 --> 00:14:56,986
+Nachdem wir alle Entropieberechnungen durchgeführt haben,
 
 301
-00:15:27,932 --> 00:15:30,660
-8, aber wir haben zufällig etwas mit weniger bekommen.
+00:14:56,986 --> 00:15:00,340
+zeigt es uns hier rechts, welche die höchsten erwarteten Informationen haben.
 
 302
-00:15:30,660 --> 00:15:33,037
-Und dann zeigt es uns auf der linken Seite alle
+00:15:00,340 --> 00:15:04,536
+Es stellt sich heraus, dass die beste Antwort, zumindest im Moment,
 
 303
-00:15:33,037 --> 00:15:35,860
-möglichen Wörter, je nachdem, wo wir uns gerade befinden.
+00:15:04,536 --> 00:15:09,905
+wir werden das später verfeinern, Tares ist, was, ähm, natürlich, eine Wicke bedeutet,
 
 304
-00:15:35,860 --> 00:15:38,646
-Die blauen Balken geben an, wie wahrscheinlich es ist, dass jedes Wort
+00:15:09,905 --> 00:15:11,140
+die häufigste Wicke.
 
 305
-00:15:38,646 --> 00:15:41,510
-vorkommt. Im Moment geht es also davon aus, dass jedes Wort mit gleicher
+00:15:11,140 --> 00:15:13,122
+Jedes Mal, wenn wir hier eine Vermutung anstellen,
 
 306
+00:15:13,122 --> 00:15:16,271
+bei der ich vielleicht die Empfehlungen ignoriere und mich für Slate entscheide,
+
+307
+00:15:16,271 --> 00:15:19,459
+weil ich Slate mag, können wir sehen, wie viele erwartete Informationen es hatte,
+
+308
+00:15:19,459 --> 00:15:22,725
+aber rechts vom Wort wird uns dann angezeigt, wie viele Tatsächliche Informationen,
+
+309
+00:15:22,725 --> 00:15:24,980
+die wir aufgrund dieses besonderen Musters erhalten haben.
+
+310
+00:15:24,980 --> 00:15:27,948
+Hier sieht es also so aus, als hätten wir etwas Pech gehabt, man hatte erwartet,
+
+311
+00:15:27,948 --> 00:15:30,660
+dass wir 5 bekommen.8, aber wir haben zufällig etwas mit weniger bekommen.
+
+312
+00:15:30,660 --> 00:15:33,928
+Und dann zeigt es uns auf der linken Seite alle möglichen Wörter,
+
+313
+00:15:33,928 --> 00:15:35,860
+je nachdem, wo wir uns gerade befinden.
+
+314
+00:15:35,860 --> 00:15:39,038
+Die blauen Balken geben an, wie wahrscheinlich es ist, dass jedes Wort vorkommt.
+
+315
+00:15:39,038 --> 00:15:41,510
+Im Moment geht es also davon aus, dass jedes Wort mit gleicher
+
+316
 00:15:41,510 --> 00:15:44,140
 Wahrscheinlichkeit vorkommt, aber wir werden das gleich verfeinern.
 
-307
+317
 00:15:44,140 --> 00:15:48,089
 Und dann sagt uns diese Unsicherheitsmessung die Entropie dieser Verteilung über
 
-308
+318
 00:15:48,089 --> 00:15:51,941
 die möglichen Wörter, was im Moment, weil es eine gleichmäßige Verteilung ist,
 
-309
+319
 00:15:51,941 --> 00:15:55,940
 nur eine unnötig komplizierte Methode ist, die Anzahl der Möglichkeiten zu zählen.
 
-310
-00:15:55,940 --> 00:15:59,343
-Wenn wir zum Beispiel 2 hoch 13 nehmen würden.
+320
+00:15:55,940 --> 00:15:59,574
+Wenn wir zum Beispiel 2 hoch 13 nehmen würden.66,
 
-311
-00:15:59,343 --> 00:16:02,700
-66, das dürften etwa 13.000 Möglichkeiten sein.
+321
+00:15:59,574 --> 00:16:02,700
+das dürften etwa 13.000 Möglichkeiten sein.
 
-312
+322
 00:16:02,700 --> 00:16:06,780
 Ich bin hier etwas daneben, aber nur, weil ich nicht alle Dezimalstellen zeige.
 
-313
-00:16:06,780 --> 00:16:09,780
-Im Moment mag das überflüssig wirken und die Sache zu kompliziert machen, aber
+323
+00:16:06,780 --> 00:16:09,590
+Im Moment mag das überflüssig wirken und die Sache zu kompliziert machen,
 
-314
-00:16:09,780 --> 00:16:12,780
-Sie werden sehen, warum es nützlich ist, beide Zahlen in einer Minute zu haben.
+324
+00:16:09,590 --> 00:16:12,780
+aber Sie werden sehen, warum es nützlich ist, beide Zahlen in einer Minute zu haben.
 
-315
+325
 00:16:12,780 --> 00:16:16,174
 Hier scheint es also darauf hinzudeuten, dass die höchste Entropie für unsere
 
-316
+326
 00:16:16,174 --> 00:16:19,700
 zweite Vermutung Ramen ist, was sich wiederum einfach nicht wie ein Wort anfühlt.
 
-317
+327
 00:16:19,700 --> 00:16:25,660
 Um hier also den moralischen Standpunkt zu vertreten, tippe ich Rains ein.
 
-318
+328
 00:16:25,660 --> 00:16:27,540
 Und wieder sieht es so aus, als hätten wir etwas Pech gehabt.
 
-319
-00:16:27,540 --> 00:16:28,872
-Wir hatten 4 erwartet.
+329
+00:16:27,540 --> 00:16:32,100
+Wir hatten 4 erwartet.3 Bits und wir haben nur 3.39 Bit Informationen.
 
-320
-00:16:28,872 --> 00:16:30,556
-3 Bits und wir haben nur 3.
-
-321
-00:16:30,556 --> 00:16:32,100
-39 Bit Informationen.
-
-322
+330
 00:16:32,100 --> 00:16:35,060
 Damit kommen wir auf 55 Möglichkeiten.
 
-323
-00:16:35,060 --> 00:16:37,675
-Und hier werde ich vielleicht einfach dem folgen, was es
+331
+00:16:35,060 --> 00:16:37,354
+Und hier werde ich vielleicht einfach dem folgen,
 
-324
-00:16:37,675 --> 00:16:40,200
-vorschlägt, nämlich Combo, was auch immer das bedeutet.
+332
+00:16:37,354 --> 00:16:40,200
+was es vorschlägt, nämlich Combo, was auch immer das bedeutet.
 
-325
+333
 00:16:40,200 --> 00:16:43,300
 Und okay, das ist tatsächlich eine gute Chance für ein Rätsel.
 
-326
-00:16:43,300 --> 00:16:45,718
-Es sagt uns, dass dieses Muster uns 4 gibt.
+334
+00:16:43,300 --> 00:16:47,020
+Es sagt uns, dass dieses Muster uns 4 gibt.7 Bits an Informationen.
 
-327
-00:16:45,718 --> 00:16:47,020
-7 Bits an Informationen.
+335
+00:16:47,020 --> 00:16:49,916
+Aber bevor wir dieses Muster sehen, waren es auf
 
-328
-00:16:47,020 --> 00:16:50,990
-Aber bevor wir dieses Muster sehen, waren es auf der linken Seite fünf.
+336
+00:16:49,916 --> 00:16:52,400
+der linken Seite fünf.78 Bit Unsicherheit.
 
-329
-00:16:50,990 --> 00:16:52,400
-78 Bit Unsicherheit.
-
-330
+337
 00:16:52,400 --> 00:16:56,860
 Als Quiz für Sie: Was bedeutet das über die Anzahl der verbleibenden Möglichkeiten?
 
-331
+338
 00:16:56,860 --> 00:17:00,701
 Nun, es bedeutet, dass wir auf ein bisschen Unsicherheit reduziert sind,
 
-332
+339
 00:17:00,701 --> 00:17:04,700
 was dasselbe ist, als würde man sagen, dass es zwei mögliche Antworten gibt.
 
-333
+340
 00:17:04,700 --> 00:17:06,520
 Es ist eine 50:50-Wahl.
 
-334
-00:17:06,520 --> 00:17:08,808
-Und da Sie und ich wissen, welche Wörter gebräuchlicher
+341
+00:17:06,520 --> 00:17:09,053
+Und da Sie und ich wissen, welche Wörter gebräuchlicher sind,
 
-335
-00:17:08,808 --> 00:17:11,220
-sind, wissen wir, dass die Antwort „Abgrund“ lauten sollte.
+342
+00:17:09,053 --> 00:17:11,220
+wissen wir, dass die Antwort „Abgrund“ lauten sollte.
 
-336
+343
 00:17:11,220 --> 00:17:13,540
 Aber so wie es gerade geschrieben steht, weiß das Programm das nicht.
 
-337
-00:17:13,540 --> 00:17:17,039
-Also macht es einfach weiter und versucht, so viele Informationen wie möglich
+344
+00:17:13,540 --> 00:17:17,578
+Also macht es einfach weiter und versucht, so viele Informationen wie möglich zu sammeln,
 
-338
-00:17:17,039 --> 00:17:20,360
-zu sammeln, bis nur noch eine Möglichkeit übrig ist, und dann errät es es.
+345
+00:17:17,578 --> 00:17:20,360
+bis nur noch eine Möglichkeit übrig ist, und dann errät es es.
 
-339
+346
 00:17:20,360 --> 00:17:22,700
 Wir brauchen also offensichtlich eine bessere Endspielstrategie.
 
-340
+347
 00:17:22,700 --> 00:17:26,747
 Aber nehmen wir an, wir nennen diese Version einen unserer Wortlöser und
 
-341
+348
 00:17:26,747 --> 00:17:30,740
 führen dann einige Simulationen durch, um zu sehen, wie es funktioniert.
 
-342
+349
 00:17:30,740 --> 00:17:34,240
 Das funktioniert also so, dass jedes mögliche Weltspiel gespielt wird.
 
-343
+350
 00:17:34,240 --> 00:17:38,780
 Es geht darum, alle 2315 Wörter durchzugehen, die die eigentlichen Wortantworten sind.
 
-344
+351
 00:17:38,780 --> 00:17:41,340
 Im Grunde wird es als Testset verwendet.
 
-345
-00:17:41,340 --> 00:17:44,373
-Und mit dieser naiven Methode, nicht darüber nachzudenken, wie häufig ein
-
-346
-00:17:44,373 --> 00:17:47,324
-Wort ist, und einfach zu versuchen, die Informationen bei jedem Schritt
-
-347
-00:17:47,324 --> 00:17:50,480
-auf dem Weg zu maximieren, bis es nur noch eine einzige Wahlmöglichkeit gibt.
-
-348
-00:17:50,480 --> 00:17:54,912
-Am Ende der Simulation liegt die durchschnittliche Punktzahl bei etwa 4.
-
-349
-00:17:54,912 --> 00:17:55,100
-124.
-
-350
-00:17:55,100 --> 00:17:57,241
-Was nicht schlecht ist, um ehrlich zu sein, ich hatte
-
-351
-00:17:57,241 --> 00:17:59,780
-irgendwie damit gerechnet, dass es schlechter abschneiden würde.
-
 352
-00:17:59,780 --> 00:18:01,315
-Aber die Leute, die Wordle spielen, werden Ihnen
+00:17:41,340 --> 00:17:44,782
+Und mit dieser naiven Methode, nicht darüber nachzudenken, wie häufig ein Wort ist,
 
 353
-00:18:01,315 --> 00:18:03,040
-sagen, dass sie es normalerweise in 4 Minuten schaffen.
+00:17:44,782 --> 00:17:48,430
+und einfach zu versuchen, die Informationen bei jedem Schritt auf dem Weg zu maximieren,
 
 354
+00:17:48,430 --> 00:17:50,480
+bis es nur noch eine einzige Wahlmöglichkeit gibt.
+
+355
+00:17:50,480 --> 00:17:55,100
+Am Ende der Simulation liegt die durchschnittliche Punktzahl bei etwa 4.124.
+
+356
+00:17:55,100 --> 00:17:58,312
+Was nicht schlecht ist, um ehrlich zu sein, ich hatte irgendwie damit gerechnet,
+
+357
+00:17:58,312 --> 00:17:59,780
+dass es schlechter abschneiden würde.
+
+358
+00:17:59,780 --> 00:18:01,535
+Aber die Leute, die Wordle spielen, werden Ihnen sagen,
+
+359
+00:18:01,535 --> 00:18:03,040
+dass sie es normalerweise in 4 Minuten schaffen.
+
+360
 00:18:03,040 --> 00:18:05,260
 Die eigentliche Herausforderung besteht darin, in 3 so viele wie möglich zu bekommen.
 
-355
+361
 00:18:05,260 --> 00:18:08,920
 Es ist ein ziemlich großer Sprung zwischen der Punktzahl 4 und der Punktzahl 3.
 
-356
-00:18:08,920 --> 00:18:15,595
-Die offensichtliche, niedrig hängende Frucht besteht hier darin, irgendwie
+362
+00:18:08,920 --> 00:18:16,930
+Die offensichtliche, niedrig hängende Frucht besteht hier darin, irgendwie einzubeziehen,
 
-357
-00:18:15,595 --> 00:18:23,160
-einzubeziehen, ob ein Wort gebräuchlich ist oder nicht, und wie wir das genau machen.
+363
+00:18:16,930 --> 00:18:23,160
+ob ein Wort gebräuchlich ist oder nicht, und wie wir das genau machen.
 
-358
+364
 00:18:23,160 --> 00:18:25,580
 Mein Ansatz besteht darin, eine Liste der relativen
 
-359
+365
 00:18:25,580 --> 00:18:28,560
 Häufigkeiten aller Wörter in der englischen Sprache zu erhalten.
 
-360
-00:18:28,560 --> 00:18:32,019
-Und ich habe gerade die Worthäufigkeitsdatenfunktion von Mathematica verwendet, die
+366
+00:18:28,560 --> 00:18:31,854
+Und ich habe gerade die Worthäufigkeitsdatenfunktion von Mathematica verwendet,
 
-361
-00:18:32,019 --> 00:18:35,520
-ihrerseits aus dem öffentlichen Ngram-Datensatz für Englisch von Google Books stammt.
+367
+00:18:31,854 --> 00:18:35,520
+die ihrerseits aus dem öffentlichen Ngram-Datensatz für Englisch von Google Books stammt.
 
-362
+368
 00:18:35,520 --> 00:18:37,852
 Und es macht irgendwie Spaß, es anzusehen, wenn wir es zum Beispiel von
 
-363
+369
 00:18:37,852 --> 00:18:40,120
 den häufigsten Wörtern zu den am wenigsten häufigen Wörtern sortieren.
 
-364
+370
 00:18:40,120 --> 00:18:41,949
 Offensichtlich sind dies die häufigsten Wörter
 
-365
+371
 00:18:41,949 --> 00:18:43,740
 mit fünf Buchstaben in der englischen Sprache.
 
-366
+372
 00:18:43,740 --> 00:18:46,480
 Oder besser gesagt, dies ist die achthäufigste.
 
-367
+373
 00:18:46,480 --> 00:18:49,440
 Zuerst ist which, danach gibt es there und there.
 
-368
-00:18:49,440 --> 00:18:52,674
-First selbst ist nicht first, sondern 9th, und es macht Sinn, dass
-
-369
-00:18:52,674 --> 00:18:55,813
-diese anderen Wörter häufiger vorkommen könnten, wobei die Worte
-
-370
-00:18:55,813 --> 00:18:59,000
-nach first nach, where sind und jene nur etwas seltener vorkommen.
-
-371
-00:18:59,000 --> 00:19:01,490
-Wenn wir diese Daten nun verwenden, um zu modellieren, wie
-
-372
-00:19:01,490 --> 00:19:04,149
-wahrscheinlich es ist, dass jedes dieser Wörter die endgültige
-
-373
-00:19:04,149 --> 00:19:07,020
-Antwort ist, sollten sie nicht nur proportional zur Häufigkeit sein.
-
 374
-00:19:07,020 --> 00:19:09,596
-Zum Beispiel, was mit einer Punktzahl von 0 bewertet wird.
+00:18:49,440 --> 00:18:52,433
+First selbst ist nicht first, sondern 9th, und es macht Sinn,
 
 375
-00:19:09,596 --> 00:19:12,398
-002 in diesem Datensatz, während das Wort „zopf“ in
+00:18:52,433 --> 00:18:55,040
+dass diese anderen Wörter häufiger vorkommen könnten,
 
 376
-00:19:12,398 --> 00:19:15,200
-gewissem Sinne etwa 1000-mal unwahrscheinlicher ist.
+00:18:55,040 --> 00:18:59,000
+wobei die Worte nach first nach, where sind und jene nur etwas seltener vorkommen.
 
 377
+00:18:59,000 --> 00:19:01,321
+Wenn wir diese Daten nun verwenden, um zu modellieren,
+
+378
+00:19:01,321 --> 00:19:04,698
+wie wahrscheinlich es ist, dass jedes dieser Wörter die endgültige Antwort ist,
+
+379
+00:19:04,698 --> 00:19:07,020
+sollten sie nicht nur proportional zur Häufigkeit sein.
+
+380
+00:19:07,020 --> 00:19:11,210
+Zum Beispiel, was mit einer Punktzahl von 0 bewertet wird.002 in diesem Datensatz,
+
+381
+00:19:11,210 --> 00:19:15,200
+während das Wort „zopf“ in gewissem Sinne etwa 1000-mal unwahrscheinlicher ist.
+
+382
 00:19:15,200 --> 00:19:17,277
 Aber beide Wörter sind so häufig, dass sie mit
 
-378
+383
 00:19:17,277 --> 00:19:19,400
 ziemlicher Sicherheit eine Überlegung wert sind.
 
-379
+384
 00:19:19,400 --> 00:19:21,900
 Wir wollen also eher einen binären Cutoff.
 
-380
-00:19:21,900 --> 00:19:25,922
-Meine Vorgehensweise besteht darin, mir vorzustellen, dass ich diese gesamte sortierte
-
-381
-00:19:25,922 --> 00:19:30,038
-Liste von Wörtern nehme, sie dann auf einer x-Achse anordne und dann die Sigmoidfunktion
-
-382
-00:19:30,038 --> 00:19:34,199
-anwende, was die Standardmethode für eine Funktion ist, deren Ausgabe grundsätzlich binär
-
-383
-00:19:34,199 --> 00:19:38,083
-ist entweder 0 oder 1, aber dazwischen gibt es für diesen Unsicherheitsbereich eine
-
-384
-00:19:38,083 --> 00:19:38,500
-Glättung.
-
 385
+00:19:21,900 --> 00:19:24,396
+Meine Vorgehensweise besteht darin, mir vorzustellen,
+
+386
+00:19:24,396 --> 00:19:27,078
+dass ich diese gesamte sortierte Liste von Wörtern nehme,
+
+387
+00:19:27,078 --> 00:19:30,454
+sie dann auf einer x-Achse anordne und dann die Sigmoidfunktion anwende,
+
+388
+00:19:30,454 --> 00:19:32,627
+was die Standardmethode für eine Funktion ist,
+
+389
+00:19:32,627 --> 00:19:35,263
+deren Ausgabe grundsätzlich binär ist entweder 0 oder 1,
+
+390
+00:19:35,263 --> 00:19:38,500
+aber dazwischen gibt es für diesen Unsicherheitsbereich eine Glättung.
+
+391
 00:19:38,500 --> 00:19:42,048
 Im Wesentlichen ist die Wahrscheinlichkeit, die ich jedem Wort
 
-386
-00:19:42,048 --> 00:19:45,597
-für die Aufnahme in die endgültige Liste zuordne, der Wert der
-
-387
-00:19:45,597 --> 00:19:49,540
-Sigmoidfunktion oben, wo auch immer sie sich auf der x-Achse befindet.
-
-388
-00:19:49,540 --> 00:19:54,062
-Dies hängt natürlich von einigen Parametern ab. Beispielsweise bestimmt die Breite des
-
-389
-00:19:54,062 --> 00:19:58,585
-Raums auf der X-Achse, den diese Wörter ausfüllen, wie allmählich oder steil wir von 1
-
-390
-00:19:58,585 --> 00:20:03,160
-auf 0 abfallen, und wo wir sie von links nach rechts positionieren, bestimmt die Grenze.
-
-391
-00:20:03,160 --> 00:20:05,198
-Um ehrlich zu sein, habe ich das einfach so gemacht, indem
-
 392
-00:20:05,198 --> 00:20:07,340
-ich meinen Finger abgeleckt und ihn in den Wind gehalten habe.
+00:19:42,048 --> 00:19:44,864
+für die Aufnahme in die endgültige Liste zuordne,
 
 393
-00:20:07,340 --> 00:20:10,786
-Ich habe die sortierte Liste durchgesehen und versucht, ein Fenster zu finden, in dem ich
+00:19:44,864 --> 00:19:49,540
+der Wert der Sigmoidfunktion oben, wo auch immer sie sich auf der x-Achse befindet.
 
 394
-00:20:10,786 --> 00:20:14,118
-beim Betrachten davon ausgegangen bin, dass etwa die Hälfte dieser Wörter mit größerer
+00:19:49,540 --> 00:19:52,035
+Dies hängt natürlich von einigen Parametern ab.
 
 395
-00:20:14,118 --> 00:20:17,297
-Wahrscheinlichkeit die endgültige Antwort sein werden, und habe dies als Grenzwert
+00:19:52,035 --> 00:19:56,713
+Beispielsweise bestimmt die Breite des Raums auf der X-Achse, den diese Wörter ausfüllen,
 
 396
-00:20:17,297 --> 00:20:17,680
-verwendet.
+00:19:56,713 --> 00:19:59,417
+wie allmählich oder steil wir von 1 auf 0 abfallen,
 
 397
-00:20:17,680 --> 00:20:20,980
-Sobald wir eine solche Verteilung über die Wörter haben, ergibt sich eine
+00:19:59,417 --> 00:20:03,160
+und wo wir sie von links nach rechts positionieren, bestimmt die Grenze.
 
 398
-00:20:20,980 --> 00:20:24,460
-weitere Situation, in der die Entropie zu diesem wirklich nützlichen Maß wird.
+00:20:03,160 --> 00:20:04,990
+Um ehrlich zu sein, habe ich das einfach so gemacht,
 
 399
+00:20:04,990 --> 00:20:07,340
+indem ich meinen Finger abgeleckt und ihn in den Wind gehalten habe.
+
+400
+00:20:07,340 --> 00:20:10,365
+Ich habe die sortierte Liste durchgesehen und versucht, ein Fenster zu finden,
+
+401
+00:20:10,365 --> 00:20:12,280
+in dem ich beim Betrachten davon ausgegangen bin,
+
+402
+00:20:12,280 --> 00:20:15,726
+dass etwa die Hälfte dieser Wörter mit größerer Wahrscheinlichkeit die endgültige Antwort
+
+403
+00:20:15,726 --> 00:20:17,680
+sein werden, und habe dies als Grenzwert verwendet.
+
+404
+00:20:17,680 --> 00:20:20,222
+Sobald wir eine solche Verteilung über die Wörter haben,
+
+405
+00:20:20,222 --> 00:20:23,567
+ergibt sich eine weitere Situation, in der die Entropie zu diesem wirklich
+
+406
+00:20:23,567 --> 00:20:24,460
+nützlichen Maß wird.
+
+407
 00:20:24,460 --> 00:20:27,690
 Nehmen wir zum Beispiel an, wir spielen ein Spiel und beginnen mit meinen
 
-400
-00:20:27,690 --> 00:20:30,703
-alten Eröffnungsworten, die eine Feder und Nägel waren, und enden in
+408
+00:20:27,690 --> 00:20:30,136
+alten Eröffnungsworten, die eine Feder und Nägel waren,
 
-401
-00:20:30,703 --> 00:20:33,760
-einer Situation, in der es vier mögliche Wörter gibt, die dazu passen.
+409
+00:20:30,136 --> 00:20:33,760
+und enden in einer Situation, in der es vier mögliche Wörter gibt, die dazu passen.
 
-402
+410
 00:20:33,760 --> 00:20:36,440
 Nehmen wir an, wir halten sie alle für gleich wahrscheinlich.
 
-403
+411
 00:20:36,440 --> 00:20:40,000
 Ich frage Sie: Wie groß ist die Entropie dieser Verteilung?
 
-404
+412
 00:20:40,000 --> 00:20:45,289
 Nun, die Informationen, die jeder dieser Möglichkeiten zugeordnet sind,
 
-405
+413
 00:20:45,289 --> 00:20:50,800
 werden die Logbasis 2 von 4 sein, da jede davon 1 und 4 ist, und das ist 2.
 
-406
+414
 00:20:50,800 --> 00:20:52,780
 Zwei Informationen, vier Möglichkeiten.
 
-407
+415
 00:20:52,780 --> 00:20:54,360
 Alles sehr schön und gut.
 
-408
+416
 00:20:54,360 --> 00:20:58,320
 Aber was wäre, wenn ich Ihnen sagen würde, dass es tatsächlich mehr als vier Spiele sind?
 
-409
+417
 00:20:58,320 --> 00:21:00,334
 Wenn wir die vollständige Wortliste durchsehen,
 
-410
+418
 00:21:00,334 --> 00:21:02,600
 finden wir in Wirklichkeit 16 Wörter, die dazu passen.
 
-411
+419
 00:21:02,600 --> 00:21:05,546
 Aber nehmen wir an, dass unser Modell den anderen 12 Wörtern eine
 
-412
-00:21:05,546 --> 00:21:08,627
-sehr geringe Wahrscheinlichkeit zuordnet, tatsächlich die endgültige
+420
+00:21:05,546 --> 00:21:09,386
+sehr geringe Wahrscheinlichkeit zuordnet, tatsächlich die endgültige Antwort zu sein,
 
-413
-00:21:08,627 --> 00:21:11,440
-Antwort zu sein, etwa 1 zu 1000, weil sie wirklich unklar sind.
+421
+00:21:09,386 --> 00:21:11,440
+etwa 1 zu 1000, weil sie wirklich unklar sind.
 
-414
+422
 00:21:11,440 --> 00:21:15,480
 Nun möchte ich Sie fragen: Wie hoch ist die Entropie dieser Verteilung?
 
-415
-00:21:15,480 --> 00:21:19,053
-Wenn die Entropie hier nur die Anzahl der Übereinstimmungen messen
-
-416
-00:21:19,053 --> 00:21:22,520
-würde, könnte man erwarten, dass sie etwa der Logarithmusbasis 2
-
-417
-00:21:22,520 --> 00:21:26,200
-von 16 entspricht, was 4 wäre, zwei Bits mehr Unsicherheit als zuvor.
-
-418
-00:21:26,200 --> 00:21:28,127
-Aber natürlich unterscheidet sich die tatsächliche
-
-419
-00:21:28,127 --> 00:21:30,320
-Unsicherheit nicht wirklich von der, die wir zuvor hatten.
-
-420
-00:21:30,320 --> 00:21:34,166
-Nur weil es diese 12 wirklich obskuren Wörter gibt, heißt das nicht, dass es umso
-
-421
-00:21:34,166 --> 00:21:38,200
-überraschender wäre, zu erfahren, dass die endgültige Antwort zum Beispiel Charme ist.
-
-422
-00:21:38,200 --> 00:21:41,991
-Wenn Sie also die Berechnung hier tatsächlich durchführen und die Wahrscheinlichkeit
-
 423
-00:21:41,991 --> 00:21:45,514
-jedes Auftretens mal die entsprechenden Informationen addieren, erhalten Sie 2.
+00:21:15,480 --> 00:21:19,426
+Wenn die Entropie hier nur die Anzahl der Übereinstimmungen messen würde,
 
 424
-00:21:45,514 --> 00:21:45,960
-11 Bit.
+00:21:19,426 --> 00:21:23,533
+könnte man erwarten, dass sie etwa der Logarithmusbasis 2 von 16 entspricht,
 
 425
-00:21:45,960 --> 00:21:48,819
-Ich sage nur, es sind im Grunde genommen zwei Teile, im Grunde genommen
+00:21:23,533 --> 00:21:26,200
+was 4 wäre, zwei Bits mehr Unsicherheit als zuvor.
 
 426
-00:21:48,819 --> 00:21:51,877
-diese vier Möglichkeiten, aber aufgrund all dieser höchst unwahrscheinlichen
+00:21:26,200 --> 00:21:29,526
+Aber natürlich unterscheidet sich die tatsächliche Unsicherheit nicht wirklich von der,
 
 427
-00:21:51,877 --> 00:21:54,617
-Ereignisse gibt es etwas mehr Unsicherheit, obwohl man, wenn man sie
+00:21:29,526 --> 00:21:30,320
+die wir zuvor hatten.
 
 428
-00:21:54,617 --> 00:21:57,120
-erfahren würde, eine Menge Informationen daraus gewinnen würde.
+00:21:30,320 --> 00:21:33,556
+Nur weil es diese 12 wirklich obskuren Wörter gibt, heißt das nicht,
 
 429
-00:21:57,120 --> 00:21:59,375
-Wenn man also herauszoomt, ist dies ein Teil dessen, was Wordle zu
+00:21:33,556 --> 00:21:35,760
+dass es umso überraschender wäre, zu erfahren,
 
 430
-00:21:59,375 --> 00:22:01,800
-einem so schönen Beispiel für eine Lektion in Informationstheorie macht.
+00:21:35,760 --> 00:21:38,200
+dass die endgültige Antwort zum Beispiel Charme ist.
 
 431
+00:21:38,200 --> 00:21:42,057
+Wenn Sie also die Berechnung hier tatsächlich durchführen und die Wahrscheinlichkeit
+
+432
+00:21:42,057 --> 00:21:45,960
+jedes Auftretens mal die entsprechenden Informationen addieren, erhalten Sie 2.11 Bit.
+
+433
+00:21:45,960 --> 00:21:48,064
+Ich sage nur, es sind im Grunde genommen zwei Teile,
+
+434
+00:21:48,064 --> 00:21:50,844
+im Grunde genommen diese vier Möglichkeiten, aber aufgrund all dieser
+
+435
+00:21:50,844 --> 00:21:53,625
+höchst unwahrscheinlichen Ereignisse gibt es etwas mehr Unsicherheit,
+
+436
+00:21:53,625 --> 00:21:57,120
+obwohl man, wenn man sie erfahren würde, eine Menge Informationen daraus gewinnen würde.
+
+437
+00:21:57,120 --> 00:21:58,904
+Wenn man also herauszoomt, ist dies ein Teil dessen,
+
+438
+00:21:58,904 --> 00:22:01,800
+was Wordle zu einem so schönen Beispiel für eine Lektion in Informationstheorie macht.
+
+439
 00:22:01,800 --> 00:22:05,280
 Wir haben diese beiden unterschiedlichen Gefühlsanwendungen für Entropie.
 
-432
-00:22:05,280 --> 00:22:08,848
-Der erste sagt uns, welche Informationen wir von einer gegebenen
+440
+00:22:05,280 --> 00:22:09,946
+Der erste sagt uns, welche Informationen wir von einer gegebenen Vermutung erwarten,
 
-433
-00:22:08,848 --> 00:22:12,636
-Vermutung erwarten, und der zweite sagt, können wir die verbleibende
+441
+00:22:09,946 --> 00:22:14,887
+und der zweite sagt, können wir die verbleibende Unsicherheit unter allen Wörtern messen,
 
-434
-00:22:12,636 --> 00:22:16,480
-Unsicherheit unter allen Wörtern messen, die uns zur Verfügung stehen.
+442
+00:22:14,887 --> 00:22:16,480
+die uns zur Verfügung stehen.
 
-435
+443
 00:22:16,480 --> 00:22:19,157
 Und ich sollte betonen: Im ersten Fall, in dem wir die erwarteten
 
-436
-00:22:19,157 --> 00:22:21,835
-Informationen einer Vermutung betrachten, wirkt sich dies auf die
+444
+00:22:19,157 --> 00:22:22,809
+Informationen einer Vermutung betrachten, wirkt sich dies auf die Entropieberechnung aus,
 
-437
-00:22:21,835 --> 00:22:25,000
-Entropieberechnung aus, sobald wir eine ungleiche Gewichtung der Wörter haben.
+445
+00:22:22,809 --> 00:22:25,000
+sobald wir eine ungleiche Gewichtung der Wörter haben.
 
-438
+446
 00:22:25,000 --> 00:22:28,229
 Lassen Sie mich zum Beispiel den gleichen Fall der mit „Weary“ verbundenen
 
-439
-00:22:28,229 --> 00:22:31,502
-Verteilung aufgreifen, den wir zuvor betrachtet haben, diesmal jedoch unter
+447
+00:22:28,229 --> 00:22:30,598
+Verteilung aufgreifen, den wir zuvor betrachtet haben,
 
-440
-00:22:31,502 --> 00:22:34,560
-Verwendung einer ungleichmäßigen Verteilung über alle möglichen Wörter.
+448
+00:22:30,598 --> 00:22:33,827
+diesmal jedoch unter Verwendung einer ungleichmäßigen Verteilung über alle
 
-441
+449
+00:22:33,827 --> 00:22:34,560
+möglichen Wörter.
+
+450
 00:22:34,560 --> 00:22:39,360
 Lassen Sie mich sehen, ob ich hier einen Teil finde, der es ziemlich gut veranschaulicht.
 
-442
+451
 00:22:39,360 --> 00:22:42,480
 Okay, hier ist das ziemlich gut.
 
-443
-00:22:42,480 --> 00:22:46,000
-Hier haben wir zwei benachbarte Muster, die ungefähr gleich wahrscheinlich sind, aber
-
-444
-00:22:46,000 --> 00:22:49,480
-für eines davon haben wir erfahren, dass es 32 mögliche Wörter gibt, die dazu passen.
-
-445
-00:22:49,480 --> 00:22:52,540
-Und wenn wir nachsehen, was sie sind, sind das diese 32, die allesamt nur
-
-446
-00:22:52,540 --> 00:22:55,600
-sehr unwahrscheinliche Wörter sind, wenn man sie mit den Augen überfliegt.
-
-447
-00:22:55,600 --> 00:22:58,417
-Es ist schwer, irgendwelche zu finden, die sich wie plausible Antworten
-
-448
-00:22:58,417 --> 00:23:01,312
-anfühlen, vielleicht Schreie, aber wenn wir uns das benachbarte Muster in
-
-449
-00:23:01,312 --> 00:23:04,246
-der Verteilung ansehen, das als ungefähr genauso wahrscheinlich gilt, wird
-
-450
-00:23:04,246 --> 00:23:07,220
-uns gesagt, dass es nur 8 mögliche Übereinstimmungen gibt, also ein Viertel
-
-451
-00:23:07,220 --> 00:23:09,920
-viele Übereinstimmungen, aber es ist ungefähr genauso wahrscheinlich.
-
 452
+00:22:42,480 --> 00:22:45,795
+Hier haben wir zwei benachbarte Muster, die ungefähr gleich wahrscheinlich sind,
+
+453
+00:22:45,795 --> 00:22:49,480
+aber für eines davon haben wir erfahren, dass es 32 mögliche Wörter gibt, die dazu passen.
+
+454
+00:22:49,480 --> 00:22:51,837
+Und wenn wir nachsehen, was sie sind, sind das diese 32,
+
+455
+00:22:51,837 --> 00:22:54,028
+die allesamt nur sehr unwahrscheinliche Wörter sind,
+
+456
+00:22:54,028 --> 00:22:55,600
+wenn man sie mit den Augen überfliegt.
+
+457
+00:22:55,600 --> 00:22:58,808
+Es ist schwer, irgendwelche zu finden, die sich wie plausible Antworten anfühlen,
+
+458
+00:22:58,808 --> 00:23:02,251
+vielleicht Schreie, aber wenn wir uns das benachbarte Muster in der Verteilung ansehen,
+
+459
+00:23:02,251 --> 00:23:04,716
+das als ungefähr genauso wahrscheinlich gilt, wird uns gesagt,
+
+460
+00:23:04,716 --> 00:23:08,198
+dass es nur 8 mögliche Übereinstimmungen gibt, also ein Viertel viele Übereinstimmungen,
+
+461
+00:23:08,198 --> 00:23:09,920
+aber es ist ungefähr genauso wahrscheinlich.
+
+462
 00:23:09,920 --> 00:23:12,520
 Und wenn wir diese Übereinstimmungen abrufen, können wir sehen, warum.
 
-453
+463
 00:23:12,520 --> 00:23:17,840
 Einige davon sind tatsächlich plausible Antworten, wie „Ring“, „Wrath“ oder „Raps“.
 
-454
-00:23:17,840 --> 00:23:20,517
-Um zu veranschaulichen, wie wir das alles integrieren, möchte
+464
+00:23:17,840 --> 00:23:20,215
+Um zu veranschaulichen, wie wir das alles integrieren,
 
-455
-00:23:20,517 --> 00:23:23,152
-ich hier Version 2 des Wordlebot aufrufen. Es gibt zwei oder
+465
+00:23:20,215 --> 00:23:22,375
+möchte ich hier Version 2 des Wordlebot aufrufen.
 
-456
-00:23:23,152 --> 00:23:25,960
-drei Hauptunterschiede zur ersten Version, die wir gesehen haben.
+466
+00:23:22,375 --> 00:23:25,960
+Es gibt zwei oder drei Hauptunterschiede zur ersten Version, die wir gesehen haben.
 
-457
-00:23:25,960 --> 00:23:29,373
-Zunächst einmal verwendet die Art und Weise, wie wir diese Entropien, diese
+467
+00:23:25,960 --> 00:23:29,104
+Zunächst einmal verwendet die Art und Weise, wie wir diese Entropien,
 
-458
-00:23:29,373 --> 00:23:32,652
-erwarteten Informationswerte, berechnen, wie ich gerade sagte, jetzt die
+468
+00:23:29,104 --> 00:23:32,203
+diese erwarteten Informationswerte, berechnen, wie ich gerade sagte,
 
-459
-00:23:32,652 --> 00:23:36,110
-verfeinerten Verteilungen über die Muster hinweg, die die Wahrscheinlichkeit
+469
+00:23:32,203 --> 00:23:34,898
+jetzt die verfeinerten Verteilungen über die Muster hinweg,
 
-460
-00:23:36,110 --> 00:23:39,300
-berücksichtigen, dass ein bestimmtes Wort tatsächlich die Antwort wäre.
+470
+00:23:34,898 --> 00:23:37,997
+die die Wahrscheinlichkeit berücksichtigen, dass ein bestimmtes Wort
 
-461
+471
+00:23:37,997 --> 00:23:39,300
+tatsächlich die Antwort wäre.
+
+472
 00:23:39,300 --> 00:23:44,160
 Zufällig sind Tränen immer noch die Nummer 1, obwohl die folgenden etwas anders sind.
 
-462
+473
 00:23:44,160 --> 00:23:46,927
 Zweitens wird es bei der Rangfolge seiner Top-Tipps nun ein Modell
 
-463
-00:23:46,927 --> 00:23:49,654
-der Wahrscheinlichkeit behalten, dass jedes Wort die tatsächliche
-
-464
-00:23:49,654 --> 00:23:52,504
-Antwort ist, und es wird dies in seine Entscheidung einbeziehen, was
-
-465
-00:23:52,504 --> 00:23:55,520
-leichter zu erkennen ist, wenn wir ein paar Vermutungen dazu haben Tisch.
-
-466
-00:23:55,520 --> 00:23:58,370
-Auch hier ignorieren wir die Empfehlung, weil wir nicht
-
-467
-00:23:58,370 --> 00:24:01,120
-zulassen können, dass Maschinen unser Leben bestimmen.
-
-468
-00:24:01,120 --> 00:24:04,013
-Und ich denke, ich sollte noch etwas erwähnen, das hier links
-
-469
-00:24:04,013 --> 00:24:06,906
-anders ist: Der Unsicherheitswert, diese Anzahl von Bits, ist
-
-470
-00:24:06,906 --> 00:24:10,080
-nicht mehr nur redundant mit der Anzahl möglicher Übereinstimmungen.
-
-471
-00:24:10,080 --> 00:24:13,489
-Wenn wir es jetzt hochziehen und 2 hoch 8 berechnen.
-
-472
-00:24:13,489 --> 00:24:17,513
-02, was etwas über 256 liegt, ich schätze 259. Was damit gesagt wird,
-
-473
-00:24:17,513 --> 00:24:21,308
-ist, dass, obwohl es insgesamt 526 Wörter gibt, die diesem Muster
-
 474
-00:24:21,308 --> 00:24:25,562
-tatsächlich entsprechen, das Ausmaß der Unsicherheit eher dem entspricht,
+00:23:46,927 --> 00:23:50,191
+der Wahrscheinlichkeit behalten, dass jedes Wort die tatsächliche Antwort ist,
 
 475
-00:24:25,562 --> 00:24:29,760
-das es wäre, wenn es 259 mit gleicher Wahrscheinlichkeit gäbe Ergebnisse.
+00:23:50,191 --> 00:23:53,578
+und es wird dies in seine Entscheidung einbeziehen, was leichter zu erkennen ist,
 
 476
+00:23:53,578 --> 00:23:55,520
+wenn wir ein paar Vermutungen dazu haben Tisch.
+
+477
+00:23:55,520 --> 00:23:59,236
+Auch hier ignorieren wir die Empfehlung, weil wir nicht zulassen können,
+
+478
+00:23:59,236 --> 00:24:01,120
+dass Maschinen unser Leben bestimmen.
+
+479
+00:24:01,120 --> 00:24:04,573
+Und ich denke, ich sollte noch etwas erwähnen, das hier links anders ist:
+
+480
+00:24:04,573 --> 00:24:07,606
+Der Unsicherheitswert, diese Anzahl von Bits, ist nicht mehr nur
+
+481
+00:24:07,606 --> 00:24:10,080
+redundant mit der Anzahl möglicher Übereinstimmungen.
+
+482
+00:24:10,080 --> 00:24:14,897
+Wenn wir es jetzt hochziehen und 2 hoch 8 berechnen.02, was etwas über 256 liegt,
+
+483
+00:24:14,897 --> 00:24:20,066
+ich schätze 259. Was damit gesagt wird, ist, dass, obwohl es insgesamt 526 Wörter gibt,
+
+484
+00:24:20,066 --> 00:24:24,766
+die diesem Muster tatsächlich entsprechen, das Ausmaß der Unsicherheit eher dem
+
+485
+00:24:24,766 --> 00:24:29,760
+entspricht, das es wäre, wenn es 259 mit gleicher Wahrscheinlichkeit gäbe Ergebnisse.
+
+486
 00:24:29,760 --> 00:24:31,100
 Man kann es sich so vorstellen.
 
-477
+487
 00:24:31,100 --> 00:24:34,353
 Es weiß, dass Borx nicht die Antwort ist, das Gleiche gilt für Yorts,
 
-478
+488
 00:24:34,353 --> 00:24:37,840
 Zorl und Zorus, daher ist es etwas weniger unsicher als im vorherigen Fall.
 
-479
+489
 00:24:37,840 --> 00:24:40,220
 Diese Anzahl von Bits wird kleiner sein.
 
-480
-00:24:40,220 --> 00:24:44,450
-Und wenn ich das Spiel weiter spiele, verfeinere ich dies mit ein
+490
+00:24:40,220 --> 00:24:45,603
+Und wenn ich das Spiel weiter spiele, verfeinere ich dies mit ein paar Vermutungen,
 
-481
-00:24:44,450 --> 00:24:48,680
-paar Vermutungen, die zu dem passen, was ich hier erklären möchte.
+491
+00:24:45,603 --> 00:24:48,680
+die zu dem passen, was ich hier erklären möchte.
 
-482
+492
 00:24:48,680 --> 00:24:51,124
 Bei der vierten Vermutung, wenn Sie einen Blick auf die Top-Picks werfen,
 
-483
+493
 00:24:51,124 --> 00:24:53,800
 können Sie erkennen, dass es nicht mehr nur um die Maximierung der Entropie geht.
 
-484
+494
 00:24:53,800 --> 00:24:57,215
 An diesem Punkt gibt es also technisch gesehen sieben Möglichkeiten,
 
-485
+495
 00:24:57,215 --> 00:25:00,780
 aber die einzigen mit einer sinnvollen Chance sind Schlafsäle und Worte.
 
-486
+496
 00:25:00,780 --> 00:25:04,080
 Und Sie können sehen, dass es wichtiger ist, diese beiden Werte zu wählen
 
-487
+497
 00:25:04,080 --> 00:25:07,560
 als alle anderen Werte, die streng genommen mehr Informationen liefern würden.
 
-488
-00:25:07,560 --> 00:25:09,817
-Als ich das zum ersten Mal gemacht habe, habe ich einfach diese
-
-489
-00:25:09,817 --> 00:25:12,145
-beiden Zahlen addiert, um die Qualität jeder Vermutung zu messen,
-
-490
-00:25:12,145 --> 00:25:14,580
-was tatsächlich besser funktioniert hat, als Sie vielleicht vermuten.
-
-491
-00:25:14,580 --> 00:25:16,327
-Aber es fühlte sich wirklich nicht systematisch an, und ich
-
-492
-00:25:16,327 --> 00:25:18,045
-bin mir sicher, dass es andere Ansätze gibt, die die Leute
-
-493
-00:25:18,045 --> 00:25:19,880
-verfolgen könnten, aber hier ist der, bei dem ich gelandet bin.
-
-494
-00:25:19,880 --> 00:25:22,599
-Wenn wir die Aussicht auf eine nächste Vermutung in Betracht
-
-495
-00:25:22,599 --> 00:25:25,319
-ziehen, wie in diesem Fall Wörter, ist das, was uns wirklich
-
-496
-00:25:25,319 --> 00:25:28,440
-interessiert, das erwartete Ergebnis unseres Spiels, wenn wir das tun.
-
-497
-00:25:28,440 --> 00:25:32,517
-Und um diesen erwarteten Wert zu berechnen, sagen wir, wie hoch die Wahrscheinlichkeit
-
 498
-00:25:32,517 --> 00:25:36,080
-ist, dass Wörter die tatsächliche Antwort sind, was derzeit 58 % entspricht.
+00:25:07,560 --> 00:25:10,629
+Als ich das zum ersten Mal gemacht habe, habe ich einfach diese beiden Zahlen addiert,
 
 499
+00:25:10,629 --> 00:25:13,592
+um die Qualität jeder Vermutung zu messen, was tatsächlich besser funktioniert hat,
+
+500
+00:25:13,592 --> 00:25:14,580
+als Sie vielleicht vermuten.
+
+501
+00:25:14,580 --> 00:25:16,094
+Aber es fühlte sich wirklich nicht systematisch an,
+
+502
+00:25:16,094 --> 00:25:17,637
+und ich bin mir sicher, dass es andere Ansätze gibt,
+
+503
+00:25:17,637 --> 00:25:19,880
+die die Leute verfolgen könnten, aber hier ist der, bei dem ich gelandet bin.
+
+504
+00:25:19,880 --> 00:25:22,956
+Wenn wir die Aussicht auf eine nächste Vermutung in Betracht ziehen,
+
+505
+00:25:22,956 --> 00:25:25,943
+wie in diesem Fall Wörter, ist das, was uns wirklich interessiert,
+
+506
+00:25:25,943 --> 00:25:28,440
+das erwartete Ergebnis unseres Spiels, wenn wir das tun.
+
+507
+00:25:28,440 --> 00:25:31,017
+Und um diesen erwarteten Wert zu berechnen, sagen wir,
+
+508
+00:25:31,017 --> 00:25:34,767
+wie hoch die Wahrscheinlichkeit ist, dass Wörter die tatsächliche Antwort sind,
+
+509
+00:25:34,767 --> 00:25:36,080
+was derzeit 58 % entspricht.
+
+510
 00:25:36,080 --> 00:25:38,263
 Wir gehen davon aus, dass unser Punktestand in
 
-500
+511
 00:25:38,263 --> 00:25:40,400
 diesem Spiel bei einer Chance von 58 % 4 wäre.
 
-501
-00:25:40,400 --> 00:25:43,261
-Und dann, wenn die Wahrscheinlichkeit 1 minus 58
+512
+00:25:40,400 --> 00:25:43,904
+Und dann, wenn die Wahrscheinlichkeit 1 minus 58 % beträgt,
 
-502
-00:25:43,261 --> 00:25:46,240
-% beträgt, wird unser Ergebnis mehr als 4 betragen.
+513
+00:25:43,904 --> 00:25:46,240
+wird unser Ergebnis mehr als 4 betragen.
 
-503
+514
 00:25:46,240 --> 00:25:49,951
 Wie viel mehr wissen wir nicht, aber wir können es anhand der voraussichtlichen
 
-504
+515
 00:25:49,951 --> 00:25:52,920
 Unsicherheit abschätzen, sobald wir diesen Punkt erreicht haben.
 
-505
-00:25:52,920 --> 00:25:55,227
-Konkret gibt es im Moment 1.
+516
+00:25:52,920 --> 00:25:56,600
+Konkret gibt es im Moment 1.44 Bit Unsicherheit.
 
-506
-00:25:55,227 --> 00:25:56,600
-44 Bit Unsicherheit.
+517
+00:25:56,600 --> 00:26:00,052
+Wenn wir Wörter erraten, sagt uns das, dass die erwartete Information,
 
-507
-00:25:56,600 --> 00:25:58,889
-Wenn wir Wörter erraten, sagt uns das, dass die
+518
+00:26:00,052 --> 00:26:01,560
+die wir erhalten, 1 ist.27 Bit.
 
-508
-00:25:58,889 --> 00:26:01,131
-erwartete Information, die wir erhalten, 1 ist.
+519
+00:26:01,560 --> 00:26:05,093
+Wenn wir also Wörter erraten, stellt dieser Unterschied dar,
 
-509
-00:26:01,131 --> 00:26:01,560
-27 Bit.
+520
+00:26:05,093 --> 00:26:08,280
+wie viel Unsicherheit uns danach wahrscheinlich bleibt.
 
-510
-00:26:01,560 --> 00:26:04,804
-Wenn wir also Wörter erraten, stellt dieser Unterschied
-
-511
-00:26:04,804 --> 00:26:08,280
-dar, wie viel Unsicherheit uns danach wahrscheinlich bleibt.
-
-512
+521
 00:26:08,280 --> 00:26:11,080
 Was wir brauchen, ist eine Art Funktion, die ich hier f nenne,
 
-513
+522
 00:26:11,080 --> 00:26:13,880
 die diese Unsicherheit mit einem erwarteten Ergebnis verknüpft.
 
-514
+523
 00:26:13,880 --> 00:26:18,283
 Und die Vorgehensweise bestand darin, einfach eine Reihe von Daten aus früheren Spielen
 
-515
-00:26:18,283 --> 00:26:22,636
-basierend auf Version 1 des Bots aufzuzeichnen, um zu sagen, wie hoch der tatsächliche
+524
+00:26:18,283 --> 00:26:21,335
+basierend auf Version 1 des Bots aufzuzeichnen, um zu sagen,
 
-516
-00:26:22,636 --> 00:26:27,040
-Punktestand nach verschiedenen Punkten war, mit gewissen, sehr messbaren Unsicherheiten.
+525
+00:26:21,335 --> 00:26:25,538
+wie hoch der tatsächliche Punktestand nach verschiedenen Punkten war, mit gewissen,
 
-517
-00:26:27,040 --> 00:26:31,073
-Zum Beispiel diese Datenpunkte hier, die über einem Wert von etwa 8 liegen.
+526
+00:26:25,538 --> 00:26:27,040
+sehr messbaren Unsicherheiten.
 
-518
-00:26:31,073 --> 00:26:35,426
-7 oder so sagen für einige Spiele nach einem Zeitpunkt, an dem es 8 waren.
+527
+00:26:27,040 --> 00:26:31,106
+Zum Beispiel diese Datenpunkte hier, die über einem Wert von etwa 8 liegen.7 oder
 
-519
-00:26:35,426 --> 00:26:37,284
-7 Bits Unsicherheit, es waren zwei Vermutungen
+528
+00:26:31,106 --> 00:26:35,471
+so sagen für einige Spiele nach einem Zeitpunkt, an dem es 8 waren.7 Bits Unsicherheit,
 
-520
-00:26:37,284 --> 00:26:39,340
-erforderlich, um die endgültige Antwort zu erhalten.
+529
+00:26:35,471 --> 00:26:39,340
+es waren zwei Vermutungen erforderlich, um die endgültige Antwort zu erhalten.
 
-521
+530
 00:26:39,340 --> 00:26:41,276
 Bei anderen Spielen waren drei Schätzungen erforderlich,
 
-522
+531
 00:26:41,276 --> 00:26:43,180
 bei anderen Spielen waren vier Schätzungen erforderlich.
 
-523
+532
 00:26:43,180 --> 00:26:47,025
 Wenn wir hier nach links wechseln, sagen alle Punkte über Null, dass immer dann,
 
-524
+533
 00:26:47,025 --> 00:26:50,965
 wenn es null Unsicherheitsbits gibt, das heißt, dass es nur eine Möglichkeit gibt,
 
-525
+534
 00:26:50,965 --> 00:26:55,000
 die Anzahl der erforderlichen Schätzungen immer nur eins beträgt, was beruhigend ist.
 
-526
-00:26:55,000 --> 00:26:57,980
-Wann immer es ein bisschen Unsicherheit gab, was bedeutete, dass es sich im
+535
+00:26:55,000 --> 00:26:57,352
+Wann immer es ein bisschen Unsicherheit gab, was bedeutete,
 
-527
-00:26:57,980 --> 00:27:00,920
-Wesentlichen nur um zwei Möglichkeiten handelte, war manchmal eine weitere
+536
+00:26:57,352 --> 00:26:59,901
+dass es sich im Wesentlichen nur um zwei Möglichkeiten handelte,
 
-528
-00:27:00,920 --> 00:27:03,940
-Vermutung erforderlich, manchmal waren zwei weitere Vermutungen erforderlich.
+537
+00:26:59,901 --> 00:27:01,861
+war manchmal eine weitere Vermutung erforderlich,
 
-529
+538
+00:27:01,861 --> 00:27:03,940
+manchmal waren zwei weitere Vermutungen erforderlich.
+
+539
 00:27:03,940 --> 00:27:05,980
 Und so weiter und so fort hier.
 
-530
+540
 00:27:05,980 --> 00:27:08,621
 Eine vielleicht etwas einfachere Möglichkeit, diese Daten zu visualisieren,
 
-531
+541
 00:27:08,621 --> 00:27:11,020
 besteht darin, sie zusammenzufassen und Durchschnittswerte zu bilden.
 
-532
-00:27:11,020 --> 00:27:15,014
+542
+00:27:11,020 --> 00:27:15,012
 Zum Beispiel dieser Balken hier, der besagt, dass von allen Punkten,
 
-533
-00:27:15,014 --> 00:27:18,661
-bei denen wir eine gewisse Unsicherheit hatten, die Anzahl der
+543
+00:27:15,012 --> 00:27:17,790
+bei denen wir eine gewisse Unsicherheit hatten,
 
-534
-00:27:18,661 --> 00:27:22,308
-erforderlichen neuen Vermutungen im Durchschnitt etwa 1 betrug.
+544
+00:27:17,790 --> 00:27:22,420
+die Anzahl der erforderlichen neuen Vermutungen im Durchschnitt etwa 1 betrug.5.
 
-535
-00:27:22,308 --> 00:27:22,420
-5.
+545
+00:27:22,420 --> 00:27:25,594
+Und der Balken hier besagt, dass bei all den verschiedenen Spielen,
 
-536
-00:27:22,420 --> 00:27:25,781
-Und der Balken hier besagt, dass bei all den verschiedenen Spielen, bei
+546
+00:27:25,594 --> 00:27:28,536
+bei denen die Unsicherheit irgendwann etwas über vier Bit lag,
 
-537
-00:27:25,781 --> 00:27:29,003
-denen die Unsicherheit irgendwann etwas über vier Bit lag, was einer
+547
+00:27:28,536 --> 00:27:31,711
+was einer Eingrenzung auf 16 verschiedene Möglichkeiten entspricht,
 
-538
-00:27:29,003 --> 00:27:32,644
-Eingrenzung auf 16 verschiedene Möglichkeiten entspricht, ab diesem Zeitpunkt
+548
+00:27:31,711 --> 00:27:34,886
+ab diesem Zeitpunkt im Durchschnitt etwas mehr als zwei Vermutungen
 
-539
-00:27:32,644 --> 00:27:36,240
-im Durchschnitt etwas mehr als zwei Vermutungen erforderlich sind nach vorne.
+549
+00:27:34,886 --> 00:27:36,240
+erforderlich sind nach vorne.
 
-540
+550
 00:27:36,240 --> 00:27:38,288
 Und von hier aus habe ich einfach eine Regression durchgeführt,
 
-541
+551
 00:27:38,288 --> 00:27:40,080
 um eine Funktion anzupassen, die hier sinnvoll erschien.
 
-542
-00:27:40,080 --> 00:27:43,170
-Und bedenken Sie, dass der Sinn all dessen darin besteht, dass wir
+552
+00:27:40,080 --> 00:27:42,755
+Und bedenken Sie, dass der Sinn all dessen darin besteht,
 
-543
-00:27:43,170 --> 00:27:46,445
-die Intuition quantifizieren können, dass die erwartete Punktzahl umso
+553
+00:27:42,755 --> 00:27:45,753
+dass wir die Intuition quantifizieren können, dass die erwartete
 
-544
-00:27:46,445 --> 00:27:49,720
-niedriger sein wird, je mehr Informationen wir aus einem Wort gewinnen.
+554
+00:27:45,753 --> 00:27:49,720
+Punktzahl umso niedriger sein wird, je mehr Informationen wir aus einem Wort gewinnen.
 
-545
-00:27:49,720 --> 00:27:51,043
-Also hiermit als Version 2.
+555
+00:27:49,720 --> 00:27:52,976
+Also hiermit als Version 2.0, wenn wir zurückgehen und den
 
-546
-00:27:51,043 --> 00:27:55,488
-0, wenn wir zurückgehen und den gleichen Satz Simulationen durchführen und ihn
+556
+00:27:52,976 --> 00:27:56,453
+gleichen Satz Simulationen durchführen und ihn gegen alle 2315
 
-547
-00:27:55,488 --> 00:27:59,820
-gegen alle 2315 möglichen Wortantworten spielen lassen, wie funktioniert das?
+557
+00:27:56,453 --> 00:27:59,820
+möglichen Wortantworten spielen lassen, wie funktioniert das?
 
-548
+558
 00:27:59,820 --> 00:28:04,060
 Nun, im Gegensatz zu unserer ersten Version ist es definitiv besser, was beruhigend ist.
 
-549
-00:28:04,060 --> 00:28:06,284
-Alles in allem liegt der Durchschnitt bei etwa 3.
+559
+00:28:04,060 --> 00:28:06,693
+Alles in allem liegt der Durchschnitt bei etwa 3.6,
 
-550
-00:28:06,284 --> 00:28:09,341
-6, obwohl es im Gegensatz zur ersten Version ein paar Mal
+560
+00:28:06,693 --> 00:28:11,149
+obwohl es im Gegensatz zur ersten Version ein paar Mal Verluste gibt und in diesem Fall
 
-551
-00:28:09,341 --> 00:28:12,820
-Verluste gibt und in diesem Fall mehr als sechs erforderlich sind.
+561
+00:28:11,149 --> 00:28:12,820
+mehr als sechs erforderlich sind.
 
-552
+562
 00:28:12,820 --> 00:28:16,068
 Vermutlich, weil es Zeiten gibt, in denen es darum geht, diesen Kompromiss einzugehen,
 
-553
+563
 00:28:16,068 --> 00:28:18,980
 um tatsächlich das Ziel zu erreichen, anstatt die Informationen zu maximieren.
 
-554
-00:28:18,980 --> 00:28:22,022
-Können wir es also besser machen als 3?
+564
+00:28:18,980 --> 00:28:22,140
+Können wir es also besser machen als 3?6?
 
-555
-00:28:22,022 --> 00:28:22,140
-6?
-
-556
+565
 00:28:22,140 --> 00:28:23,260
 Das können wir auf jeden Fall.
 
-557
+566
 00:28:23,260 --> 00:28:25,536
 Nun habe ich zu Beginn gesagt, dass es am meisten Spaß macht,
 
-558
+567
 00:28:25,536 --> 00:28:27,813
 zu versuchen, nicht die wahre Liste der Wort-Antworten in die
 
-559
+568
 00:28:27,813 --> 00:28:29,980
 Art und Weise zu integrieren, wie das Modell erstellt wird.
 
-560
-00:28:29,980 --> 00:28:35,043
-Aber wenn wir es integrieren, lag die beste Leistung, die ich erzielen konnte, bei etwa 3.
-
-561
-00:28:35,043 --> 00:28:35,180
-43.
-
-562
-00:28:35,180 --> 00:28:38,184
-Wenn wir also versuchen, bei der Auswahl dieser vorherigen Verteilung, dieser
-
-563
-00:28:38,184 --> 00:28:40,957
-3, anspruchsvoller zu werden, als nur Worthäufigkeitsdaten zu verwenden.
-
-564
-00:28:40,957 --> 00:28:43,679
-43 gibt wahrscheinlich einen Höchstwert dafür, wie gut wir damit
-
-565
-00:28:43,679 --> 00:28:46,360
-werden könnten, oder zumindest, wie gut ich damit werden könnte.
-
-566
-00:28:46,360 --> 00:28:49,419
-Diese beste Leistung nutzt im Wesentlichen nur die Ideen, über die ich hier
-
-567
-00:28:49,419 --> 00:28:52,439
-gesprochen habe, geht aber noch ein wenig weiter, als würde die Suche nach
-
-568
-00:28:52,439 --> 00:28:55,660
-den erwarteten Informationen zwei Schritte vorwärts statt nur einen durchführen.
-
 569
-00:28:55,660 --> 00:28:58,099
-Ursprünglich hatte ich vor, mehr darüber zu reden, aber mir
+00:28:29,980 --> 00:28:32,999
+Aber wenn wir es integrieren, lag die beste Leistung,
 
 570
-00:28:58,099 --> 00:29:00,580
-ist klar, dass wir ohnehin schon ziemlich weit gekommen sind.
+00:28:32,999 --> 00:28:35,180
+die ich erzielen konnte, bei etwa 3.43.
 
 571
+00:28:35,180 --> 00:28:38,025
+Wenn wir also versuchen, bei der Auswahl dieser vorherigen Verteilung,
+
+572
+00:28:38,025 --> 00:28:40,790
+dieser 3, anspruchsvoller zu werden, als nur Worthäufigkeitsdaten zu
+
+573
+00:28:40,790 --> 00:28:43,074
+verwenden.43 gibt wahrscheinlich einen Höchstwert dafür,
+
+574
+00:28:43,074 --> 00:28:46,360
+wie gut wir damit werden könnten, oder zumindest, wie gut ich damit werden könnte.
+
+575
+00:28:46,360 --> 00:28:48,695
+Diese beste Leistung nutzt im Wesentlichen nur die Ideen,
+
+576
+00:28:48,695 --> 00:28:51,432
+über die ich hier gesprochen habe, geht aber noch ein wenig weiter,
+
+577
+00:28:51,432 --> 00:28:54,532
+als würde die Suche nach den erwarteten Informationen zwei Schritte vorwärts
+
+578
+00:28:54,532 --> 00:28:55,660
+statt nur einen durchführen.
+
+579
+00:28:55,660 --> 00:28:57,733
+Ursprünglich hatte ich vor, mehr darüber zu reden,
+
+580
+00:28:57,733 --> 00:29:00,580
+aber mir ist klar, dass wir ohnehin schon ziemlich weit gekommen sind.
+
+581
 00:29:00,580 --> 00:29:03,527
 Das Einzige, was ich sagen möchte, ist, dass nach dieser zweistufigen Suche
 
-572
+582
 00:29:03,527 --> 00:29:06,242
 und dem anschließenden Ausführen einiger Beispielsimulationen bei den
 
-573
+583
 00:29:06,242 --> 00:29:09,500
 Top-Kandidaten es für mich zumindest so aussieht, als ob Crane der beste Opener ist.
 
-574
+584
 00:29:09,500 --> 00:29:11,080
 Wer hätte es gedacht?
 
-575
-00:29:11,080 --> 00:29:14,483
-Auch wenn Sie die wahre Wortliste verwenden, um Ihren Möglichkeitenraum zu
+585
+00:29:11,080 --> 00:29:14,983
+Auch wenn Sie die wahre Wortliste verwenden, um Ihren Möglichkeitenraum zu bestimmen,
 
-576
-00:29:14,483 --> 00:29:18,160
-bestimmen, beträgt die Unsicherheit, mit der Sie beginnen, etwas mehr als 11 Bit.
+586
+00:29:14,983 --> 00:29:18,160
+beträgt die Unsicherheit, mit der Sie beginnen, etwas mehr als 11 Bit.
 
-577
+587
 00:29:18,160 --> 00:29:22,191
 Und es stellt sich heraus, dass allein bei einer Brute-Force-Suche die maximal
 
-578
+588
 00:29:22,191 --> 00:29:26,580
 mögliche erwartete Information nach den ersten beiden Schätzungen etwa 10 Bit beträgt.
 
-579
+589
 00:29:26,580 --> 00:29:30,799
 Das deutet darauf hin, dass Sie im besten Fall nach Ihren ersten beiden Vermutungen
 
-580
+590
 00:29:30,799 --> 00:29:35,220
 und vollkommen optimalem Spiel mit etwa einem kleinen Unsicherheitsfaktor zurückbleiben.
 
-581
+591
 00:29:35,220 --> 00:29:37,400
 Das ist das Gleiche, als ob man auf zwei mögliche Vermutungen angewiesen wäre.
 
-582
-00:29:37,400 --> 00:29:39,927
-Daher denke ich, dass es fair und wahrscheinlich ziemlich konservativ ist, zu
+592
+00:29:37,400 --> 00:29:39,830
+Daher denke ich, dass es fair und wahrscheinlich ziemlich konservativ ist,
 
-583
-00:29:39,927 --> 00:29:42,682
-sagen, dass Sie niemals einen Algorithmus schreiben könnten, der diesen Durchschnitt
+593
+00:29:39,830 --> 00:29:41,904
+zu sagen, dass Sie niemals einen Algorithmus schreiben könnten,
 
-584
-00:29:42,682 --> 00:29:45,242
-auf 3 reduziert, denn mit den Wörtern, die Ihnen zur Verfügung stehen, gibt es
+594
+00:29:41,904 --> 00:29:43,946
+der diesen Durchschnitt auf 3 reduziert, denn mit den Wörtern,
 
-585
-00:29:45,242 --> 00:29:47,964
-einfach keinen Platz, um nach nur zwei Schritten genügend Informationen zu erhalten
+595
+00:29:43,946 --> 00:29:45,955
+die Ihnen zur Verfügung stehen, gibt es einfach keinen Platz,
 
-586
-00:29:47,964 --> 00:29:50,460
-in der Lage, die Antwort im dritten Slot jedes Mal fehlerfrei zu garantieren.
+596
+00:29:45,955 --> 00:29:48,385
+um nach nur zwei Schritten genügend Informationen zu erhalten in der Lage,
+
+597
+00:29:48,385 --> 00:29:50,460
+die Antwort im dritten Slot jedes Mal fehlerfrei zu garantieren.
 

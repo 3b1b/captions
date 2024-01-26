@@ -7,958 +7,1006 @@ Tôi cho rằng mọi người ở đây đều đến từ phần 1.
 Chúng ta đang nói về mã Hamming, một cách để tạo ra một khối dữ liệu trong
 
 3
-00:00:06,900 --> 00:00:10,529
-đó hầu hết các bit mang một thông điệp có ý nghĩa, trong khi một số bit
+00:00:06,900 --> 00:00:09,470
+đó hầu hết các bit mang một thông điệp có ý nghĩa,
 
 4
-00:00:10,529 --> 00:00:14,208
-khác hoạt động như một loại dự phòng, theo cách mà nếu bất kỳ bit nào bị
+00:00:09,470 --> 00:00:12,444
+trong khi một số bit khác hoạt động như một loại dự phòng,
 
 5
-00:00:14,208 --> 00:00:17,938
-đảo lộn, thì đó sẽ là một thông báo. bit hoặc bit dự phòng, bất kỳ thứ gì
+00:00:12,444 --> 00:00:16,073
+theo cách mà nếu bất kỳ bit nào bị đảo lộn, thì đó sẽ là một thông báo.
 
 6
-00:00:17,938 --> 00:00:21,920
-trong khối này, bộ thu sẽ có thể xác định rằng đã xảy ra lỗi và cách khắc phục.
+00:00:16,073 --> 00:00:18,744
+bit hoặc bit dự phòng, bất kỳ thứ gì trong khối này,
 
 7
+00:00:18,744 --> 00:00:21,920
+bộ thu sẽ có thể xác định rằng đã xảy ra lỗi và cách khắc phục.
+
+8
 00:00:21,920 --> 00:00:25,773
 Ý tưởng cơ bản được trình bày ở đó là cách sử dụng nhiều biện pháp
 
-8
+9
 00:00:25,773 --> 00:00:29,800
 kiểm tra chẵn lẻ để tìm kiếm nhị phân theo cách của bạn để tìm ra lỗi.
 
-9
+10
 00:00:29,800 --> 00:00:32,667
 Trong video đó, mục tiêu là làm cho mã Hamming có
 
-10
+11
 00:00:32,667 --> 00:00:35,420
 cảm giác thực tế và dễ khám phá lại nhất có thể.
 
-11
+12
 00:00:35,420 --> 00:00:38,380
 Nhưng khi bạn bắt đầu nghĩ đến việc thực sự triển khai điều này,
 
-12
+13
 00:00:38,380 --> 00:00:41,250
 dù bằng phần mềm hay phần cứng, thì việc đóng khung đó thực sự
 
-13
+14
 00:00:41,250 --> 00:00:44,120
 có thể đánh giá thấp mức độ trang nhã thực sự của những mã này.
 
-14
+15
 00:00:44,120 --> 00:00:47,415
 Bạn có thể nghĩ rằng mình cần phải viết một thuật toán theo dõi
 
-15
-00:00:47,415 --> 00:00:50,658
-tất cả các vị trí lỗi có thể xảy ra và cắt nhóm đó làm đôi sau
-
 16
-00:00:50,658 --> 00:00:54,160
-mỗi lần kiểm tra, nhưng thực tế thì cách này đơn giản hơn thế nhiều.
+00:00:47,415 --> 00:00:51,585
+tất cả các vị trí lỗi có thể xảy ra và cắt nhóm đó làm đôi sau mỗi lần kiểm tra,
 
 17
+00:00:51,585 --> 00:00:54,160
+nhưng thực tế thì cách này đơn giản hơn thế nhiều.
+
+18
 00:00:54,160 --> 00:00:57,641
 Nếu bạn đọc to câu trả lời cho bốn phép kiểm tra tính chẵn lẻ mà chúng
 
-18
-00:00:57,641 --> 00:01:01,122
-tôi đã thực hiện trong video trước, tất cả đều là 1 và 0 thay vì có và
-
 19
-00:01:01,122 --> 00:01:04,800
-không, thì nó sẽ chỉ ra vị trí của lỗi ở dạng nhị phân theo đúng nghĩa đen.
+00:00:57,641 --> 00:01:01,465
+tôi đã thực hiện trong video trước, tất cả đều là 1 và 0 thay vì có và không,
 
 20
-00:01:04,800 --> 00:01:08,677
-Ví dụ: số 7 trong hệ nhị phân trông giống như
+00:01:01,465 --> 00:01:04,800
+thì nó sẽ chỉ ra vị trí của lỗi ở dạng nhị phân theo đúng nghĩa đen.
 
 21
-00:01:08,677 --> 00:01:12,640
-0111, về cơ bản nó có nghĩa là 4 cộng 2 cộng 1.
+00:01:04,800 --> 00:01:09,183
+Ví dụ: số 7 trong hệ nhị phân trông giống như 0111,
 
 22
+00:01:09,183 --> 00:01:12,640
+về cơ bản nó có nghĩa là 4 cộng 2 cộng 1.
+
+23
 00:01:12,640 --> 00:01:15,853
 Và hãy để ý xem vị trí số 7 nằm ở đâu, nó ảnh hưởng đến nhóm
 
-23
-00:01:15,853 --> 00:01:19,066
-đầu tiên trong số các nhóm ngang bằng của chúng ta, nhóm thứ
-
 24
-00:01:19,066 --> 00:01:22,280
-hai và nhóm thứ ba, nhưng không ảnh hưởng đến nhóm cuối cùng.
+00:01:15,853 --> 00:01:18,592
+đầu tiên trong số các nhóm ngang bằng của chúng ta,
 
 25
+00:01:18,592 --> 00:01:22,280
+nhóm thứ hai và nhóm thứ ba, nhưng không ảnh hưởng đến nhóm cuối cùng.
+
+26
 00:01:22,280 --> 00:01:25,368
 Vì vậy, việc đọc kết quả của bốn lần kiểm tra đó
 
-26
+27
 00:01:25,368 --> 00:01:28,520
 từ dưới lên trên thực sự sẽ chỉ ra vị trí của lỗi.
 
-27
+28
 00:01:28,520 --> 00:01:32,839
 Không có gì đặc biệt về ví dụ 7, nhìn chung nó hoạt động tốt và điều này làm
 
-28
+29
 00:01:32,839 --> 00:01:37,440
 cho logic triển khai toàn bộ sơ đồ trong phần cứng trở nên đơn giản đến kinh ngạc.
 
-29
-00:01:37,440 --> 00:01:41,765
-Bây giờ nếu bạn muốn biết tại sao điều kỳ diệu này lại xảy ra, hãy lấy
-
 30
-00:01:41,765 --> 00:01:46,273
-16 nhãn chỉ mục này cho các vị trí của chúng ta, nhưng thay vì viết chúng
+00:01:37,440 --> 00:01:41,277
+Bây giờ nếu bạn muốn biết tại sao điều kỳ diệu này lại xảy ra,
 
 31
-00:01:46,273 --> 00:01:50,720
-ở cơ số 10, hãy viết tất cả chúng ở dạng nhị phân, chạy từ 0000 đến 1111.
+00:01:41,277 --> 00:01:44,750
+hãy lấy 16 nhãn chỉ mục này cho các vị trí của chúng ta,
 
 32
-00:01:50,720 --> 00:01:54,550
-Khi chúng ta đặt các nhãn nhị phân này trở lại hộp của chúng, hãy
+00:01:44,750 --> 00:01:49,379
+nhưng thay vì viết chúng ở cơ số 10, hãy viết tất cả chúng ở dạng nhị phân,
 
 33
-00:01:54,550 --> 00:01:58,440
-để tôi nhấn mạnh rằng chúng khác biệt với dữ liệu thực sự được gửi.
+00:01:49,379 --> 00:01:50,720
+chạy từ 0000 đến 1111.
 
 34
+00:01:50,720 --> 00:01:54,318
+Khi chúng ta đặt các nhãn nhị phân này trở lại hộp của chúng,
+
+35
+00:01:54,318 --> 00:01:58,440
+hãy để tôi nhấn mạnh rằng chúng khác biệt với dữ liệu thực sự được gửi.
+
+36
 00:01:58,440 --> 00:02:01,374
 Chúng không gì khác hơn là một nhãn hiệu khái niệm để
 
-35
+37
 00:02:01,374 --> 00:02:04,200
 giúp bạn và tôi hiểu bốn nhóm ngang bằng đến từ đâu.
 
-36
+38
 00:02:04,200 --> 00:02:08,654
 Sự sang trọng của việc mọi thứ chúng ta đang xem xét được mô tả ở dạng nhị phân có thể
 
-37
+39
 00:02:08,654 --> 00:02:13,160
 bị giảm bớt do sự nhầm lẫn khi mọi thứ chúng ta đang xem xét được mô tả ở dạng nhị phân.
 
-38
+40
 00:02:13,160 --> 00:02:15,040
 Tuy nhiên, nó đáng giá.
 
-39
-00:02:15,040 --> 00:02:19,478
-Hãy tập trung sự chú ý của bạn vào phần cuối cùng của tất cả
-
-40
-00:02:19,478 --> 00:02:24,280
-các nhãn này, sau đó đánh dấu các vị trí mà bit cuối cùng đó là 1.
-
 41
-00:02:24,280 --> 00:02:28,474
-Những gì chúng tôi nhận được là nhóm đầu tiên trong số bốn nhóm chẵn
+00:02:15,040 --> 00:02:20,496
+Hãy tập trung sự chú ý của bạn vào phần cuối cùng của tất cả các nhãn này,
 
 42
-00:02:28,474 --> 00:02:32,729
-lẻ, có nghĩa là bạn có thể hiểu lần kiểm tra đầu tiên đó là hỏi, này,
+00:02:20,496 --> 00:02:24,280
+sau đó đánh dấu các vị trí mà bit cuối cùng đó là 1.
 
 43
+00:02:24,280 --> 00:02:28,717
+Những gì chúng tôi nhận được là nhóm đầu tiên trong số bốn nhóm chẵn lẻ,
+
+44
+00:02:28,717 --> 00:02:32,729
+có nghĩa là bạn có thể hiểu lần kiểm tra đầu tiên đó là hỏi, này,
+
+45
 00:02:32,729 --> 00:02:36,680
 nếu có lỗi, bit cuối cùng ở vị trí của lỗi đó có phải là 1 không?
 
-44
+46
 00:02:36,680 --> 00:02:41,924
 Tương tự, nếu bạn tập trung vào bit thứ hai đến bit cuối cùng và đánh dấu tất cả
 
-45
+47
 00:02:41,924 --> 00:02:47,040
 các vị trí có số 1, bạn sẽ có được nhóm chẵn lẻ thứ hai từ sơ đồ của chúng tôi.
 
-46
-00:02:47,040 --> 00:02:51,600
-Nói cách khác, lần kiểm tra thứ hai đó đang hỏi, này, tôi lại nói, nếu
-
-47
-00:02:51,600 --> 00:02:56,160
-có lỗi, bit thứ hai đến bit cuối cùng của vị trí đó có phải là 1 không?
-
 48
+00:02:47,040 --> 00:02:51,343
+Nói cách khác, lần kiểm tra thứ hai đó đang hỏi, này, tôi lại nói,
+
+49
+00:02:51,343 --> 00:02:56,160
+nếu có lỗi, bit thứ hai đến bit cuối cùng của vị trí đó có phải là 1 không?
+
+50
 00:02:56,160 --> 00:02:57,160
 Và như thế.
 
-49
+51
 00:02:57,160 --> 00:03:03,568
 Kiểm tra tính chẵn lẻ thứ ba bao gồm mọi vị trí có bit thứ ba đến bit cuối cùng được bật
 
-50
-00:03:03,568 --> 00:03:09,976
-và vị trí cuối cùng bao gồm tám vị trí cuối cùng, những vị trí có bit thứ tự cao nhất là
-
-51
-00:03:09,976 --> 00:03:10,120
-1.
-
 52
+00:03:03,568 --> 00:03:07,168
+và vị trí cuối cùng bao gồm tám vị trí cuối cùng,
+
+53
+00:03:07,168 --> 00:03:10,120
+những vị trí có bit thứ tự cao nhất là 1.
+
+54
 00:03:10,120 --> 00:03:15,053
 Mọi điều chúng ta đã làm trước đó cũng giống như việc trả lời bốn câu hỏi này,
 
-53
+55
 00:03:15,053 --> 00:03:19,800
 những câu hỏi này cũng giống như việc đánh vần một vị trí trong hệ nhị phân.
 
-54
+56
 00:03:19,800 --> 00:03:22,080
 Tôi hy vọng điều này làm cho hai điều rõ ràng hơn.
 
-55
+57
 00:03:22,080 --> 00:03:24,540
 Đầu tiên là làm thế nào để khái quát hóa một cách có
 
-56
+58
 00:03:24,540 --> 00:03:27,140
 hệ thống các kích thước khối có lũy thừa lớn hơn bằng 2.
 
-57
+59
 00:03:27,140 --> 00:03:32,789
 Nếu cần nhiều bit hơn để mô tả từng vị trí, chẳng hạn như sáu bit để mô tả 64 điểm,
 
-58
+60
 00:03:32,789 --> 00:03:38,640
 thì mỗi bit đó sẽ cung cấp cho bạn một trong các nhóm chẵn lẻ mà chúng ta cần kiểm tra.
 
-59
+61
 00:03:38,640 --> 00:03:41,062
 Những ai đã xem trò chơi xếp hình trên bàn cờ mà tôi làm
 
-60
+62
 00:03:41,062 --> 00:03:43,400
 với Matt Parker có thể thấy điều này cực kỳ quen thuộc.
 
-61
+63
 00:03:43,400 --> 00:03:46,672
 Đó là logic cốt lõi tương tự, nhưng giải quyết một
 
-62
+64
 00:03:46,672 --> 00:03:49,880
 vấn đề khác và được áp dụng cho bàn cờ 64 ô vuông.
 
-63
+65
 00:03:49,880 --> 00:03:54,069
 Điều thứ hai tôi hy vọng điều này làm rõ là tại sao các bit chẵn lẻ
 
-64
+66
 00:03:54,069 --> 00:03:58,320
 của chúng ta lại nằm ở các vị trí lũy thừa của 2, ví dụ 1, 2, 4 và 8.
 
-65
+67
 00:03:58,320 --> 00:04:03,640
 Đây là những vị trí mà biểu diễn nhị phân chỉ được bật một bit.
 
-66
+68
 00:04:03,640 --> 00:04:08,288
 Điều đó có nghĩa là mỗi bit chẵn lẻ đó nằm bên
 
-67
+69
 00:04:08,288 --> 00:04:12,640
 trong một và chỉ một trong bốn nhóm chẵn lẻ.
 
-68
-00:04:12,640 --> 00:04:19,322
-Bạn cũng có thể thấy điều này trong các ví dụ lớn hơn, trong đó dù bạn có lớn
-
-69
-00:04:19,322 --> 00:04:25,920
-đến đâu, mỗi bit chẵn lẻ chỉ chạm vào một trong các nhóm một cách thuận tiện.
-
 70
+00:04:12,640 --> 00:04:20,093
+Bạn cũng có thể thấy điều này trong các ví dụ lớn hơn, trong đó dù bạn có lớn đến đâu,
+
+71
+00:04:20,093 --> 00:04:25,920
+mỗi bit chẵn lẻ chỉ chạm vào một trong các nhóm một cách thuận tiện.
+
+72
 00:04:25,920 --> 00:04:29,387
 Một khi bạn hiểu rằng việc kiểm tra tính chẵn lẻ mà chúng ta đã dành rất
 
-71
+73
 00:04:29,387 --> 00:04:32,996
 nhiều thời gian vào đó không gì khác hơn là một cách thông minh để đánh vần
 
-72
+74
 00:04:32,996 --> 00:04:36,653
 vị trí của một lỗi trong hệ nhị phân, khi đó chúng ta có thể rút ra mối liên
 
-73
+75
 00:04:36,653 --> 00:04:40,168
 hệ bằng một cách nghĩ khác về hamming. mã, một mã được cho là đơn giản và
 
-74
+76
 00:04:40,168 --> 00:04:43,920
 thanh lịch hơn rất nhiều và về cơ bản có thể được viết ra chỉ bằng một dòng mã.
 
-75
+77
 00:04:43,920 --> 00:04:46,200
 Nó dựa trên hàm XOR.
 
-76
+78
 00:04:46,200 --> 00:04:50,960
 XOR, dành cho những ai chưa biết, là viết tắt của độc quyền hoặc.
 
-77
-00:04:50,960 --> 00:04:55,615
-Khi bạn lấy XOR của hai bit, nó sẽ trả về 1 nếu một trong hai bit
-
-78
-00:04:55,615 --> 00:05:00,200
-đó được bật, nhưng không trả về nếu cả hai bit được bật hoặc tắt.
-
 79
+00:04:50,960 --> 00:04:56,532
+Khi bạn lấy XOR của hai bit, nó sẽ trả về 1 nếu một trong hai bit đó được bật,
+
+80
+00:04:56,532 --> 00:05:00,200
+nhưng không trả về nếu cả hai bit được bật hoặc tắt.
+
+81
 00:05:00,200 --> 00:05:03,760
 Nói cách khác, đó là tính chẵn lẻ của hai bit này.
 
-80
+82
 00:05:03,760 --> 00:05:07,840
 Là một người làm toán, tôi thích coi nó như phép cộng mod 2 hơn.
 
-81
-00:05:07,840 --> 00:05:10,912
-Chúng ta cũng thường nói về XOR của hai chuỗi bit khác
-
-82
-00:05:10,912 --> 00:05:14,040
-nhau, về cơ bản thực hiện việc này theo từng thành phần.
-
 83
+00:05:07,840 --> 00:05:11,247
+Chúng ta cũng thường nói về XOR của hai chuỗi bit khác nhau,
+
+84
+00:05:11,247 --> 00:05:14,040
+về cơ bản thực hiện việc này theo từng thành phần.
+
+85
 00:05:14,040 --> 00:05:16,280
 Nó giống như sự bổ sung, nhưng bạn không bao giờ mang theo.
 
-84
+86
 00:05:16,280 --> 00:05:19,709
 Một lần nữa, những người thiên về toán học hơn có thể
 
-85
+87
 00:05:19,709 --> 00:05:23,520
 thích coi điều này như việc cộng hai vectơ và rút gọn mod 2.
 
-86
-00:05:23,520 --> 00:05:27,501
-Nếu bạn mở một số Python ngay bây giờ và áp dụng thao tác dấu
-
-87
-00:05:27,501 --> 00:05:31,418
-mũ giữa hai số nguyên, thì đây chính là những gì nó đang làm
-
 88
-00:05:31,418 --> 00:05:35,400
-nhưng đối với các biểu diễn bit của các số đó ở phần bên dưới.
+00:05:23,520 --> 00:05:28,978
+Nếu bạn mở một số Python ngay bây giờ và áp dụng thao tác dấu mũ giữa hai số nguyên,
 
 89
+00:05:28,978 --> 00:05:32,895
+thì đây chính là những gì nó đang làm nhưng đối với các biểu
+
+90
+00:05:32,895 --> 00:05:35,400
+diễn bit của các số đó ở phần bên dưới.
+
+91
 00:05:35,400 --> 00:05:40,681
 Điểm mấu chốt đối với bạn và tôi là việc lấy XOR của nhiều chuỗi bit
 
-90
-00:05:40,681 --> 00:05:45,962
-khác nhau thực sự là một cách để tính toán các bản nhại của một loạt
-
-91
-00:05:45,962 --> 00:05:51,320
-các nhóm riêng biệt, giống như với các cột, tất cả trong một cú trượt.
-
 92
+00:05:40,681 --> 00:05:47,569
+khác nhau thực sự là một cách để tính toán các bản nhại của một loạt các nhóm riêng biệt,
+
+93
+00:05:47,569 --> 00:05:51,320
+giống như với các cột, tất cả trong một cú trượt.
+
+94
 00:05:51,320 --> 00:05:54,063
 Điều này mang lại cho chúng ta một cách khá thú vị để suy nghĩ
 
-93
+95
 00:05:54,063 --> 00:05:56,849
 về nhiều lần kiểm tra tính chẵn lẻ từ thuật toán mã Hamming của
 
-94
+96
 00:05:56,849 --> 00:05:59,680
 chúng ta khi tất cả được gói gọn lại thành một thao tác duy nhất.
 
-95
+97
 00:05:59,680 --> 00:06:02,800
 Mặc dù thoạt nhìn nó trông rất khác.
 
-96
-00:06:02,800 --> 00:06:08,280
-Cụ thể là viết ra 16 vị trí trong hệ nhị phân, giống như chúng ta đã
-
-97
-00:06:08,280 --> 00:06:13,601
-làm trước đây và bây giờ đánh dấu các vị trí mà bit thông báo được
-
 98
-00:06:13,601 --> 00:06:19,400
-bật thành 1, sau đó thu thập các vị trí này thành một cột lớn và lấy XOR.
+00:06:02,800 --> 00:06:06,533
+Cụ thể là viết ra 16 vị trí trong hệ nhị phân,
 
 99
+00:06:06,533 --> 00:06:12,092
+giống như chúng ta đã làm trước đây và bây giờ đánh dấu các vị trí mà
+
+100
+00:06:12,092 --> 00:06:17,573
+bit thông báo được bật thành 1, sau đó thu thập các vị trí này thành
+
+101
+00:06:17,573 --> 00:06:19,400
+một cột lớn và lấy XOR.
+
+102
 00:06:19,400 --> 00:06:23,749
 Bạn có thể đoán rằng kết quả là 4 bit nằm ở dưới cùng giống với
 
-100
-00:06:23,749 --> 00:06:28,098
-4 kiểm tra tính chẵn lẻ mà chúng ta đã biết và yêu thích, nhưng
+103
+00:06:23,749 --> 00:06:27,691
+4 kiểm tra tính chẵn lẻ mà chúng ta đã biết và yêu thích,
 
-101
-00:06:28,098 --> 00:06:32,720
-hãy dành chút thời gian để thực sự suy nghĩ chính xác lý do tại sao.
+104
+00:06:27,691 --> 00:06:32,720
+nhưng hãy dành chút thời gian để thực sự suy nghĩ chính xác lý do tại sao.
 
-102
+105
 00:06:32,720 --> 00:06:37,172
 Ví dụ: cột cuối cùng này đang đếm tất cả các vị trí có bit cuối cùng là 1,
 
-103
-00:06:37,172 --> 00:06:41,625
-nhưng chúng tôi chỉ giới hạn ở các vị trí được đánh dấu, do đó, nó đếm một
+106
+00:06:37,172 --> 00:06:40,972
+nhưng chúng tôi chỉ giới hạn ở các vị trí được đánh dấu, do đó,
 
-104
-00:06:41,625 --> 00:06:45,960
-cách hiệu quả số lượng vị trí được đánh dấu đến từ nhóm chẵn lẻ đầu tiên.
+107
+00:06:40,972 --> 00:06:45,960
+nó đếm một cách hiệu quả số lượng vị trí được đánh dấu đến từ nhóm chẵn lẻ đầu tiên.
 
-105
+108
 00:06:45,960 --> 00:06:48,520
 Điều đó có ý nghĩa?
 
-106
+109
 00:06:48,520 --> 00:06:54,376
 Tương tự, cột tiếp theo đếm số lượng vị trí trong nhóm chẵn lẻ thứ hai,
 
-107
+110
 00:06:54,376 --> 00:07:00,640
 các vị trí có bit thứ hai đến bit cuối cùng là 1 và cũng được đánh dấu, v. v.
 
-108
+111
 00:07:00,640 --> 00:07:04,328
 Đó thực sự chỉ là một sự thay đổi nhỏ trong quan
 
-109
+112
 00:07:04,328 --> 00:07:07,640
 điểm về điều tương tự mà chúng tôi đang làm.
 
-110
+113
 00:07:07,640 --> 00:07:10,000
 Và vì vậy bạn biết nó sẽ đi đâu từ đây.
 
-111
+114
 00:07:10,000 --> 00:07:15,134
 Người gửi chịu trách nhiệm chuyển đổi một số bit
 
-112
+115
 00:07:15,134 --> 00:07:19,640
 chẵn lẻ đặc biệt để đảm bảo tổng bằng 0000.
 
-113
+116
 00:07:19,640 --> 00:07:22,682
 Bây giờ khi chúng ta đã có nó như thế này, điều này mang lại cho
 
-114
+117
 00:07:22,682 --> 00:07:25,630
 chúng ta một cách thực sự hay để suy nghĩ về lý do tại sao bốn
 
-115
+118
 00:07:25,630 --> 00:07:28,720
 bit kết quả ở phía dưới này trực tiếp đánh vần vị trí của một lỗi.
 
-116
+119
 00:07:28,720 --> 00:07:32,720
 Giả sử một số bit trong khối này được chuyển từ 0 sang 1.
 
-117
-00:07:32,720 --> 00:07:38,684
-Điều đó có nghĩa là vị trí của bit đó hiện sẽ được bao gồm trong tổng XOR, làm
+120
+00:07:32,720 --> 00:07:38,382
+Điều đó có nghĩa là vị trí của bit đó hiện sẽ được bao gồm trong tổng XOR,
 
-118
-00:07:38,684 --> 00:07:44,800
-thay đổi tổng từ 0 thành thay vào đó là giá trị mới được đưa vào, vị trí của lỗi.
+121
+00:07:38,382 --> 00:07:44,800
+làm thay đổi tổng từ 0 thành thay vào đó là giá trị mới được đưa vào, vị trí của lỗi.
 
-119
+122
 00:07:44,800 --> 00:07:49,800
 Ít rõ ràng hơn một chút, điều tương tự cũng đúng nếu có lỗi thay đổi từ 1 thành 0.
 
-120
-00:07:49,800 --> 00:07:54,186
-Bạn thấy đấy, nếu bạn cộng một chuỗi bit lại với nhau hai lần, thì cũng
+123
+00:07:49,800 --> 00:07:53,638
+Bạn thấy đấy, nếu bạn cộng một chuỗi bit lại với nhau hai lần,
 
-121
-00:07:54,186 --> 00:07:59,000
-giống như không có nó ở đó, về cơ bản là vì trong thế giới này 1 cộng 1 bằng 0.
+124
+00:07:53,638 --> 00:07:59,000
+thì cũng giống như không có nó ở đó, về cơ bản là vì trong thế giới này 1 cộng 1 bằng 0.
 
-122
+125
 00:07:59,000 --> 00:08:02,200
 Vì vậy, việc thêm một bản sao của vị trí này vào tổng số
 
-123
+126
 00:08:02,200 --> 00:08:05,400
 tiền có tác dụng tương tự như việc chúng ta di chuyển nó.
 
-124
+127
 00:08:05,400 --> 00:08:13,480
 Và một lần nữa, hiệu ứng đó là kết quả tổng thể ở phía dưới ở đây cho biết vị trí của lỗi.
 
-125
+128
 00:08:13,480 --> 00:08:17,718
 Để minh họa mức độ tinh tế của điều này, hãy để tôi chỉ ra một dòng mã Python
 
-126
+129
 00:08:17,718 --> 00:08:22,120
 mà tôi đã tham chiếu trước đó, nó sẽ nắm bắt gần như toàn bộ logic ở đầu máy thu.
 
-127
+130
 00:08:22,120 --> 00:08:26,166
 Chúng ta sẽ bắt đầu bằng cách tạo một mảng ngẫu nhiên gồm 16 số 1 và
 
-128
-00:08:26,166 --> 00:08:30,272
-0 để mô phỏng khối dữ liệu và tôi sẽ đặt tên cho nó là các bit, nhưng
-
-129
-00:08:30,272 --> 00:08:34,436
-tất nhiên trong thực tế đây sẽ là thứ chúng tôi nhận được từ người gửi
-
-130
-00:08:34,436 --> 00:08:38,600
-và thay vì ngẫu nhiên nó sẽ mang 11 bit dữ liệu cùng với 5 bit chẵn lẻ.
-
 131
+00:08:26,166 --> 00:08:29,920
+0 để mô phỏng khối dữ liệu và tôi sẽ đặt tên cho nó là các bit,
+
+132
+00:08:29,920 --> 00:08:33,849
+nhưng tất nhiên trong thực tế đây sẽ là thứ chúng tôi nhận được từ
+
+133
+00:08:33,849 --> 00:08:38,600
+người gửi và thay vì ngẫu nhiên nó sẽ mang 11 bit dữ liệu cùng với 5 bit chẵn lẻ.
+
+134
 00:08:38,600 --> 00:08:43,353
 Nếu tôi gọi hàm enumerateBits, nhiệm vụ của nó là ghép từng bit đó lại
 
-132
+135
 00:08:43,353 --> 00:08:48,240
 với nhau bằng một chỉ mục tương ứng, trong trường hợp này là từ 0 đến 15.
 
-133
+136
 00:08:48,240 --> 00:08:52,800
 Vì vậy, nếu sau đó chúng ta tạo một danh sách lặp lại tất cả các cặp này,
 
-134
-00:08:52,800 --> 00:08:57,421
-các cặp trông giống i và sau đó chúng ta chỉ lấy ra giá trị i, chỉ số, thì
-
-135
-00:08:57,421 --> 00:09:01,920
-điều đó không thú vị lắm, chúng ta chỉ lấy lại các chỉ số đó từ 0 đến 15.
-
-136
-00:09:01,920 --> 00:09:07,591
-Nhưng nếu chúng ta thêm vào điều kiện chỉ thực hiện điều này nếu bit, nghĩa là nếu
-
 137
-00:09:07,591 --> 00:09:13,400
-bit đó là 1 chứ không phải 0, thì nó chỉ lấy ra các vị trí mà bit tương ứng được bật.
+00:08:52,800 --> 00:08:57,175
+các cặp trông giống i và sau đó chúng ta chỉ lấy ra giá trị i, chỉ số,
 
 138
+00:08:57,175 --> 00:09:01,920
+thì điều đó không thú vị lắm, chúng ta chỉ lấy lại các chỉ số đó từ 0 đến 15.
+
+139
+00:09:01,920 --> 00:09:06,703
+Nhưng nếu chúng ta thêm vào điều kiện chỉ thực hiện điều này nếu bit,
+
+140
+00:09:06,703 --> 00:09:12,511
+nghĩa là nếu bit đó là 1 chứ không phải 0, thì nó chỉ lấy ra các vị trí mà bit tương
+
+141
+00:09:12,511 --> 00:09:13,400
+ứng được bật.
+
+142
 00:09:13,400 --> 00:09:20,720
 Trong trường hợp này, có vẻ như các vị trí đó là 0, 4, 6, 9, v. v.
 
-139
-00:09:20,720 --> 00:09:25,085
-Điều chúng tôi muốn là tập hợp tất cả các vị trí đó lại với
+143
+00:09:20,720 --> 00:09:25,521
+Điều chúng tôi muốn là tập hợp tất cả các vị trí đó lại với nhau,
 
-140
-00:09:25,085 --> 00:09:29,960
-nhau, vị trí của các bit được bật và sau đó XOR chúng lại với nhau.
+144
+00:09:25,521 --> 00:09:29,960
+vị trí của các bit được bật và sau đó XOR chúng lại với nhau.
 
-141
+145
 00:09:29,960 --> 00:09:33,960
 Để thực hiện điều này bằng Python, trước tiên tôi hãy nhập một vài hàm hữu ích.
 
-142
+146
 00:09:33,960 --> 00:09:36,740
 Bằng cách đó, chúng ta có thể gọi hàm less() trong
 
-143
+147
 00:09:36,740 --> 00:09:39,140
 danh sách này và sử dụng hàm XOR để giảm nó.
 
-144
+148
 00:09:39,140 --> 00:09:44,840
 Về cơ bản, điều này sẽ xuyên suốt danh sách, mang theo XOR trong suốt quá trình.
 
-145
+149
 00:09:44,840 --> 00:09:52,200
 Nếu muốn, bạn có thể viết rõ ràng hàm XOR đó mà không cần phải nhập nó từ bất kỳ đâu.
 
-146
-00:09:52,200 --> 00:09:57,065
-Vì vậy, hiện tại, có vẻ như nếu chúng ta thực hiện điều này trên
+150
+00:09:52,200 --> 00:09:58,861
+Vì vậy, hiện tại, có vẻ như nếu chúng ta thực hiện điều này trên khối 16 bit ngẫu nhiên,
 
-147
-00:09:57,065 --> 00:10:02,080
-khối 16 bit ngẫu nhiên, nó sẽ trả về 9, có biểu diễn nhị phân 1001.
+151
+00:09:58,861 --> 00:10:02,080
+nó sẽ trả về 9, có biểu diễn nhị phân 1001.
 
-148
+152
 00:10:02,080 --> 00:10:07,120
 Chúng tôi sẽ không làm điều đó ở đây, nhưng bạn có thể viết một hàm trong đó người
 
-149
-00:10:07,120 --> 00:10:12,281
-gửi sử dụng biểu diễn nhị phân đó để đặt bốn bit chẵn lẻ nếu cần, cuối cùng đưa khối
+153
+00:10:07,120 --> 00:10:11,127
+gửi sử dụng biểu diễn nhị phân đó để đặt bốn bit chẵn lẻ nếu cần,
 
-150
-00:10:12,281 --> 00:10:17,200
-này về trạng thái chạy dòng mã này trên danh sách đầy đủ các bit trả về một số 0.
+154
+00:10:11,127 --> 00:10:16,228
+cuối cùng đưa khối này về trạng thái chạy dòng mã này trên danh sách đầy đủ các bit
 
-151
+155
+00:10:16,228 --> 00:10:17,200
+trả về một số 0.
+
+156
 00:10:17,200 --> 00:10:20,200
 Đây sẽ được coi là một khối được chuẩn bị tốt.
 
-152
-00:10:20,200 --> 00:10:25,431
-Điều thú vị là nếu chúng ta chuyển đổi bất kỳ bit nào trong danh sách này, mô phỏng
+157
+00:10:20,200 --> 00:10:24,870
+Điều thú vị là nếu chúng ta chuyển đổi bất kỳ bit nào trong danh sách này,
 
-153
-00:10:25,431 --> 00:10:30,600
-một lỗi ngẫu nhiên do nhiễu, thì nếu bạn chạy cùng dòng mã này, nó sẽ in ra lỗi đó.
+158
+00:10:24,870 --> 00:10:29,416
+mô phỏng một lỗi ngẫu nhiên do nhiễu, thì nếu bạn chạy cùng dòng mã này,
 
-154
+159
+00:10:29,416 --> 00:10:30,600
+nó sẽ in ra lỗi đó.
+
+160
 00:10:30,600 --> 00:10:31,920
 Không phải là gọn gàng sao?
 
-155
+161
 00:10:31,920 --> 00:10:37,283
 Bạn có thể lấy khối này bất ngờ, chạy dòng đơn này trên đó
 
-156
+162
 00:10:37,283 --> 00:10:42,920
 và nó sẽ tự động đưa ra vị trí của lỗi hoặc số 0 nếu không có.
 
-157
+163
 00:10:42,920 --> 00:10:45,520
 Và cũng không có gì đặc biệt về size 16 ở đây.
 
-158
+164
 00:10:45,520 --> 00:10:52,280
 Dòng mã tương tự sẽ hoạt động nếu bạn có một danh sách 256 bit.
 
-159
-00:10:52,280 --> 00:10:56,509
-Không cần phải nói, có nhiều mã hơn để viết ở đây, chẳng hạn như thực hiện
-
-160
-00:10:56,509 --> 00:11:00,794
-kiểm tra tính chẵn lẻ meta để phát hiện lỗi 2 bit, nhưng ý tưởng là hầu như
-
-161
-00:11:00,794 --> 00:11:05,080
-tất cả logic cốt lõi từ sơ đồ của chúng tôi đều giảm xuống một XOR duy nhất.
-
-162
-00:11:05,080 --> 00:11:09,613
-Bây giờ, tùy thuộc vào sự thoải mái của bạn với nhị phân, XOR và phần mềm nói
-
-163
-00:11:09,613 --> 00:11:14,379
-chung, bạn có thể thấy quan điểm này hơi khó hiểu hoặc thanh lịch và đơn giản hơn
-
-164
-00:11:14,379 --> 00:11:19,320
-nhiều đến mức bạn đang tự hỏi tại sao chúng ta không bắt đầu với nó ngay từ đầu. -đi.
-
 165
+00:10:52,280 --> 00:10:55,155
+Không cần phải nói, có nhiều mã hơn để viết ở đây,
+
+166
+00:10:55,155 --> 00:10:59,384
+chẳng hạn như thực hiện kiểm tra tính chẵn lẻ meta để phát hiện lỗi 2 bit,
+
+167
+00:10:59,384 --> 00:11:03,501
+nhưng ý tưởng là hầu như tất cả logic cốt lõi từ sơ đồ của chúng tôi đều
+
+168
+00:11:03,501 --> 00:11:05,080
+giảm xuống một XOR duy nhất.
+
+169
+00:11:05,080 --> 00:11:10,020
+Bây giờ, tùy thuộc vào sự thoải mái của bạn với nhị phân, XOR và phần mềm nói chung,
+
+170
+00:11:10,020 --> 00:11:14,728
+bạn có thể thấy quan điểm này hơi khó hiểu hoặc thanh lịch và đơn giản hơn nhiều
+
+171
+00:11:14,728 --> 00:11:19,320
+đến mức bạn đang tự hỏi tại sao chúng ta không bắt đầu với nó ngay từ đầu. -đi.
+
+172
 00:11:19,320 --> 00:11:23,321
 Nói một cách lỏng lẻo, phối cảnh kiểm tra tính chẵn lẻ sẽ dễ nghĩ đến hơn
 
-166
+173
 00:11:23,321 --> 00:11:27,323
 khi triển khai mã Hamming trong phần cứng một cách trực tiếp và phối cảnh
 
-167
+174
 00:11:27,323 --> 00:11:31,380
 XOR là dễ nghĩ đến nhất khi thực hiện nó trong phần mềm, từ cấp độ cao hơn.
 
-168
+175
 00:11:31,380 --> 00:11:36,161
 Cách đầu tiên thực sự dễ thực hiện nhất bằng tay và tôi nghĩ nó thực hiện công việc
 
-169
-00:11:36,161 --> 00:11:41,114
-tốt hơn khi thấm nhuần trực giác cốt lõi làm nền tảng cho tất cả những điều này, đó là
+176
+00:11:36,161 --> 00:11:40,773
+tốt hơn khi thấm nhuần trực giác cốt lõi làm nền tảng cho tất cả những điều này,
 
-170
-00:11:41,114 --> 00:11:45,953
-thông tin cần thiết để xác định một lỗi duy nhất có liên quan đến nhật ký kích thước
+177
+00:11:40,773 --> 00:11:45,611
+đó là thông tin cần thiết để xác định một lỗi duy nhất có liên quan đến nhật ký kích
 
-171
-00:11:45,953 --> 00:11:51,020
-của khối , hay nói cách khác, nó tăng lên từng chút một khi kích thước khối tăng gấp đôi.
+178
+00:11:45,611 --> 00:11:50,564
+thước của khối , hay nói cách khác, nó tăng lên từng chút một khi kích thước khối tăng
 
-172
+179
+00:11:50,564 --> 00:11:51,020
+gấp đôi.
+
+180
 00:11:51,020 --> 00:11:53,730
 Thực tế có liên quan ở đây là thông tin đó tương
 
-173
+181
 00:11:53,730 --> 00:11:56,440
 ứng trực tiếp với mức độ dư thừa mà chúng ta cần.
 
-174
+182
 00:11:56,440 --> 00:12:00,117
 Đó thực sự là điều khiến hầu hết mọi người phải phản ứng tức thời khi lần đầu
 
-175
-00:12:00,117 --> 00:12:03,748
-tiên họ nghĩ đến việc tạo ra một thông điệp có khả năng chống lại lỗi, trong
+183
+00:12:00,117 --> 00:12:03,465
+tiên họ nghĩ đến việc tạo ra một thông điệp có khả năng chống lại lỗi,
 
-176
-00:12:03,748 --> 00:12:07,520
-đó việc sao chép toàn bộ thông điệp là bản năng đầu tiên hiện lên trong đầu bạn.
+184
+00:12:03,465 --> 00:12:07,520
+trong đó việc sao chép toàn bộ thông điệp là bản năng đầu tiên hiện lên trong đầu bạn.
 
-177
+185
 00:12:07,520 --> 00:12:11,134
 Và sau đó, nhân tiện, có một cách hoàn toàn khác mà đôi khi bạn thấy mã
 
-178
+186
 00:12:11,134 --> 00:12:14,800
 Hamming được trình bày, trong đó bạn nhân thông điệp với một ma trận lớn.
 
-179
-00:12:14,800 --> 00:12:19,950
-Điều này khá hay vì nó liên quan đến họ mã tuyến tính rộng hơn, nhưng tôi nghĩ điều đó
+187
+00:12:14,800 --> 00:12:18,588
+Điều này khá hay vì nó liên quan đến họ mã tuyến tính rộng hơn,
 
-180
-00:12:19,950 --> 00:12:25,160
-hầu như không mang lại trực giác nào về nguồn gốc của nó hoặc quy mô của nó như thế nào.
+188
+00:12:18,588 --> 00:12:23,620
+nhưng tôi nghĩ điều đó hầu như không mang lại trực giác nào về nguồn gốc của nó hoặc
 
-181
+189
+00:12:23,620 --> 00:12:25,160
+quy mô của nó như thế nào.
+
+190
 00:12:25,160 --> 00:12:28,706
 Và nói về việc chia tỷ lệ, bạn có thể nhận thấy rằng hiệu quả của
 
-182
+191
 00:12:28,706 --> 00:12:32,200
 sơ đồ này chỉ trở nên tốt hơn khi chúng tôi tăng kích thước khối.
 
-183
+192
 00:12:32,200 --> 00:12:37,840
 Ví dụ: chúng tôi thấy rằng với 256 bit, bạn chỉ sử dụng 3%
 
-184
+193
 00:12:37,840 --> 00:12:43,480
 dung lượng đó để dự phòng và nó sẽ ngày càng tốt hơn từ đó.
 
-185
+194
 00:12:43,480 --> 00:12:49,040
 Khi số lượng bit chẵn lẻ tăng lên từng cái một, kích thước khối tiếp tục tăng gấp đôi.
 
-186
-00:12:49,040 --> 00:12:53,001
-Và nếu bạn coi điều đó đến mức cực đoan, bạn có thể có một khối
+195
+00:12:49,040 --> 00:12:54,177
+Và nếu bạn coi điều đó đến mức cực đoan, bạn có thể có một khối với một triệu bit,
 
-187
-00:12:53,001 --> 00:12:56,900
-với một triệu bit, trong đó bạn thực sự sẽ chơi 20 câu hỏi với
+196
+00:12:54,177 --> 00:12:58,014
+trong đó bạn thực sự sẽ chơi 20 câu hỏi với các kiểm tra chẵn
 
-188
-00:12:56,900 --> 00:13:00,800
-các kiểm tra chẵn lẻ của mình và nó chỉ sử dụng 21 bit chẵn lẻ.
+197
+00:12:58,014 --> 00:13:00,800
+lẻ của mình và nó chỉ sử dụng 21 bit chẵn lẻ.
 
-189
-00:13:00,800 --> 00:13:04,720
-Và nếu bạn lùi lại để nghĩ về việc xem xét một triệu bit và tìm
+198
+00:13:00,800 --> 00:13:06,006
+Và nếu bạn lùi lại để nghĩ về việc xem xét một triệu bit và tìm ra một lỗi duy nhất,
 
-190
-00:13:04,720 --> 00:13:08,640
-ra một lỗi duy nhất, điều đó thực sự khiến bạn cảm thấy điên rồ.
+199
+00:13:06,006 --> 00:13:08,640
+điều đó thực sự khiến bạn cảm thấy điên rồ.
 
-191
+200
 00:13:08,640 --> 00:13:13,530
 Tất nhiên, vấn đề là với khối lớn hơn, xác suất nhìn thấy nhiều hơn một hoặc hai
 
-192
+201
 00:13:13,530 --> 00:13:18,360
 bit lỗi sẽ tăng lên và mã Hamming không xử lý được bất kỳ điều gì ngoài điều đó.
 
-193
+202
 00:13:18,360 --> 00:13:22,474
 Vì vậy, trong thực tế, điều bạn muốn là tìm kích thước phù
 
-194
+203
 00:13:22,474 --> 00:13:26,520
 hợp để xác suất xảy ra quá nhiều bit bị lật không quá cao.
 
-195
-00:13:26,520 --> 00:13:31,293
-Ngoài ra, trong thực tế, lỗi có xu hướng xảy ra theo từng đợt nhỏ, điều
+204
+00:13:26,520 --> 00:13:30,961
+Ngoài ra, trong thực tế, lỗi có xu hướng xảy ra theo từng đợt nhỏ,
 
-196
-00:13:31,293 --> 00:13:35,933
-này sẽ làm hỏng hoàn toàn một khối đơn lẻ, do đó, một chiến thuật phổ
+205
+00:13:30,961 --> 00:13:34,607
+điều này sẽ làm hỏng hoàn toàn một khối đơn lẻ, do đó,
 
-197
-00:13:35,933 --> 00:13:40,640
-biến để giúp dàn trải một loạt lỗi trên nhiều khối khác nhau là xen kẽ
+206
+00:13:34,607 --> 00:13:39,314
+một chiến thuật phổ biến để giúp dàn trải một loạt lỗi trên nhiều khối
 
-198
-00:13:40,640 --> 00:13:45,480
-các khối đó, như thế này, trước khi chúng xuất hiện. gửi đi hoặc lưu trữ.
+207
+00:13:39,314 --> 00:13:44,154
+khác nhau là xen kẽ các khối đó, như thế này, trước khi chúng xuất hiện.
 
-199
+208
+00:13:44,154 --> 00:13:45,480
+gửi đi hoặc lưu trữ.
+
+209
 00:13:45,480 --> 00:13:48,956
 Sau đó, một lần nữa, phần lớn trong số này được hiển thị hoàn toàn bằng
 
-200
-00:13:48,956 --> 00:13:52,385
-các mã hiện đại hơn, như thuật toán Reed-Solomon được sử dụng phổ biến
+210
+00:13:48,956 --> 00:13:52,916
+các mã hiện đại hơn, như thuật toán Reed-Solomon được sử dụng phổ biến hơn nhiều,
 
-201
-00:13:52,385 --> 00:13:56,006
-hơn nhiều, xử lý các lỗi bùng phát một cách đặc biệt tốt và nó có thể được
+211
+00:13:52,916 --> 00:13:56,537
+xử lý các lỗi bùng phát một cách đặc biệt tốt và nó có thể được điều chỉnh
 
-202
-00:13:56,006 --> 00:13:59,580
-điều chỉnh để có khả năng phục hồi với số lượng lỗi lớn hơn trên mỗi khối.
+212
+00:13:56,537 --> 00:13:59,580
+để có khả năng phục hồi với số lượng lỗi lớn hơn trên mỗi khối.
 
-203
+213
 00:13:59,580 --> 00:14:03,000
 Nhưng đó là một chủ đề cho một thời điểm khác.
 
-204
-00:14:03,000 --> 00:14:06,826
-Trong cuốn sách Nghệ thuật thực hiện khoa học và kỹ thuật, Hamming đã thẳng thắn
+214
+00:14:03,000 --> 00:14:05,787
+Trong cuốn sách Nghệ thuật thực hiện khoa học và kỹ thuật,
 
-205
-00:14:06,826 --> 00:14:10,700
-một cách tuyệt vời về việc khám phá ra mật mã này của ông đã quanh co như thế nào.
+215
+00:14:05,787 --> 00:14:09,566
+Hamming đã thẳng thắn một cách tuyệt vời về việc khám phá ra mật mã này của ông
 
-206
+216
+00:14:09,566 --> 00:14:10,700
+đã quanh co như thế nào.
+
+217
 00:14:10,700 --> 00:14:14,631
 Đầu tiên anh ấy thử tất cả các loại kế hoạch khác nhau liên quan đến việc tổ chức
 
-207
+218
 00:14:14,631 --> 00:14:18,420
 các bit thành các phần của mạng nhiều chiều hơn và những thứ kỳ lạ như thế này.
 
-208
+219
 00:14:18,420 --> 00:14:21,900
 Ý tưởng rằng có thể sử dụng các biện pháp kiểm tra tính chẵn lẻ để
 
-209
+220
 00:14:21,900 --> 00:14:25,484
 thông đồng theo cách xác định vị trí của lỗi chỉ đến với Hamming khi
 
-210
-00:14:25,484 --> 00:14:29,120
-anh ấy lùi lại sau một loạt các phân tích khác và hỏi, được rồi, cách
+221
+00:14:25,484 --> 00:14:28,860
+anh ấy lùi lại sau một loạt các phân tích khác và hỏi, được rồi,
 
-211
-00:14:29,120 --> 00:14:32,860
-hiệu quả nhất mà tôi có thể làm là gì có thể hình dung được về điều này?
+222
+00:14:28,860 --> 00:14:32,860
+cách hiệu quả nhất mà tôi có thể làm là gì có thể hình dung được về điều này?
 
-212
+223
 00:14:32,860 --> 00:14:37,535
 Ông cũng thẳng thắn về tầm quan trọng của việc kiểm tra tính chẵn lẻ đã nằm trong
 
-213
+224
 00:14:37,535 --> 00:14:42,040
 tâm trí ông, điều này có lẽ ít phổ biến hơn vào những năm 1940 so với ngày nay.
 
-214
-00:14:42,040 --> 00:14:45,785
-Có khoảng nửa tá lần trong suốt cuốn sách này ông đề cập đến câu nói
+225
+00:14:42,040 --> 00:14:46,817
+Có khoảng nửa tá lần trong suốt cuốn sách này ông đề cập đến câu nói của Louis Pasteur,
 
-215
-00:14:45,785 --> 00:14:49,640
-của Louis Pasteur, may mắn sẽ đến với một tâm trí đã chuẩn bị sẵn sàng.
+226
+00:14:46,817 --> 00:14:49,640
+may mắn sẽ đến với một tâm trí đã chuẩn bị sẵn sàng.
 
-216
-00:14:49,640 --> 00:14:52,380
-Những ý tưởng thông minh thường có vẻ đơn giản khi
+227
+00:14:49,640 --> 00:14:52,917
+Những ý tưởng thông minh thường có vẻ đơn giản khi nhìn lại,
 
-217
-00:14:52,380 --> 00:14:55,120
-nhìn lại, điều này khiến chúng dễ bị đánh giá thấp.
+228
+00:14:52,917 --> 00:14:55,120
+điều này khiến chúng dễ bị đánh giá thấp.
 
-218
-00:14:55,120 --> 00:14:58,574
-Hiện tại, hy vọng thực sự của tôi là các mã Hamming, hoặc ít nhất
+229
+00:14:55,120 --> 00:14:57,894
+Hiện tại, hy vọng thực sự của tôi là các mã Hamming,
 
-219
-00:14:58,574 --> 00:15:01,820
-là khả năng có các mã như vậy, gần như hiển nhiên đối với bạn.
+230
+00:14:57,894 --> 00:15:01,820
+hoặc ít nhất là khả năng có các mã như vậy, gần như hiển nhiên đối với bạn.
 
-220
-00:15:01,820 --> 00:15:04,880
-Nhưng bạn không nên tự lừa dối mình rằng chúng thực
+231
+00:15:01,820 --> 00:15:05,763
+Nhưng bạn không nên tự lừa dối mình rằng chúng thực sự hiển nhiên,
 
-221
-00:15:04,880 --> 00:15:08,000
-sự hiển nhiên, bởi vì chúng chắc chắn không phải vậy.
+232
+00:15:05,763 --> 00:15:08,000
+bởi vì chúng chắc chắn không phải vậy.
 
-222
+233
 00:15:08,000 --> 00:15:11,811
 Một phần lý do khiến những ý tưởng thông minh có vẻ dễ dàng bị đánh lừa là vì
 
-223
-00:15:11,811 --> 00:15:15,672
-chúng ta chỉ nhìn thấy kết quả cuối cùng, dọn dẹp những thứ lộn xộn, không bao
+234
+00:15:11,811 --> 00:15:15,183
+chúng ta chỉ nhìn thấy kết quả cuối cùng, dọn dẹp những thứ lộn xộn,
 
-224
-00:15:15,672 --> 00:15:19,484
-giờ đề cập đến tất cả những bước rẽ sai lầm, đánh giá thấp tầm quan trọng của
+235
+00:15:15,183 --> 00:15:17,871
+không bao giờ đề cập đến tất cả những bước rẽ sai lầm,
 
-225
-00:15:19,484 --> 00:15:23,442
-những khả năng có thể khám phá khi bắt đầu một vấn đề. quá trình giải quyết, tất
+236
+00:15:17,871 --> 00:15:22,171
+đánh giá thấp tầm quan trọng của những khả năng có thể khám phá khi bắt đầu một vấn đề.
 
-226
-00:15:23,442 --> 00:15:23,980
-cả điều đó.
+237
+00:15:22,171 --> 00:15:23,980
+quá trình giải quyết, tất cả điều đó.
 
-227
+238
 00:15:23,980 --> 00:15:25,280
 Nhưng điều này nói chung là đúng.
 
-228
+239
 00:15:25,280 --> 00:15:28,082
 Tôi nghĩ đối với một số phát minh đặc biệt, còn có lý
 
-229
+240
 00:15:28,082 --> 00:15:31,040
 do thứ hai sâu xa hơn khiến chúng ta đánh giá thấp chúng.
 
-230
+241
 00:15:31,040 --> 00:15:35,119
 Việc suy nghĩ về thông tin dưới dạng bit chỉ thực sự kết hợp thành một lý thuyết
 
-231
+242
 00:15:35,119 --> 00:15:39,400
 đầy đủ vào năm 1948, với bài báo chuyên đề về lý thuyết thông tin của Claude Shannon.
 
-232
+243
 00:15:39,400 --> 00:15:43,440
 Điều này về cơ bản xảy ra đồng thời với thời điểm Hamming phát triển thuật toán của mình.
 
-233
+244
 00:15:43,440 --> 00:15:48,553
 Theo một nghĩa nào đó, đây cũng chính là bài báo nền tảng đã chỉ ra rằng luôn có
 
-234
+245
 00:15:48,553 --> 00:15:53,920
 thể sửa lỗi hiệu quả, bất kể xác suất lật bit cao đến đâu, ít nhất là trên lý thuyết.
 
-235
-00:15:53,920 --> 00:15:58,186
-Nhân tiện, Shannon và Hamming chia sẻ một văn phòng ở Bell Labs, mặc dù làm việc
+246
+00:15:53,920 --> 00:15:57,343
+Nhân tiện, Shannon và Hamming chia sẻ một văn phòng ở Bell Labs,
 
-236
-00:15:58,186 --> 00:16:02,400
-trên những lĩnh vực rất khác nhau, điều này hầu như không có vẻ trùng hợp ở đây.
+247
+00:15:57,343 --> 00:16:00,029
+mặc dù làm việc trên những lĩnh vực rất khác nhau,
 
-237
-00:16:02,400 --> 00:16:05,890
-Nhiều thập kỷ trôi qua nhanh chóng, và ngày nay, nhiều người trong
+248
+00:16:00,029 --> 00:16:02,400
+điều này hầu như không có vẻ trùng hợp ở đây.
 
-238
-00:16:05,890 --> 00:16:09,328
-chúng ta quá đắm chìm trong việc suy nghĩ về các bit và thông tin
+249
+00:16:02,400 --> 00:16:04,952
+Nhiều thập kỷ trôi qua nhanh chóng, và ngày nay,
 
-239
-00:16:09,328 --> 00:16:13,080
-đến mức chúng ta dễ dàng bỏ qua cách suy nghĩ này khác biệt như thế nào.
+250
+00:16:04,952 --> 00:16:08,443
+nhiều người trong chúng ta quá đắm chìm trong việc suy nghĩ về các
 
-240
+251
+00:16:08,443 --> 00:16:13,080
+bit và thông tin đến mức chúng ta dễ dàng bỏ qua cách suy nghĩ này khác biệt như thế nào.
+
+252
 00:16:13,080 --> 00:16:15,438
 Trớ trêu thay, những ý tưởng định hình sâu sắc nhất cách suy nghĩ của thế hệ
 
-241
+253
 00:16:15,438 --> 00:16:17,920
 tương lai cuối cùng lại khiến thế hệ tương lai nhìn nhận nó đơn giản hơn thực tế.
 

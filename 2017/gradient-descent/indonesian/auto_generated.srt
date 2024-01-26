@@ -3,1258 +3,1326 @@
 Video terakhir saya memaparkan struktur jaringan saraf.
 
 2
-00:00:07,240 --> 00:00:10,285
-Saya akan memberikan rekap singkatnya di sini agar segar dalam ingatan
+00:00:07,240 --> 00:00:10,543
+Saya akan memberikan rekap singkatnya di sini agar segar dalam ingatan kita,
 
 3
-00:00:10,285 --> 00:00:13,160
-kita, dan kemudian saya memiliki dua tujuan utama untuk video ini.
+00:00:10,543 --> 00:00:13,160
+dan kemudian saya memiliki dua tujuan utama untuk video ini.
 
 4
-00:00:13,160 --> 00:00:17,023
-Yang pertama adalah memperkenalkan gagasan penurunan gradien, yang tidak hanya mendasari
+00:00:13,160 --> 00:00:15,851
+Yang pertama adalah memperkenalkan gagasan penurunan gradien,
 
 5
-00:00:17,023 --> 00:00:20,800
-cara jaringan saraf belajar, tetapi juga cara kerja banyak pembelajaran mesin lainnya.
+00:00:15,851 --> 00:00:18,282
+yang tidak hanya mendasari cara jaringan saraf belajar,
 
 6
+00:00:18,282 --> 00:00:20,800
+tetapi juga cara kerja banyak pembelajaran mesin lainnya.
+
+7
 00:00:20,800 --> 00:00:24,963
 Kemudian setelah itu kita akan menggali lebih jauh tentang bagaimana kinerja
 
-7
+8
 00:00:24,963 --> 00:00:29,560
 jaringan ini, dan apa yang akhirnya dicari oleh lapisan neuron tersembunyi tersebut.
 
-8
+9
 00:00:29,560 --> 00:00:33,320
 Sebagai pengingat, tujuan kami di sini adalah contoh klasik
 
-9
+10
 00:00:33,320 --> 00:00:37,080
 pengenalan angka tulisan tangan, halo dunia jaringan saraf.
 
-10
-00:00:37,080 --> 00:00:41,013
-Digit-digit ini dirender pada grid 28x28 piksel, masing-masing
-
 11
-00:00:41,013 --> 00:00:44,260
-piksel memiliki nilai skala abu-abu antara 0 dan 1.
+00:00:37,080 --> 00:00:40,139
+Digit-digit ini dirender pada grid 28x28 piksel,
 
 12
+00:00:40,139 --> 00:00:44,260
+masing-masing piksel memiliki nilai skala abu-abu antara 0 dan 1.
+
+13
 00:00:44,260 --> 00:00:51,400
 Hal itulah yang menentukan aktivasi 784 neuron di lapisan input jaringan.
 
-13
+14
 00:00:51,400 --> 00:00:56,850
 Aktivasi setiap neuron pada lapisan berikutnya didasarkan pada jumlah tertimbang semua
 
-14
+15
 00:00:56,850 --> 00:01:02,300
 aktivasi pada lapisan sebelumnya, ditambah beberapa bilangan khusus yang disebut bias.
 
-15
-00:01:02,300 --> 00:01:05,622
-Anda menyusun jumlah tersebut dengan beberapa fungsi lain, seperti
-
 16
-00:01:05,622 --> 00:01:09,640
-squishification sigmoid, atau ReLU, seperti yang saya lihat di video sebelumnya.
+00:01:02,300 --> 00:01:05,226
+Anda menyusun jumlah tersebut dengan beberapa fungsi lain,
 
 17
-00:01:09,640 --> 00:01:14,755
-Secara total, mengingat pilihan dua lapisan tersembunyi dengan masing-masing
+00:01:05,226 --> 00:01:09,640
+seperti squishification sigmoid, atau ReLU, seperti yang saya lihat di video sebelumnya.
 
 18
-00:01:14,755 --> 00:01:19,738
-16 neuron, jaringan memiliki sekitar 13.000 bobot dan bias yang dapat kita
+00:01:09,640 --> 00:01:15,486
+Secara total, mengingat pilihan dua lapisan tersembunyi dengan masing-masing 16 neuron,
 
 19
-00:01:19,738 --> 00:01:25,320
-sesuaikan, dan nilai inilah yang menentukan apa sebenarnya yang dilakukan jaringan.
+00:01:15,486 --> 00:01:20,469
+jaringan memiliki sekitar 13.000 bobot dan bias yang dapat kita sesuaikan,
 
 20
+00:01:20,469 --> 00:01:25,320
+dan nilai inilah yang menentukan apa sebenarnya yang dilakukan jaringan.
+
+21
 00:01:25,320 --> 00:01:28,093
 Dan yang kami maksud ketika kami mengatakan bahwa jaringan ini
 
-21
+22
 00:01:28,093 --> 00:01:30,998
 mengklasifikasikan digit tertentu adalah bahwa yang paling terang
 
-22
+23
 00:01:30,998 --> 00:01:34,080
 dari 10 neuron di lapisan terakhir berhubungan dengan digit tersebut.
 
-23
+24
 00:01:34,080 --> 00:01:37,970
 Dan ingat, motivasi yang ada dalam pikiran kita untuk struktur berlapis
 
-24
-00:01:37,970 --> 00:01:41,697
-adalah mungkin lapisan kedua dapat mengambil bagian tepinya, lapisan
-
 25
-00:01:41,697 --> 00:01:45,533
-ketiga mungkin mengambil pola seperti lingkaran dan garis, dan lapisan
+00:01:37,970 --> 00:01:41,265
+adalah mungkin lapisan kedua dapat mengambil bagian tepinya,
 
 26
-00:01:45,533 --> 00:01:49,640
-terakhir dapat menyatukan pola-pola tersebut menjadi satu. mengenali angka.
+00:01:41,265 --> 00:01:44,885
+lapisan ketiga mungkin mengambil pola seperti lingkaran dan garis,
 
 27
+00:01:44,885 --> 00:01:49,640
+dan lapisan terakhir dapat menyatukan pola-pola tersebut menjadi satu. mengenali angka.
+
+28
 00:01:49,640 --> 00:01:52,880
 Jadi di sini, kita mempelajari bagaimana jaringan belajar.
 
-28
+29
 00:01:52,880 --> 00:01:57,211
 Apa yang kami inginkan adalah sebuah algoritma dimana Anda dapat menunjukkan jaringan
 
-29
+30
 00:01:57,211 --> 00:02:01,442
 ini sejumlah besar data pelatihan, yang datang dalam bentuk sekumpulan gambar angka
 
-30
-00:02:01,442 --> 00:02:05,975
-tulisan tangan yang berbeda, bersama dengan label untuk apa yang seharusnya, dan itu akan
-
 31
-00:02:05,975 --> 00:02:10,205
-menyesuaikan 13.000 bobot dan bias tersebut untuk meningkatkan kinerjanya pada data
+00:02:01,442 --> 00:02:05,320
+tulisan tangan yang berbeda, bersama dengan label untuk apa yang seharusnya,
 
 32
-00:02:10,205 --> 00:02:10,760
-pelatihan.
+00:02:05,320 --> 00:02:09,702
+dan itu akan menyesuaikan 13.000 bobot dan bias tersebut untuk meningkatkan kinerjanya
 
 33
+00:02:09,702 --> 00:02:10,760
+pada data pelatihan.
+
+34
 00:02:10,760 --> 00:02:14,325
 Mudah-mudahan struktur berlapis ini berarti bahwa apa yang dipelajari
 
-34
+35
 00:02:14,325 --> 00:02:17,840
 dapat digeneralisasi menjadi gambar di luar data pelatihan tersebut.
 
-35
-00:02:17,840 --> 00:02:22,234
-Cara kami mengujinya adalah setelah Anda melatih jaringan, Anda
-
 36
-00:02:22,234 --> 00:02:26,765
-menampilkan lebih banyak data berlabel, dan Anda melihat seberapa
+00:02:17,840 --> 00:02:21,890
+Cara kami mengujinya adalah setelah Anda melatih jaringan,
 
 37
-00:02:26,765 --> 00:02:31,160
-akurat jaringan mengklasifikasikan gambar-gambar baru tersebut.
+00:02:21,890 --> 00:02:26,147
+Anda menampilkan lebih banyak data berlabel, dan Anda melihat
 
 38
-00:02:31,160 --> 00:02:35,761
-Untungnya bagi kami, dan apa yang membuat ini menjadi contoh umum, adalah bahwa
+00:02:26,147 --> 00:02:31,160
+seberapa akurat jaringan mengklasifikasikan gambar-gambar baru tersebut.
 
 39
-00:02:35,761 --> 00:02:40,535
-orang-orang baik di belakang database MNIST telah mengumpulkan puluhan ribu gambar
+00:02:31,160 --> 00:02:35,013
+Untungnya bagi kami, dan apa yang membuat ini menjadi contoh umum,
 
 40
-00:02:40,535 --> 00:02:45,080
-digit tulisan tangan, masing-masing diberi label dengan angka yang seharusnya.
+00:02:35,013 --> 00:02:39,385
+adalah bahwa orang-orang baik di belakang database MNIST telah mengumpulkan
 
 41
-00:02:45,080 --> 00:02:48,255
-Dan meskipun provokatif untuk mendeskripsikan mesin sebagai
+00:02:39,385 --> 00:02:44,102
+puluhan ribu gambar digit tulisan tangan, masing-masing diberi label dengan angka
 
 42
-00:02:48,255 --> 00:02:51,590
-pembelajaran, begitu Anda melihat cara kerjanya, rasanya tidak
+00:02:44,102 --> 00:02:45,080
+yang seharusnya.
 
 43
-00:02:51,590 --> 00:02:55,560
-seperti premis fiksi ilmiah yang gila, dan lebih seperti latihan kalkulus.
+00:02:45,080 --> 00:02:48,996
+Dan meskipun provokatif untuk mendeskripsikan mesin sebagai pembelajaran,
 
 44
+00:02:48,996 --> 00:02:53,654
+begitu Anda melihat cara kerjanya, rasanya tidak seperti premis fiksi ilmiah yang gila,
+
+45
+00:02:53,654 --> 00:02:55,560
+dan lebih seperti latihan kalkulus.
+
+46
 00:02:55,560 --> 00:03:01,040
 Maksud saya, pada dasarnya ini adalah menemukan fungsi minimum tertentu.
 
-45
+47
 00:03:01,040 --> 00:03:05,772
 Ingat, secara konseptual kita menganggap setiap neuron terhubung ke semua
 
-46
+48
 00:03:05,772 --> 00:03:10,186
 neuron di lapisan sebelumnya, dan bobot dalam jumlah tertimbang yang
 
-47
-00:03:10,186 --> 00:03:14,791
-menentukan aktivasinya mirip dengan kekuatan koneksi tersebut, dan bias
-
-48
-00:03:14,791 --> 00:03:19,780
-adalah indikasi dari apakah neuron tersebut cenderung aktif atau tidak aktif.
-
 49
+00:03:10,186 --> 00:03:14,215
+menentukan aktivasinya mirip dengan kekuatan koneksi tersebut,
+
+50
+00:03:14,215 --> 00:03:19,780
+dan bias adalah indikasi dari apakah neuron tersebut cenderung aktif atau tidak aktif.
+
+51
 00:03:19,780 --> 00:03:22,744
 Dan sebagai permulaan, kita hanya akan menginisialisasi
 
-50
+52
 00:03:22,744 --> 00:03:25,020
 semua bobot dan bias tersebut secara acak.
 
-51
+53
 00:03:25,020 --> 00:03:27,940
 Tak perlu dikatakan lagi, jaringan ini akan berkinerja buruk pada contoh
 
-52
+54
 00:03:27,940 --> 00:03:31,180
 pelatihan yang diberikan, karena jaringan ini hanya melakukan sesuatu yang acak.
 
-53
+55
 00:03:31,180 --> 00:03:36,820
 Misalnya, Anda memasukkan gambar 3 ini, dan lapisan keluarannya terlihat berantakan.
 
-54
-00:03:36,820 --> 00:03:40,693
-Jadi yang Anda lakukan adalah mendefinisikan fungsi biaya, cara untuk
-
-55
-00:03:40,693 --> 00:03:44,789
-memberi tahu komputer, tidak, komputer buruk, bahwa output harus memiliki
-
 56
-00:03:44,789 --> 00:03:48,940
-aktivasi sebesar 0 untuk sebagian besar neuron, tetapi 1 untuk neuron ini.
+00:03:36,820 --> 00:03:40,085
+Jadi yang Anda lakukan adalah mendefinisikan fungsi biaya,
 
 57
+00:03:40,085 --> 00:03:43,239
+cara untuk memberi tahu komputer, tidak, komputer buruk,
+
+58
+00:03:43,239 --> 00:03:47,445
+bahwa output harus memiliki aktivasi sebesar 0 untuk sebagian besar neuron,
+
+59
+00:03:47,445 --> 00:03:48,940
+tetapi 1 untuk neuron ini.
+
+60
 00:03:48,940 --> 00:03:51,740
 Apa yang kamu berikan padaku benar-benar sampah.
 
-58
+61
 00:03:51,740 --> 00:03:56,728
 Untuk mengatakannya secara lebih matematis, Anda menjumlahkan kuadrat perbedaan
 
-59
-00:03:56,728 --> 00:04:01,405
-antara masing-masing aktivasi keluaran sampah tersebut dan nilai yang Anda
+62
+00:03:56,728 --> 00:04:02,029
+antara masing-masing aktivasi keluaran sampah tersebut dan nilai yang Anda inginkan,
 
-60
-00:04:01,405 --> 00:04:06,020
-inginkan, dan inilah yang kami sebut sebagai biaya satu contoh pelatihan.
+63
+00:04:02,029 --> 00:04:06,020
+dan inilah yang kami sebut sebagai biaya satu contoh pelatihan.
 
-61
+64
 00:04:06,020 --> 00:04:10,243
 Perhatikan bahwa jumlah ini kecil ketika jaringan dengan percaya
 
-62
+65
 00:04:10,243 --> 00:04:14,466
 diri mengklasifikasikan gambar dengan benar, namun menjadi besar
 
-63
+66
 00:04:14,466 --> 00:04:18,820
 ketika jaringan sepertinya tidak mengetahui apa yang dilakukannya.
 
-64
+67
 00:04:18,820 --> 00:04:22,822
 Jadi yang Anda lakukan adalah mempertimbangkan biaya
 
-65
+68
 00:04:22,822 --> 00:04:27,580
 rata-rata dari puluhan ribu contoh pelatihan yang Anda miliki.
 
-66
-00:04:27,580 --> 00:04:30,249
-Biaya rata-rata ini adalah ukuran seberapa buruk
+69
+00:04:27,580 --> 00:04:31,284
+Biaya rata-rata ini adalah ukuran seberapa buruk jaringan tersebut,
 
-67
-00:04:30,249 --> 00:04:33,300
-jaringan tersebut, dan seberapa buruk kinerja komputer.
+70
+00:04:31,284 --> 00:04:33,300
+dan seberapa buruk kinerja komputer.
 
-68
+71
 00:04:33,300 --> 00:04:35,300
 Dan itu adalah hal yang rumit.
 
-69
-00:04:35,300 --> 00:04:40,063
-Ingat bagaimana jaringan itu sendiri pada dasarnya adalah sebuah fungsi, yang mengambil
+72
+00:04:35,300 --> 00:04:39,251
+Ingat bagaimana jaringan itu sendiri pada dasarnya adalah sebuah fungsi,
 
-70
-00:04:40,063 --> 00:04:44,827
-784 angka sebagai masukan, nilai piksel, dan mengeluarkan 10 angka sebagai keluarannya,
+73
+00:04:39,251 --> 00:04:42,283
+yang mengambil 784 angka sebagai masukan, nilai piksel,
 
-71
+74
+00:04:42,283 --> 00:04:44,827
+dan mengeluarkan 10 angka sebagai keluarannya,
+
+75
 00:04:44,827 --> 00:04:49,700
 dan dalam arti tertentu jaringan tersebut diparameterisasi oleh semua bobot dan bias ini?
 
-72
+76
 00:04:49,700 --> 00:04:53,340
 Fungsi biaya juga merupakan lapisan kompleksitas.
 
-73
-00:04:53,340 --> 00:04:58,736
-Dibutuhkan 13.000 atau lebih bobot dan bias sebagai masukan, dan mengeluarkan satu
+77
+00:04:53,340 --> 00:04:57,306
+Dibutuhkan 13.000 atau lebih bobot dan bias sebagai masukan,
 
-74
-00:04:58,736 --> 00:05:03,548
-angka yang menggambarkan seberapa buruk bobot dan bias tersebut, dan cara
+78
+00:04:57,306 --> 00:05:02,963
+dan mengeluarkan satu angka yang menggambarkan seberapa buruk bobot dan bias tersebut,
 
-75
-00:05:03,548 --> 00:05:09,140
-mendefinisikannya bergantung pada perilaku jaringan pada puluhan ribu data pelatihan.
+79
+00:05:02,963 --> 00:05:08,099
+dan cara mendefinisikannya bergantung pada perilaku jaringan pada puluhan ribu
 
-76
+80
+00:05:08,099 --> 00:05:09,140
+data pelatihan.
+
+81
 00:05:09,140 --> 00:05:12,460
 Banyak hal yang perlu dipikirkan.
 
-77
+82
 00:05:12,460 --> 00:05:14,326
 Namun hanya memberi tahu komputer betapa buruknya
 
-78
+83
 00:05:14,326 --> 00:05:16,380
 pekerjaan yang dilakukannya tidaklah terlalu membantu.
 
-79
+84
 00:05:16,380 --> 00:05:21,300
 Anda ingin memberi tahu cara mengubah bobot dan bias tersebut agar menjadi lebih baik.
 
-80
+85
 00:05:21,300 --> 00:05:24,583
 Agar lebih mudah, daripada bersusah payah membayangkan suatu fungsi
 
-81
+86
 00:05:24,583 --> 00:05:27,818
 dengan 13.000 masukan, bayangkan saja sebuah fungsi sederhana yang
 
-82
+87
 00:05:27,818 --> 00:05:31,440
 memiliki satu bilangan sebagai masukan dan satu bilangan sebagai keluaran.
 
-83
+88
 00:05:31,440 --> 00:05:36,420
 Bagaimana cara menemukan masukan yang meminimalkan nilai fungsi ini?
 
-84
+89
 00:05:36,420 --> 00:05:40,237
 Siswa kalkulus akan mengetahui bahwa terkadang Anda dapat mengetahui jumlah
 
-85
+90
 00:05:40,237 --> 00:05:43,904
 minimum tersebut secara eksplisit, namun hal tersebut tidak selalu dapat
 
-86
+91
 00:05:43,904 --> 00:05:47,772
 dilakukan untuk fungsi yang sangat rumit, tentunya tidak dalam versi masukan
 
-87
+92
 00:05:47,772 --> 00:05:51,640
 13.000 dari situasi ini untuk fungsi biaya jaringan saraf yang sangat rumit.
 
-88
-00:05:51,640 --> 00:05:55,859
-Taktik yang lebih fleksibel adalah memulai dari masukan apa pun, dan mencari
-
-89
-00:05:55,859 --> 00:05:59,860
-tahu arah mana yang harus Anda ambil untuk menurunkan keluaran tersebut.
-
-90
-00:05:59,860 --> 00:06:03,939
-Khususnya, jika Anda dapat mengetahui kemiringan fungsi di
-
-91
-00:06:03,939 --> 00:06:08,018
-tempat Anda berada, geser ke kiri jika kemiringan tersebut
-
-92
-00:06:08,018 --> 00:06:12,720
-positif, dan geser input ke kanan jika kemiringan tersebut negatif.
-
 93
+00:05:51,640 --> 00:05:55,202
+Taktik yang lebih fleksibel adalah memulai dari masukan apa pun,
+
+94
+00:05:55,202 --> 00:05:59,860
+dan mencari tahu arah mana yang harus Anda ambil untuk menurunkan keluaran tersebut.
+
+95
+00:05:59,860 --> 00:06:05,322
+Khususnya, jika Anda dapat mengetahui kemiringan fungsi di tempat Anda berada,
+
+96
+00:06:05,322 --> 00:06:08,640
+geser ke kiri jika kemiringan tersebut positif,
+
+97
+00:06:08,640 --> 00:06:12,720
+dan geser input ke kanan jika kemiringan tersebut negatif.
+
+98
 00:06:12,720 --> 00:06:16,624
 Jika Anda melakukan ini berulang kali, pada setiap titik memeriksa kemiringan
 
-94
+99
 00:06:16,624 --> 00:06:20,680
 baru dan mengambil langkah yang tepat, Anda akan mendekati fungsi minimum lokal.
 
-95
+100
 00:06:20,680 --> 00:06:22,544
 Dan gambaran yang mungkin Anda bayangkan di sini
 
-96
+101
 00:06:22,544 --> 00:06:24,600
 adalah sebuah bola yang menggelinding menuruni bukit.
 
-97
-00:06:24,600 --> 00:06:28,257
-Dan perhatikan, bahkan untuk fungsi masukan tunggal yang sangat disederhanakan
+102
+00:06:24,600 --> 00:06:28,488
+Dan perhatikan, bahkan untuk fungsi masukan tunggal yang sangat disederhanakan ini,
 
-98
-00:06:28,257 --> 00:06:31,821
-ini, ada banyak kemungkinan lembah yang mungkin Anda masuki, bergantung pada
+103
+00:06:28,488 --> 00:06:31,080
+ada banyak kemungkinan lembah yang mungkin Anda masuki,
 
-99
-00:06:31,821 --> 00:06:35,386
-masukan acak mana yang Anda mulai, dan tidak ada jaminan bahwa nilai minimum
+104
+00:06:31,080 --> 00:06:33,441
+bergantung pada masukan acak mana yang Anda mulai,
 
-100
-00:06:35,386 --> 00:06:39,460
-lokal tempat Anda mendarat akan menjadi nilai terkecil yang mungkin. dari fungsi biaya.
+105
+00:06:33,441 --> 00:06:37,237
+dan tidak ada jaminan bahwa nilai minimum lokal tempat Anda mendarat akan menjadi
 
-101
+106
+00:06:37,237 --> 00:06:39,460
+nilai terkecil yang mungkin. dari fungsi biaya.
+
+107
 00:06:39,460 --> 00:06:43,180
 Hal ini juga akan terbawa ke kasus jaringan saraf kita.
 
-102
+108
 00:06:43,180 --> 00:06:47,543
 Dan saya juga ingin Anda memperhatikan bagaimana jika Anda membuat ukuran langkah Anda
 
-103
+109
 00:06:47,543 --> 00:06:51,756
 proporsional dengan kemiringan, maka ketika kemiringannya mendatar ke arah minimum,
 
-104
+110
 00:06:51,756 --> 00:06:56,020
 langkah Anda akan semakin kecil, dan hal ini membantu Anda menghindari overshooting.
 
-105
-00:06:56,020 --> 00:06:58,860
-Untuk menambah kerumitannya, bayangkan sebuah
+111
+00:06:56,020 --> 00:07:01,578
+Untuk menambah kerumitannya, bayangkan sebuah fungsi dengan dua masukan dan satu keluaran.
 
-106
-00:06:58,860 --> 00:07:01,640
-fungsi dengan dua masukan dan satu keluaran.
+112
+00:07:01,578 --> 00:07:01,640
 
-107
+
+113
 00:07:01,640 --> 00:07:05,266
 Anda mungkin menganggap ruang masukan sebagai bidang xy,
 
-108
+114
 00:07:05,266 --> 00:07:09,020
 dan fungsi biaya digambarkan sebagai permukaan di atasnya.
 
-109
-00:07:09,020 --> 00:07:12,665
-Daripada bertanya tentang kemiringan suatu fungsi, Anda harus
+115
+00:07:09,020 --> 00:07:12,018
+Daripada bertanya tentang kemiringan suatu fungsi,
 
-110
-00:07:12,665 --> 00:07:16,016
-menanyakan ke arah mana Anda harus melangkah dalam ruang
+116
+00:07:12,018 --> 00:07:15,664
+Anda harus menanyakan ke arah mana Anda harus melangkah dalam
 
-111
-00:07:16,016 --> 00:07:19,780
-masukan ini agar keluaran fungsi dapat diturunkan paling cepat.
+117
+00:07:15,664 --> 00:07:19,780
+ruang masukan ini agar keluaran fungsi dapat diturunkan paling cepat.
 
-112
+118
 00:07:19,780 --> 00:07:22,340
 Dengan kata lain, ke arah mana arah menurunnya?
 
-113
+119
 00:07:22,340 --> 00:07:26,740
 Dan sekali lagi, ada gunanya membayangkan sebuah bola menggelinding menuruni bukit itu.
 
-114
+120
 00:07:26,740 --> 00:07:30,760
 Bagi Anda yang familiar dengan kalkulus multivariabel pasti tahu
 
-115
+121
 00:07:30,760 --> 00:07:34,966
 bahwa gradien suatu fungsi memberi Anda arah kenaikan paling curam,
 
-116
+122
 00:07:34,966 --> 00:07:39,420
 arah mana yang harus Anda ambil untuk meningkatkan fungsi paling cepat.
 
-117
+123
 00:07:39,420 --> 00:07:43,180
 Tentu saja, mengambil nilai negatif dari gradien tersebut
 
-118
+124
 00:07:43,180 --> 00:07:47,460
 memberi Anda arah ke langkah yang menurunkan fungsi paling cepat.
 
-119
+125
 00:07:47,460 --> 00:07:50,986
 Lebih dari itu, panjang vektor gradien ini merupakan
 
-120
+126
 00:07:50,986 --> 00:07:54,580
 indikasi seberapa curam lereng paling curam tersebut.
 
-121
+127
 00:07:54,580 --> 00:07:56,811
 Sekarang jika Anda belum terbiasa dengan kalkulus multivariabel
 
-122
+128
 00:07:56,811 --> 00:07:58,938
 dan ingin mempelajari lebih lanjut, lihat beberapa pekerjaan
 
-123
+129
 00:07:58,938 --> 00:08:01,100
 yang saya lakukan untuk Khan Academy mengenai topik tersebut.
 
-124
+130
 00:08:01,100 --> 00:08:04,802
 Sejujurnya, yang penting bagi Anda dan saya saat ini adalah bahwa
 
-125
-00:08:04,802 --> 00:08:08,505
-pada prinsipnya terdapat cara untuk menghitung vektor ini, vektor
+131
+00:08:04,802 --> 00:08:08,112
+pada prinsipnya terdapat cara untuk menghitung vektor ini,
 
-126
-00:08:08,505 --> 00:08:12,040
-ini yang memberi tahu Anda arah menurun dan seberapa curamnya.
+132
+00:08:08,112 --> 00:08:12,040
+vektor ini yang memberi tahu Anda arah menurun dan seberapa curamnya.
 
-127
+133
 00:08:12,040 --> 00:08:14,535
 Anda akan baik-baik saja jika hanya itu yang Anda
 
-128
+134
 00:08:14,535 --> 00:08:17,280
 ketahui dan Anda tidak terlalu yakin dengan detailnya.
 
-129
+135
 00:08:17,280 --> 00:08:22,255
 Karena kalau bisa, algoritma untuk meminimalkan fungsinya adalah dengan menghitung arah
 
-130
-00:08:22,255 --> 00:08:27,060
-gradien ini, lalu mengambil langkah kecil menuruni bukit, dan mengulanginya berulang
+136
+00:08:22,255 --> 00:08:27,343
+gradien ini, lalu mengambil langkah kecil menuruni bukit, dan mengulanginya berulang kali.
 
-131
-00:08:27,060 --> 00:08:27,400
-kali.
+137
+00:08:27,343 --> 00:08:27,400
 
-132
+
+138
 00:08:27,400 --> 00:08:33,700
 Itu ide dasar yang sama untuk fungsi yang memiliki 13.000 masukan, bukan 2 masukan.
 
-133
+139
 00:08:33,700 --> 00:08:40,180
 Bayangkan mengatur 13.000 bobot dan bias jaringan kita ke dalam vektor kolom raksasa.
 
-134
-00:08:40,180 --> 00:08:45,399
-Gradien negatif dari fungsi biaya hanyalah sebuah vektor, ini adalah suatu arah di
-
-135
-00:08:45,399 --> 00:08:50,555
-dalam ruang masukan yang sangat besar ini yang memberi tahu Anda dorongan mana ke
-
-136
-00:08:50,555 --> 00:08:55,900
-semua angka tersebut yang akan menyebabkan penurunan paling cepat pada fungsi biaya.
-
-137
-00:08:55,900 --> 00:08:59,794
-Dan tentu saja, dengan fungsi biaya yang dirancang khusus, mengubah bobot dan
-
-138
-00:08:59,794 --> 00:09:03,590
-bias menjadi lebih kecil berarti membuat output jaringan pada setiap bagian
-
-139
-00:09:03,590 --> 00:09:07,435
-data pelatihan tidak terlihat seperti array acak yang terdiri dari 10 nilai,
-
 140
-00:09:07,435 --> 00:09:11,280
-dan lebih seperti keputusan sebenarnya yang kita inginkan. itu untuk dibuat.
+00:08:40,180 --> 00:08:43,827
+Gradien negatif dari fungsi biaya hanyalah sebuah vektor,
 
 141
-00:09:11,280 --> 00:09:17,917
-Penting untuk diingat, fungsi biaya ini melibatkan rata-rata seluruh data pelatihan, jadi
+00:08:43,827 --> 00:08:49,171
+ini adalah suatu arah di dalam ruang masukan yang sangat besar ini yang memberi tahu
 
 142
-00:09:17,917 --> 00:09:24,260
-jika Anda meminimalkannya, artinya performanya lebih baik pada semua sampel tersebut.
+00:08:49,171 --> 00:08:54,328
+Anda dorongan mana ke semua angka tersebut yang akan menyebabkan penurunan paling
 
 143
-00:09:24,260 --> 00:09:27,425
-Algoritme untuk menghitung gradien ini secara efisien, yang secara
+00:08:54,328 --> 00:08:55,900
+cepat pada fungsi biaya.
 
 144
-00:09:27,425 --> 00:09:30,496
-efektif merupakan inti dari cara jaringan saraf belajar, disebut
+00:08:55,900 --> 00:08:58,846
+Dan tentu saja, dengan fungsi biaya yang dirancang khusus,
 
 145
-00:09:30,496 --> 00:09:34,040
-propagasi mundur, dan itulah yang akan saya bicarakan di video berikutnya.
+00:08:58,846 --> 00:09:02,641
+mengubah bobot dan bias menjadi lebih kecil berarti membuat output jaringan
 
 146
+00:09:02,641 --> 00:09:06,286
+pada setiap bagian data pelatihan tidak terlihat seperti array acak yang
+
+147
+00:09:06,286 --> 00:09:10,381
+terdiri dari 10 nilai, dan lebih seperti keputusan sebenarnya yang kita inginkan.
+
+148
+00:09:10,381 --> 00:09:11,280
+itu untuk dibuat.
+
+149
+00:09:11,280 --> 00:09:17,548
+Penting untuk diingat, fungsi biaya ini melibatkan rata-rata seluruh data pelatihan,
+
+150
+00:09:17,548 --> 00:09:24,186
+jadi jika Anda meminimalkannya, artinya performanya lebih baik pada semua sampel tersebut.
+
+151
+00:09:24,186 --> 00:09:24,260
+
+
+152
+00:09:24,260 --> 00:09:26,858
+Algoritme untuk menghitung gradien ini secara efisien,
+
+153
+00:09:26,858 --> 00:09:30,118
+yang secara efektif merupakan inti dari cara jaringan saraf belajar,
+
+154
+00:09:30,118 --> 00:09:34,040
+disebut propagasi mundur, dan itulah yang akan saya bicarakan di video berikutnya.
+
+155
 00:09:34,040 --> 00:09:38,581
 Di sana, saya benar-benar ingin meluangkan waktu untuk menelusuri apa yang sebenarnya
 
-147
-00:09:38,581 --> 00:09:43,069
-terjadi pada setiap bobot dan bias untuk data pelatihan tertentu, mencoba memberikan
+156
+00:09:38,581 --> 00:09:42,066
+terjadi pada setiap bobot dan bias untuk data pelatihan tertentu,
 
-148
-00:09:43,069 --> 00:09:47,504
-gambaran intuitif tentang apa yang terjadi di luar tumpukan kalkulus dan rumus yang
+157
+00:09:42,066 --> 00:09:46,712
+mencoba memberikan gambaran intuitif tentang apa yang terjadi di luar tumpukan kalkulus
 
-149
-00:09:47,504 --> 00:09:47,980
-relevan.
+158
+00:09:46,712 --> 00:09:47,980
+dan rumus yang relevan.
 
-150
-00:09:47,980 --> 00:09:51,652
-Di sini, saat ini, hal utama yang saya ingin Anda ketahui, terlepas dari detail
+159
+00:09:47,980 --> 00:09:50,688
+Di sini, saat ini, hal utama yang saya ingin Anda ketahui,
 
-151
-00:09:51,652 --> 00:09:55,188
-implementasinya, adalah bahwa yang kita maksud ketika kita berbicara tentang
+160
+00:09:50,688 --> 00:09:54,361
+terlepas dari detail implementasinya, adalah bahwa yang kita maksud ketika kita
 
-152
-00:09:55,188 --> 00:09:59,320
-pembelajaran jaringan adalah bahwa pembelajaran jaringan hanya meminimalkan fungsi biaya.
+161
+00:09:54,361 --> 00:09:58,080
+berbicara tentang pembelajaran jaringan adalah bahwa pembelajaran jaringan hanya
 
-153
+162
+00:09:58,080 --> 00:09:59,320
+meminimalkan fungsi biaya.
+
+163
 00:09:59,320 --> 00:10:02,723
 Dan perhatikan, salah satu konsekuensi dari hal ini adalah penting agar
 
-154
-00:10:02,723 --> 00:10:05,936
-fungsi biaya ini memiliki keluaran yang lancar, sehingga kita dapat
+164
+00:10:02,723 --> 00:10:04,991
+fungsi biaya ini memiliki keluaran yang lancar,
 
-155
-00:10:05,936 --> 00:10:09,340
-menemukan nilai minimum lokal dengan mengambil sedikit langkah menurun.
+165
+00:10:04,991 --> 00:10:08,158
+sehingga kita dapat menemukan nilai minimum lokal dengan mengambil
 
-156
+166
+00:10:08,158 --> 00:10:09,340
+sedikit langkah menurun.
+
+167
 00:10:09,340 --> 00:10:14,713
 Inilah sebabnya mengapa neuron buatan memiliki aktivasi yang terus menerus,
 
-157
+168
 00:10:14,713 --> 00:10:20,440
 bukan hanya aktif atau tidak aktif secara biner, seperti halnya neuron biologis.
 
-158
+169
 00:10:20,440 --> 00:10:23,563
 Proses berulang kali mendorong input suatu fungsi dengan
 
-159
+170
 00:10:23,563 --> 00:10:26,960
 beberapa kelipatan gradien negatif disebut penurunan gradien.
 
-160
-00:10:26,960 --> 00:10:29,903
-Ini adalah cara untuk menyatu menuju fungsi biaya minimum
+171
+00:10:26,960 --> 00:10:30,259
+Ini adalah cara untuk menyatu menuju fungsi biaya minimum lokal,
 
-161
-00:10:29,903 --> 00:10:33,000
-lokal, yang pada dasarnya merupakan lembah dalam grafik ini.
+172
+00:10:30,259 --> 00:10:33,000
+yang pada dasarnya merupakan lembah dalam grafik ini.
 
-162
-00:10:33,000 --> 00:10:37,183
-Saya masih menampilkan gambar fungsi dengan dua masukan, tentu saja, karena
+173
+00:10:33,000 --> 00:10:36,798
+Saya masih menampilkan gambar fungsi dengan dua masukan, tentu saja,
 
-163
-00:10:37,183 --> 00:10:41,091
-dorongan dalam ruang masukan 13.000 dimensi agak sulit untuk dipahami,
+174
+00:10:36,798 --> 00:10:41,091
+karena dorongan dalam ruang masukan 13.000 dimensi agak sulit untuk dipahami,
 
-164
+175
 00:10:41,091 --> 00:10:45,220
 namun sebenarnya ada cara non-spasial yang bagus untuk memikirkan hal ini.
 
-165
+176
 00:10:45,220 --> 00:10:49,100
 Setiap komponen gradien negatif memberi tahu kita dua hal.
 
-166
+177
 00:10:49,100 --> 00:10:52,619
 Tandanya, tentu saja, memberi tahu kita apakah komponen vektor
 
-167
+178
 00:10:52,619 --> 00:10:55,860
 masukan yang bersesuaian harus dinaikkan atau diturunkan.
 
-168
+179
 00:10:55,860 --> 00:11:00,824
 Namun yang terpenting, besaran relatif dari semua komponen
 
-169
+180
 00:11:00,824 --> 00:11:05,620
 ini memberi tahu Anda perubahan mana yang lebih penting.
 
-170
+181
 00:11:05,620 --> 00:11:10,087
 Anda lihat, dalam jaringan kami, penyesuaian pada salah satu bobot mungkin memiliki
 
-171
+182
 00:11:10,087 --> 00:11:14,501
 dampak yang jauh lebih besar pada fungsi biaya dibandingkan penyesuaian pada bobot
 
-172
+183
 00:11:14,501 --> 00:11:14,980
 lainnya.
 
-173
+184
 00:11:14,980 --> 00:11:19,440
 Beberapa dari koneksi ini lebih penting untuk data pelatihan kami.
 
-174
+185
 00:11:19,440 --> 00:11:24,110
 Jadi, cara Anda memikirkan vektor gradien dari fungsi biaya yang sangat
 
-175
-00:11:24,110 --> 00:11:28,910
-besar ini adalah dengan mengkodekan kepentingan relatif dari setiap bobot
+186
+00:11:24,110 --> 00:11:29,559
+besar ini adalah dengan mengkodekan kepentingan relatif dari setiap bobot dan bias,
 
-176
-00:11:28,910 --> 00:11:34,100
-dan bias, yaitu, perubahan mana yang akan menghasilkan keuntungan paling besar.
+187
+00:11:29,559 --> 00:11:34,100
+yaitu, perubahan mana yang akan menghasilkan keuntungan paling besar.
 
-177
+188
 00:11:34,100 --> 00:11:37,360
 Ini sebenarnya hanyalah cara berpikir lain tentang arah.
 
-178
+189
 00:11:37,360 --> 00:11:41,826
 Untuk mengambil contoh yang lebih sederhana, jika Anda memiliki suatu fungsi dengan
 
-179
+190
 00:11:41,826 --> 00:11:46,026
 dua variabel sebagai masukan, dan menghitung bahwa gradiennya pada suatu titik
 
-180
+191
 00:11:46,026 --> 00:11:50,492
 tertentu adalah 3,1, maka di satu sisi Anda dapat menafsirkannya sebagai pernyataan
 
-181
-00:11:50,492 --> 00:11:54,746
-bahwa ketika Anda berdiri di masukan tersebut, bergerak sepanjang arah ini akan
+192
+00:11:50,492 --> 00:11:52,991
+bahwa ketika Anda berdiri di masukan tersebut,
 
-182
-00:11:54,746 --> 00:11:58,999
-meningkatkan fungsi paling cepat, sehingga ketika Anda membuat grafik fungsi di
+193
+00:11:52,991 --> 00:11:56,553
+bergerak sepanjang arah ini akan meningkatkan fungsi paling cepat,
 
-183
-00:11:58,999 --> 00:12:03,200
-atas bidang titik masukan, vektor itulah yang memberi Anda arah lurus ke atas.
+194
+00:11:56,553 --> 00:12:00,435
+sehingga ketika Anda membuat grafik fungsi di atas bidang titik masukan,
 
-184
+195
+00:12:00,435 --> 00:12:03,200
+vektor itulah yang memberi Anda arah lurus ke atas.
+
+196
 00:12:03,200 --> 00:12:06,751
 Namun cara lain untuk membacanya adalah dengan mengatakan bahwa perubahan
 
-185
+197
 00:12:06,751 --> 00:12:10,398
 pada variabel pertama ini memiliki kepentingan tiga kali lipat dibandingkan
 
-186
-00:12:10,398 --> 00:12:13,853
-perubahan pada variabel kedua, bahwa setidaknya di sekitar masukan yang
+198
+00:12:10,398 --> 00:12:14,284
+perubahan pada variabel kedua, bahwa setidaknya di sekitar masukan yang relevan,
 
-187
-00:12:13,853 --> 00:12:17,740
-relevan, mendorong nilai x akan membawa lebih banyak keuntungan bagi Anda. uang.
+199
+00:12:14,284 --> 00:12:17,740
+mendorong nilai x akan membawa lebih banyak keuntungan bagi Anda. uang.
 
-188
+200
 00:12:17,740 --> 00:12:22,880
 Baiklah, mari kita perkecil dan simpulkan posisi kita sejauh ini.
 
-189
-00:12:22,880 --> 00:12:26,693
-Jaringan itu sendiri adalah fungsi ini dengan 784 masukan dan 10
+201
+00:12:22,880 --> 00:12:27,280
+Jaringan itu sendiri adalah fungsi ini dengan 784 masukan dan 10 keluaran,
 
-190
-00:12:26,693 --> 00:12:30,860
-keluaran, yang didefinisikan dalam bentuk semua jumlah tertimbang ini.
+202
+00:12:27,280 --> 00:12:30,860
+yang didefinisikan dalam bentuk semua jumlah tertimbang ini.
 
-191
+203
 00:12:30,860 --> 00:12:34,160
 Fungsi biaya juga merupakan lapisan kompleksitas.
 
-192
-00:12:34,160 --> 00:12:38,008
-Dibutuhkan 13.000 bobot dan bias sebagai masukan, dan
+204
+00:12:34,160 --> 00:12:37,723
+Dibutuhkan 13.000 bobot dan bias sebagai masukan,
 
-193
-00:12:38,008 --> 00:12:42,640
-mengeluarkan satu ukuran keburukan berdasarkan contoh pelatihan.
+205
+00:12:37,723 --> 00:12:42,640
+dan mengeluarkan satu ukuran keburukan berdasarkan contoh pelatihan.
 
-194
+206
 00:12:42,640 --> 00:12:47,520
 Gradien fungsi biaya masih merupakan satu lapisan kompleksitas lagi.
 
-195
+207
 00:12:47,520 --> 00:12:52,788
 Hal ini memberi tahu kita dorongan apa pada semua bobot dan bias ini yang
 
-196
-00:12:52,788 --> 00:12:58,056
-menyebabkan perubahan tercepat pada nilai fungsi biaya, yang mungkin Anda
+208
+00:12:52,788 --> 00:12:56,775
+menyebabkan perubahan tercepat pada nilai fungsi biaya,
 
-197
-00:12:58,056 --> 00:13:03,040
-tafsirkan sebagai perubahan mana pada bobot mana yang paling penting.
+209
+00:12:56,775 --> 00:13:03,040
+yang mungkin Anda tafsirkan sebagai perubahan mana pada bobot mana yang paling penting.
 
-198
+210
 00:13:03,040 --> 00:13:06,656
 Jadi, ketika Anda menginisialisasi jaringan dengan bobot dan bias acak,
 
-199
+211
 00:13:06,656 --> 00:13:10,422
 dan menyesuaikannya berkali-kali berdasarkan proses penurunan gradien ini,
 
-200
+212
 00:13:10,422 --> 00:13:14,240
 seberapa baik kinerjanya pada gambar yang belum pernah terlihat sebelumnya?
 
-201
+213
 00:13:14,240 --> 00:13:18,734
 Yang telah saya jelaskan di sini, dengan dua lapisan tersembunyi yang masing-masing
 
-202
+214
 00:13:18,734 --> 00:13:23,014
 terdiri dari 16 neuron, sebagian besar dipilih karena alasan estetika, lumayan,
 
-203
+215
 00:13:23,014 --> 00:13:26,920
 mengklasifikasikan sekitar 96% gambar baru yang dilihatnya dengan benar.
 
-204
-00:13:26,920 --> 00:13:31,406
-Dan sejujurnya, jika Anda melihat beberapa contoh yang
+216
+00:13:26,920 --> 00:13:32,955
+Dan sejujurnya, jika Anda melihat beberapa contoh yang membuat kesalahan,
 
-205
-00:13:31,406 --> 00:13:36,300
-membuat kesalahan, Anda merasa harus menguranginya sedikit.
+217
+00:13:32,955 --> 00:13:36,300
+Anda merasa harus menguranginya sedikit.
 
-206
+218
 00:13:36,300 --> 00:13:38,666
 Jika Anda bermain-main dengan struktur lapisan tersembunyi dan
 
-207
+219
 00:13:38,666 --> 00:13:41,220
 membuat beberapa penyesuaian, Anda bisa mendapatkan ini hingga 98%.
 
-208
+220
 00:13:41,220 --> 00:13:42,900
 Dan itu cukup bagus!
 
-209
+221
 00:13:42,900 --> 00:13:46,621
 Ini bukan yang terbaik, Anda pasti bisa mendapatkan kinerja yang lebih baik dengan
 
-210
-00:13:46,621 --> 00:13:50,297
-menjadi lebih canggih daripada jaringan vanilla biasa ini, namun mengingat betapa
+222
+00:13:46,621 --> 00:13:49,266
+menjadi lebih canggih daripada jaringan vanilla biasa ini,
 
-211
-00:13:50,297 --> 00:13:54,198
-beratnya tugas awalnya, menurut saya ada sesuatu yang luar biasa tentang jaringan mana
+223
+00:13:49,266 --> 00:13:51,373
+namun mengingat betapa beratnya tugas awalnya,
 
-212
-00:13:54,198 --> 00:13:58,188
-pun yang melakukan hal ini dengan baik pada gambar yang belum pernah terlihat sebelumnya
+224
+00:13:51,373 --> 00:13:55,229
+menurut saya ada sesuatu yang luar biasa tentang jaringan mana pun yang melakukan hal
 
-213
-00:13:58,188 --> 00:14:02,000
-mengingat kami tidak pernah secara spesifik memberi tahu pola apa yang harus dicari.
+225
+00:13:55,229 --> 00:13:59,130
+ini dengan baik pada gambar yang belum pernah terlihat sebelumnya mengingat kami tidak
 
-214
+226
+00:13:59,130 --> 00:14:02,000
+pernah secara spesifik memberi tahu pola apa yang harus dicari.
+
+227
 00:14:02,000 --> 00:14:05,940
 Awalnya, cara saya memotivasi struktur ini adalah dengan mendeskripsikan harapan yang
 
-215
-00:14:05,940 --> 00:14:09,972
-mungkin kita miliki, bahwa lapisan kedua dapat menangkap tepi-tepi kecil, bahwa lapisan
+228
+00:14:05,940 --> 00:14:09,331
+mungkin kita miliki, bahwa lapisan kedua dapat menangkap tepi-tepi kecil,
 
-216
-00:14:09,972 --> 00:14:14,096
-ketiga akan menyatukan tepi-tepi tersebut untuk mengenali loop dan garis-garis yang lebih
+229
+00:14:09,331 --> 00:14:13,042
+bahwa lapisan ketiga akan menyatukan tepi-tepi tersebut untuk mengenali loop dan
 
-217
-00:14:14,096 --> 00:14:18,220
-panjang, dan agar tepi-tepi tersebut dapat disatukan. bersama-sama untuk mengenali angka.
+230
+00:14:13,042 --> 00:14:16,570
+garis-garis yang lebih panjang, dan agar tepi-tepi tersebut dapat disatukan.
 
-218
+231
+00:14:16,570 --> 00:14:18,220
+bersama-sama untuk mengenali angka.
+
+232
 00:14:18,220 --> 00:14:21,040
 Jadi apakah ini yang sebenarnya dilakukan jaringan kita?
 
-219
+233
 00:14:21,040 --> 00:14:24,880
 Setidaknya untuk yang satu ini, tidak sama sekali.
 
-220
+234
 00:14:24,880 --> 00:14:29,138
 Ingat bagaimana video terakhir kita melihat bagaimana bobot koneksi dari semua
 
-221
+235
 00:14:29,138 --> 00:14:33,720
 neuron di lapisan pertama ke neuron tertentu di lapisan kedua dapat divisualisasikan
 
-222
+236
 00:14:33,720 --> 00:14:37,440
 sebagai pola piksel tertentu yang diambil oleh neuron lapisan kedua?
 
-223
+237
 00:14:37,440 --> 00:14:42,908
 Nah, ketika kita melakukan itu untuk bobot yang terkait dengan transisi ini,
 
-224
-00:14:42,908 --> 00:14:48,305
-alih-alih mengambil tepi kecil yang terisolasi di sana-sini, bobot tersebut
+238
+00:14:42,908 --> 00:14:47,240
+alih-alih mengambil tepi kecil yang terisolasi di sana-sini,
 
-225
-00:14:48,305 --> 00:14:54,200
-terlihat hampir acak, hanya dengan beberapa pola yang sangat longgar di tengahnya.
+239
+00:14:47,240 --> 00:14:52,637
+bobot tersebut terlihat hampir acak, hanya dengan beberapa pola yang sangat
 
-226
+240
+00:14:52,637 --> 00:14:54,200
+longgar di tengahnya.
+
+241
 00:14:54,200 --> 00:14:57,809
 Tampaknya dalam ruang 13.000 dimensi yang sangat besar dan berisi
 
-227
+242
 00:14:57,809 --> 00:15:01,527
 kemungkinan bobot dan bias, jaringan kami menemukan dirinya sebagai
 
-228
+243
 00:15:01,527 --> 00:15:05,683
 minimum lokal kecil yang menyenangkan, meskipun berhasil mengklasifikasikan
 
-229
+244
 00:15:05,683 --> 00:15:09,840
 sebagian besar gambar, tidak benar-benar menangkap pola yang kami harapkan.
 
-230
+245
 00:15:09,840 --> 00:15:12,174
 Dan untuk benar-benar memahami hal ini, perhatikan
 
-231
+246
 00:15:12,174 --> 00:15:14,600
 apa yang terjadi ketika Anda memasukkan gambar acak.
 
-232
-00:15:14,600 --> 00:15:17,955
-Jika sistemnya cerdas, Anda mungkin mengira sistem tersebut akan terasa tidak
+247
+00:15:14,600 --> 00:15:18,256
+Jika sistemnya cerdas, Anda mungkin mengira sistem tersebut akan terasa tidak pasti,
 
-233
-00:15:17,955 --> 00:15:21,439
-pasti, mungkin tidak benar-benar mengaktifkan salah satu dari 10 neuron keluaran
+248
+00:15:18,256 --> 00:15:21,869
+mungkin tidak benar-benar mengaktifkan salah satu dari 10 neuron keluaran tersebut,
 
-234
-00:15:21,439 --> 00:15:24,709
-tersebut, atau mengaktifkan semuanya secara merata, namun sebaliknya sistem
+249
+00:15:21,869 --> 00:15:25,096
+atau mengaktifkan semuanya secara merata, namun sebaliknya sistem tersebut
 
-235
-00:15:24,709 --> 00:15:27,849
-tersebut dengan percaya diri memberi Anda jawaban yang tidak masuk akal,
+250
+00:15:25,096 --> 00:15:27,849
+dengan percaya diri memberi Anda jawaban yang tidak masuk akal,
 
-236
-00:15:27,849 --> 00:15:31,247
-seolah-olah sistem tersebut terasa yakin bahwa sistem ini bersifat acak. noise
+251
+00:15:27,849 --> 00:15:30,989
+seolah-olah sistem tersebut terasa yakin bahwa sistem ini bersifat acak.
 
-237
-00:15:31,247 --> 00:15:34,560
-adalah angka 5 seperti halnya gambar sebenarnya dari angka 5 adalah angka 5.
+252
+00:15:30,989 --> 00:15:34,560
+noise adalah angka 5 seperti halnya gambar sebenarnya dari angka 5 adalah angka 5.
 
-238
-00:15:34,560 --> 00:15:38,085
-Dengan kata lain, meskipun jaringan ini dapat mengenali
+253
+00:15:34,560 --> 00:15:39,659
+Dengan kata lain, meskipun jaringan ini dapat mengenali angka dengan cukup baik,
 
-239
-00:15:38,085 --> 00:15:41,800
-angka dengan cukup baik, ia tidak tahu cara menggambarnya.
+254
+00:15:39,659 --> 00:15:41,800
+ia tidak tahu cara menggambarnya.
 
-240
+255
 00:15:41,800 --> 00:15:45,400
 Hal ini sebagian besar disebabkan oleh pengaturan pelatihan yang sangat terbatas.
 
-241
+256
 00:15:45,400 --> 00:15:48,220
 Maksud saya, tempatkan diri Anda pada posisi jaringan di sini.
 
-242
+257
 00:15:48,220 --> 00:15:52,797
 Dari sudut pandangnya, seluruh alam semesta hanya terdiri dari angka-angka tak bergerak
 
-243
-00:15:52,797 --> 00:15:57,374
-yang terdefinisi dengan jelas dan berpusat pada sebuah kotak kecil, dan fungsi biayanya
+258
+00:15:52,797 --> 00:15:56,334
+yang terdefinisi dengan jelas dan berpusat pada sebuah kotak kecil,
 
-244
-00:15:57,374 --> 00:16:01,587
-tidak pernah memberinya insentif apa pun kecuali keyakinan penuh dalam mengambil
+259
+00:15:56,334 --> 00:16:00,755
+dan fungsi biayanya tidak pernah memberinya insentif apa pun kecuali keyakinan penuh
 
-245
-00:16:01,587 --> 00:16:02,160
-keputusan.
+260
+00:16:00,755 --> 00:16:02,160
+dalam mengambil keputusan.
 
-246
+261
 00:16:02,160 --> 00:16:04,892
 Jadi dengan gambaran tentang apa yang sebenarnya dilakukan oleh neuron
 
-247
+262
 00:16:04,892 --> 00:16:07,394
 lapisan kedua tersebut, Anda mungkin bertanya-tanya mengapa saya
 
-248
+263
 00:16:07,394 --> 00:16:10,320
 memperkenalkan jaringan ini dengan motivasi untuk memahami tepian dan pola.
 
-249
+264
 00:16:10,320 --> 00:16:13,040
 Maksudku, bukan itu yang akhirnya terjadi.
 
-250
+265
 00:16:13,040 --> 00:16:17,480
 Ya, ini bukan dimaksudkan sebagai tujuan akhir kita, melainkan sebuah titik awal.
 
-251
-00:16:17,480 --> 00:16:21,617
-Sejujurnya, ini adalah teknologi lama, jenis yang diteliti pada tahun 80an
+266
+00:16:17,480 --> 00:16:22,169
+Sejujurnya, ini adalah teknologi lama, jenis yang diteliti pada tahun 80an dan 90an,
 
-252
-00:16:21,617 --> 00:16:25,976
-dan 90an, dan Anda perlu memahaminya sebelum Anda dapat memahami varian modern
+267
+00:16:22,169 --> 00:16:27,024
+dan Anda perlu memahaminya sebelum Anda dapat memahami varian modern yang lebih detail,
 
-253
-00:16:25,976 --> 00:16:30,224
-yang lebih detail, dan teknologi ini jelas mampu memecahkan beberapa masalah
+268
+00:16:27,024 --> 00:16:30,720
+dan teknologi ini jelas mampu memecahkan beberapa masalah menarik,
 
-254
-00:16:30,224 --> 00:16:34,637
-menarik, tetapi semakin Anda menggali apa yang ada di dalamnya. lapisan-lapisan
+269
+00:16:30,720 --> 00:16:33,754
+tetapi semakin Anda menggali apa yang ada di dalamnya.
 
-255
-00:16:34,637 --> 00:16:38,720
-tersembunyi itu benar-benar berfungsi, semakin tidak cerdas kelihatannya.
+270
+00:16:33,754 --> 00:16:38,720
+lapisan-lapisan tersembunyi itu benar-benar berfungsi, semakin tidak cerdas kelihatannya.
 
-256
+271
 00:16:38,720 --> 00:16:42,857
 Mengalihkan fokus sejenak dari cara jaringan belajar ke cara Anda belajar,
 
-257
+272
 00:16:42,857 --> 00:16:47,160
 itu hanya akan terjadi jika Anda terlibat secara aktif dengan materi di sini.
 
-258
+273
 00:16:47,160 --> 00:16:50,864
 Satu hal yang cukup sederhana yang saya ingin Anda lakukan adalah berhenti
 
-259
+274
 00:16:50,864 --> 00:16:54,668
 sejenak dan berpikir sejenak tentang perubahan apa yang mungkin Anda lakukan
 
-260
+275
 00:16:54,668 --> 00:16:58,323
 pada sistem ini dan bagaimana sistem ini memandang gambar jika Anda ingin
 
-261
+276
 00:16:58,323 --> 00:17:01,880
 sistem ini menangkap hal-hal seperti tepian dan pola dengan lebih baik.
 
-262
-00:17:01,880 --> 00:17:05,333
-Namun lebih baik dari itu, untuk benar-benar memahami materi, saya sangat
+277
+00:17:01,880 --> 00:17:04,773
+Namun lebih baik dari itu, untuk benar-benar memahami materi,
 
-263
-00:17:05,333 --> 00:17:09,393
-merekomendasikan buku karya Michael Nielsen tentang pembelajaran mendalam dan jaringan
+278
+00:17:04,773 --> 00:17:08,786
+saya sangat merekomendasikan buku karya Michael Nielsen tentang pembelajaran mendalam
 
-264
-00:17:09,393 --> 00:17:09,720
-saraf.
+279
+00:17:08,786 --> 00:17:09,720
+dan jaringan saraf.
 
-265
+280
 00:17:09,720 --> 00:17:12,982
 Di dalamnya, Anda dapat menemukan kode dan data untuk diunduh dan
 
-266
+281
 00:17:12,982 --> 00:17:16,245
 dimainkan untuk contoh persis ini, dan buku ini akan memandu Anda
 
-267
+282
 00:17:16,245 --> 00:17:19,360
 langkah demi langkah tentang apa yang dilakukan kode tersebut.
 
-268
+283
 00:17:19,360 --> 00:17:22,208
 Yang luar biasa adalah buku ini gratis dan tersedia untuk umum,
 
-269
+284
 00:17:22,208 --> 00:17:25,057
 jadi jika Anda mendapatkan manfaat darinya, pertimbangkan untuk
 
-270
+285
 00:17:25,057 --> 00:17:28,040
 bergabung dengan saya dalam memberikan donasi untuk upaya Nielsen.
 
-271
+286
 00:17:28,040 --> 00:17:33,158
 Saya juga menautkan beberapa sumber lain yang sangat saya sukai dalam deskripsi,
 
-272
+287
 00:17:33,158 --> 00:17:38,720
 termasuk postingan blog yang fenomenal dan indah oleh Chris Ola dan artikel di Distill.
 
-273
-00:17:38,720 --> 00:17:41,682
-Untuk menutup beberapa menit terakhir di sini, saya ingin
+288
+00:17:38,720 --> 00:17:41,120
+Untuk menutup beberapa menit terakhir di sini,
 
-274
-00:17:41,682 --> 00:17:44,440
-kembali ke cuplikan wawancara saya dengan Leisha Lee.
+289
+00:17:41,120 --> 00:17:44,440
+saya ingin kembali ke cuplikan wawancara saya dengan Leisha Lee.
 
-275
+290
 00:17:44,440 --> 00:17:46,236
 Anda mungkin ingat dia dari video terakhir, dia
 
-276
+291
 00:17:46,236 --> 00:17:48,520
 menyelesaikan pekerjaan PhD-nya dalam pembelajaran mendalam.
 
-277
+292
 00:17:48,520 --> 00:17:52,520
 Dalam cuplikan kecil ini, dia berbicara tentang dua makalah terbaru yang benar-benar
 
-278
+293
 00:17:52,520 --> 00:17:56,380
 menggali bagaimana beberapa jaringan pengenalan gambar modern sebenarnya belajar.
 
-279
-00:17:56,380 --> 00:17:59,510
-Sekadar untuk mengatur posisi kita dalam percakapan, makalah pertama
+294
+00:17:56,380 --> 00:17:58,784
+Sekadar untuk mengatur posisi kita dalam percakapan,
 
-280
-00:17:59,510 --> 00:18:02,731
-mengambil salah satu dari jaringan saraf dalam yang sangat bagus dalam
+295
+00:17:58,784 --> 00:18:01,869
+makalah pertama mengambil salah satu dari jaringan saraf dalam yang
 
-281
-00:18:02,731 --> 00:18:05,816
-pengenalan gambar, dan alih-alih melatihnya pada kumpulan data yang
+296
+00:18:01,869 --> 00:18:04,954
+sangat bagus dalam pengenalan gambar, dan alih-alih melatihnya pada
 
-282
-00:18:05,816 --> 00:18:09,400
-diberi label dengan benar, makalah ini mengacak semua label sebelum pelatihan.
+297
+00:18:04,954 --> 00:18:08,265
+kumpulan data yang diberi label dengan benar, makalah ini mengacak semua
 
-283
-00:18:09,400 --> 00:18:12,513
-Tentu saja keakuratan pengujian di sini tidak akan lebih baik daripada
+298
+00:18:08,265 --> 00:18:09,400
+label sebelum pelatihan.
 
-284
-00:18:12,513 --> 00:18:15,320
-pengujian acak, karena semuanya hanya diberi label secara acak.
+299
+00:18:09,400 --> 00:18:13,215
+Tentu saja keakuratan pengujian di sini tidak akan lebih baik daripada pengujian acak,
 
-285
+300
+00:18:13,215 --> 00:18:15,320
+karena semuanya hanya diberi label secara acak.
+
+301
 00:18:15,320 --> 00:18:18,312
 Namun ia masih dapat mencapai akurasi pelatihan yang sama seperti
 
-286
+302
 00:18:18,312 --> 00:18:21,440
 yang Anda lakukan pada kumpulan data yang diberi label dengan benar.
 
-287
+303
 00:18:21,440 --> 00:18:26,553
 Pada dasarnya, jutaan bobot untuk jaringan khusus ini cukup untuk sekadar menghafal
 
-288
+304
 00:18:26,553 --> 00:18:31,423
 data acak, sehingga menimbulkan pertanyaan apakah meminimalkan fungsi biaya ini
 
-289
+305
 00:18:31,423 --> 00:18:36,720
 benar-benar sesuai dengan struktur apa pun dalam gambar, atau hanya sekadar menghafal?
 
-290
+306
 00:18:36,720 --> 00:18:40,120
 . . . untuk menghafal seluruh dataset tentang klasifikasi yang benar.
 
-291
-00:18:40,120 --> 00:18:43,938
-Dan beberapa dari, Anda tahu, setengah tahun kemudian di ICML tahun ini, tidak ada
+307
+00:18:40,120 --> 00:18:43,478
+Dan beberapa dari, Anda tahu, setengah tahun kemudian di ICML tahun ini,
 
-292
-00:18:43,938 --> 00:18:47,987
-makalah yang benar-benar membantah, namun makalah yang membahas beberapa aspek seperti,
+308
+00:18:43,478 --> 00:18:47,573
+tidak ada makalah yang benar-benar membantah, namun makalah yang membahas beberapa aspek
 
-293
-00:18:47,987 --> 00:18:51,989
-hei, sebenarnya jaringan-jaringan ini melakukan sesuatu yang sedikit lebih pintar dari
+309
+00:18:47,573 --> 00:18:51,437
+seperti, hei, sebenarnya jaringan-jaringan ini melakukan sesuatu yang sedikit lebih
 
-294
-00:18:51,989 --> 00:18:52,220
-itu.
+310
+00:18:51,437 --> 00:18:52,220
+pintar dari itu.
 
-295
+311
 00:18:52,220 --> 00:18:58,885
 Jika Anda melihat kurva akurasi tersebut, jika Anda hanya berlatih pada kumpulan data
 
-296
+312
 00:18:58,885 --> 00:19:05,240
 acak, kurva tersebut akan turun dengan sangat lambat, hampir seperti gaya linier.
 
-297
+313
 00:19:05,240 --> 00:19:08,780
 Jadi Anda benar-benar kesulitan menemukan kemungkinan minimum lokal,
 
-298
+314
 00:19:08,780 --> 00:19:12,320
 Anda tahu, bobot yang tepat yang akan memberi Anda akurasi tersebut.
 
-299
-00:19:12,320 --> 00:19:16,086
-Sedangkan jika Anda benar-benar berlatih pada kumpulan data terstruktur, yang memiliki
+315
+00:19:12,320 --> 00:19:15,480
+Sedangkan jika Anda benar-benar berlatih pada kumpulan data terstruktur,
 
-300
-00:19:16,086 --> 00:19:19,723
-label yang tepat, Anda tahu, Anda melakukan sedikit penyesuaian pada awalnya, namun
+316
+00:19:15,480 --> 00:19:19,073
+yang memiliki label yang tepat, Anda tahu, Anda melakukan sedikit penyesuaian pada
 
-301
-00:19:19,723 --> 00:19:23,360
-kemudian Anda terjatuh dengan sangat cepat untuk mencapai tingkat akurasi tersebut.
+317
+00:19:19,073 --> 00:19:22,580
+awalnya, namun kemudian Anda terjatuh dengan sangat cepat untuk mencapai tingkat
 
-302
+318
+00:19:22,580 --> 00:19:23,360
+akurasi tersebut.
+
+319
 00:19:23,360 --> 00:19:28,580
 Jadi, dalam beberapa hal, lebih mudah untuk menemukan nilai maksimal lokal tersebut.
 
-303
+320
 00:19:28,580 --> 00:19:34,291
 Dan yang juga menarik dari hal ini adalah ia mengungkap makalah lain dari beberapa
 
-304
+321
 00:19:34,291 --> 00:19:40,140
 tahun yang lalu, yang memiliki lebih banyak penyederhanaan tentang lapisan jaringan.
 
-305
-00:19:40,140 --> 00:19:43,210
-Namun salah satu hasilnya menunjukkan bahwa, jika Anda melihat
+322
+00:19:40,140 --> 00:19:44,331
+Namun salah satu hasilnya menunjukkan bahwa, jika Anda melihat lanskap pengoptimalan,
 
-306
-00:19:43,210 --> 00:19:46,037
-lanskap pengoptimalan, nilai minimum lokal yang cenderung
+323
+00:19:44,331 --> 00:19:47,450
+nilai minimum lokal yang cenderung dipelajari oleh jaringan ini
 
-307
-00:19:46,037 --> 00:19:49,400
-dipelajari oleh jaringan ini sebenarnya memiliki kualitas yang sama.
+324
+00:19:47,450 --> 00:19:49,400
+sebenarnya memiliki kualitas yang sama.
 
-308
-00:19:49,400 --> 00:19:51,563
-Jadi dalam beberapa hal, jika kumpulan data Anda
+325
+00:19:49,400 --> 00:19:52,136
+Jadi dalam beberapa hal, jika kumpulan data Anda terstruktur,
 
-309
-00:19:51,563 --> 00:19:54,300
-terstruktur, Anda akan dapat menemukannya dengan lebih mudah.
+326
+00:19:52,136 --> 00:19:54,300
+Anda akan dapat menemukannya dengan lebih mudah.
 
-310
+327
 00:19:54,300 --> 00:20:01,140
 Terima kasih saya seperti biasa kepada Anda yang mendukung Patreon.
 
-311
-00:20:01,140 --> 00:20:03,952
-Saya telah mengatakan sebelumnya apa itu game changer di
+328
+00:20:01,140 --> 00:20:04,396
+Saya telah mengatakan sebelumnya apa itu game changer di Patreon,
 
-312
-00:20:03,952 --> 00:20:07,160
-Patreon, tetapi video ini tidak akan mungkin terjadi tanpa Anda.
+329
+00:20:04,396 --> 00:20:07,160
+tetapi video ini tidak akan mungkin terjadi tanpa Anda.
 
-313
+330
 00:20:07,160 --> 00:20:10,244
 Saya juga ingin mengucapkan terima kasih khusus kepada perusahaan VC
 
-314
+331
 00:20:10,244 --> 00:20:13,240
 Amplify Partners dan dukungan mereka terhadap video awal seri ini.
 
-315
+332
 00:20:13,240 --> 00:20:33,140
 Terima kasih.
 
