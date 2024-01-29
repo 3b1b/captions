@@ -1,0 +1,1308 @@
+1
+00:00:04,320 --> 00:00:06,981
+Esto es lo que vamos a incorporar en este video, 
+
+2
+00:00:06,981 --> 00:00:11,273
+un cierto enfoque animado para pensar en una idea matemática súper importante: 
+
+3
+00:00:11,273 --> 00:00:12,740
+la transformada de Fourier.
+
+4
+00:00:13,520 --> 00:00:16,181
+Para cualquiera que no esté familiarizado con lo que es esto, 
+
+5
+00:00:16,181 --> 00:00:19,960
+mi objetivo número uno aquí es simplemente que el video sea una introducción a ese tema.
+
+6
+00:00:20,380 --> 00:00:23,920
+Pero incluso para aquellos de ustedes que ya están familiarizados con él, 
+
+7
+00:00:23,920 --> 00:00:28,034
+sigo pensando que hay algo divertido y enriquecedor en ver cómo lucen realmente todos 
+
+8
+00:00:28,034 --> 00:00:28,800
+sus componentes.
+
+9
+00:00:29,320 --> 00:00:34,300
+El ejemplo central para empezar va a ser el clásico, descomponer frecuencias del sonido.
+
+10
+00:00:34,780 --> 00:00:37,861
+Pero después de eso también quiero mostrar un vistazo de cómo esta 
+
+11
+00:00:37,861 --> 00:00:40,988
+idea se extiende mucho más allá del sonido y la frecuencia a muchas 
+
+12
+00:00:40,988 --> 00:00:44,300
+áreas aparentemente dispares de las matemáticas, e incluso de la física.
+
+13
+00:00:44,880 --> 00:00:48,140
+Realmente, es una locura lo omnipresente que es esta idea.
+
+14
+00:00:49,120 --> 00:00:50,080
+Vamos a sumergirnos.
+
+15
+00:00:50,520 --> 00:00:53,999
+Este sonido aquí es una A pura, 440 latidos por segundo, 
+
+16
+00:00:53,999 --> 00:00:58,516
+lo que significa que si midieras la presión del aire justo al lado de tus 
+
+17
+00:00:58,516 --> 00:01:01,446
+auriculares o tu altavoz en función del tiempo, 
+
+18
+00:01:01,446 --> 00:01:06,757
+oscilaría hacia arriba y hacia abajo alrededor de su equilibrio habitual en esta onda. 
+
+19
+00:01:06,757 --> 00:01:09,260
+, haciendo 440 oscilaciones cada segundo.
+
+20
+00:01:09,940 --> 00:01:12,969
+Una nota de tono más bajo, como una D, tiene la misma estructura, 
+
+21
+00:01:12,969 --> 00:01:14,760
+sólo que menos pulsaciones por segundo.
+
+22
+00:01:15,680 --> 00:01:19,540
+Y cuando ambos se juegan a la vez, ¿cuál crees que será la presión vs.
+
+23
+00:01:19,820 --> 00:01:21,140
+¿Cómo se ve el gráfico de tiempo?
+
+24
+00:01:22,060 --> 00:01:25,575
+Bueno, en cualquier momento, esta diferencia de presión será 
+
+25
+00:01:25,575 --> 00:01:29,552
+la suma de lo que sería para cada una de esas notas individualmente, 
+
+26
+00:01:29,552 --> 00:01:32,780
+lo cual, seamos realistas, es algo complicado de pensar.
+
+27
+00:01:33,980 --> 00:01:36,137
+En algunos puntos los picos coinciden entre sí, 
+
+28
+00:01:36,137 --> 00:01:38,160
+lo que resulta en una presión realmente alta.
+
+29
+00:01:38,660 --> 00:01:40,940
+En otros puntos tienden a cancelarse.
+
+30
+00:01:41,500 --> 00:01:44,780
+Y en definitiva, lo que se obtiene es una presión similar a una ola vs.
+
+31
+00:01:44,960 --> 00:01:48,720
+gráfico de tiempo que no es una onda sinusoidal pura, es algo más complicado.
+
+32
+00:01:48,720 --> 00:01:53,160
+Y a medida que agregas otras notas, la ola se vuelve cada vez más complicada.
+
+33
+00:01:53,800 --> 00:01:57,799
+Pero ahora mismo, todo lo que es es una combinación de cuatro frecuencias puras, 
+
+34
+00:01:57,799 --> 00:02:02,095
+por lo que parece innecesariamente complicado dada la poca cantidad de información que 
+
+35
+00:02:02,095 --> 00:02:02,540
+contiene.
+
+36
+00:02:03,000 --> 00:02:06,847
+Un micrófono que graba cualquier sonido simplemente capta la presión 
+
+37
+00:02:06,847 --> 00:02:10,360
+del aire en muchos momentos diferentes y solo ve la suma final.
+
+38
+00:02:10,639 --> 00:02:14,424
+Entonces nuestra pregunta central será cómo se puede tomar una señal 
+
+39
+00:02:14,424 --> 00:02:18,100
+como ésta y descomponerla en las frecuencias puras que la componen.
+
+40
+00:02:18,820 --> 00:02:19,840
+Bastante interesante, ¿verdad?
+
+41
+00:02:20,300 --> 00:02:23,076
+Sumar esas señales realmente las mezcla todas, 
+
+42
+00:02:23,076 --> 00:02:27,506
+por lo que separarlas se siente como separar varios colores de pintura que 
+
+43
+00:02:27,506 --> 00:02:29,220
+se han mezclado todos juntos.
+
+44
+00:02:29,920 --> 00:02:34,522
+La estrategia general será construir nosotros mismos una máquina matemática que trate 
+
+45
+00:02:34,522 --> 00:02:39,340
+las señales con una frecuencia determinada de manera diferente a como trata otras señales.
+
+46
+00:02:40,080 --> 00:02:42,992
+Para empezar, considere simplemente tomar una señal pura, 
+
+47
+00:02:42,992 --> 00:02:47,260
+digamos con unos mínimos 3 latidos por segundo, para que podamos trazarla fácilmente.
+
+48
+00:02:47,820 --> 00:02:51,442
+Y limitémonos a mirar una porción finita de este gráfico, 
+
+49
+00:02:51,442 --> 00:02:54,940
+en este caso la porción entre 0 segundos y 4,5 segundos.
+
+50
+00:02:55,660 --> 00:03:01,080
+La idea clave es tomar este gráfico y envolverlo alrededor de un círculo.
+
+51
+00:03:04,980 --> 00:03:06,640
+Concretamente, esto es lo que quiero decir con eso.
+
+52
+00:03:07,020 --> 00:03:10,486
+Imagine un pequeño vector giratorio donde en cada momento su 
+
+53
+00:03:10,486 --> 00:03:14,180
+longitud es igual a la altura de nuestro gráfico para ese tiempo.
+
+54
+00:03:14,860 --> 00:03:17,792
+Entonces, los puntos altos del gráfico corresponden a una mayor 
+
+55
+00:03:17,792 --> 00:03:21,000
+distancia del origen y los puntos bajos terminan más cerca del origen.
+
+56
+00:03:22,080 --> 00:03:25,646
+Y ahora mismo lo estoy dibujando de tal manera que avanzar 2 segundos 
+
+57
+00:03:25,646 --> 00:03:29,060
+en el tiempo corresponde a una sola rotación alrededor del círculo.
+
+58
+00:03:29,640 --> 00:03:34,420
+Nuestro pequeño vector que dibuja este gráfico terminado gira a medio ciclo por segundo.
+
+59
+00:03:35,420 --> 00:03:38,460
+Entonces esto es importante, hay dos frecuencias diferentes en juego aquí.
+
+60
+00:03:38,720 --> 00:03:42,786
+Está la frecuencia de nuestra señal, que sube y baja 3 veces por segundo, 
+
+61
+00:03:42,786 --> 00:03:46,908
+y luego, por separado, está la frecuencia con la que envolvemos el gráfico 
+
+62
+00:03:46,908 --> 00:03:50,920
+alrededor del círculo, que en este momento es media rotación por segundo.
+
+63
+00:03:51,440 --> 00:03:54,340
+Pero podemos ajustar esa segunda frecuencia como queramos.
+
+64
+00:03:54,660 --> 00:03:56,640
+¿Quizás queramos terminarlo más rápido?
+
+65
+00:03:58,680 --> 00:04:00,940
+¿O tal vez vamos y lo envolvemos más lentamente?
+
+66
+00:04:03,380 --> 00:04:08,580
+Y esa elección de la frecuencia de bobinado determina cómo se ve el gráfico de bobinado.
+
+67
+00:04:09,160 --> 00:04:12,336
+Algunos de los diagramas que surgen de esto pueden ser bastante complicados, 
+
+68
+00:04:12,336 --> 00:04:15,429
+aunque son muy bonitos, pero es importante tener en cuenta que todo lo que 
+
+69
+00:04:15,429 --> 00:04:18,399
+sucede aquí es que estamos envolviendo la señal alrededor de un círculo.
+
+70
+00:04:20,839 --> 00:04:23,788
+Por cierto, las líneas verticales que estoy dibujando arriba son solo 
+
+71
+00:04:23,788 --> 00:04:26,609
+una forma de realizar un seguimiento de la distancia en el gráfico 
+
+72
+00:04:26,609 --> 00:04:29,600
+original que corresponde a una rotación completa alrededor del círculo.
+
+73
+00:04:30,900 --> 00:04:33,577
+Entonces, las líneas espaciadas por 1,5 segundos significarían 
+
+74
+00:04:33,577 --> 00:04:36,340
+que se necesitan 1,5 segundos para hacer una revolución completa.
+
+75
+00:04:37,240 --> 00:04:40,264
+Y en este punto podríamos tener una especie de vaga sensación de 
+
+76
+00:04:40,264 --> 00:04:43,102
+que algo especial sucederá cuando la frecuencia del devanado 
+
+77
+00:04:43,102 --> 00:04:46,220
+coincida con la frecuencia de nuestra señal, 3 latidos por segundo.
+
+78
+00:04:46,800 --> 00:04:49,212
+Todos los puntos altos del gráfico ocurren en el lado derecho 
+
+79
+00:04:49,212 --> 00:04:51,780
+del círculo y todos los puntos bajos ocurren en el lado izquierdo.
+
+80
+00:04:52,500 --> 00:04:55,180
+Pero, ¿cómo exactamente podemos aprovechar esto en nuestro 
+
+81
+00:04:55,180 --> 00:04:57,860
+intento de construir una máquina separadora de frecuencias?
+
+82
+00:04:59,000 --> 00:05:03,080
+Bueno, imagina que este gráfico tiene algún tipo de masa, como un alambre de metal.
+
+83
+00:05:04,220 --> 00:05:07,560
+Este pequeño punto representará el centro de masa de ese cable.
+
+84
+00:05:08,140 --> 00:05:12,116
+A medida que cambiamos la frecuencia y el gráfico termina de manera diferente, 
+
+85
+00:05:12,116 --> 00:05:14,080
+ese centro de masa se tambalea un poco.
+
+86
+00:05:16,220 --> 00:05:18,130
+Y para la mayoría de las frecuencias sinuosas, 
+
+87
+00:05:18,130 --> 00:05:20,732
+los picos y valles están todos espaciados alrededor del círculo 
+
+88
+00:05:20,732 --> 00:05:23,660
+de tal manera que el centro de masa permanece bastante cerca del origen.
+
+89
+00:05:26,300 --> 00:05:30,686
+Pero cuando la frecuencia del devanado es la misma que la frecuencia de nuestra señal, 
+
+90
+00:05:30,686 --> 00:05:35,173
+en este caso 3 ciclos por segundo, todos los picos están a la derecha y todos los valles 
+
+91
+00:05:35,173 --> 00:05:39,660
+están a la izquierda, por lo que el centro de masa está inusualmente lejos. A la derecha.
+
+92
+00:05:42,300 --> 00:05:45,278
+Aquí, para capturar esto, dibujemos algún tipo de gráfico que realice un 
+
+93
+00:05:45,278 --> 00:05:48,460
+seguimiento de dónde está ese centro de masa para cada frecuencia de devanado.
+
+94
+00:05:49,300 --> 00:05:51,476
+Por supuesto, el centro de masa es algo bidimensional, 
+
+95
+00:05:51,476 --> 00:05:54,009
+requiere dos coordenadas para realizar un seguimiento completo, 
+
+96
+00:05:54,009 --> 00:05:56,820
+pero por el momento, solo realicemos un seguimiento de la coordenada x.
+
+97
+00:05:57,580 --> 00:06:01,164
+Entonces, para una frecuencia de cero, cuando todo está agrupado a la derecha, 
+
+98
+00:06:01,164 --> 00:06:02,980
+esta coordenada x es relativamente alta.
+
+99
+00:06:03,740 --> 00:06:06,940
+Y luego, a medida que aumentas esa frecuencia de bobinado, 
+
+100
+00:06:06,940 --> 00:06:09,598
+y el gráfico se equilibra alrededor del círculo, 
+
+101
+00:06:09,598 --> 00:06:14,480
+la coordenada x de ese centro de masa se acerca a cero, y simplemente se tambalea un poco.
+
+102
+00:06:26,940 --> 00:06:32,160
+Pero luego, a 3 latidos por segundo, hay un pico, ya que todo se alinea hacia la derecha.
+
+103
+00:06:44,440 --> 00:06:47,960
+Esta es la construcción central, así que resumamos lo que tenemos hasta ahora.
+
+104
+00:06:47,960 --> 00:06:51,208
+Tenemos ese gráfico original de intensidad versus tiempo, 
+
+105
+00:06:51,208 --> 00:06:55,856
+y luego tenemos la versión terminada de eso en algún plano bidimensional, y luego, 
+
+106
+00:06:55,856 --> 00:07:00,727
+como tercera cosa, tenemos un gráfico de cómo la frecuencia del devanado influye en el 
+
+107
+00:07:00,727 --> 00:07:02,520
+centro de masa de ese gráfico. .
+
+108
+00:07:03,920 --> 00:07:07,020
+Y, por cierto, volvamos a mirar esas frecuencias realmente bajas cercanas a cero.
+
+109
+00:07:07,610 --> 00:07:11,265
+Este gran pico alrededor de cero en nuestro nuevo gráfico de frecuencia 
+
+110
+00:07:11,265 --> 00:07:15,580
+corresponde simplemente al hecho de que toda la onda coseno se desplaza hacia arriba.
+
+111
+00:07:16,780 --> 00:07:20,059
+Si hubiera elegido una señal que oscila alrededor de cero, 
+
+112
+00:07:20,059 --> 00:07:24,840
+sumergiéndose en valores negativos, entonces, mientras jugamos con varias frecuencias 
+
+113
+00:07:24,840 --> 00:07:29,565
+de devanado, esta gráfica de la frecuencia de devanado versus el centro de masa solo 
+
+114
+00:07:29,565 --> 00:07:31,400
+tendría un pico en el valor de 3.
+
+115
+00:07:32,520 --> 00:07:35,618
+Pero es un poco extraño y confuso pensar en los valores negativos, 
+
+116
+00:07:35,618 --> 00:07:39,550
+especialmente en un primer ejemplo, así que sigamos pensando en términos del gráfico 
+
+117
+00:07:39,550 --> 00:07:40,660
+desplazado hacia arriba.
+
+118
+00:07:41,400 --> 00:07:45,460
+Sólo quiero que entiendas que ese pico alrededor de cero sólo corresponde al cambio.
+
+119
+00:07:45,980 --> 00:07:49,436
+Nuestro enfoque principal, en lo que respecta a la descomposición de la frecuencia, 
+
+120
+00:07:49,436 --> 00:07:50,260
+es ese aumento en 3.
+
+121
+00:07:51,320 --> 00:07:56,040
+Toda esta trama es lo que llamaré la transformada casi de Fourier de la señal original.
+
+122
+00:07:56,680 --> 00:08:00,340
+Hay un par de pequeñas distinciones entre esto y la transformada de Fourier real, 
+
+123
+00:08:00,340 --> 00:08:03,599
+a la que llegaré en un par de minutos, pero es posible que ya puedan ver 
+
+124
+00:08:03,599 --> 00:08:06,680
+cómo esta máquina nos permite seleccionar la frecuencia de una señal.
+
+125
+00:08:07,980 --> 00:08:11,852
+Sólo para jugar un poco más con esto, tome una señal de Fourier diferente, 
+
+126
+00:08:11,852 --> 00:08:15,880
+digamos con una frecuencia más baja de 2 latidos por segundo, y haga lo mismo.
+
+127
+00:08:16,380 --> 00:08:19,601
+Enróllelo alrededor de un círculo, imagine diferentes frecuencias 
+
+128
+00:08:19,601 --> 00:08:22,969
+potenciales de devanado y, mientras lo hace, mantenga un registro de 
+
+129
+00:08:22,969 --> 00:08:26,483
+dónde está el centro de masa de ese gráfico y luego trace la coordenada 
+
+130
+00:08:26,483 --> 00:08:29,900
+x de ese centro de masa a medida que ajusta la frecuencia de devanado.
+
+131
+00:08:30,580 --> 00:08:34,646
+Al igual que antes, obtenemos un pico cuando la frecuencia del devanado es la misma que 
+
+132
+00:08:34,646 --> 00:08:38,620
+la frecuencia de la señal, que en este caso es cuando equivale a 2 ciclos por segundo.
+
+133
+00:08:39,700 --> 00:08:43,841
+Pero el verdadero punto clave, lo que hace que esta máquina sea tan encantadora, 
+
+134
+00:08:43,841 --> 00:08:48,237
+es cómo nos permite tomar una señal que consta de múltiples frecuencias y seleccionar 
+
+135
+00:08:48,237 --> 00:08:48,800
+cuáles son.
+
+136
+00:08:49,240 --> 00:08:51,770
+Imagine tomar las dos señales que acabamos de ver, 
+
+137
+00:08:51,770 --> 00:08:55,840
+la onda con 3 latidos por segundo y la onda con 2 latidos por segundo, y sumarlas.
+
+138
+00:08:56,620 --> 00:09:00,267
+Como dije antes, lo que obtienes ya no es una bonita onda coseno pura, 
+
+139
+00:09:00,267 --> 00:09:01,860
+es algo un poco más complicado.
+
+140
+00:09:02,500 --> 00:09:05,360
+Pero imagina arrojar esto a nuestra máquina de frecuencia de bobinado.
+
+141
+00:09:06,360 --> 00:09:10,484
+Ciertamente es el caso que a medida que envuelves esto parece mucho más complicado, 
+
+142
+00:09:10,484 --> 00:09:13,233
+tienes este caos y caos y caos y caos, y luego, ¡vaya!, 
+
+143
+00:09:13,233 --> 00:09:16,180
+las cosas parecen alinearse muy bien a 2 ciclos por segundo.
+
+144
+00:09:16,720 --> 00:09:20,295
+Luego, a medida que continúas, hay más caos y más caos y más caos y caos y caos y caos, 
+
+145
+00:09:20,295 --> 00:09:23,220
+¡vaya!, las cosas se alinean muy bien nuevamente a 3 ciclos por segundo.
+
+146
+00:09:23,780 --> 00:09:27,362
+Y como dije antes, el gráfico terminado puede parecer un poco complicado y complicado, 
+
+147
+00:09:27,362 --> 00:09:29,998
+pero todo lo que es es la idea relativamente simple de envolver 
+
+148
+00:09:29,998 --> 00:09:31,440
+el gráfico alrededor de un círculo.
+
+149
+00:09:31,960 --> 00:09:35,140
+Es sólo un gráfico más complicado y una frecuencia de bobinado bastante rápida.
+
+150
+00:09:36,180 --> 00:09:40,802
+Ahora, lo que sucede aquí con los dos picos diferentes es que si tomaras dos señales 
+
+151
+00:09:40,802 --> 00:09:45,642
+y luego aplicaras esta transformada casi de Fourier a cada una de ellas individualmente, 
+
+152
+00:09:45,642 --> 00:09:49,992
+y luego sumaras los resultados, lo que obtendrías sería lo mismo que si primero 
+
+153
+00:09:49,992 --> 00:09:54,180
+sumaras recogió las señales y luego aplicó esta transformada casi de Fourier.
+
+154
+00:09:55,680 --> 00:09:58,441
+Y los espectadores atentos entre ustedes tal vez quieran hacer una pausa, 
+
+155
+00:09:58,441 --> 00:10:01,240
+reflexionar y convencerse de que lo que acabo de decir es realmente cierto.
+
+156
+00:10:01,880 --> 00:10:04,946
+Es una prueba bastante buena para comprobar por sí mismo que está 
+
+157
+00:10:04,946 --> 00:10:07,920
+claro qué se mide exactamente dentro de esta máquina bobinadora.
+
+158
+00:10:09,080 --> 00:10:12,828
+Ahora bien, esta propiedad hace que las cosas sean realmente útiles para nosotros, 
+
+159
+00:10:12,828 --> 00:10:16,125
+porque la transformada de una frecuencia pura es cercana a cero en todas 
+
+160
+00:10:16,125 --> 00:10:18,654
+partes excepto por un pico alrededor de esa frecuencia, 
+
+161
+00:10:18,654 --> 00:10:20,777
+por lo que cuando sumas dos frecuencias puras, 
+
+162
+00:10:20,777 --> 00:10:24,028
+el gráfico de transformación solo tiene estos pequeños picos por encima 
+
+163
+00:10:24,028 --> 00:10:25,700
+de las frecuencias. eso entró en eso.
+
+164
+00:10:26,340 --> 00:10:29,460
+Entonces esta pequeña máquina matemática hace exactamente lo que queríamos.
+
+165
+00:10:29,720 --> 00:10:33,140
+Extrae las frecuencias originales de sus sumas confusas, 
+
+166
+00:10:33,140 --> 00:10:35,600
+desmezclando el cubo de pintura mezclado.
+
+167
+00:10:36,860 --> 00:10:40,401
+Y antes de continuar con los cálculos completos que describen esta operación, 
+
+168
+00:10:40,401 --> 00:10:44,260
+echemos un vistazo rápido a un contexto en el que esto es útil: la edición de sonido.
+
+169
+00:10:44,700 --> 00:10:49,640
+Digamos que tienes una grabación y tiene un tono alto molesto que te gustaría filtrar.
+
+170
+00:10:50,660 --> 00:10:54,808
+Bueno, al principio tu señal llega en función de varias intensidades a lo largo 
+
+171
+00:10:54,808 --> 00:10:59,060
+del tiempo, diferentes voltajes dados a tu altavoz de un milisegundo al siguiente.
+
+172
+00:10:59,560 --> 00:11:01,780
+Pero queremos pensar en esto en términos de frecuencias.
+
+173
+00:11:02,620 --> 00:11:06,393
+Entonces, cuando tomas la transformada de Fourier de esa señal, 
+
+174
+00:11:06,393 --> 00:11:10,520
+el molesto tono alto aparecerá como un pico en alguna frecuencia alta.
+
+175
+00:11:11,280 --> 00:11:14,204
+Filtrando eso simplemente aplastando la punta hacia abajo, 
+
+176
+00:11:14,204 --> 00:11:17,128
+lo que estarías viendo es la transformada de Fourier de un 
+
+177
+00:11:17,128 --> 00:11:20,400
+sonido que es como tu grabación, solo que sin esa frecuencia alta.
+
+178
+00:11:21,340 --> 00:11:24,901
+Afortunadamente, existe la noción de una transformada de Fourier inversa 
+
+179
+00:11:24,901 --> 00:11:28,560
+que indica qué señal habría producido esto como su transformada de Fourier.
+
+180
+00:11:29,280 --> 00:11:32,892
+Hablaré de esa inversa mucho más detalladamente en el próximo video, 
+
+181
+00:11:32,892 --> 00:11:36,663
+pero para resumir, aplicar la transformada de Fourier a la transformada 
+
+182
+00:11:36,663 --> 00:11:39,700
+de Fourier te devuelve algo cercano a la función original.
+
+183
+00:11:40,760 --> 00:11:44,400
+Más o menos, esto es un poco mentira, pero va en la dirección de la verdad.
+
+184
+00:11:44,720 --> 00:11:47,783
+Y la mayor parte de la razón por la que es mentira es que todavía 
+
+185
+00:11:47,783 --> 00:11:50,567
+tengo que decirles cuál es la transformada de Fourier real, 
+
+186
+00:11:50,567 --> 00:11:54,420
+ya que es un poco más compleja que esta coordenada x de la idea del centro de masa.
+
+187
+00:11:55,380 --> 00:11:59,223
+En primer lugar, recuperando este gráfico terminado y observando su centro de masa, 
+
+188
+00:11:59,223 --> 00:12:02,380
+la coordenada x es en realidad solo la mitad de la historia, ¿verdad?
+
+189
+00:12:02,520 --> 00:12:05,440
+Quiero decir, esta cosa está en dos dimensiones y también tiene una coordenada y.
+
+190
+00:12:05,860 --> 00:12:10,105
+Y como es típico en matemáticas, siempre que se trata de algo bidimensional, 
+
+191
+00:12:10,105 --> 00:12:12,917
+es elegante pensar en ello como un plano complejo, 
+
+192
+00:12:12,917 --> 00:12:17,052
+donde este centro de masa será un número complejo que tiene una parte real 
+
+193
+00:12:17,052 --> 00:12:18,100
+y una imaginaria. .
+
+194
+00:12:21,140 --> 00:12:23,520
+Y la razón para hablar en términos de números complejos, 
+
+195
+00:12:23,520 --> 00:12:25,901
+en lugar de simplemente decir que tiene dos coordenadas, 
+
+196
+00:12:25,901 --> 00:12:29,242
+es que los números complejos se prestan a descripciones realmente agradables de 
+
+197
+00:12:29,242 --> 00:12:31,540
+cosas que tienen que ver con el devanado y la rotación.
+
+198
+00:12:32,360 --> 00:12:35,866
+Por ejemplo, la fórmula de Euler nos dice que si elevamos e a algún 
+
+199
+00:12:35,866 --> 00:12:39,475
+número multiplicado por i, aterrizaremos en el punto que obtendríamos 
+
+200
+00:12:39,475 --> 00:12:43,187
+si camináramos ese número de unidades alrededor de un círculo con radio 
+
+201
+00:12:43,187 --> 00:12:46,900
+1 en el sentido contrario a las agujas del reloj, comenzando en el bien.
+
+202
+00:12:47,920 --> 00:12:50,961
+Entonces imagina que quisieras describir la rotación 
+
+203
+00:12:50,961 --> 00:12:53,200
+a una velocidad de 1 ciclo por segundo.
+
+204
+00:12:54,160 --> 00:12:58,838
+Una cosa que podrías hacer es llevar la expresión e a 2 pi por i por t, 
+
+205
+00:12:58,838 --> 00:13:04,296
+donde t es la cantidad de tiempo que ha pasado, ya que para un círculo con radio 1, 
+
+206
+00:13:04,296 --> 00:13:07,740
+2 pi describe la longitud total de su circunferencia.
+
+207
+00:13:08,920 --> 00:13:12,793
+Y esto es un poco vertiginoso de ver, así que tal vez quieras describir 
+
+208
+00:13:12,793 --> 00:13:15,859
+una frecuencia diferente, algo más baja y más razonable, 
+
+209
+00:13:15,859 --> 00:13:20,540
+y para eso simplemente multiplicarías ese tiempo t en el exponente por la frecuencia f.
+
+210
+00:13:21,200 --> 00:13:25,112
+Por ejemplo, si f fuera 1 décimo, entonces este vector da una 
+
+211
+00:13:25,112 --> 00:13:29,088
+vuelta completa cada 10 segundos, ya que el tiempo t tiene que 
+
+212
+00:13:29,088 --> 00:13:33,380
+aumentar hasta 10 antes de que el exponente completo parezca 2 pi i.
+
+213
+00:13:34,140 --> 00:13:38,856
+Tengo otro video que da una idea de por qué este es el comportamiento de e a x para 
+
+214
+00:13:38,856 --> 00:13:43,460
+entradas imaginarias, si tienes curiosidad, pero por ahora lo daremos por sentado.
+
+215
+00:13:44,440 --> 00:13:46,180
+Ahora bien, ¿por qué les digo esto?, se preguntarán.
+
+216
+00:13:46,600 --> 00:13:49,732
+Bueno, nos brinda una manera realmente agradable de escribir la 
+
+217
+00:13:49,732 --> 00:13:53,060
+idea de enrollar el gráfico en una pequeña fórmula única y ajustada.
+
+218
+00:13:53,960 --> 00:13:57,271
+En primer lugar, la convención en el contexto de las transformadas 
+
+219
+00:13:57,271 --> 00:14:00,680
+de Fourier es pensar en rotar en el sentido de las agujas del reloj, 
+
+220
+00:14:00,680 --> 00:14:03,300
+así que agreguemos un signo negativo a ese exponente.
+
+221
+00:14:04,480 --> 00:14:08,295
+Ahora tomemos alguna función que describa la intensidad de una señal en función 
+
+222
+00:14:08,295 --> 00:14:11,920
+del tiempo, como esta onda coseno pura que teníamos antes, y llámala g de t.
+
+223
+00:14:12,760 --> 00:14:16,288
+Si multiplicas esta expresión exponencial por g de t, 
+
+224
+00:14:16,288 --> 00:14:21,514
+significa que el número complejo giratorio se escala hacia arriba y hacia abajo 
+
+225
+00:14:21,514 --> 00:14:23,540
+según el valor de esta función.
+
+226
+00:14:24,060 --> 00:14:27,088
+Así que puedes pensar en este pequeño vector giratorio con 
+
+227
+00:14:27,088 --> 00:14:30,220
+su longitud cambiante como si dibujaras el gráfico terminado.
+
+228
+00:14:31,320 --> 00:14:35,077
+Piénselo, esto es asombroso, esta expresión realmente pequeña es 
+
+229
+00:14:35,077 --> 00:14:38,777
+una forma súper elegante de resumir toda la idea de enrollar un 
+
+230
+00:14:38,777 --> 00:14:42,420
+gráfico alrededor de un círculo con una frecuencia variable, f.
+
+231
+00:14:43,320 --> 00:14:46,948
+Y recuerde, lo que queremos hacer con este gráfico terminado es 
+
+232
+00:14:46,948 --> 00:14:50,860
+rastrear su centro de masa, así que piense qué fórmula capturará eso.
+
+233
+00:14:51,760 --> 00:14:55,795
+Bueno, al menos para aproximarlo, podrías muestrear un montón de veces 
+
+234
+00:14:55,795 --> 00:14:59,944
+de la señal original, ver dónde terminan esos puntos en el gráfico final 
+
+235
+00:14:59,944 --> 00:15:04,946
+y luego simplemente tomar un promedio, es decir, sumarlos todos como números complejos. 
+
+236
+00:15:04,946 --> 00:15:08,300
+y luego divida por la cantidad de puntos que ha muestreado.
+
+237
+00:15:09,140 --> 00:15:13,180
+Esto será más preciso si toma muestras de más puntos que estén más juntos.
+
+238
+00:15:14,200 --> 00:15:17,881
+Y en el límite, en lugar de mirar la suma de un montón de puntos 
+
+239
+00:15:17,881 --> 00:15:21,449
+dividida por el número de puntos, se toma una integral de esta 
+
+240
+00:15:21,449 --> 00:15:25,640
+función dividida por el tamaño del intervalo de tiempo que estamos viendo.
+
+241
+00:15:25,940 --> 00:15:29,109
+La idea de integrar una función valorada compleja puede parecer extraña y, 
+
+242
+00:15:29,109 --> 00:15:32,659
+para cualquiera que tenga dudas con el cálculo, incluso puede resultar intimidante, 
+
+243
+00:15:32,659 --> 00:15:36,420
+pero el significado subyacente aquí realmente no requiere ningún conocimiento de cálculo.
+
+244
+00:15:36,860 --> 00:15:40,480
+La expresión completa es solo el centro de masa del gráfico terminado.
+
+245
+00:15:41,620 --> 00:15:46,582
+Genial, paso a paso, hemos construido esta expresión complicada, pero seamos realistas, 
+
+246
+00:15:46,582 --> 00:15:51,431
+sorprendentemente pequeña para toda la idea de la máquina bobinadora de la que hablé, 
+
+247
+00:15:51,431 --> 00:15:56,393
+y ahora solo hay una distinción final que señalar entre esto y la verdadera honestidad. 
+
+248
+00:15:56,393 --> 00:15:59,100
+-a la bondad transformada de Fourier, es decir, 
+
+249
+00:15:59,100 --> 00:16:01,920
+simplemente no dividir por el intervalo de tiempo.
+
+250
+00:16:02,540 --> 00:16:05,380
+La transformada de Fourier es sólo la parte integral de esto.
+
+251
+00:16:06,360 --> 00:16:09,424
+Lo que eso significa es que en lugar de mirar el centro de masa, 
+
+252
+00:16:09,424 --> 00:16:10,980
+lo ampliarías en cierta cantidad.
+
+253
+00:16:11,660 --> 00:16:15,375
+Si la parte del gráfico original que estabas usando abarcaba 3 segundos, 
+
+254
+00:16:15,375 --> 00:16:17,360
+multiplicarías el centro de masa por 3.
+
+255
+00:16:19,500 --> 00:16:23,720
+Si durara 6 segundos, multiplicarías el centro de masa por 6.
+
+256
+00:16:25,040 --> 00:16:28,503
+Físicamente, esto tiene el efecto de que cuando una determinada 
+
+257
+00:16:28,503 --> 00:16:31,750
+frecuencia persiste durante mucho tiempo, la magnitud de la 
+
+258
+00:16:31,750 --> 00:16:35,160
+transformada de Fourier en esa frecuencia aumenta cada vez más.
+
+259
+00:16:36,040 --> 00:16:41,029
+Por ejemplo, lo que estamos viendo aquí es cómo cuando tienes una frecuencia pura de 
+
+260
+00:16:41,029 --> 00:16:45,842
+2 latidos por segundo y la enrollas alrededor del gráfico a 2 ciclos por segundo, 
+
+261
+00:16:45,842 --> 00:16:48,601
+el centro de masa permanece en el mismo lugar, 
+
+262
+00:16:48,601 --> 00:16:51,888
+pero cuanto más tiempo Mientras más persista esa señal, 
+
+263
+00:16:51,888 --> 00:16:55,880
+mayor será el valor de la transformada de Fourier en esa frecuencia.
+
+264
+00:16:56,500 --> 00:16:59,406
+Para otras frecuencias, incluso si solo lo aumentas un poco, 
+
+265
+00:16:59,406 --> 00:17:02,836
+esto se anula por el hecho de que para intervalos de tiempo más largos, 
+
+266
+00:17:02,836 --> 00:17:06,171
+le estás dando al gráfico terminado más oportunidades de equilibrarse 
+
+267
+00:17:06,171 --> 00:17:07,220
+alrededor del círculo.
+
+268
+00:17:08,940 --> 00:17:11,390
+Son muchas partes móviles diferentes, así que 
+
+269
+00:17:11,390 --> 00:17:14,160
+retrocedamos y resumamos lo que tenemos hasta ahora.
+
+270
+00:17:14,599 --> 00:17:17,540
+La transformada de Fourier de una intensidad vs.
+
+271
+00:17:17,700 --> 00:17:20,928
+La función de tiempo, como g de t, es una función nueva, 
+
+272
+00:17:20,928 --> 00:17:24,724
+que no tiene el tiempo como entrada, sino que toma una frecuencia, 
+
+273
+00:17:24,724 --> 00:17:27,500
+lo que he estado llamando frecuencia de bobinado.
+
+274
+00:17:28,680 --> 00:17:32,187
+En términos de notación, por cierto, la convención común es llamar 
+
+275
+00:17:32,187 --> 00:17:35,380
+a esta nueva función g-hat con un pequeño circunflejo encima.
+
+276
+00:17:35,840 --> 00:17:38,669
+La salida de esta función es un número complejo, 
+
+277
+00:17:38,669 --> 00:17:43,114
+algún punto en el plano 2d que corresponde a la intensidad de una frecuencia 
+
+278
+00:17:43,114 --> 00:17:45,020
+determinada en la señal original.
+
+279
+00:17:46,060 --> 00:17:49,465
+La gráfica que he estado graficando para la transformada de Fourier es solo 
+
+280
+00:17:49,465 --> 00:17:51,750
+el componente real de esa salida, la coordenada x, 
+
+281
+00:17:51,750 --> 00:17:55,200
+pero también puedes graficar el componente imaginario por separado si deseas 
+
+282
+00:17:55,200 --> 00:17:56,500
+una descripción más completa.
+
+283
+00:17:57,440 --> 00:18:01,440
+Y todo esto está resumido dentro de esa fórmula que construimos.
+
+284
+00:18:01,920 --> 00:18:06,733
+Y fuera de contexto, puedes imaginar cómo ver esta fórmula parecería algo desalentador, 
+
+285
+00:18:06,733 --> 00:18:10,507
+pero si entiendes cómo los exponenciales corresponden a la rotación, 
+
+286
+00:18:10,507 --> 00:18:15,265
+cómo multiplicar eso por la función g de t significa dibujar una versión terminada del 
+
+287
+00:18:15,265 --> 00:18:20,133
+gráfico, y cómo una La integral de una función valorada compleja se puede interpretar en 
+
+288
+00:18:20,133 --> 00:18:24,564
+términos de una idea de centro de masas, se puede ver cómo todo esto conlleva un 
+
+289
+00:18:24,564 --> 00:18:26,260
+significado intuitivo muy rico.
+
+290
+00:18:27,540 --> 00:18:30,640
+Y, por cierto, una pequeña nota antes de que podamos dar por concluido esto.
+
+291
+00:18:30,920 --> 00:18:33,825
+Aunque en la práctica, con cosas como la edición de sonido, 
+
+292
+00:18:33,825 --> 00:18:37,651
+integrarás en un intervalo de tiempo finito, la teoría de las transformadas de 
+
+293
+00:18:37,651 --> 00:18:41,331
+Fourier a menudo se expresa donde los límites de esta integral son infinito 
+
+294
+00:18:41,331 --> 00:18:42,300
+negativo e infinito.
+
+295
+00:18:43,140 --> 00:18:46,390
+Concretamente, lo que eso significa es que consideramos esta expresión para 
+
+296
+00:18:46,390 --> 00:18:49,598
+todos los intervalos de tiempo finitos posibles y simplemente preguntamos: 
+
+297
+00:18:49,598 --> 00:18:53,020
+¿cuál es su límite a medida que ese intervalo de tiempo crece hasta el infinito?
+
+298
+00:18:54,760 --> 00:18:57,040
+Y hombre, oh hombre, hay mucho más que decir.
+
+299
+00:18:57,220 --> 00:18:58,800
+Tanto es así que no quiero darlo por hecho aquí.
+
+300
+00:18:58,980 --> 00:19:01,258
+Esta transformación se extiende a rincones de las matemáticas 
+
+301
+00:19:01,258 --> 00:19:03,500
+mucho más allá de la idea de extraer frecuencias de la señal.
+
+302
+00:19:04,240 --> 00:19:06,831
+Así que el próximo vídeo que publiqué abordará un par de estos, 
+
+303
+00:19:06,831 --> 00:19:09,140
+y ahí es donde las cosas empiezan a ponerse interesantes.
+
+304
+00:19:10,000 --> 00:19:13,152
+Así que mantente suscrito para cuando salga, o una opción alternativa es 
+
+305
+00:19:13,152 --> 00:19:16,390
+simplemente ver un par de videos de 3Blue y Brown para que el recomendador 
+
+306
+00:19:16,390 --> 00:19:19,500
+de YouTube esté más inclinado a mostrarte las cosas nuevas que aparecen.
+
+307
+00:19:19,880 --> 00:19:20,760
+Realmente la elección es tuya.
+
+308
+00:19:22,640 --> 00:19:26,352
+Y para cerrar, tengo algo bastante divertido, un acertijo matemático del 
+
+309
+00:19:26,352 --> 00:19:30,420
+patrocinador de este video, Jane Street, que busca reclutar más talento técnico.
+
+310
+00:19:31,200 --> 00:19:36,378
+Entonces, digamos que tienes un conjunto convexo acotado cerrado C ubicado en un espacio 
+
+311
+00:19:36,378 --> 00:19:41,440
+3D, y luego deja que B sea el límite de ese espacio, la superficie de tu masa compleja.
+
+312
+00:19:42,200 --> 00:19:46,526
+Ahora imagina tomar cada par posible de puntos en esa superficie y sumarlos, 
+
+313
+00:19:46,526 --> 00:19:48,100
+haciendo una suma vectorial.
+
+314
+00:19:48,960 --> 00:19:51,320
+Llamemos a este conjunto de todas las sumas posibles D.
+
+315
+00:19:52,020 --> 00:19:55,920
+Tu tarea es demostrar que D también es un conjunto convexo.
+
+316
+00:19:57,200 --> 00:19:59,762
+Entonces, Jane Street es una empresa de comercio cuantitativo, 
+
+317
+00:19:59,762 --> 00:20:03,260
+y si usted es el tipo de persona que disfruta de las matemáticas y resuelve acertijos 
+
+318
+00:20:03,260 --> 00:20:05,904
+como este, el equipo realmente valora la curiosidad intelectual, 
+
+319
+00:20:05,904 --> 00:20:08,020
+por lo que podrían estar interesados en contratarlo.
+
+320
+00:20:08,360 --> 00:20:10,720
+Y están buscando tanto empleados de tiempo completo como pasantes.
+
+321
+00:20:11,140 --> 00:20:14,469
+Por mi parte, puedo decir que el par de personas con las que he interactuado 
+
+322
+00:20:14,469 --> 00:20:17,495
+allí parecen amar las matemáticas y compartirlas, y cuando contratan, 
+
+323
+00:20:17,495 --> 00:20:20,348
+se fijan menos en su experiencia en finanzas que en cómo piensas, 
+
+324
+00:20:20,348 --> 00:20:24,240
+cómo aprendes y cómo resuelves problemas, de ahí el patrocinio de un vídeo de 3Blue1Brown.
+
+325
+00:20:25,000 --> 00:20:28,710
+Si desea la respuesta a ese enigma, aprender más sobre lo que 
+
+326
+00:20:28,710 --> 00:20:32,840
+hacen o solicitar puestos vacantes, visite janestreet.com barra 3b1b.
+
+327
+00:20:41,040 --> 00:20:46,800
+Gracias.
+

@@ -1,0 +1,1372 @@
+1
+00:00:04,180 --> 00:00:07,280
+Dans la dernière vidéo, j&#39;ai présenté la structure d&#39;un réseau de neurones.
+
+2
+00:00:07,680 --> 00:00:10,582
+Je vais donner un bref récapitulatif ici pour que ce soit frais dans nos esprits, 
+
+3
+00:00:10,582 --> 00:00:12,600
+puis j&#39;ai deux objectifs principaux pour cette vidéo.
+
+4
+00:00:13,100 --> 00:00:15,309
+La première consiste à introduire l’idée de descente de gradient, 
+
+5
+00:00:15,309 --> 00:00:17,921
+qui sous-tend non seulement la façon dont les réseaux de neurones apprennent, 
+
+6
+00:00:17,921 --> 00:00:20,600
+mais également le fonctionnement de nombreux autres apprentissages automatiques.
+
+7
+00:00:21,120 --> 00:00:24,371
+Ensuite, nous approfondirons un peu plus le fonctionnement de ce réseau 
+
+8
+00:00:24,371 --> 00:00:27,940
+particulier et ce que ces couches cachées de neurones finissent par rechercher.
+
+9
+00:00:28,980 --> 00:00:32,345
+Pour rappel, notre objectif ici est l&#39;exemple classique de la 
+
+10
+00:00:32,345 --> 00:00:36,220
+reconnaissance de chiffres manuscrits, le bon monde des réseaux de neurones.
+
+11
+00:00:37,020 --> 00:00:39,924
+Ces chiffres sont rendus sur une grille de 28 x 28 pixels, 
+
+12
+00:00:39,924 --> 00:00:43,420
+chaque pixel ayant une valeur en niveaux de gris comprise entre 0 et 1.
+
+13
+00:00:43,820 --> 00:00:50,040
+C’est ce qui détermine l’activation de 784 neurones dans la couche d’entrée du réseau.
+
+14
+00:00:51,180 --> 00:00:54,600
+Et puis l’activation de chaque neurone dans les couches suivantes 
+
+15
+00:00:54,600 --> 00:00:58,954
+est basée sur une somme pondérée de toutes les activations de la couche précédente, 
+
+16
+00:00:58,954 --> 00:01:00,820
+plus un nombre spécial appelé biais.
+
+17
+00:01:02,160 --> 00:01:04,784
+Ensuite, vous composez cette somme avec une autre fonction, 
+
+18
+00:01:04,784 --> 00:01:08,152
+comme l&#39;écrasement sigmoïde, ou un relu, comme je l&#39;ai parcouru dans 
+
+19
+00:01:08,152 --> 00:01:08,940
+la dernière vidéo.
+
+20
+00:01:09,480 --> 00:01:14,427
+Au total, étant donné le choix quelque peu arbitraire de deux couches cachées de 16 
+
+21
+00:01:14,427 --> 00:01:19,491
+neurones chacune, le réseau a environ 13 000 poids et biais que nous pouvons ajuster, 
+
+22
+00:01:19,491 --> 00:01:24,380
+et ce sont ces valeurs qui déterminent exactement ce que fait réellement le réseau.
+
+23
+00:01:24,880 --> 00:01:28,998
+Alors ce que nous voulons dire lorsque nous disons que ce réseau classe un chiffre donné, 
+
+24
+00:01:28,998 --> 00:01:31,881
+c&#39;est que le plus brillant de ces 10 neurones de la couche 
+
+25
+00:01:31,881 --> 00:01:33,300
+finale correspond à ce chiffre.
+
+26
+00:01:34,100 --> 00:01:37,903
+Et rappelez-vous, la motivation que nous avions en tête ici pour la structure en couches 
+
+27
+00:01:37,903 --> 00:01:40,851
+était que peut-être la deuxième couche pourrait reprendre les bords, 
+
+28
+00:01:40,851 --> 00:01:44,526
+et la troisième couche pourrait reprendre des motifs comme des boucles et des lignes, 
+
+29
+00:01:44,526 --> 00:01:47,176
+et la dernière pourrait simplement reconstituer ces éléments. 
+
+30
+00:01:47,176 --> 00:01:48,800
+modèles pour reconnaître les chiffres.
+
+31
+00:01:49,800 --> 00:01:52,240
+Nous apprenons donc ici comment le réseau apprend.
+
+32
+00:01:52,640 --> 00:01:56,127
+Ce que nous voulons, c&#39;est un algorithme dans lequel vous pouvez montrer à ce 
+
+33
+00:01:56,127 --> 00:01:58,254
+réseau tout un tas de données d&#39;entraînement, 
+
+34
+00:01:58,254 --> 00:02:01,741
+qui se présentent sous la forme d&#39;un tas d&#39;images différentes de chiffres 
+
+35
+00:02:01,741 --> 00:02:05,101
+manuscrits, ainsi que des étiquettes indiquant ce qu&#39;ils sont censés être, 
+
+36
+00:02:05,101 --> 00:02:08,631
+et cela va ajuster ces 13 000 poids et biais afin d&#39;améliorer ses performances 
+
+37
+00:02:08,631 --> 00:02:10,120
+sur les données d&#39;entraînement.
+
+38
+00:02:10,720 --> 00:02:13,582
+Espérons que cette structure en couches signifie que ce qu’il 
+
+39
+00:02:13,582 --> 00:02:16,860
+apprend se généralise aux images au-delà de ces données d’entraînement.
+
+40
+00:02:17,640 --> 00:02:20,556
+La façon dont nous testons cela est qu&#39;après avoir entraîné le réseau, 
+
+41
+00:02:20,556 --> 00:02:23,628
+vous lui montrez davantage de données étiquetées qu&#39;il n&#39;a jamais vues 
+
+42
+00:02:23,628 --> 00:02:26,700
+auparavant, et vous voyez avec quelle précision il classe ces nouvelles images.
+
+43
+00:02:31,120 --> 00:02:33,935
+Heureusement pour nous, et ce qui en fait un exemple si courant, 
+
+44
+00:02:33,935 --> 00:02:37,096
+c&#39;est que les bonnes personnes derrière la base de données MNIST ont 
+
+45
+00:02:37,096 --> 00:02:40,865
+rassemblé une collection de dizaines de milliers d&#39;images de chiffres manuscrites, 
+
+46
+00:02:40,865 --> 00:02:44,200
+chacune étiquetée avec les chiffres qu&#39;elles sont censées indiquer. être.
+
+47
+00:02:44,900 --> 00:02:48,839
+Et aussi provocateur que cela puisse être de décrire une machine comme un apprentissage, 
+
+48
+00:02:48,839 --> 00:02:51,008
+une fois que vous voyez comment elle fonctionne, 
+
+49
+00:02:51,008 --> 00:02:54,506
+cela ressemble beaucoup moins à une prémisse folle de science-fiction qu&#39;à 
+
+50
+00:02:54,506 --> 00:02:55,480
+un exercice de calcul.
+
+51
+00:02:56,200 --> 00:02:59,960
+Je veux dire, en gros, cela revient à trouver le minimum d&#39;une certaine fonction.
+
+52
+00:03:01,940 --> 00:03:05,972
+Rappelez-vous, conceptuellement, nous considérons chaque neurone comme étant 
+
+53
+00:03:05,972 --> 00:03:08,800
+connecté à tous les neurones de la couche précédente, 
+
+54
+00:03:08,800 --> 00:03:13,042
+et les poids dans la somme pondérée définissant son activation sont un peu comme 
+
+55
+00:03:13,042 --> 00:03:17,231
+les forces de ces connexions, et le biais est une indication de si ce neurone a 
+
+56
+00:03:17,231 --> 00:03:18,960
+tendance à être actif ou inactif.
+
+57
+00:03:19,720 --> 00:03:22,017
+Et pour commencer, nous allons simplement initialiser 
+
+58
+00:03:22,017 --> 00:03:24,400
+tous ces poids et biais de manière totalement aléatoire.
+
+59
+00:03:24,940 --> 00:03:27,653
+Inutile de dire que ce réseau fonctionnera assez horriblement sur un 
+
+60
+00:03:27,653 --> 00:03:30,720
+exemple de formation donné, car il fait simplement quelque chose de aléatoire.
+
+61
+00:03:31,040 --> 00:03:33,579
+Par exemple, vous introduisez cette image d&#39;un 
+
+62
+00:03:33,579 --> 00:03:36,020
+3 et la couche de sortie ressemble à un désordre.
+
+63
+00:03:36,600 --> 00:03:39,833
+Donc, ce que vous faites, c&#39;est définir une fonction de coût, 
+
+64
+00:03:39,833 --> 00:03:42,920
+une façon de dire à l&#39;ordinateur, non, mauvais ordinateur, 
+
+65
+00:03:42,920 --> 00:03:47,085
+que la sortie devrait avoir des activations qui sont 0 pour la plupart des neurones, 
+
+66
+00:03:47,085 --> 00:03:50,760
+mais 1 pour ce neurone, ce que vous m&#39;avez donné est une pure poubelle.
+
+67
+00:03:51,720 --> 00:03:54,888
+Pour dire cela un peu plus mathématiquement, vous additionnez les 
+
+68
+00:03:54,888 --> 00:03:58,201
+carrés des différences entre chacune de ces activations de sortie de 
+
+69
+00:03:58,201 --> 00:04:01,178
+corbeille et la valeur que vous souhaitez qu&#39;elles aient, 
+
+70
+00:04:01,178 --> 00:04:05,020
+et c&#39;est ce que nous appellerons le coût d&#39;un seul exemple de formation.
+
+71
+00:04:05,960 --> 00:04:09,233
+Notez que cette somme est petite lorsque le réseau classe 
+
+72
+00:04:09,233 --> 00:04:12,562
+correctement l&#39;image en toute confiance, mais elle est 
+
+73
+00:04:12,562 --> 00:04:16,399
+importante lorsque le réseau semble ne pas savoir ce qu&#39;il fait.
+
+74
+00:04:18,640 --> 00:04:21,904
+Vous devez donc considérer le coût moyen sur l’ensemble des 
+
+75
+00:04:21,904 --> 00:04:25,440
+dizaines de milliers d’exemples de formation à votre disposition.
+
+76
+00:04:27,040 --> 00:04:29,940
+Ce coût moyen est notre mesure de la mauvaise qualité du 
+
+77
+00:04:29,940 --> 00:04:32,740
+réseau et de la mauvaise sensation de l&#39;ordinateur.
+
+78
+00:04:33,420 --> 00:04:34,600
+Et c&#39;est une chose compliquée.
+
+79
+00:04:35,040 --> 00:04:39,318
+Rappelez-vous que le réseau lui-même était fondamentalement une fonction, 
+
+80
+00:04:39,318 --> 00:04:43,307
+une fonction qui prend en entrée 784 nombres, les valeurs de pixels, 
+
+81
+00:04:43,307 --> 00:04:46,140
+et crache 10 nombres en sortie, et dans un sens, 
+
+82
+00:04:46,140 --> 00:04:48,800
+il est paramétré par tous ces poids et biais ?
+
+83
+00:04:49,500 --> 00:04:52,820
+Eh bien, la fonction de coût est en plus une couche de complexité.
+
+84
+00:04:53,100 --> 00:04:56,554
+Il prend en entrée ces quelque 13 000 poids et biais, 
+
+85
+00:04:56,554 --> 00:05:01,031
+et crache un seul chiffre décrivant la gravité de ces poids et biais, 
+
+86
+00:05:01,031 --> 00:05:06,213
+et la façon dont il est défini dépend du comportement du réseau sur les dizaines 
+
+87
+00:05:06,213 --> 00:05:08,900
+de milliers de données d&#39;entraînement.
+
+88
+00:05:09,520 --> 00:05:11,000
+Cela fait beaucoup de choses à penser.
+
+89
+00:05:12,400 --> 00:05:15,820
+Mais il ne suffit pas de dire à l&#39;ordinateur à quel point il fait un travail merdique.
+
+90
+00:05:16,220 --> 00:05:20,060
+Vous voulez lui dire comment modifier ces pondérations et ces biais pour qu’il s’améliore.
+
+91
+00:05:20,780 --> 00:05:24,030
+Pour faciliter les choses, plutôt que de lutter pour imaginer 
+
+92
+00:05:24,030 --> 00:05:27,071
+une fonction avec 13 000 entrées, imaginez simplement une 
+
+93
+00:05:27,071 --> 00:05:30,480
+fonction simple qui a un nombre en entrée et un nombre en sortie.
+
+94
+00:05:31,480 --> 00:05:35,300
+Comment trouver une entrée qui minimise la valeur de cette fonction ?
+
+95
+00:05:36,460 --> 00:05:40,114
+Les étudiants en calcul sauront que vous pouvez parfois déterminer ce minimum 
+
+96
+00:05:40,114 --> 00:05:43,676
+explicitement, mais ce n&#39;est pas toujours réalisable pour des fonctions 
+
+97
+00:05:43,676 --> 00:05:47,190
+vraiment compliquées, certainement pas dans la version à 13 000 entrées de 
+
+98
+00:05:47,190 --> 00:05:51,080
+cette situation pour notre fonction de coût de réseau neuronal compliquée et folle.
+
+99
+00:05:51,580 --> 00:05:55,366
+Une tactique plus flexible consiste à commencer par n&#39;importe quelle entrée 
+
+100
+00:05:55,366 --> 00:05:59,200
+et à déterminer dans quelle direction vous devez aller pour réduire cette sortie.
+
+101
+00:06:00,080 --> 00:06:03,278
+Plus précisément, si vous pouvez déterminer la pente de la fonction là 
+
+102
+00:06:03,278 --> 00:06:06,431
+où vous vous trouvez, déplacez-vous vers la gauche si cette pente est 
+
+103
+00:06:06,431 --> 00:06:09,900
+positive et déplacez l&#39;entrée vers la droite si cette pente est négative.
+
+104
+00:06:11,960 --> 00:06:14,671
+Si vous faites cela à plusieurs reprises, en vérifiant à chaque 
+
+105
+00:06:14,671 --> 00:06:17,298
+point la nouvelle pente et en prenant l&#39;étape appropriée, 
+
+106
+00:06:17,298 --> 00:06:19,840
+vous vous approcherez d&#39;un minimum local de la fonction.
+
+107
+00:06:20,640 --> 00:06:23,800
+L’image que vous avez peut-être en tête ici est celle d’une balle qui dévale une colline.
+
+108
+00:06:24,620 --> 00:06:27,651
+Remarquez que même pour cette fonction à entrée unique très simplifiée, 
+
+109
+00:06:27,651 --> 00:06:31,104
+il existe de nombreuses vallées possibles dans lesquelles vous pourriez atterrir, 
+
+110
+00:06:31,104 --> 00:06:33,841
+en fonction de l&#39;entrée aléatoire à laquelle vous commencez, 
+
+111
+00:06:33,841 --> 00:06:37,505
+et rien ne garantit que le minimum local dans lequel vous atterrirez sera la valeur la 
+
+112
+00:06:37,505 --> 00:06:39,400
+plus petite possible. de la fonction de coût.
+
+113
+00:06:40,220 --> 00:06:42,620
+Cela se répercutera également sur notre cas de réseau neuronal.
+
+114
+00:06:43,180 --> 00:06:47,019
+Je veux également que vous remarquiez que si vous rendez la taille de vos pas 
+
+115
+00:06:47,019 --> 00:06:50,760
+proportionnelle à la pente, lorsque la pente s&#39;aplatit vers le minimum, 
+
+116
+00:06:50,760 --> 00:06:54,600
+vos pas deviennent de plus en plus petits, ce qui vous aide à ne pas dépasser.
+
+117
+00:06:55,940 --> 00:06:58,641
+En augmentant un peu la complexité, imaginez plutôt 
+
+118
+00:06:58,641 --> 00:07:00,980
+une fonction avec deux entrées et une sortie.
+
+119
+00:07:01,500 --> 00:07:04,820
+Vous pourriez considérer l’espace d’entrée comme le plan xy et la fonction de 
+
+120
+00:07:04,820 --> 00:07:08,140
+coût comme étant représentée graphiquement comme une surface au-dessus de lui.
+
+121
+00:07:08,760 --> 00:07:11,593
+Au lieu de poser des questions sur la pente de la fonction, 
+
+122
+00:07:11,593 --> 00:07:14,946
+vous devez vous demander dans quelle direction vous devez marcher dans 
+
+123
+00:07:14,946 --> 00:07:18,960
+cet espace d&#39;entrée afin de diminuer le plus rapidement la sortie de la fonction.
+
+124
+00:07:19,720 --> 00:07:21,760
+En d’autres termes, quelle est la direction de la descente ?
+
+125
+00:07:22,380 --> 00:07:25,560
+Encore une fois, il est utile de penser à une balle qui dévale cette colline.
+
+126
+00:07:26,660 --> 00:07:30,700
+Ceux d&#39;entre vous qui sont familiers avec le calcul multivarié sauront que la 
+
+127
+00:07:30,700 --> 00:07:34,493
+pente d&#39;une fonction vous donne la direction de la montée la plus raide, 
+
+128
+00:07:34,493 --> 00:07:38,780
+dans quelle direction devez-vous avancer pour augmenter la fonction le plus rapidement.
+
+129
+00:07:39,560 --> 00:07:42,720
+Naturellement, prendre le négatif de ce gradient vous donne 
+
+130
+00:07:42,720 --> 00:07:46,040
+la direction du pas qui diminue la fonction le plus rapidement.
+
+131
+00:07:47,240 --> 00:07:50,345
+Plus encore, la longueur de ce vecteur gradient 
+
+132
+00:07:50,345 --> 00:07:53,840
+indique à quel point la pente la plus raide est raide.
+
+133
+00:07:54,540 --> 00:07:57,440
+Si vous n&#39;êtes pas familier avec le calcul multivarié et souhaitez en savoir plus, 
+
+134
+00:07:57,440 --> 00:08:00,340
+consultez certains des travaux que j&#39;ai réalisés pour la Khan Academy sur le sujet.
+
+135
+00:08:00,860 --> 00:08:03,937
+Honnêtement, tout ce qui compte pour vous et moi en ce moment, 
+
+136
+00:08:03,937 --> 00:08:07,503
+c&#39;est qu&#39;en principe, il existe un moyen de calculer ce vecteur, 
+
+137
+00:08:07,503 --> 00:08:11,900
+ce vecteur qui vous indique quelle est la direction de la descente et quelle est sa pente.
+
+138
+00:08:12,400 --> 00:08:14,260
+Tout ira bien si c&#39;est tout ce que vous savez 
+
+139
+00:08:14,260 --> 00:08:16,120
+et que vous n&#39;êtes pas solide sur les détails.
+
+140
+00:08:17,200 --> 00:08:20,473
+Si vous pouvez obtenir cela, l&#39;algorithme permettant de minimiser 
+
+141
+00:08:20,473 --> 00:08:23,326
+la fonction consiste à calculer cette direction de gradient, 
+
+142
+00:08:23,326 --> 00:08:26,740
+puis à faire un petit pas en descente et à répéter cela encore et encore.
+
+143
+00:08:27,700 --> 00:08:30,286
+C&#39;est la même idée de base pour une fonction 
+
+144
+00:08:30,286 --> 00:08:32,820
+qui possède 13 000 entrées au lieu de 2 entrées.
+
+145
+00:08:33,400 --> 00:08:36,596
+Imaginez organiser les 13 000 poids et biais de 
+
+146
+00:08:36,596 --> 00:08:39,460
+notre réseau dans un vecteur colonne géant.
+
+147
+00:08:40,140 --> 00:08:43,837
+Le gradient négatif de la fonction de coût n&#39;est qu&#39;un vecteur, 
+
+148
+00:08:43,837 --> 00:08:47,381
+c&#39;est une direction à l&#39;intérieur de cet espace d&#39;entrée 
+
+149
+00:08:47,381 --> 00:08:51,028
+incroyablement énorme qui vous indique quels coups de pouce à tous ces 
+
+150
+00:08:51,028 --> 00:08:54,880
+nombres vont provoquer la diminution la plus rapide de la fonction de coût.
+
+151
+00:08:55,640 --> 00:08:58,620
+Et bien sûr, grâce à notre fonction de coût spécialement conçue, 
+
+152
+00:08:58,620 --> 00:09:02,427
+modifier les pondérations et les biais pour les diminuer signifie que la sortie du 
+
+153
+00:09:02,427 --> 00:09:06,325
+réseau sur chaque élément de données d&#39;entraînement ressemble moins à un tableau 
+
+154
+00:09:06,325 --> 00:09:09,994
+aléatoire de 10 valeurs, mais plutôt à une décision réelle que nous souhaitons. 
+
+155
+00:09:09,994 --> 00:09:10,820
+c&#39;est à faire.
+
+156
+00:09:11,440 --> 00:09:14,529
+Il est important de se rappeler que cette fonction de coût implique une 
+
+157
+00:09:14,529 --> 00:09:17,876
+moyenne sur toutes les données d&#39;entraînement, donc si vous la minimisez, 
+
+158
+00:09:17,876 --> 00:09:21,180
+cela signifie que les performances sont meilleures sur tous ces échantillons.
+
+159
+00:09:23,820 --> 00:09:26,735
+L&#39;algorithme permettant de calculer efficacement ce gradient, 
+
+160
+00:09:26,735 --> 00:09:29,783
+qui est en fait au cœur de la façon dont un réseau neuronal apprend, 
+
+161
+00:09:29,783 --> 00:09:33,140
+s&#39;appelle la rétropropagation, et c&#39;est ce dont je vais parler dans 
+
+162
+00:09:33,140 --> 00:09:33,980
+la prochaine vidéo.
+
+163
+00:09:34,660 --> 00:09:38,806
+Là, je veux vraiment prendre le temps d&#39;examiner ce qui arrive exactement à chaque 
+
+164
+00:09:38,806 --> 00:09:41,571
+poids et biais pour une donnée d&#39;entraînement donnée, 
+
+165
+00:09:41,571 --> 00:09:45,860
+en essayant de donner une idée intuitive de ce qui se passe au-delà de la pile de calculs 
+
+166
+00:09:45,860 --> 00:09:47,100
+et de formules pertinents.
+
+167
+00:09:47,780 --> 00:09:50,348
+Ici, maintenant, la principale chose que je veux que vous sachiez, 
+
+168
+00:09:50,348 --> 00:09:53,069
+indépendamment des détails de mise en œuvre, c&#39;est que ce que nous 
+
+169
+00:09:53,069 --> 00:09:55,446
+entendons lorsque nous parlons d&#39;apprentissage en réseau, 
+
+170
+00:09:55,446 --> 00:09:58,360
+c&#39;est qu&#39;il s&#39;agit simplement de minimiser une fonction de coût.
+
+171
+00:09:59,300 --> 00:10:02,247
+Et remarquez, une des conséquences de cela est qu&#39;il est important 
+
+172
+00:10:02,247 --> 00:10:04,862
+que cette fonction de coût ait un résultat agréable et fluide, 
+
+173
+00:10:04,862 --> 00:10:08,100
+afin que nous puissions trouver un minimum local en descendant par petits pas.
+
+174
+00:10:09,260 --> 00:10:13,546
+C’est d’ailleurs pourquoi les neurones artificiels ont des activations continues, 
+
+175
+00:10:13,546 --> 00:10:17,101
+plutôt que d’être simplement actifs ou inactifs de manière binaire, 
+
+176
+00:10:17,101 --> 00:10:19,140
+comme le sont les neurones biologiques.
+
+177
+00:10:20,220 --> 00:10:23,469
+Ce processus consistant à pousser à plusieurs reprises l&#39;entrée d&#39;une 
+
+178
+00:10:23,469 --> 00:10:26,760
+fonction d&#39;un multiple du gradient négatif est appelé descente de gradient.
+
+179
+00:10:27,300 --> 00:10:30,709
+C&#39;est un moyen de converger vers un minimum local d&#39;une fonction de coût, 
+
+180
+00:10:30,709 --> 00:10:32,580
+essentiellement une vallée dans ce graphique.
+
+181
+00:10:33,440 --> 00:10:36,914
+Je montre toujours l&#39;image d&#39;une fonction avec deux entrées, bien sûr, 
+
+182
+00:10:36,914 --> 00:10:40,565
+car les coups de pouce dans un espace d&#39;entrée à 13 000 dimensions sont un peu 
+
+183
+00:10:40,565 --> 00:10:44,260
+difficiles à comprendre, mais il existe une belle façon non spatiale d&#39;y penser.
+
+184
+00:10:45,080 --> 00:10:48,440
+Chaque composante du gradient négatif nous dit deux choses.
+
+185
+00:10:49,060 --> 00:10:52,076
+Le signe, bien sûr, nous indique si la composante correspondante 
+
+186
+00:10:52,076 --> 00:10:55,140
+du vecteur d’entrée doit être poussée vers le haut ou vers le bas.
+
+187
+00:10:55,800 --> 00:10:59,318
+Mais surtout, les ampleurs relatives de tous ces composants 
+
+188
+00:10:59,318 --> 00:11:02,720
+vous indiquent quels changements sont les plus importants.
+
+189
+00:11:05,220 --> 00:11:09,153
+Vous voyez, dans notre réseau, un ajustement à l’un des poids peut avoir un impact 
+
+190
+00:11:09,153 --> 00:11:13,040
+beaucoup plus important sur la fonction de coût que l’ajustement à un autre poids.
+
+191
+00:11:14,800 --> 00:11:16,535
+Certaines de ces connexions sont tout simplement 
+
+192
+00:11:16,535 --> 00:11:18,200
+plus importantes pour nos données de formation.
+
+193
+00:11:19,320 --> 00:11:23,976
+Donc, une façon de penser à ce vecteur gradient de notre fonction de coût incroyablement 
+
+194
+00:11:23,976 --> 00:11:28,109
+massive est qu&#39;il code l&#39;importance relative de chaque poids et biais, 
+
+195
+00:11:28,109 --> 00:11:32,400
+c&#39;est-à-dire lequel de ces changements va rapporter le plus pour votre argent.
+
+196
+00:11:33,620 --> 00:11:36,640
+Il s’agit en réalité d’une autre façon de penser la direction.
+
+197
+00:11:37,100 --> 00:11:41,245
+Pour prendre un exemple plus simple, si vous avez une fonction avec deux variables en 
+
+198
+00:11:41,245 --> 00:11:45,101
+entrée et que vous calculez que son gradient à un point particulier est de 3,1, 
+
+199
+00:11:45,101 --> 00:11:49,342
+alors d&#39;une part vous pouvez interpréter cela comme disant que lorsque vous Si vous 
+
+200
+00:11:49,342 --> 00:11:53,584
+vous trouvez à cette entrée, vous déplacer dans cette direction augmente la fonction le 
+
+201
+00:11:53,584 --> 00:11:57,873
+plus rapidement, et lorsque vous représentez graphiquement la fonction au-dessus du plan 
+
+202
+00:11:57,873 --> 00:12:02,019
+des points d&#39;entrée, ce vecteur est ce qui vous donne la direction droite vers le 
+
+203
+00:12:02,019 --> 00:12:02,260
+haut.
+
+204
+00:12:02,860 --> 00:12:06,347
+Mais une autre façon de lire cela est de dire que les modifications apportées 
+
+205
+00:12:06,347 --> 00:12:09,969
+à cette première variable ont 3 fois plus d&#39;importance que les modifications 
+
+206
+00:12:09,969 --> 00:12:13,993
+apportées à la deuxième variable, qu&#39;au moins au voisinage de l&#39;entrée concernée, 
+
+207
+00:12:13,993 --> 00:12:16,900
+pousser la valeur x a beaucoup plus d&#39;impact pour votre mâle.
+
+208
+00:12:19,880 --> 00:12:22,340
+Faisons un zoom arrière et résumons où nous en sommes jusqu&#39;à présent.
+
+209
+00:12:22,840 --> 00:12:26,971
+Le réseau lui-même est cette fonction avec 784 entrées et 10 sorties, 
+
+210
+00:12:26,971 --> 00:12:30,040
+définies en fonction de toutes ces sommes pondérées.
+
+211
+00:12:30,640 --> 00:12:33,680
+La fonction de coût est en outre une couche de complexité supplémentaire.
+
+212
+00:12:33,980 --> 00:12:37,754
+Il prend les 13 000 poids et biais comme entrées et génère 
+
+213
+00:12:37,754 --> 00:12:41,720
+une seule mesure de moche basée sur les exemples de formation.
+
+214
+00:12:42,440 --> 00:12:44,717
+Et le gradient de la fonction de coût constitue 
+
+215
+00:12:44,717 --> 00:12:46,900
+encore un niveau de complexité supplémentaire.
+
+216
+00:12:47,360 --> 00:12:50,749
+Il nous indique quels coups de pouce à tous ces poids et biais provoquent le 
+
+217
+00:12:50,749 --> 00:12:53,522
+changement le plus rapide de la valeur de la fonction de coût, 
+
+218
+00:12:53,522 --> 00:12:56,867
+ce que vous pourriez interpréter comme indiquant quels changements et quels 
+
+219
+00:12:56,867 --> 00:12:57,880
+poids comptent le plus.
+
+220
+00:13:02,560 --> 00:13:06,024
+Ainsi, lorsque vous initialisez le réseau avec des poids et des biais aléatoires et 
+
+221
+00:13:06,024 --> 00:13:09,694
+que vous les ajustez plusieurs fois en fonction de ce processus de descente de gradient, 
+
+222
+00:13:09,694 --> 00:13:13,200
+dans quelle mesure fonctionne-t-il réellement sur des images jamais vues auparavant ?
+
+223
+00:13:14,100 --> 00:13:18,502
+Celui que j&#39;ai décrit ici, avec les deux couches cachées de 16 neurones chacune, 
+
+224
+00:13:18,502 --> 00:13:22,282
+choisies principalement pour des raisons esthétiques, n&#39;est pas mal, 
+
+225
+00:13:22,282 --> 00:13:25,960
+classant correctement environ 96 % des nouvelles images qu&#39;il voit.
+
+226
+00:13:26,680 --> 00:13:30,239
+Et honnêtement, si vous regardez certains des exemples sur lesquels il se trompe, 
+
+227
+00:13:30,239 --> 00:13:32,540
+vous vous sentez obligé de prendre un peu de relâche.
+
+228
+00:13:36,220 --> 00:13:38,949
+Maintenant, si vous jouez avec la structure des couches cachées et 
+
+229
+00:13:38,949 --> 00:13:41,760
+effectuez quelques ajustements, vous pouvez obtenir jusqu&#39;à 98 %.
+
+230
+00:13:41,760 --> 00:13:42,720
+Et c&#39;est plutôt bien !
+
+231
+00:13:43,020 --> 00:13:46,826
+Ce n&#39;est pas le meilleur, vous pouvez certainement obtenir de meilleures performances 
+
+232
+00:13:46,826 --> 00:13:48,984
+en devenant plus sophistiqué que ce réseau simple, 
+
+233
+00:13:48,984 --> 00:13:51,479
+mais étant donné à quel point la tâche initiale est ardue, 
+
+234
+00:13:51,479 --> 00:13:55,202
+je pense qu&#39;il y a quelque chose d&#39;incroyable à ce qu&#39;un réseau fasse aussi 
+
+235
+00:13:55,202 --> 00:13:57,824
+bien sur des images qu&#39;il n&#39;a jamais vues auparavant, 
+
+236
+00:13:57,824 --> 00:14:01,420
+étant donné que nous ne lui avons jamais dit spécifiquement quels modèles rechercher.
+
+237
+00:14:02,560 --> 00:14:05,443
+À l&#39;origine, la façon dont j&#39;ai motivé cette structure était en 
+
+238
+00:14:05,443 --> 00:14:08,488
+décrivant un espoir que nous pourrions avoir, que la deuxième couche puisse 
+
+239
+00:14:08,488 --> 00:14:11,412
+capter les petits bords, que la troisième couche rassemblerait ces bords 
+
+240
+00:14:11,412 --> 00:14:13,695
+pour reconnaître les boucles et les lignes plus longues, 
+
+241
+00:14:13,695 --> 00:14:17,180
+et que celles-ci pourraient être reconstituées. ensemble pour reconnaître les chiffres.
+
+242
+00:14:17,960 --> 00:14:20,400
+Alors, est-ce réellement ce que fait notre réseau ?
+
+243
+00:14:21,080 --> 00:14:24,400
+Eh bien, pour celui-ci au moins, pas du tout.
+
+244
+00:14:24,820 --> 00:14:26,763
+Rappelez-vous comment, dans la dernière vidéo, 
+
+245
+00:14:26,763 --> 00:14:29,782
+nous avons regardé comment les poids des connexions de tous les neurones 
+
+246
+00:14:29,782 --> 00:14:32,924
+de la première couche à un neurone donné de la deuxième couche peuvent être 
+
+247
+00:14:32,924 --> 00:14:35,984
+visualisés sous la forme d&#39;un motif de pixels donné que le neurone de 
+
+248
+00:14:35,984 --> 00:14:37,060
+la deuxième couche capte ?
+
+249
+00:14:37,780 --> 00:14:42,662
+Eh bien, lorsque nous faisons cela pour les poids associés à ces transitions, 
+
+250
+00:14:42,662 --> 00:14:47,920
+de la première couche à la suivante, au lieu de détecter de petits bords isolés ici 
+
+251
+00:14:47,920 --> 00:14:53,054
+et là, ils semblent presque aléatoires, avec juste des motifs très lâches dans le 
+
+252
+00:14:53,054 --> 00:14:53,680
+milieu là.
+
+253
+00:14:53,760 --> 00:14:57,381
+Il semblerait que dans l&#39;espace insondable de 13 000 dimensions de 
+
+254
+00:14:57,381 --> 00:15:01,308
+pondérations et de biais possibles, notre réseau s&#39;est trouvé un heureux 
+
+255
+00:15:01,308 --> 00:15:05,593
+petit minimum local qui, malgré la classification réussie de la plupart des images, 
+
+256
+00:15:05,593 --> 00:15:08,960
+ne reprend pas exactement les modèles que nous aurions pu espérer.
+
+257
+00:15:09,780 --> 00:15:11,760
+Et pour bien comprendre ce point, regardez ce qui 
+
+258
+00:15:11,760 --> 00:15:13,820
+se passe lorsque vous saisissez une image aléatoire.
+
+259
+00:15:14,320 --> 00:15:18,156
+Si le système était intelligent, vous pourriez vous attendre à ce qu&#39;il 
+
+260
+00:15:18,156 --> 00:15:21,943
+semble incertain, n&#39;activant peut-être pas vraiment l&#39;un de ces 10 
+
+261
+00:15:21,943 --> 00:15:26,133
+neurones de sortie ou les activant tous de manière uniforme, mais au lieu de cela, 
+
+262
+00:15:26,133 --> 00:15:28,859
+il vous donne en toute confiance une réponse absurde, 
+
+263
+00:15:28,859 --> 00:15:32,090
+comme s&#39;il était aussi sûr que ce bruit aléatoire est un 5, 
+
+264
+00:15:32,090 --> 00:15:34,160
+car une image réelle d&#39;un 5 est un 5.
+
+265
+00:15:34,540 --> 00:15:38,567
+Autrement dit, même si ce réseau reconnaît assez bien les chiffres, 
+
+266
+00:15:38,567 --> 00:15:40,700
+il ne sait pas comment les dessiner.
+
+267
+00:15:41,420 --> 00:15:43,409
+Cela est dû en grande partie au fait qu’il s’agit 
+
+268
+00:15:43,409 --> 00:15:45,240
+d’une configuration de formation très limitée.
+
+269
+00:15:45,880 --> 00:15:47,740
+Je veux dire, mettez-vous à la place du réseau ici.
+
+270
+00:15:48,140 --> 00:15:52,417
+De son point de vue, l’univers entier n’est constitué que de chiffres immobiles 
+
+271
+00:15:52,417 --> 00:15:55,465
+clairement définis et centrés dans une minuscule grille, 
+
+272
+00:15:55,465 --> 00:15:59,582
+et sa fonction de coût ne l’a jamais incité à être autre chose qu’absolument 
+
+273
+00:15:59,582 --> 00:16:01,080
+confiant dans ses décisions.
+
+274
+00:16:02,120 --> 00:16:05,382
+Donc, avec cela comme image de ce que font réellement ces neurones de deuxième couche, 
+
+275
+00:16:05,382 --> 00:16:07,895
+vous pourriez vous demander pourquoi j&#39;introduireais ce réseau 
+
+276
+00:16:07,895 --> 00:16:09,920
+avec la motivation de capter les bords et les modèles.
+
+277
+00:16:09,920 --> 00:16:12,300
+Je veux dire, ce n’est tout simplement pas du tout ce que cela finit par faire.
+
+278
+00:16:13,380 --> 00:16:17,180
+Eh bien, ce n’est pas notre objectif final, mais plutôt un point de départ.
+
+279
+00:16:17,640 --> 00:16:19,935
+Franchement, il s’agit d’une technologie ancienne, 
+
+280
+00:16:19,935 --> 00:16:23,310
+du type étudié dans les années 80 et 90, et vous devez la comprendre avant 
+
+281
+00:16:23,310 --> 00:16:26,099
+de pouvoir comprendre des variantes modernes plus détaillées, 
+
+282
+00:16:26,099 --> 00:16:29,520
+et elle est clairement capable de résoudre certains problèmes intéressants, 
+
+283
+00:16:29,520 --> 00:16:33,390
+mais plus vous approfondissez ce que ces couches cachées font vraiment l&#39;affaire, 
+
+284
+00:16:33,390 --> 00:16:34,740
+moins cela semble intelligent.
+
+285
+00:16:38,480 --> 00:16:41,108
+En déplaçant un instant l&#39;attention de la façon dont les réseaux apprennent 
+
+286
+00:16:41,108 --> 00:16:43,704
+vers la façon dont vous apprenez, cela ne se produira que si vous vous engagez 
+
+287
+00:16:43,704 --> 00:16:46,300
+activement avec le matériel présenté ici, d&#39;une manière ou d&#39;une autre.
+
+288
+00:16:47,060 --> 00:16:50,414
+Une chose assez simple que je veux que vous fassiez est de faire une pause 
+
+289
+00:16:50,414 --> 00:16:53,813
+maintenant et de réfléchir profondément un instant aux changements que vous 
+
+290
+00:16:53,813 --> 00:16:57,257
+pourriez apporter à ce système et à la manière dont il perçoit les images si 
+
+291
+00:16:57,257 --> 00:17:00,880
+vous vouliez qu&#39;il capte mieux des éléments tels que les bords et les motifs.
+
+292
+00:17:01,480 --> 00:17:04,140
+Mais mieux que cela, pour réellement approfondir le sujet, 
+
+293
+00:17:04,140 --> 00:17:07,882
+je recommande vivement le livre de Michael Nielsen sur l&#39;apprentissage profond 
+
+294
+00:17:07,882 --> 00:17:09,099
+et les réseaux de neurones.
+
+295
+00:17:09,680 --> 00:17:14,098
+Vous y trouverez le code et les données à télécharger et avec lesquelles jouer pour 
+
+296
+00:17:14,098 --> 00:17:18,359
+cet exemple précis, et le livre vous guidera étape par étape ce que fait ce code.
+
+297
+00:17:19,300 --> 00:17:22,652
+Ce qui est génial, c&#39;est que ce livre est gratuit et accessible au public, 
+
+298
+00:17:22,652 --> 00:17:25,325
+donc si vous en retirez quelque chose, pensez à vous joindre à 
+
+299
+00:17:25,325 --> 00:17:27,660
+moi pour faire un don en faveur des efforts de Nielsen.
+
+300
+00:17:27,660 --> 00:17:30,700
+J&#39;ai également lié quelques autres ressources que j&#39;aime 
+
+301
+00:17:30,700 --> 00:17:33,880
+beaucoup dans la description, y compris le magnifique et phénoménal 
+
+302
+00:17:33,880 --> 00:17:36,500
+article de blog de Chris Ola et les articles de Distill.
+
+303
+00:17:38,280 --> 00:17:40,969
+Pour conclure ici ces dernières minutes, je voudrais revenir 
+
+304
+00:17:40,969 --> 00:17:43,880
+sur un extrait de l&#39;entretien que j&#39;ai eu avec Leisha Lee.
+
+305
+00:17:44,300 --> 00:17:46,220
+Vous vous souvenez peut-être d&#39;elle dans la dernière vidéo, 
+
+306
+00:17:46,220 --> 00:17:47,720
+elle a fait son doctorat en apprentissage profond.
+
+307
+00:17:48,300 --> 00:17:50,729
+Dans ce petit extrait, elle parle de deux articles récents qui 
+
+308
+00:17:50,729 --> 00:17:53,196
+approfondissent réellement la manière dont certains des réseaux 
+
+309
+00:17:53,196 --> 00:17:55,780
+de reconnaissance d’images les plus modernes apprennent réellement.
+
+310
+00:17:56,120 --> 00:17:58,291
+Juste pour situer où nous en étions dans la conversation, 
+
+311
+00:17:58,291 --> 00:18:01,512
+le premier article a pris l&#39;un de ces réseaux neuronaux particulièrement profonds 
+
+312
+00:18:01,512 --> 00:18:03,497
+qui est vraiment bon en reconnaissance d&#39;images, 
+
+313
+00:18:03,497 --> 00:18:06,493
+et au lieu de l&#39;entraîner sur un ensemble de données correctement étiqueté, 
+
+314
+00:18:06,493 --> 00:18:08,740
+il a mélangé toutes les étiquettes avant l&#39;entraînement.
+
+315
+00:18:09,480 --> 00:18:12,234
+De toute évidence, la précision des tests ici n&#39;était pas meilleure 
+
+316
+00:18:12,234 --> 00:18:14,873
+que celle du hasard, puisque tout est étiqueté de manière aléatoire, 
+
+317
+00:18:14,873 --> 00:18:17,819
+mais il était toujours possible d&#39;obtenir la même précision de formation 
+
+318
+00:18:17,819 --> 00:18:20,880
+que celle que vous obtiendriez sur un ensemble de données correctement étiqueté.
+
+319
+00:18:21,600 --> 00:18:25,300
+Fondamentalement, les millions de poids pour ce réseau particulier étaient suffisants 
+
+320
+00:18:25,300 --> 00:18:27,838
+pour qu&#39;il mémorise simplement les données aléatoires, 
+
+321
+00:18:27,838 --> 00:18:31,366
+ce qui soulève la question de savoir si la minimisation de cette fonction de coût 
+
+322
+00:18:31,366 --> 00:18:34,162
+correspond réellement à une sorte de structure dans l&#39;image, 
+
+323
+00:18:34,162 --> 00:18:36,400
+ou s&#39;agit-il simplement d&#39;une mémorisation ?
+
+324
+00:18:51,440 --> 00:18:56,456
+Si vous regardez cette courbe de précision, si vous vous entraîniez simplement 
+
+325
+00:18:56,456 --> 00:19:01,472
+sur un ensemble de données aléatoires, cette courbe descendait très lentement, 
+
+326
+00:19:01,472 --> 00:19:06,615
+de manière presque linéaire, donc vous avez vraiment du mal à trouver ce minimum 
+
+327
+00:19:06,615 --> 00:19:12,140
+local de possible, vous savez. , les bons poids qui vous apporteraient cette précision.
+
+328
+00:19:12,240 --> 00:19:16,466
+Alors que si vous vous entraînez réellement sur un ensemble de données structuré, 
+
+329
+00:19:16,466 --> 00:19:19,662
+qui a les bonnes étiquettes, vous bidouillez un peu au début, 
+
+330
+00:19:19,662 --> 00:19:23,993
+mais vous avez ensuite chuté très rapidement pour atteindre ce niveau de précision, 
+
+331
+00:19:23,993 --> 00:19:28,220
+et donc dans un certain sens, cela était plus facile de trouver ces maxima locaux.
+
+332
+00:19:28,540 --> 00:19:32,676
+Et ce qui était également intéressant, c&#39;est que cela met en lumière un autre 
+
+333
+00:19:32,676 --> 00:19:36,460
+article datant d&#39;il y a quelques années, qui contient beaucoup plus de 
+
+334
+00:19:36,460 --> 00:19:40,849
+simplifications sur les couches réseau, mais l&#39;un des résultats disait que si vous 
+
+335
+00:19:40,849 --> 00:19:45,037
+regardez le paysage de l&#39;optimisation, les minimums locaux que ces réseaux ont 
+
+336
+00:19:45,037 --> 00:19:49,174
+tendance à apprendre sont en réalité de qualité égale, donc dans un certain sens, 
+
+337
+00:19:49,174 --> 00:19:53,512
+si votre ensemble de données est structuré, vous devriez pouvoir les trouver beaucoup 
+
+338
+00:19:53,512 --> 00:19:54,320
+plus facilement.
+
+339
+00:19:58,160 --> 00:20:01,180
+Mes remerciements, comme toujours, à ceux d&#39;entre vous qui soutiennent Patreon.
+
+340
+00:20:01,520 --> 00:20:04,047
+J&#39;ai déjà dit à quel point Patreon change la donne, 
+
+341
+00:20:04,047 --> 00:20:06,800
+mais ces vidéos ne seraient vraiment pas possibles sans vous.
+
+342
+00:20:07,460 --> 00:20:10,330
+Je tiens également à remercier tout particulièrement la société de capital-risque 
+
+343
+00:20:10,330 --> 00:20:12,780
+Amplify Partners, pour son soutien à ces premières vidéos de la série.
+

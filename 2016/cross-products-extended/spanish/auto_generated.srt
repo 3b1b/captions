@@ -1,0 +1,704 @@
+1
+00:00:16,540 --> 00:00:20,211
+Hola amigos, donde lo dejamos estaba hablando de cómo calcular 
+
+2
+00:00:20,211 --> 00:00:24,000
+un producto cruzado tridimensional entre dos vectores, v cross w.
+
+3
+00:00:25,280 --> 00:00:29,852
+Es algo curioso donde escribes una matriz cuya segunda columna tiene las coordenadas 
+
+4
+00:00:29,852 --> 00:00:32,810
+de v, cuya tercera columna tiene las coordenadas de w, 
+
+5
+00:00:32,810 --> 00:00:37,113
+pero las entradas de esa primera columna, curiosamente, son los símbolos i-hat, 
+
+6
+00:00:37,113 --> 00:00:41,470
+j-hat y k. -Sombrero, donde simplemente finges que esos tipos son números por el 
+
+7
+00:00:41,470 --> 00:00:42,600
+bien de los cálculos.
+
+8
+00:00:43,780 --> 00:00:47,460
+Luego, con esa matriz original en la mano, calculas su determinante.
+
+9
+00:00:48,080 --> 00:00:51,230
+Si simplemente sigues esos cálculos, ignorando la rareza, 
+
+10
+00:00:51,230 --> 00:00:55,630
+obtienes algunos tiempos constantes i-hat, más algunos tiempos constantes j-hat, 
+
+11
+00:00:55,630 --> 00:00:57,640
+más algunos tiempos constantes k-hat.
+
+12
+00:00:59,800 --> 00:01:04,300
+Qué tan específicamente piensas en calcular ese determinante no viene al caso.
+
+13
+00:01:04,819 --> 00:01:07,898
+Lo único que realmente importa aquí es que terminarás con tres números 
+
+14
+00:01:07,898 --> 00:01:11,280
+diferentes que se interpretan como las coordenadas de algún vector resultante.
+
+15
+00:01:13,760 --> 00:01:16,900
+A partir de aquí, normalmente se les dice a los estudiantes que simplemente 
+
+16
+00:01:16,900 --> 00:01:20,040
+crean que el vector resultante tiene las siguientes propiedades geométricas.
+
+17
+00:01:20,040 --> 00:01:24,760
+Su longitud es igual al área del paralelogramo definido por v y w.
+
+18
+00:01:25,640 --> 00:01:28,222
+Apunta en una dirección perpendicular a v y w, 
+
+19
+00:01:28,222 --> 00:01:31,189
+y esta dirección obedece la regla de la mano derecha, 
+
+20
+00:01:31,189 --> 00:01:34,980
+en el sentido de que si apuntas con el dedo índice a lo largo de v y 
+
+21
+00:01:34,980 --> 00:01:38,167
+el dedo medio a lo largo de w, cuando levantas el pulgar, 
+
+22
+00:01:38,167 --> 00:01:40,860
+Todos apuntarán en la dirección del nuevo vector.
+
+23
+00:01:43,660 --> 00:01:47,241
+Hay algunos cálculos de fuerza bruta que podrías hacer para confirmar estos hechos, 
+
+24
+00:01:47,241 --> 00:01:50,440
+pero quiero compartir contigo una línea de razonamiento realmente elegante.
+
+25
+00:01:51,120 --> 00:01:53,619
+Sin embargo, aprovecha un poco los antecedentes, 
+
+26
+00:01:53,619 --> 00:01:56,782
+así que para este video asumo que todos han visto el capítulo 
+
+27
+00:01:56,782 --> 00:02:00,660
+5 sobre el determinante y el capítulo 7, donde presenté la idea de dualidad.
+
+28
+00:02:04,580 --> 00:02:08,584
+Como recordatorio rápido, la idea de dualidad es que cada vez que tienes 
+
+29
+00:02:08,584 --> 00:02:12,259
+una transformación lineal desde algún espacio a la recta numérica, 
+
+30
+00:02:12,259 --> 00:02:15,001
+está asociada con un vector único en ese espacio, 
+
+31
+00:02:15,001 --> 00:02:19,225
+en el sentido de que realizar la transformación lineal es lo mismo que tomar 
+
+32
+00:02:19,225 --> 00:02:21,200
+una producto escalar con ese vector.
+
+33
+00:02:22,080 --> 00:02:25,525
+Numéricamente, esto se debe a que una de esas transformaciones 
+
+34
+00:02:25,525 --> 00:02:28,315
+se describe mediante una matriz con solo una fila, 
+
+35
+00:02:28,315 --> 00:02:31,980
+donde cada columna indica el número en el que cae cada vector base.
+
+36
+00:02:35,240 --> 00:02:40,149
+Y multiplicar esta matriz por algún vector v es computacionalmente idéntico a tomar 
+
+37
+00:02:40,149 --> 00:02:45,000
+el producto escalar entre v y el vector que se obtiene al girar esa matriz de lado.
+
+38
+00:02:46,580 --> 00:02:50,589
+La conclusión es que siempre que estés en el mundo matemático y encuentres una 
+
+39
+00:02:50,589 --> 00:02:54,750
+transformación lineal en la recta numérica, podrás relacionarla con algún vector, 
+
+40
+00:02:54,750 --> 00:02:57,186
+que se llama vector dual de esa transformación, 
+
+41
+00:02:57,186 --> 00:03:01,399
+de modo que al realizar la transformación lineal La transformación es lo mismo que 
+
+42
+00:03:01,399 --> 00:03:03,480
+tomar un producto escalar con ese vector.
+
+43
+00:03:06,360 --> 00:03:10,040
+El producto cruzado nos da un ejemplo realmente ingenioso de este proceso en acción.
+
+44
+00:03:10,360 --> 00:03:13,040
+Requiere algo de esfuerzo, pero definitivamente vale la pena.
+
+45
+00:03:13,640 --> 00:03:17,699
+Lo que voy a hacer es definir una determinada transformación lineal de tres 
+
+46
+00:03:17,699 --> 00:03:22,240
+dimensiones a la recta numérica, y se definirá en términos de los dos vectores v y w.
+
+47
+00:03:23,140 --> 00:03:28,936
+Luego, cuando asociamos esa transformación con su vector dual en el espacio 3D, 
+
+48
+00:03:28,936 --> 00:03:32,560
+ese vector dual será el producto cruzado de v y w.
+
+49
+00:03:33,220 --> 00:03:38,181
+La razón para hacer esto será que comprender esa transformación aclarará 
+
+50
+00:03:38,181 --> 00:03:42,600
+la conexión entre el cálculo y la geometría del producto cruzado.
+
+51
+00:03:44,720 --> 00:03:47,504
+Entonces, retrocediendo un poco, ¿recuerdas en dos dimensiones 
+
+52
+00:03:47,504 --> 00:03:50,200
+lo que significa calcular la versión 2D del producto cruzado?
+
+53
+00:03:50,820 --> 00:03:55,023
+Cuando tienes dos vectores v y w, colocas las coordenadas de v como la primera 
+
+54
+00:03:55,023 --> 00:03:59,440
+columna de una matriz y las coordenadas de w como la segunda columna de una matriz.
+
+55
+00:03:59,720 --> 00:04:01,300
+Luego simplemente calculas el determinante.
+
+56
+00:04:01,680 --> 00:04:04,828
+No hay ninguna tontería con los vectores base atrapados en una matriz ni 
+
+57
+00:04:04,828 --> 00:04:08,020
+nada por el estilo, solo un determinante ordinario que devuelve un número.
+
+58
+00:04:09,380 --> 00:04:14,311
+Geométricamente, esto nos da el área de un paralelogramo abarcada por esos dos vectores, 
+
+59
+00:04:14,311 --> 00:04:18,800
+con la posibilidad de ser negativa dependiendo de la orientación de los vectores.
+
+60
+00:04:19,779 --> 00:04:25,036
+Ahora, si aún no conoces el producto cruzado 3D y estás intentando extrapolar, 
+
+61
+00:04:25,036 --> 00:04:29,827
+puedes imaginar que implica tomar tres vectores 3D separados, u, v y w, 
+
+62
+00:04:29,827 --> 00:04:34,352
+y convertir sus coordenadas en las columnas de una matriz de 3x3. , 
+
+63
+00:04:34,352 --> 00:04:37,480
+luego calculando el determinante de esa matriz.
+
+64
+00:04:38,840 --> 00:04:43,343
+Y como sabes por el capítulo 5, geométricamente esto te daría el volumen de un 
+
+65
+00:04:43,343 --> 00:04:46,023
+paralelepípedo formado por esos tres vectores, 
+
+66
+00:04:46,023 --> 00:04:50,469
+con un signo más o menos dependiendo de la orientación de la regla de la mano 
+
+67
+00:04:50,469 --> 00:04:52,180
+derecha de esos tres vectores.
+
+68
+00:04:53,060 --> 00:04:55,920
+Por supuesto, todos sabéis que este no es el producto cruzado 3D.
+
+69
+00:04:56,920 --> 00:05:01,100
+El producto cruzado 3D real toma dos vectores y escupe un vector.
+
+70
+00:05:02,640 --> 00:05:05,060
+No toma tres vectores y escupe un número.
+
+71
+00:05:05,660 --> 00:05:09,640
+Pero esta idea en realidad nos acerca mucho a lo que es el producto cruzado real.
+
+72
+00:05:10,900 --> 00:05:13,986
+Considere que el primer vector u es una variable, 
+
+73
+00:05:13,986 --> 00:05:18,740
+digamos con entradas variables x, y y z, mientras que v y w permanecen fijos.
+
+74
+00:05:22,760 --> 00:05:26,600
+Lo que tenemos entonces es una función desde tres dimensiones hasta la recta numérica.
+
+75
+00:05:27,180 --> 00:05:31,900
+Ingresas un vector x, y, z y obtienes un número tomando el determinante 
+
+76
+00:05:31,900 --> 00:05:36,095
+de una matriz cuya primera columna es x, y, z y cuyas otras dos 
+
+77
+00:05:36,095 --> 00:05:40,160
+columnas son las coordenadas de los vectores constantes v y w.
+
+78
+00:05:40,920 --> 00:05:45,881
+Geométricamente, el significado de esta función es que para cualquier vector de 
+
+79
+00:05:45,881 --> 00:05:50,780
+entrada x, y, z, se considera el paralelepípedo definido por este vector v y w.
+
+80
+00:05:51,420 --> 00:05:55,380
+Luego le devuelves su volumen con un signo más o menos según la orientación.
+
+81
+00:05:57,500 --> 00:05:59,740
+Ahora bien, esto podría parecer algo aleatorio.
+
+82
+00:06:00,160 --> 00:06:01,700
+Quiero decir, ¿de dónde viene esta función?
+
+83
+00:06:01,760 --> 00:06:03,040
+¿Por qué lo definimos de esta manera?
+
+84
+00:06:03,860 --> 00:06:06,680
+Y lo admito, en esta etapa puede parecer que viene de la nada.
+
+85
+00:06:06,980 --> 00:06:11,119
+Pero si estás dispuesto a aceptarlo y jugar con las propiedades que tiene este tipo, 
+
+86
+00:06:11,119 --> 00:06:13,360
+es la clave para entender el producto cruzado.
+
+87
+00:06:15,340 --> 00:06:19,160
+Un hecho realmente importante acerca de esta función es que es lineal.
+
+88
+00:06:20,020 --> 00:06:22,587
+De hecho, dejaré que usted resuelva los detalles de por qué 
+
+89
+00:06:22,587 --> 00:06:25,240
+esto es cierto en función de las propiedades del determinante.
+
+90
+00:06:26,380 --> 00:06:30,780
+Pero una vez que sabemos que es lineal, podemos empezar a incorporar la idea de dualidad.
+
+91
+00:06:35,060 --> 00:06:37,994
+Una vez que sepas que es lineal, sabrás que hay alguna manera 
+
+92
+00:06:37,994 --> 00:06:40,740
+de describir esta función como multiplicación de matrices.
+
+93
+00:06:41,320 --> 00:06:45,922
+En concreto, al ser una función que va de tres dimensiones a una dimensión, 
+
+94
+00:06:45,922 --> 00:06:49,920
+habrá una matriz de uno por tres que codifica esta transformación.
+
+95
+00:06:53,360 --> 00:06:57,750
+Y la idea general de la dualidad es que lo especial de las transformaciones de varias 
+
+96
+00:06:57,750 --> 00:07:01,885
+dimensiones a una dimensión es que puedes girar esa matriz de lado y en su lugar 
+
+97
+00:07:01,885 --> 00:07:06,480
+interpretar la transformación completa como el producto escalar con un determinado vector.
+
+98
+00:07:07,900 --> 00:07:12,959
+Lo que estamos buscando es el vector 3D especial que llamaré p tal que tomando el 
+
+99
+00:07:12,959 --> 00:07:16,352
+producto escalar entre p y cualquier otro vector x, y, 
+
+100
+00:07:16,352 --> 00:07:20,918
+z dé el mismo resultado que reemplazando x, y, z como la primera columna. 
+
+101
+00:07:20,918 --> 00:07:26,224
+de una matriz de tres por tres cuyas otras dos columnas tienen las coordenadas v y w, 
+
+102
+00:07:26,224 --> 00:07:28,260
+calculando luego el determinante.
+
+103
+00:07:29,160 --> 00:07:31,693
+Llegaré a la geometría de esto en un momento, pero ahora 
+
+104
+00:07:31,693 --> 00:07:34,760
+profundicemos y pensemos en lo que esto significa computacionalmente.
+
+105
+00:07:35,780 --> 00:07:41,445
+Tomando el producto escalar entre p y x, y, z nos dará algo multiplicado por x más algo 
+
+106
+00:07:41,445 --> 00:07:47,240
+multiplicado por y más algo multiplicado por z, donde esos algos son las coordenadas de p.
+
+107
+00:07:47,980 --> 00:07:51,080
+Pero en el lado derecho aquí, cuando calculas el determinante, 
+
+108
+00:07:51,080 --> 00:07:54,772
+puedes organizarlo para que parezca algunas constantes multiplicadas por x 
+
+109
+00:07:54,772 --> 00:07:59,054
+más algunas constantes multiplicadas por y más algunas constantes multiplicadas por z, 
+
+110
+00:07:59,054 --> 00:08:03,140
+donde esas constantes involucran ciertas combinaciones de los componentes de v y w.
+
+111
+00:08:03,880 --> 00:08:08,118
+Entonces esas constantes, esas combinaciones particulares de las 
+
+112
+00:08:08,118 --> 00:08:13,140
+coordenadas de v y w serán las coordenadas del vector p que estamos buscando.
+
+113
+00:08:18,260 --> 00:08:21,348
+Pero lo que está sucediendo aquí debería resultarle muy familiar 
+
+114
+00:08:21,348 --> 00:08:24,580
+a cualquiera que haya trabajado en un cálculo de productos cruzados.
+
+115
+00:08:25,900 --> 00:08:29,448
+Recopilar los términos constantes que se multiplican por x, 
+
+116
+00:08:29,448 --> 00:08:33,765
+y y por z de esta manera no es diferente de conectar los símbolos i-hat, 
+
+117
+00:08:33,765 --> 00:08:38,674
+j-hat y k-hat a esa primera columna y ver qué coeficientes se agregan en cada uno. 
+
+118
+00:08:38,674 --> 00:08:39,679
+de esos términos.
+
+119
+00:08:40,960 --> 00:08:45,051
+Es sólo que conectar i-hat, j-hat y k-hat es una forma de señalar que 
+
+120
+00:08:45,051 --> 00:08:49,260
+debemos interpretar esos coeficientes como las coordenadas de un vector.
+
+121
+00:08:51,280 --> 00:08:54,248
+Entonces, lo que todo esto quiere decir es que este extraño cálculo 
+
+122
+00:08:54,248 --> 00:08:57,260
+puede considerarse como una forma de responder la siguiente pregunta.
+
+123
+00:08:57,740 --> 00:09:01,844
+¿Qué vector p tiene la propiedad especial de que cuando se toma un 
+
+124
+00:09:01,844 --> 00:09:07,174
+producto escalar entre p y algún vector x, y, z, da el mismo resultado que conectar x, 
+
+125
+00:09:07,174 --> 00:09:11,585
+y, z a la primera columna de una matriz cuyas otras dos columnas tienen 
+
+126
+00:09:11,585 --> 00:09:15,200
+las coordenadas de v y w, luego calculando el determinante.
+
+127
+00:09:15,960 --> 00:09:18,268
+Es un poco complicado, pero es una pregunta importante 
+
+128
+00:09:18,268 --> 00:09:19,780
+que debemos digerir para este video.
+
+129
+00:09:21,220 --> 00:09:24,554
+Ahora viene la parte interesante, que une todo esto con la comprensión 
+
+130
+00:09:24,554 --> 00:09:27,560
+geométrica del producto cruzado que presenté en el último video.
+
+131
+00:09:28,920 --> 00:09:32,208
+Voy a hacer la misma pregunta nuevamente, pero esta vez intentaremos 
+
+132
+00:09:32,208 --> 00:09:35,020
+responderla geométricamente en lugar de computacionalmente.
+
+133
+00:09:36,420 --> 00:09:42,493
+¿Qué vector 3D p tiene la propiedad especial de que cuando tomas un producto escalar 
+
+134
+00:09:42,493 --> 00:09:48,423
+entre p y algún otro vector x, y, z, da el mismo resultado que si tomas el volumen 
+
+135
+00:09:48,423 --> 00:09:54,140
+con signo de un paralelepípedo definido por este vector x, y, z junto con v y w.
+
+136
+00:09:57,140 --> 00:10:01,507
+Recuerde, la interpretación geométrica de un producto escalar entre 
+
+137
+00:10:01,507 --> 00:10:05,939
+un vector p y algún otro vector es proyectar ese otro vector sobre p 
+
+138
+00:10:05,939 --> 00:10:10,500
+y luego multiplicar la longitud de esa proyección por la longitud de p.
+
+139
+00:10:13,460 --> 00:10:16,474
+Con eso en mente, permítanme mostrarles una cierta manera de 
+
+140
+00:10:16,474 --> 00:10:19,440
+pensar sobre el volumen del paralelepípedo que nos interesa.
+
+141
+00:10:20,240 --> 00:10:24,413
+Comience tomando el área del paralelogramo definido por v y w, 
+
+142
+00:10:24,413 --> 00:10:27,791
+luego multiplíquelo no por la longitud de x, y, z, 
+
+143
+00:10:27,791 --> 00:10:32,760
+sino por la componente de x, y, z que es perpendicular a ese paralelogramo.
+
+144
+00:10:34,280 --> 00:10:39,622
+En otras palabras, la forma en que nuestra función lineal funciona en un vector dado 
+
+145
+00:10:39,622 --> 00:10:44,022
+es proyectar ese vector sobre una línea que es perpendicular a v y w, 
+
+146
+00:10:44,022 --> 00:10:49,491
+luego multiplicar la longitud de esa proyección por el área del paralelogramo abarcada 
+
+147
+00:10:49,491 --> 00:10:50,120
+por v y w.
+
+148
+00:10:51,560 --> 00:10:55,922
+Pero esto es lo mismo que tomar un producto escalar entre x, y, 
+
+149
+00:10:55,922 --> 00:11:01,920
+z y un vector perpendicular a v y w con una longitud igual al área de ese paralelogramo.
+
+150
+00:11:03,200 --> 00:11:06,256
+Es más, si eliges la dirección adecuada para ese vector, 
+
+151
+00:11:06,256 --> 00:11:10,225
+los casos en los que el producto escalar es negativo se alinearán con los 
+
+152
+00:11:10,225 --> 00:11:14,193
+casos en los que la regla de la mano derecha para la orientación de x, y, 
+
+153
+00:11:14,193 --> 00:11:15,320
+z, v y w es negativa.
+
+154
+00:11:19,600 --> 00:11:22,980
+Esto significa que acabamos de encontrar un vector p, 
+
+155
+00:11:22,980 --> 00:11:27,173
+de modo que tomar un producto escalar entre p y algún vector x, y, 
+
+156
+00:11:27,173 --> 00:11:32,556
+z es lo mismo que calcular el determinante de una matriz de 3x3 cuyas columnas son x, 
+
+157
+00:11:32,556 --> 00:11:34,560
+y, z, las coordenadas de v. y W.
+
+158
+00:11:35,480 --> 00:11:39,290
+Entonces, la respuesta que encontramos antes computacionalmente usando ese 
+
+159
+00:11:39,290 --> 00:11:43,100
+truco de notación especial debe corresponder geométricamente a este vector.
+
+160
+00:11:43,900 --> 00:11:46,911
+Ésta es la razón fundamental por la que el cálculo y la 
+
+161
+00:11:46,911 --> 00:11:50,300
+interpretación geométrica del producto cruz están relacionados.
+
+162
+00:11:52,640 --> 00:11:57,470
+Sólo para resumir lo que pasó aquí, comencé definiendo una transformación lineal 
+
+163
+00:11:57,470 --> 00:12:02,420
+del espacio 3D a la recta numérica, y se definió en términos de los vectores v y w.
+
+164
+00:12:03,280 --> 00:12:08,250
+Luego analicé dos formas distintas de pensar en el vector dual de esta transformación, 
+
+165
+00:12:08,250 --> 00:12:11,677
+el vector tal que aplicar la transformación es lo mismo que 
+
+166
+00:12:11,677 --> 00:12:14,020
+tomar un producto escalar con ese vector.
+
+167
+00:12:14,860 --> 00:12:20,108
+Por un lado, un enfoque computacional le llevará al truco de conectar los símbolos i-hat, 
+
+168
+00:12:20,108 --> 00:12:24,540
+j-hat y k-hat a la primera columna de una matriz y calcular el determinante.
+
+169
+00:12:26,020 --> 00:12:30,734
+Pero pensando geométricamente, podemos deducir que este vector dual debe ser 
+
+170
+00:12:30,734 --> 00:12:36,244
+perpendicular a v y w con una longitud igual al área del paralelogramo extendida por esos 
+
+171
+00:12:36,244 --> 00:12:37,040
+dos vectores.
+
+172
+00:12:39,100 --> 00:12:43,525
+Dado que ambos enfoques nos dan un vector dual para la misma transformación, 
+
+173
+00:12:43,525 --> 00:12:45,020
+deben ser el mismo vector.
+
+174
+00:12:47,400 --> 00:12:49,718
+Esto resume los productos escalares y cruzados, 
+
+175
+00:12:49,718 --> 00:12:53,630
+y el próximo video será un concepto realmente importante para el álgebra lineal, 
+
+176
+00:12:53,630 --> 00:12:54,500
+el cambio de base.
+
