@@ -1,1028 +1,1292 @@
 1
-00:00:00,000 --> 00:00:02,560
-Feltételezem, hogy itt mindenki az 1. részből jön.
+00:00:03,620 --> 00:00:07,978
+Elgondolkozott már azon, hogyan lehetséges egy CD-t vagy DVD-t megkarcolni, 
 
 2
-00:00:03,060 --> 00:00:06,853
-Hamming-kódokról beszéltünk, egy olyan adatblokk létrehozásának módszeréről, 
+00:00:07,978 --> 00:00:10,100
+és még mindig lejátszani, amit tárol?
 
 3
-00:00:06,853 --> 00:00:09,415
-amelyben a bitek többsége értelmes üzenetet hordoz, 
+00:00:10,900 --> 00:00:14,588
+A karcolás valóban hatással van a lemezen lévő 1-ekre és 0-kra, 
 
 4
-00:00:09,415 --> 00:00:12,470
-míg néhány másik egyfajta redundanciaként működik, oly módon, 
+00:00:14,588 --> 00:00:19,486
+tehát a tárolttól eltérő adatokat olvas ki, de hacsak nem teljesen összekarcolódott, 
 
 5
-00:00:12,470 --> 00:00:16,263
-hogy ha bármelyik bit megfordul, akkor vagy üzenet bit vagy redundancia bit, 
+00:00:19,486 --> 00:00:23,002
+a kiolvasott bitek pontosan ugyanabba a fájlba dekódolódnak, 
 
 6
-00:00:16,263 --> 00:00:19,909
-bármi ebben a blokkban, a vevő képes lesz azonosítani, hogy hiba történt, 
+00:00:23,002 --> 00:00:27,440
+mint amilyenre rá volt kódolva. bit a bitmásoláshoz, mindezen hibák ellenére.
 
 7
-00:00:19,909 --> 00:00:21,240
-és hogyan lehet kijavítani.
+00:00:27,440 --> 00:00:31,431
+Számtalan matematikai okosság van, amely lehetővé teszi az adatok tárolását, 
 
 8
-00:00:21,880 --> 00:00:24,564
-Az ott bemutatott alapötlet az volt, hogyan lehet többszörös 
+00:00:31,431 --> 00:00:34,852
+és ami ugyanilyen fontos, hogy adatokat továbbítsunk olyan módon, 
 
 9
-00:00:24,564 --> 00:00:27,160
-paritásellenőrzést használni a bináris kereséshez a hibáig.
+00:00:34,852 --> 00:00:36,200
+amely ellenáll a hibáknak.
 
 10
-00:00:28,980 --> 00:00:31,737
-Ebben a videóban az volt a cél, hogy a Hamming-kódok 
+00:00:36,200 --> 00:00:40,880
+Nos, oké, valójában nem kell akkora okosság, hogy kitaláljon egy módot erre.
 
 11
-00:00:31,737 --> 00:00:34,600
-a lehető leggyakrabban és újra felfedezhetővé váljanak.
+00:00:40,880 --> 00:00:46,210
+Bármely fájl, legyen szó videóról, hangról vagy szövegről, valamilyen kódról, 
 
 12
-00:00:35,180 --> 00:00:39,118
-De ahogy elkezd gondolkodni ennek tényleges megvalósításán, akár szoftverben, 
+00:00:46,210 --> 00:00:50,380
+képről vagy bármi másról, végső soron 1-esek és 0-k sorozata.
 
 13
-00:00:39,118 --> 00:00:43,460
-akár hardverben, ez a keretezés valójában alááshatja, mennyire elegánsak ezek a kódok.
+00:00:50,680 --> 00:00:53,950
+A megfordított bitek kijavítására egy egyszerű stratégia az lenne, 
 
 14
-00:00:43,920 --> 00:00:46,343
-Azt gondolhatnánk, hogy olyan algoritmust kell írnia, 
+00:00:53,950 --> 00:00:56,000
+ha minden bitből három másolatot tárolunk.
 
 15
-00:00:46,343 --> 00:00:48,722
-amely nyomon követi az összes lehetséges hibahelyet, 
+00:00:57,580 --> 00:01:01,282
+Ekkor a fájlt olvasó gép össze tudja hasonlítani ezt a három másolatot, 
 
 16
-00:00:48,722 --> 00:00:52,268
-és minden egyes ellenőrzéssel kettévágja azt a csoportot, de valójában sokkal, 
+00:01:01,282 --> 00:01:04,060
+és mindig a legjobb 2-t kapja a 3-ból, ha eltérés van.
 
 17
-00:00:52,268 --> 00:00:53,480
-de sokkal egyszerűbb ennél.
+00:01:07,160 --> 00:01:10,860
+De ez azt jelenti, hogy a hely kétharmadát redundanciára használja.
 
 18
-00:00:53,940 --> 00:00:57,055
-Ha felolvasod a négy paritásellenőrzésre adott válaszokat, 
+00:01:11,480 --> 00:01:14,873
+És még akkor sem, ha az összes helyet feladjuk, nincs komoly garancia arra, 
 
 19
-00:00:57,055 --> 00:01:01,333
-amelyeket az előző videóban végeztünk, 1-es és 0-s formában igen és nem helyett, 
+00:01:14,873 --> 00:01:17,240
+hogy mi történik, ha egynél több bitet megfordítanak.
 
 20
-00:01:01,333 --> 00:01:04,080
-akkor szó szerint kiírja a hiba helyzetét binárisan.
+00:01:17,980 --> 00:01:20,593
+Sokkal érdekesebb kérdés, hogy hogyan lehet úgy megcsinálni, 
 
 21
-00:01:04,780 --> 00:01:08,249
-Például a 7-es szám binárisan úgy néz ki, mint 0111, 
+00:01:20,593 --> 00:01:24,020
+hogy a hibákat a lehető legkevesebb hely elhagyása mellett ki lehessen javítani.
 
 22
-00:01:08,249 --> 00:01:11,260
-lényegében azt mondva, hogy 4 plusz 2 plusz 1.
+00:01:24,520 --> 00:01:30,588
+Például a videóról megismert módszerrel 256 bites blokkokban tárolhatja adatait, 
 
 23
-00:01:12,540 --> 00:01:16,168
-És figyeld meg, hogy a 7-es pozíció hol helyezkedik el, 
+00:01:30,588 --> 00:01:33,360
+ahol minden blokk 9, 9 bitet használ!
 
 24
-00:01:16,168 --> 00:01:21,740
-ez érinti az első paritáscsoportunkat, a másodikat és a harmadikat, de nem az utolsót.
+00:01:33,760 --> 00:01:37,005
+egyfajta redundanciaként működik, a többi 247 bit pedig szabadon 
 
 25
-00:01:22,220 --> 00:01:24,783
-Tehát e négy ellenőrzés eredményének alulról felfelé 
+00:01:37,005 --> 00:01:40,300
+hordozhat bármilyen értelmes üzenetet vagy adatot, amit csak akar.
 
 26
-00:01:24,783 --> 00:01:27,540
-történő elolvasása valóban meghatározza a hiba helyzetét.
+00:01:40,900 --> 00:01:44,252
+És továbbra is az lesz, hogy ha itt bármelyik bit megfordul, 
 
 27
-00:01:28,320 --> 00:01:31,330
-A 7-es példában nincs semmi különös, ez általában működik, 
+00:01:44,252 --> 00:01:48,263
+csak erre a blokkra nézve, és semmi másra, a gép képes lesz azonosítani, 
 
 28
-00:01:31,330 --> 00:01:35,820
-és ez megdöbbentően egyszerűvé teszi az egész séma hardveres megvalósításának logikáját.
+00:01:48,263 --> 00:01:52,660
+hogy hiba történt, és hogy pontosan hol volt, így tudja, hogyan kell kijavítani.
 
 29
-00:01:37,240 --> 00:01:40,944
-Ha szeretnéd látni, miért történik ez a varázslat, 
+00:01:52,660 --> 00:01:54,620
+És őszintén szólva, ez varázslatnak tűnik.
 
 30
-00:01:40,944 --> 00:01:47,046
-vegyük ezt a 16 indexcímkét a pozícióinkhoz, de ahelyett, hogy 10-es alapba írnánk, 
+00:01:55,440 --> 00:01:58,506
+És ennél a konkrét sémánál, ha két bit megfordul, 
 
 31
-00:01:47,046 --> 00:01:49,880
-írjuk őket binárisan, 0000-től 1111-ig.
+00:01:58,506 --> 00:02:02,860
+a gép legalább két hibát észlel, bár nem tudja, hogyan javítsa ki őket.
 
 32
-00:01:50,559 --> 00:01:53,992
-Miközben ezeket a bináris címkéket visszahelyezzük a dobozukba, 
+00:02:03,520 --> 00:02:05,377
+Egy kicsit később beszélünk arról, hogy ez hogyan 
 
 33
-00:01:53,992 --> 00:01:57,800
-hadd hangsúlyozzam, hogy különböznek a ténylegesen elküldött adatoktól.
+00:02:05,377 --> 00:02:06,900
+skálázható a különböző méretű blokkokhoz.
 
 34
-00:01:58,320 --> 00:02:01,757
-Nem mások, mint egy fogalmi címke, amely segít neked és nekem megérteni, 
+00:02:07,860 --> 00:02:10,329
+Az ehhez hasonló hibák kijavítását lehetővé tevő 
 
 35
-00:02:01,757 --> 00:02:03,500
-honnan jött a négy paritásos csoport.
+00:02:10,329 --> 00:02:12,900
+módszereket ésszerűen hibajavító kódokként ismerik.
 
 36
-00:02:04,140 --> 00:02:08,071
-Azt az eleganciát, hogy mindent, amit nézünk, binárisan írunk le, 
+00:02:13,660 --> 00:02:17,829
+A múlt század nagy részében ez a terület a meglepően mély matematikai 
 
 37
-00:02:08,071 --> 00:02:12,360
-talán aláássa az a zavar, hogy mindent, amit nézünk, binárisan írunk le.
+00:02:17,829 --> 00:02:21,940
+adatok gazdag forrása volt, amely beépül a mindennapi használatunkba.
 
 38
-00:02:13,020 --> 00:02:14,120
-Pedig megéri.
+00:02:22,840 --> 00:02:26,903
+Itt az a cél, hogy nagyon alapos megértést nyújtsunk az egyik legkorábbi, 
 
 39
-00:02:14,800 --> 00:02:19,224
-A címkék közül csak az utolsó bitre összpontosítsa figyelmét, 
+00:02:26,903 --> 00:02:28,660
+Hamming-kódként ismert példának.
 
 40
-00:02:19,224 --> 00:02:23,220
-majd jelölje ki azokat a helyeket, ahol az utolsó bit 1.
+00:02:29,520 --> 00:02:33,450
+És mellesleg, ahogyan ennek a videónak a felépítésére gondolok, kevésbé arról van szó, 
 
 41
-00:02:24,240 --> 00:02:28,268
-A négy paritáscsoport közül az elsőt kapjuk, ami azt jelenti, 
+00:02:33,450 --> 00:02:37,019
+hogy a lehető legközvetlenebbül magyarázzam el, hanem inkább arra ösztönözzek, 
 
 42
-00:02:28,268 --> 00:02:33,336
-hogy az első ellenőrzést úgy értelmezheti, hogy azt kérdezi, hé, ha hiba van, 
+00:02:37,019 --> 00:02:39,820
+hogy találd ki magadnak, itt-ott egy kis gyengéd irányítással.
 
 43
-00:02:33,336 --> 00:02:35,740
-akkor a hiba helyének utolsó bitje 1?
+00:02:40,120 --> 00:02:42,632
+Tehát amikor úgy érzed, hogy egy ponton látod, merre tart, 
 
 44
-00:02:38,200 --> 00:02:42,677
-Hasonlóképpen, ha a másodiktól az utolsóig fókuszál, és kiemeli az összes olyan pozíciót, 
+00:02:42,632 --> 00:02:45,910
+szánj arra a pillanatra egy szünetet, és aktívan jósold meg, mi lesz a terv, 
 
 45
-00:02:42,677 --> 00:02:46,160
-ahol ez 1, akkor megkapja a második paritáscsoportot a rendszerünkből.
+00:02:45,910 --> 00:02:46,720
+mielőtt elmondanám.
 
 46
-00:02:46,740 --> 00:02:50,820
-Más szóval, a második ellenőrzés azt kérdezi, hé, megint én, 
+00:02:47,240 --> 00:02:50,511
+Továbbá, ha azt szeretné, hogy megértése a hardver szintjére jusson, 
 
 47
-00:02:50,820 --> 00:02:54,500
-ha hiba van, akkor a pozíció második és utolsó bitje 1?
+00:02:50,511 --> 00:02:53,640
+Ben Eater készített egy videót ehhez a videóhoz, amely bemutatja, 
 
 48
-00:02:55,760 --> 00:02:56,900
-Stb.
+00:02:53,640 --> 00:02:57,102
+hogyan kell ténylegesen implementálni a Hamming-kódokat a kenyérlapokon, 
 
 49
-00:02:57,220 --> 00:03:00,721
-A harmadik paritásellenőrzés minden olyan pozícióra kiterjed, 
+00:02:57,102 --> 00:02:58,240
+ami rendkívül kielégítő.
 
 50
-00:03:00,721 --> 00:03:04,561
-amelynek harmadik bitje be van kapcsolva, az utolsó pedig az utolsó 
+00:02:59,300 --> 00:03:02,339
+Tudnod kell, a Hamming-kódokat nem használják olyan széles körben, 
 
 51
-00:03:04,561 --> 00:03:08,740
-nyolc pozíciót fedi le, azokat, amelyeknek a legmagasabb sorrendű bitje 1.
+00:03:02,339 --> 00:03:05,333
+mint a modernebb kódokat, mint például a Reed-Solomon algoritmus, 
 
 52
-00:03:09,740 --> 00:03:14,585
-Minden, amit korábban tettünk, ugyanaz, mint ennek a négy kérdésnek a megválaszolása, 
+00:03:05,333 --> 00:03:07,783
+de van egy bizonyos varázslat a kontrasztban aközött, 
 
 53
-00:03:14,585 --> 00:03:17,740
-ami viszont ugyanaz, mint egy pozíció kiírása binárisan.
+00:03:07,783 --> 00:03:10,414
+hogy mennyire lehetetlennek tűnik ez a feladat az elején, 
 
 54
-00:03:19,620 --> 00:03:21,480
-Remélem, ez két dolgot tisztáz.
+00:03:10,414 --> 00:03:13,000
+és mennyire ésszerűnek tűnik egyszer. tanulsz Hammingről.
 
 55
-00:03:22,040 --> 00:03:25,102
-Az első az, hogyan lehet szisztematikusan általánosítani olyan blokkméretekre, 
+00:03:13,720 --> 00:03:18,151
+A hibajavítás alapelve, hogy az összes lehetséges üzenet hatalmas 
 
 56
-00:03:25,102 --> 00:03:26,460
-amelyek kettőnél nagyobb hatványok.
+00:03:18,151 --> 00:03:22,180
+területén csak egy részhalmaz tekinthető érvényes üzenetnek.
 
 57
-00:03:26,960 --> 00:03:29,709
-Ha több bitre van szükség az egyes pozíciók leírásához, 
+00:03:22,800 --> 00:03:26,940
+Analógiaként gondoljon a helyesen írt szavakra a helytelenül írt szavakra.
 
 58
-00:03:29,709 --> 00:03:32,163
-például hat bitre van szükség 64 folt leírásához, 
+00:03:28,900 --> 00:03:32,119
+Amikor egy érvényes üzenetet módosítanak, a fogadó felelős azért, 
 
 59
-00:03:32,163 --> 00:03:35,354
-akkor ezek a bitek mindegyike megadja az egyik paritáscsoportot, 
+00:03:32,119 --> 00:03:35,193
+hogy a látottakat a legközelebbi érvényes szomszédhoz javítsa, 
 
 60
-00:03:35,354 --> 00:03:36,680
-amelyet ellenőriznünk kell.
+00:03:35,193 --> 00:03:37,340
+ahogyan azt az elírások esetén is megteheti.
 
 61
-00:03:38,400 --> 00:03:40,312
-Azok, akik megnézték azt a sakktábla-rejtvényt, 
+00:03:38,220 --> 00:03:41,140
+Egy konkrét algoritmus kidolgozása az ehhez hasonló üzenetek 
 
 62
-00:03:40,312 --> 00:03:43,180
-amit Matt Parkerrel csináltam, mindezt rendkívül ismerősnek találhatták.
+00:03:41,140 --> 00:03:44,060
+hatékony kategorizálására azonban bizonyos okosságot igényel.
 
 63
-00:03:43,660 --> 00:03:46,481
-Ugyanaz az alapvető logika, de más problémát old meg, 
+00:03:46,780 --> 00:03:50,326
+A történet az 1940-es években kezdődik, amikor egy fiatal Richard Hamming a 
 
 64
-00:03:46,481 --> 00:03:48,780
-és egy 64 négyzetes sakktáblára alkalmazzák.
+00:03:50,326 --> 00:03:53,126
+Bell Labs-nál dolgozott, és néhány munkája egy nagyon nagy, 
 
 65
-00:03:49,880 --> 00:03:53,675
-A második dolog, remélem, ez világossá teszi, hogy a paritásbitjeink miért 
+00:03:53,126 --> 00:03:55,413
+drága lyukkártyás számítógép használatából állt, 
 
 66
-00:03:53,675 --> 00:03:57,320
-vannak olyan pozíciókban, amelyek kettő hatványai, például 1, 2, 4 és 8.
+00:03:55,413 --> 00:03:57,420
+amelyhez csak korlátozott hozzáférése volt.
 
 67
-00:03:58,000 --> 00:04:01,131
-Ezek azok a pozíciók, amelyek bináris reprezentációjában 
+00:03:57,800 --> 00:04:00,866
+És a programok, amiket folyamatosan csinált, folyamatosan kudarcot vallottak, 
 
 68
-00:04:01,131 --> 00:04:03,000
-csak egyetlen bit van bekapcsolva.
+00:04:00,866 --> 00:04:02,400
+mert időnként egy kicsit félreolvastak.
 
 69
-00:04:03,600 --> 00:04:06,561
-Ez azt jelenti, hogy a paritásbitek mindegyike 
+00:04:03,120 --> 00:04:06,113
+Mivel a frusztráció a találmány tégelye, annyira elege lett, 
 
 70
-00:04:06,561 --> 00:04:09,460
-a négy paritáscsoport egyikén belül található.
+00:04:06,113 --> 00:04:08,420
+hogy feltalálta a világ első hibajavító kódját.
 
 71
-00:04:12,040 --> 00:04:15,719
-Ezt láthatod nagyobb példákon is, ahol akármekkora is leszel, 
+00:04:09,060 --> 00:04:11,960
+A Hamming-kódok keretbe foglalásának sokféle módja van, 
 
 72
-00:04:15,719 --> 00:04:19,339
-minden paritásbit kényelmesen csak az egyik csoportot érinti.
+00:04:11,960 --> 00:04:15,380
+de első lépésként úgy megyünk végig, ahogy Hamming gondolta róluk.
 
 73
-00:04:25,600 --> 00:04:27,865
-Ha megértjük, hogy ezek a paritásellenőrzések, 
+00:04:16,519 --> 00:04:20,940
+Használjunk egy egyszerű, de nem túl egyszerű példát, egy 16 bites blokkot.
 
 74
-00:04:27,865 --> 00:04:30,708
-amelyekre az időnk nagy részét összpontosítottuk, nem más, 
+00:04:21,820 --> 00:04:24,740
+Ezeknek a biteknek a pozícióit 0-tól 15-ig számozzuk.
 
 75
-00:04:30,708 --> 00:04:34,323
-mint egy okos módszer a hiba helyének binárisban történő megfogalmazására, 
+00:04:25,620 --> 00:04:29,630
+A tárolni kívánt tényleges adatok csak 12 bitet tesznek ki ebből a bitből, 
 
 76
-00:04:34,323 --> 00:04:37,793
-akkor összefüggést vonhatunk le a hamming másfajta gondolkodásmódjával. 
+00:04:29,630 --> 00:04:33,000
+míg a pozíciók közül 4 egyfajta redundanciaként van fenntartva.
 
 77
-00:04:37,793 --> 00:04:41,167
-kódokat, amelyek vitathatatlanul sokkal egyszerűbbek és elegánsabbak, 
+00:04:33,900 --> 00:04:36,725
+A redundáns szó itt nem egyszerűen másolást jelent, 
 
 78
-00:04:41,167 --> 00:04:43,240
-és alapvetően egyetlen kódsorral leírhatók.
+00:04:36,725 --> 00:04:40,040
+elvégre az a 4 bit nem ad elég teret az adatok vakmásolására.
 
 79
-00:04:43,660 --> 00:04:45,500
-Az XOR függvényen alapul.
+00:04:40,720 --> 00:04:44,748
+Ehelyett sokkal árnyaltabb és okosabb redundanciát kell alkalmazniuk, 
 
 80
-00:04:46,940 --> 00:04:50,220
-Az XOR azoknak, akik nem ismerik, az exkluzív ill.
+00:04:44,748 --> 00:04:47,280
+nem új információkkal, hanem rugalmassággal.
 
 81
-00:04:50,780 --> 00:04:54,039
-Ha két bit XOR-jét veszed, akkor 1-et ad vissza, 
+00:04:48,600 --> 00:04:52,806
+Arra számíthat, hogy ez a 4 speciális bit szépen össze van csomagolva, 
 
 82
-00:04:54,039 --> 00:04:59,360
-ha az egyik bit be van kapcsolva, de nem, ha mindkettő be vagy ki van kapcsolva.
+00:04:52,806 --> 00:04:56,242
+talán a végén, vagy valami hasonló, de amint látni fogja, 
 
 83
-00:05:00,100 --> 00:05:02,980
-Másképpen fogalmazva ez a két bit paritása.
+00:04:56,242 --> 00:04:59,620
+ha 2-es pozícióban ülnek, valami igazán elegáns a végére.
 
 84
-00:05:03,540 --> 00:05:06,760
-Matematikusként szívesebben gondolok rá, mint 2. kiegészítésre.
+00:05:00,200 --> 00:05:03,540
+Ez is adhat egy kis utalást arra vonatkozóan, hogyan méretezhető ez a nagyobb blokkokhoz.
 
 85
-00:05:07,360 --> 00:05:10,488
-Gyakran beszélünk két különböző bitsor XOR-járól is, 
+00:05:04,900 --> 00:05:08,209
+Technikailag is csak 11 bites adat lesz, és látni fogja, 
 
 86
-00:05:10,488 --> 00:05:13,440
-amely alapvetően komponensenként hajtja végre ezt.
+00:05:08,209 --> 00:05:13,260
+hogy van egy enyhe árnyalat a 0. pozícióban zajló eseményekhez, de ez most ne aggódjon.
 
 87
-00:05:13,680 --> 00:05:15,720
-Ez olyan, mint egy kiegészítés, de ahol soha nem viszed magaddal.
+00:05:14,140 --> 00:05:17,757
+Mint minden hibajavító algoritmus, ez is két játékost foglal magában, 
 
 88
-00:05:16,500 --> 00:05:19,632
-Ismét a matematikailag hajlamosabbak ezt inkább úgy gondolhatják, 
+00:05:17,757 --> 00:05:21,478
+egy feladót, aki a 4 speciális bit beállításáért felelős, és egy vevőt, 
 
 89
-00:05:19,632 --> 00:05:22,480
-mintha két vektort adnának hozzá, és csökkentenék a mod 2-t.
+00:05:21,478 --> 00:05:25,200
+aki valamilyen ellenőrzés elvégzéséért és a hibák kijavításáért felelős.
 
 90
-00:05:23,500 --> 00:05:28,583
-Ha most megnyit egy Pythont, és alkalmazza a caret műveletet két egész szám között, 
+00:05:25,200 --> 00:05:29,236
+Természetesen a küldő és fogadó szavak valóban olyan gépekre vagy szoftverekre utalnak, 
 
 91
-00:05:28,583 --> 00:05:32,940
-akkor ez az, amit csinál, csak a tető alatti számok bitreprezentációira.
+00:05:29,236 --> 00:05:32,309
+amelyek minden ellenőrzést elvégeznek, és az üzenet fogalma nagyon 
 
 92
-00:05:34,960 --> 00:05:38,707
-Számodra és nekem az a kulcsfontosságú, hogy a sok különböző bitsor 
+00:05:32,309 --> 00:05:34,740
+tág értelemben értendő, beleértve például a tárolást.
 
 93
-00:05:38,707 --> 00:05:42,896
-XOR-értékének vétele hatékony módja annak, hogy egy csomó különálló csoport 
+00:05:35,340 --> 00:05:39,772
+Végül is az adatok tárolása ugyanaz, mint üzenetet küldeni a múltból a jövőbe, 
 
 94
-00:05:42,896 --> 00:05:47,140
-paródiáit számítsuk ki, mint ahogyan az oszlopoknál is, mindezt egy csapásra.
+00:05:39,772 --> 00:05:41,680
+nem pedig egyik helyről a másikra.
 
 95
-00:05:51,260 --> 00:05:53,807
-Ez egy meglehetősen pofás módot ad arra, hogy elgondolkodjunk 
+00:05:42,560 --> 00:05:46,835
+Tehát ez a beállítás, de mielőtt belemerülnénk, beszélnünk kell egy kapcsolódó ötletről, 
 
 96
-00:05:53,807 --> 00:05:56,848
-a Hamming-kód algoritmusunkból származó többszörös paritásellenőrzéseken, 
+00:05:46,835 --> 00:05:50,390
+amely Hammingnek a felfedezése idején frissen járt, egy olyan módszerről, 
 
 97
-00:05:56,848 --> 00:05:58,780
-mivel mindez egyetlen műveletbe van csomagolva.
+00:05:50,390 --> 00:05:54,282
+amely lehetővé teszi, hogy bármilyen bites hibát észleljen, de kijavítsa azokat, 
 
 98
-00:05:59,479 --> 00:06:02,180
-Bár első pillantásra nagyon másképp néz ki.
+00:05:54,282 --> 00:05:56,300
+ismert. az üzletben paritásellenőrzésként.
 
 99
-00:06:02,820 --> 00:06:06,702
-Konkrétan írja fel a 16 pozíciót binárisan, mint korábban, 
+00:05:56,880 --> 00:05:59,775
+A paritásellenőrzéshez csak egyetlen bitet választunk ki, 
 
 100
-00:06:06,702 --> 00:06:11,835
-és most jelölje ki azokat a pozíciókat, ahol az üzenetbit 1-re van kapcsolva, 
+00:05:59,775 --> 00:06:03,820
+amelynek hangolásáért a küldő felelős, a többi pedig szabadon hordozhat üzenetet.
 
 101
-00:06:11,835 --> 00:06:17,100
-majd gyűjtse össze ezeket a pozíciókat egy nagy oszlopba, és vegye fel az XOR-t.
+00:06:04,880 --> 00:06:08,564
+Ennek a speciális bitnek az egyetlen feladata, hogy megbizonyosodjon arról, 
 
 102
-00:06:19,260 --> 00:06:24,119
-Valószínűleg sejtheti, hogy az eredményül kapott 4 bit megegyezik az általunk megismert 
+00:06:08,564 --> 00:06:11,280
+hogy az üzenetben szereplő 1-ek száma páros szám legyen.
 
 103
-00:06:24,119 --> 00:06:28,371
-és kedvelt 4 paritásellenőrzéssel, de szánjunk egy percet, hogy átgondoljuk, 
+00:06:12,080 --> 00:06:15,028
+Így például jelenleg az 1-ek teljes száma 7, ez páratlan, 
 
 104
-00:06:28,371 --> 00:06:29,200
-miért pontosan.
+00:06:15,028 --> 00:06:18,841
+tehát a küldőnek meg kell fordítania azt a speciális bitet, hogy 1 legyen, 
 
 105
-00:06:32,220 --> 00:06:37,355
-Ez az utolsó oszlop például az összes olyan pozíciót számolja, amelynek utolsó bitje 1, 
+00:06:18,841 --> 00:06:19,960
+így a szám páros lesz.
 
 106
-00:06:37,355 --> 00:06:42,083
-de már csak a kiemelt pozíciókra korlátozódik, tehát gyakorlatilag azt számolja, 
+00:06:20,800 --> 00:06:23,817
+De ha a blokk már páros számú 1-gyel indult volna, 
 
 107
-00:06:42,083 --> 00:06:45,760
-hogy hány kiemelt pozíció származott az első paritáscsoportból.
+00:06:23,817 --> 00:06:26,420
+akkor ez a speciális bit 0-ban maradt volna.
 
 108
-00:06:46,240 --> 00:06:46,800
-Ennek van értelme?
+00:06:27,340 --> 00:06:31,364
+Ez nagyon egyszerű, megtévesztően egyszerű, de hihetetlenül elegáns módja annak, 
 
 109
-00:06:49,080 --> 00:06:51,636
-Hasonlóképpen, a következő oszlop azt számolja, 
+00:06:31,364 --> 00:06:34,295
+hogy a változás gondolatát az üzenetben bárhol lepároljuk, 
 
 110
-00:06:51,636 --> 00:06:55,472
-hogy hány pozíció van a második paritáscsoportban, azokat a pozíciókat, 
+00:06:34,295 --> 00:06:36,780
+hogy az egyetlen információrészletben tükröződjön.
 
 111
-00:06:55,472 --> 00:07:00,000
-amelyek második és utolsó bitje 1, és amelyek szintén kiemelve vannak, és így tovább.
+00:06:37,500 --> 00:06:42,203
+Figyelje meg, ha ennek az üzenetnek bármely része átfordul, akár 0-ról 1-re, 
 
 112
-00:07:00,260 --> 00:07:03,960
-Valójában ez csak egy kis perspektívaváltás ugyanabban a dologban, amit mi csináltunk.
+00:06:42,203 --> 00:06:46,540
+akár 1-ről 0-ra, az 1-ek teljes számát párosról páratlanra változtatja.
 
 113
-00:07:07,760 --> 00:07:09,600
-És hogy tudd, hová vezet innen.
+00:06:47,980 --> 00:06:52,455
+Tehát ha Ön a címzett, megnézi ezt az üzenetet, és páratlan számú 1-et lát, 
 
 114
-00:07:10,000 --> 00:07:13,034
-A küldő felelős néhány speciális paritásbit átkapcsolásáért, 
+00:06:52,455 --> 00:06:57,460
+akkor biztosan tudhatja, hogy hiba történt, még akkor is, ha fogalma sincs, hol volt.
 
 115
-00:07:13,034 --> 00:07:15,720
-hogy megbizonyosodjon arról, hogy az összeg 0000 lesz.
+00:06:58,500 --> 00:07:02,480
+A szakzsargonban azt, hogy egy bitcsoport páros vagy páratlan 1-es számmal rendelkezik, 
 
 116
-00:07:15,720 --> 00:07:21,370
-Ha már így van, akkor ez egy nagyon jó módot ad arra, hogy elgondolkodjunk azon, 
+00:07:02,480 --> 00:07:03,340
+paritásnak nevezik.
 
 117
-00:07:21,370 --> 00:07:27,580
-hogy ez a négy eredményül kapott bit az alján miért írja le közvetlenül a hiba helyzetét.
+00:07:04,860 --> 00:07:07,880
+Számokat is használhat, és azt mondhatja, hogy a paritás 0 vagy 1, 
 
 118
-00:07:28,460 --> 00:07:31,860
-Tegyük fel, hogy ebben a blokkban egy kicsit 0-ról 1-re vált.
+00:07:07,880 --> 00:07:10,720
+ami általában hasznosabb, ha elkezdi a matematikát az ötlettel.
 
 119
-00:07:32,600 --> 00:07:37,953
-Ez azt jelenti, hogy ennek a bitnek a pozíciója bekerül a teljes XOR-be, 
+00:07:11,220 --> 00:07:14,550
+Ezt a speciális bitet pedig, amelyet a küldő a paritás szabályozására használ, 
 
 120
-00:07:37,953 --> 00:07:43,820
-ami 0-ról az összeget az újonnan hozzáadott értékre, a hiba helyére változtatja.
+00:07:14,550 --> 00:07:15,520
+paritásbitnek nevezzük.
 
 121
-00:07:44,460 --> 00:07:47,191
-Valamivel kevésbé nyilvánvaló, ugyanez igaz arra az esetre is, 
+00:07:17,560 --> 00:07:21,194
+És tulajdonképpen tisztán kell lennünk, ha a vevő páratlan paritást lát, 
 
 122
-00:07:47,191 --> 00:07:49,360
-ha olyan hiba történik, amely 1-et 0-ra változtat.
+00:07:21,194 --> 00:07:25,277
+az nem feltétlenül azt jelenti, hogy csak egy hiba volt, lehet, hogy 3 hiba volt, 
 
 123
-00:07:50,180 --> 00:07:53,176
-Tudod, ha kétszer összeadsz egy bites karakterláncot, az ugyanaz, 
+00:07:25,277 --> 00:07:29,260
+vagy 5, vagy bármilyen más páratlan szám, de biztosan tudhatják hogy nem 0 volt.
 
 124
-00:07:53,176 --> 00:07:55,491
-mintha egyáltalán nem lenne ott, alapvetően azért, 
+00:07:29,980 --> 00:07:32,878
+Másrészt, ha 2 vagy páros számú hiba történt volna, 
 
 125
-00:07:55,491 --> 00:07:57,580
-mert ebben a világban 1 plusz 1 egyenlő 0-val.
+00:07:32,878 --> 00:07:35,721
+akkor az 1-ek végső száma továbbra is páros lenne, 
 
 126
-00:07:57,580 --> 00:08:00,566
-Tehát ennek a pozíciónak a másolatának hozzáadása a 
+00:07:35,721 --> 00:07:40,125
+így a fogadó nem lehet teljesen biztos abban, hogy a páros szám szükségszerűen 
 
 127
-00:08:00,566 --> 00:08:04,300
-végösszeghez ugyanazt a hatást eredményezi, mint ahogy mozgatjuk.
+00:07:40,125 --> 00:07:42,300
+azt jelenti, hogy az üzenet hibamentes.
 
 128
-00:08:05,160 --> 00:08:10,700
-És ez a hatás ismét az, hogy az összesített eredmény itt alul jelzi a hiba helyzetét.
+00:07:42,840 --> 00:07:47,180
+Panaszkodhat, hogy egy üzenet, amely csak 2 bites átfordulással összezavarodik, 
 
 129
-00:08:13,039 --> 00:08:15,245
-Annak szemléltetésére, hogy ez milyen elegáns, 
+00:07:47,180 --> 00:07:49,080
+elég gyenge, és teljesen igaza van.
 
 130
-00:08:15,245 --> 00:08:18,765
-hadd mutassam meg azt a Python-kód egy sort, amelyre korábban hivatkoztam, 
+00:07:49,700 --> 00:07:53,933
+Ne feledje azonban, hogy nincs olyan hibaészlelési vagy -javítási módszer, 
 
 131
-00:08:18,765 --> 00:08:21,440
-és amely szinte az összes logikát rögzíti a vevő oldalán.
+00:07:53,933 --> 00:07:58,900
+amely 100%-os biztonságot adna afelől, hogy a kapott üzenetet a küldő szándéka szerinti.
 
 132
-00:08:22,080 --> 00:08:26,812
-Kezdjük azzal, hogy létrehozunk egy véletlenszerű 16 1-es és 0-s tömböt az adatblokk 
+00:07:59,580 --> 00:08:02,174
+Végtére is, elegendő véletlenszerű zaj pusztán véletlenül 
 
 133
-00:08:26,812 --> 00:08:31,432
-szimulálására, és megadom neki a névbiteket, de természetesen a gyakorlatban ezt a 
+00:08:02,174 --> 00:08:05,440
+megváltoztathatja az egyik érvényes üzenetet egy másik érvényes üzenetté.
 
 134
-00:08:31,432 --> 00:08:35,830
-küldőtől kapjuk, és ahelyett, hogy véletlenszerű lévén 11 adatbitet hordozna 5 
+00:08:06,240 --> 00:08:10,890
+Ehelyett az a cél, hogy egy bizonyos maximális számú hibaig robusztus sémát dolgozzunk 
 
 135
-00:08:35,830 --> 00:08:37,000
-paritásbittel együtt.
+00:08:10,890 --> 00:08:15,380
+ki, vagy esetleg csökkentsük az ehhez hasonló téves pozitív eredmény valószínűségét.
 
 136
-00:08:37,000 --> 00:08:41,042
-Ha az enumerateBits függvényt hívom, akkor azt csinálja, 
+00:08:16,260 --> 00:08:19,101
+A paritásellenőrzések önmagukban meglehetősen gyengék, 
 
 137
-00:08:41,042 --> 00:08:47,000
-hogy ezeket a biteket párosítja a megfelelő indexszel, ebben az esetben 0-tól 15-ig.
+00:08:19,101 --> 00:08:23,647
+de ha a változás gondolatát egy teljes üzeneten keresztül egyetlen bitig desztilláljuk, 
 
 138
-00:08:48,180 --> 00:08:52,253
-Tehát ha ezután létrehozunk egy listát, amely az összes ilyen páron áthurkol, 
+00:08:23,647 --> 00:08:27,160
+azt adják, hogy hatékony építőelemet adnak a kifinomultabb sémákhoz.
 
 139
-00:08:52,253 --> 00:08:56,170
-olyan párokon, amelyek i-nek néznek ki, majd csak az i értéket vesszük ki, 
+00:08:27,940 --> 00:08:31,131
+Például, amikor Hamming egy módot keresett annak azonosítására, 
 
 140
-00:08:56,170 --> 00:09:00,556
-csak az indexet, akkor ez nem olyan izgalmas, csak visszakapjuk azokat az indexeket 
+00:08:31,131 --> 00:08:35,419
+hol történt a hiba, nem csak azt, hogy megtörtént, kulcsfontosságú meglátása az volt, 
 
 141
-00:09:00,556 --> 00:09:01,340
-0 és 15 között.
+00:08:35,419 --> 00:08:38,261
+hogy ha néhány paritásellenőrzést nem a teljes üzenetre, 
 
 142
-00:09:01,680 --> 00:09:07,434
-De ha hozzátesszük azt a feltételt, hogy ezt csak if bit, azaz ha ez a bit 1 és nem 0, 
+00:08:38,261 --> 00:08:41,352
+hanem bizonyos gondosan kiválasztott részhalmazokra alkalmaz, 
 
 143
-00:09:07,434 --> 00:09:12,660
-akkor csak azokat a pozíciókat húzza ki, ahol a megfelelő bit be van kapcsolva.
+00:08:41,352 --> 00:08:43,845
+akkor megkérdezheti. egy kifinomultabb kérdéssor, 
 
 144
-00:09:13,380 --> 00:09:20,360
-Ebben az esetben úgy tűnik, hogy ezek a pozíciók 0, 4, 6, 9 stb.
+00:08:43,845 --> 00:08:45,940
+amely meghatározza bármely bithiba helyét.
 
 145
-00:09:20,720 --> 00:09:23,861
-Azt akarjuk, hogy összegyűjtsük ezeket a pozíciókat, 
+00:08:46,680 --> 00:08:50,130
+Az általános érzés egy kicsit olyan, mintha egy 20 kérdésből álló játékot játszanánk, 
 
 146
-00:09:23,861 --> 00:09:27,240
-a bekapcsolt bitek pozícióit, majd együtt XOR-eljük őket.
+00:08:50,130 --> 00:08:53,380
+és igen vagy nem kérdéseket tennénk fel, amelyek kettévágják a lehetőségek terét.
 
 147
-00:09:29,180 --> 00:09:33,220
-Ahhoz, hogy ezt Pythonban megtegye, először importáljak néhány hasznos funkciót.
+00:08:54,160 --> 00:08:57,809
+Tegyük fel például, hogy csak ezen a 8 biten végezzük el a paritásellenőrzést, 
 
 148
-00:09:33,900 --> 00:09:36,300
-Így meghívhatjuk a redukció()-t ezen a listán, 
+00:08:57,809 --> 00:08:59,380
+az összes páratlan számú pozíciót.
 
 149
-00:09:36,300 --> 00:09:38,700
-és az XOR függvény segítségével csökkenthetjük.
+00:09:00,100 --> 00:09:04,141
+Aztán ha hibát észlel, egy kicsit több információt ad a vevőnek arról, 
 
 150
-00:09:39,100 --> 00:09:42,680
-Ez alapvetően átveszi a listát, és végigviszi az XOR-t.
+00:09:04,141 --> 00:09:08,240
+hogy pontosan hol van a hiba, nevezetesen, hogy páratlan helyzetben van.
 
 151
-00:09:44,800 --> 00:09:47,816
-Ha úgy tetszik, kifejezetten kiírhatja az XOR függvényt anélkül, 
+00:09:08,940 --> 00:09:12,782
+Ha a 8 bit között nem észlelünk hibát, az vagy azt jelenti, 
 
 152
-00:09:47,816 --> 00:09:49,440
-hogy bárhonnan importálnia kellene.
+00:09:12,782 --> 00:09:16,240
+hogy nincs hiba, vagy valahol a páros pozíciókban van.
 
 153
-00:09:51,940 --> 00:09:57,305
-Tehát jelenleg úgy néz ki, hogy ha ezt tesszük a 16 bites véletlenszerű blokkon, 
+00:09:17,180 --> 00:09:20,858
+Azt gondolhatnánk, hogy ha a paritásellenőrzést a bitek felére korlátozzuk, 
 
 154
-00:09:57,305 --> 00:10:01,280
-akkor 9-et ad vissza, aminek a bináris reprezentációja 1001.
+00:09:20,858 --> 00:09:25,070
+az kevésbé hatékony, de ha más jól megválasztott ellenőrzésekkel együtt hajtjuk végre, 
 
 155
-00:10:01,980 --> 00:10:04,510
-Itt nem fogjuk megtenni, de írhat egy függvényt, 
+00:09:25,070 --> 00:09:27,200
+akkor az intuitív módon sokkal erősebbet ad.
 
 156
-00:10:04,510 --> 00:10:08,900
-ahol a küldő ezt a bináris reprezentációt használja a négy paritásbit igény szerinti 
+00:09:29,240 --> 00:09:33,036
+Ne feledje, hogy a paritásellenőrzés tényleges beállításához speciális 
 
 157
-00:10:08,900 --> 00:10:11,793
-beállításához, így végül a blokk olyan állapotba kerül, 
+00:09:33,036 --> 00:09:36,620
+bitet kell kijelölni, amely szabályozza a teljes csoport paritását.
 
 158
-00:10:11,793 --> 00:10:15,460
-ahol ennek a kódsornak a futtatása a teljes bitlistán visszatér. egy 0.
+00:09:37,480 --> 00:09:39,180
+Itt csak válasszuk ki az 1. pozíciót.
 
 159
-00:10:16,080 --> 00:10:20,100
-Ez egy jól előkészített blokknak tekinthető.
+00:09:39,720 --> 00:09:43,323
+A bemutatott példában ennek a 8 bitnek a paritása jelenleg páratlan, 
 
 160
-00:10:20,100 --> 00:10:24,487
-A jó dolog az, hogy ha a listában szereplő bitek bármelyikét átkapcsoljuk, 
+00:09:43,323 --> 00:09:46,980
+tehát a feladó felelős a paritásbit átkapcsolásáért, most pedig páros.
 
 161
-00:10:24,487 --> 00:10:29,342
-véletlenszerű zajból eredő hibát szimulálva, akkor ha ugyanazt a kódsort futtatja, 
+00:09:47,940 --> 00:09:50,680
+Ez csak 1 a 4 paritásellenőrzésből, amit elvégezünk.
 
 162
-00:10:29,342 --> 00:10:30,220
-kiírja a hibát.
+00:09:50,920 --> 00:09:54,524
+A második ellenőrzés a rács jobb felében található 8 bit között van, 
 
 163
-00:10:30,960 --> 00:10:31,520
-Hát nem ügyes?
+00:09:54,524 --> 00:09:56,300
+legalábbis ahogy itt megrajzoltuk.
 
 164
-00:10:31,820 --> 00:10:36,825
-Megkaphatja ezt a blokkot a semmiből, futtathatja rajta ezt az egyetlen sort, 
+00:09:56,680 --> 00:09:59,713
+Ezúttal a 2-es pozíciót használhatjuk paritásbitként, 
 
 165
-00:10:36,825 --> 00:10:41,060
-és automatikusan kiköpi a hiba pozícióját, vagy egy 0-t, ha nincs.
+00:09:59,713 --> 00:10:03,981
+így ennek a 8 bitnek már van páros paritása, és a küldő jól érezheti magát, 
 
 166
-00:10:42,500 --> 00:10:44,840
-A 16-os méretben pedig nincs itt semmi különös.
+00:10:03,981 --> 00:10:06,060
+ha a 2-es bitet változatlanul hagyja.
 
 167
-00:10:44,840 --> 00:10:49,860
-Ugyanez a kódsor működne, ha mondjuk 256 bites listája lenne.
+00:10:07,020 --> 00:10:11,271
+Aztán a másik végén, ha a vevő ellenőrzi ennek a csoportnak a paritását, és azt találja, 
 
 168
-00:10:51,880 --> 00:10:54,646
-Mondanunk sem kell, hogy több kódot kell ide írni, 
+00:10:11,271 --> 00:10:15,380
+hogy ez furcsa, akkor tudni fogja, hogy a hiba valahol a jobb oldali 8 bit között van.
 
 169
-00:10:54,646 --> 00:10:58,932
-például a meta paritásellenőrzést a 2 bites hibák észlelésére, de az ötlet az, 
+00:10:15,820 --> 00:10:20,580
+Ellenkező esetben ez azt jelenti, hogy nincs hiba, vagy a hiba valahol a bal oldalon van.
 
 170
-00:10:58,932 --> 00:11:03,760
-hogy a sémánk szinte minden alapvető logikája egyetlen XOR-csökkentésre vezethető vissza.
+00:10:21,120 --> 00:10:24,338
+Vagy azt hiszem, két hiba is lehetett, de jelenleg azt feltételezzük, 
 
 171
-00:11:06,120 --> 00:11:10,493
-A bináris és XOR-ok és általában a szoftverek kényelmétől függően előfordulhat, 
+00:10:24,338 --> 00:10:26,500
+hogy legfeljebb egy hiba van az egész blokkban.
 
 172
-00:11:10,493 --> 00:11:13,172
-hogy ezt a perspektívát kissé zavarónak találja, 
+00:10:26,940 --> 00:10:28,740
+Ennél többért teljesen összeomlanak a dolgok.
 
 173
-00:11:13,172 --> 00:11:16,616
-vagy sokkal elegánsabbnak és egyszerűbbnek, hogy azon töpreng, 
+00:10:29,160 --> 00:10:32,519
+Mielőtt megvizsgálnánk a következő két ellenőrzést, gondoljunk át egy pillanatra, 
 
 174
-00:11:16,616 --> 00:11:18,420
-miért nem kezdtük el vele. -megy.
+00:10:32,519 --> 00:10:35,100
+hogy az első kettő mit tesz lehetővé, ha együtt tekintjük őket.
 
 175
-00:11:19,140 --> 00:11:22,988
-Lazán szólva, a többszörös paritásellenőrzési perspektíva könnyebben átgondolható, 
+00:10:35,800 --> 00:10:39,660
+Tegyük fel, hogy hibát észlel a páratlan oszlopok között és a jobb felében.
 
 176
-00:11:22,988 --> 00:11:26,095
-ha a Hamming-kódokat nagyon közvetlenül implementálják hardverben, 
+00:10:40,200 --> 00:10:43,040
+Ez szükségszerűen azt jelenti, hogy a hiba valahol az utolsó oszlopban van.
 
 177
-00:11:26,095 --> 00:11:29,201
-az XOR perspektívára pedig akkor a legegyszerűbb, ha szoftveresen, 
+00:10:43,820 --> 00:10:46,564
+Ha a páratlan oszlopban nem volt hiba, de a jobb felében volt, 
 
 178
-00:11:29,201 --> 00:11:30,500
-valamivel magasabb szintről.
+00:10:46,564 --> 00:10:49,700
+akkor ez azt jelzi, hogy a másodiktól az utolsóig terjedő oszlopban van.
 
 179
-00:11:31,360 --> 00:11:34,865
-Az elsőt a legegyszerűbb kézzel elvégezni, és úgy gondolom, 
+00:10:50,440 --> 00:10:52,957
+Hasonlóképpen, ha hiba van a páratlan oszlopokban, 
 
 180
-00:11:34,865 --> 00:11:39,715
-hogy ez jobban beépíti a mindennek hátterében álló alapvető intuíciót, vagyis azt, 
+00:10:52,957 --> 00:10:56,560
+de nem a jobb felében, akkor tudja, hogy valahol a második oszlopban van.
 
 181
-00:11:39,715 --> 00:11:44,156
-hogy az egyetlen hiba megtalálásához szükséges információ a blokk méretének 
+00:10:56,560 --> 00:10:59,475
+És ha a két paritásellenőrzés egyike sem észlel semmit, 
 
 182
-00:11:44,156 --> 00:11:48,772
-naplójához kapcsolódik. , vagy más szóval, a blokk méretének megduplázódásával 
+00:10:59,475 --> 00:11:03,120
+akkor az egyetlen hely, ahol hiba lehet, a bal szélső oszlopban lehet.
 
 183
-00:11:48,772 --> 00:11:50,000
-egy kicsit növekszik.
+00:11:03,340 --> 00:11:06,120
+De ez azt is jelentheti, hogy egyáltalán nincs hiba.
 
 184
-00:11:51,020 --> 00:11:54,235
-A lényeges tény itt az, hogy ez az információ közvetlenül megfelel annak, 
+00:11:06,300 --> 00:11:08,548
+Ez egy meglehetősen elcsépelt módja annak, hogy két 
 
 185
-00:11:54,235 --> 00:11:56,060
-hogy mekkora redundanciára van szükségünk.
+00:11:08,548 --> 00:11:10,840
+paritásellenőrzés segítségével rögzítsük az oszlopot.
 
 186
-00:11:56,660 --> 00:11:59,752
-Valójában ez az, ami ellentétes a legtöbb ember térdrángó reakciójával, 
+00:11:11,480 --> 00:11:13,640
+Innentől valószínűleg sejtheti, mi következik.
 
 187
-00:11:59,752 --> 00:12:03,404
-amikor először arra gondol, hogy egy üzenetet tegyen ellenállóvá a hibákkal szemben, 
+00:11:13,800 --> 00:11:16,140
+Alapvetően ugyanazt csináljuk, csak a sorok esetében.
 
 188
-00:12:03,404 --> 00:12:06,540
-ahol általában a teljes üzenet lemásolása az első ösztön, ami eszébe jut.
+00:11:16,440 --> 00:11:20,900
+A páratlan sorokon paritásellenőrzés történik, a 4-es pozíciót használva paritásbitként.
 
 189
-00:12:07,500 --> 00:12:11,678
-És akkor, egyébként, van egy egészen más mód, hogy néha Hamming-kódokat látunk bemutatva, 
+00:11:21,380 --> 00:11:24,401
+Tehát ebben a példában ennek a csoportnak már van páros paritása, 
 
 190
-00:12:11,678 --> 00:12:14,000
-ahol az üzenetet megszorozzuk egy nagy mátrixszal.
+00:11:24,401 --> 00:11:25,820
+így a 4. bit 0-ra lesz állítva.
 
 191
-00:12:14,670 --> 00:12:18,036
-Ez kedves, mert a lineáris kódok tágabb családjához kapcsolódik, 
+00:11:26,560 --> 00:11:29,436
+És végül van egy paritásellenőrzés az alsó két sorban, 
 
 192
-00:12:18,036 --> 00:12:20,988
-de szerintem ez szinte semmilyen megérzést nem ad arról, 
+00:11:29,436 --> 00:11:31,580
+a 8-as pozíciót használva paritásbitként.
 
 193
-00:12:20,988 --> 00:12:23,060
-honnan származik vagy hogyan skálázódik.
+00:11:32,120 --> 00:11:34,969
+Ebben az esetben úgy tűnik, hogy a küldőnek be kell kapcsolnia a 8-as bitet, 
 
 194
-00:12:25,200 --> 00:12:28,031
-És ha a skálázásról beszélünk, észreveheti, hogy ennek a 
+00:11:34,969 --> 00:11:36,820
+hogy egyenletes paritást biztosítson a csoportnak.
 
 195
-00:12:28,031 --> 00:12:31,160
-sémának a hatékonysága csak javul, ha növeljük a blokk méretét.
+00:11:37,700 --> 00:11:40,055
+Ahogy az első két ellenőrzés lehetővé teszi az oszlop rögzítését, 
 
 196
-00:12:35,000 --> 00:12:38,712
-Például azt láttuk, hogy 256 bittel ennek a helynek csak 3%-át 
+00:11:40,055 --> 00:11:41,840
+a következő kettő lehetővé teszi a sor rögzítését.
 
 197
-00:12:38,712 --> 00:12:42,660
-használjuk fel a redundanciára, és onnantól kezdve egyre jobb lesz.
+00:11:42,880 --> 00:11:47,540
+Példaként képzeljük el, hogy az átvitel során hiba történik, mondjuk a 3. pozícióban.
 
 198
-00:12:43,300 --> 00:12:47,340
-Ahogy a paritásbitek száma egyesével nő, a blokk mérete folyamatosan megduplázódik.
+00:11:48,180 --> 00:11:51,945
+Nos, ez érinti az első paritáscsoportot, és a második paritáscsoportot is, 
 
 199
-00:12:49,000 --> 00:12:53,422
-És ha ezt túlzásba viszed, akkor lehet egy millió bites blokk, 
+00:11:51,945 --> 00:11:55,560
+tehát a vevő tudja, hogy valahol hiba van abban a jobb oldali oszlopban.
 
 200
-00:12:53,422 --> 00:12:57,773
-ahol szó szerint 20 kérdést játszanál a paritásellenőrzéssel, 
+00:11:56,100 --> 00:12:00,540
+De ez nem érinti a harmadik csoportot, és nem érinti a negyedik csoportot.
 
 201
-00:12:57,773 --> 00:13:00,020
-és csak 21 paritásbitet használ.
+00:12:01,240 --> 00:12:04,545
+Ez pedig lehetővé teszi, hogy a vevő pontosan az első sorig azonosítsa a hibát, 
 
 202
-00:13:00,740 --> 00:13:04,026
-És ha visszalép, és arra gondol, hogy megnézzen egymillió bitet, 
+00:12:04,545 --> 00:12:07,520
+ami szükségszerűen a 3. pozíciót jelenti, így ki tudja javítani a hibát.
 
 203
-00:13:04,026 --> 00:13:07,060
-és megkeressen egyetlen hibát, az valóban őrültségnek tűnik.
+00:12:08,580 --> 00:12:11,350
+Szívesen szánhat egy pillanatot arra, hogy meggyőzze magát arról, 
 
 204
-00:13:08,199 --> 00:13:12,588
-A probléma persze az, hogy egy nagyobb blokknál megnő annak a valószínűsége, 
+00:12:11,350 --> 00:12:14,204
+hogy a négy kérdésre adott válaszok valóban mindig lehetővé teszik, 
 
 205
-00:13:12,588 --> 00:13:17,660
-hogy egy-két bitnél több hibát látunk, és a Hamming kódok ezen kívül semmit sem kezelnek.
+00:12:14,204 --> 00:12:17,100
+hogy meghatározzon egy adott helyet, függetlenül attól, hogy hol van.
 
 206
-00:13:18,320 --> 00:13:21,286
-Tehát a gyakorlatban a megfelelő méretet szeretné megtalálni, 
+00:12:17,720 --> 00:12:20,115
+Valójában az okoskodók még azt is észrevehetik, 
 
 207
-00:13:21,286 --> 00:13:24,300
-hogy ne legyen túl nagy a valószínűsége a túl sok bitváltásnak.
+00:12:20,115 --> 00:12:23,060
+hogy van kapcsolat e kérdések és a bináris számolás között.
 
 208
-00:13:26,600 --> 00:13:30,355
-Ezenkívül a gyakorlatban a hibák általában kis sorozatokban érkeznek, 
+00:12:23,500 --> 00:12:25,886
+És ha igen, hadd hangsúlyozzam ismét, állj meg, 
 
 209
-00:13:30,355 --> 00:13:35,077
-ami teljesen tönkretesz egy blokkot, ezért az egyik gyakori taktika a hibák sorozatának 
+00:12:25,886 --> 00:12:28,920
+próbáld meg magad megvonni az összefüggést, mielőtt elrontom.
 
 210
-00:13:35,077 --> 00:13:39,370
-szétosztására a különböző blokkok között az, hogy ezeket a blokkokat összefűzi, 
+00:12:30,500 --> 00:12:36,060
+Ha kíváncsi arra, hogy mi történik, ha magát a paritásbitet érinti, akkor megpróbálhatja.
 
 211
-00:13:39,370 --> 00:13:40,980
-mielőtt kiküldve vagy tárolva.
+00:12:36,440 --> 00:12:38,520
+Szánjon egy pillanatot arra, hogy gondolja végig, 
 
 212
-00:13:45,580 --> 00:13:49,243
-Viszont ennek nagy részét teljesen megkérdőjelezik a modernebb kódok, 
+00:12:38,520 --> 00:12:41,558
+hogyan lehet e négy speciális bit közötti hibát ugyanúgy nyomon követni, 
 
 213
-00:13:49,243 --> 00:13:52,749
-mint például a sokkal gyakrabban használt Reed-Solomon algoritmus, 
+00:12:41,558 --> 00:12:44,180
+mint bármely mást, ugyanazzal a négy kérdésből álló csoporttal.
 
 214
-00:13:52,749 --> 00:13:57,040
-amely különösen jól kezeli a sorozathibákat, és blokkonként nagyobb számú hibával 
+00:12:47,060 --> 00:12:51,219
+Teljesen mindegy, hiszen végső soron az üzenetbiteket akarjuk megvédeni, 
 
 215
-00:13:57,040 --> 00:13:58,820
-szemben is ellenállóra hangolható.
+00:12:51,219 --> 00:12:53,100
+a hibajavító bitek csak haladnak.
 
 216
-00:13:59,360 --> 00:14:01,340
-De ez egy másik alkalom témája.
+00:12:53,600 --> 00:12:57,820
+De ezeknek a biteknek a védelme is melléktermékként természetesen kiesik a rendszerből.
 
 217
-00:14:02,500 --> 00:14:06,521
-A tudomány és mérnöki tevékenység művészete című könyvében Hamming csodálatosan 
+00:12:59,200 --> 00:13:01,760
+Azt is élvezheti, ha előre látja, hogy ez hogyan skálázódik.
 
 218
-00:14:06,521 --> 00:14:09,940
-őszintén beszél arról, hogy milyen kanyargós volt a kód felfedezése.
+00:13:02,300 --> 00:13:06,849
+Ha például egy 256 bites méretű blokkot használtunk egy hely meghatározásához, 
 
 219
-00:14:10,620 --> 00:14:12,909
-Először mindenféle különféle sémát próbált ki, 
+00:13:06,849 --> 00:13:10,246
+akkor mindössze nyolc igen vagy nem kérdésre van szüksége, 
 
 220
-00:14:12,909 --> 00:14:16,172
-beleértve a biteket egy magasabb dimenziós rács részeire rendezve, 
+00:13:10,246 --> 00:13:12,780
+hogy binárisan keressen egy bizonyos helyre.
 
 221
-00:14:16,172 --> 00:14:17,780
-és ehhez hasonló furcsa dolgokat.
+00:13:15,640 --> 00:13:17,997
+És ne feledje, minden kérdés csak egyetlen bitet 
 
 222
-00:14:18,300 --> 00:14:21,940
-Az ötlet, hogy a paritásellenőrzések összeesküvésre késztethetők oly módon, 
+00:13:17,997 --> 00:13:20,500
+igényel a megfelelő paritásellenőrzés beállításához.
 
 223
-00:14:21,940 --> 00:14:24,957
-hogy kifejtsék a hiba helyzetét, csak akkor jutott Hamminghez, 
+00:13:23,160 --> 00:13:25,761
+Lehet, hogy néhányan már látják, de később beszélünk arról, 
 
 224
-00:14:24,957 --> 00:14:28,358
-amikor egy csomó egyéb elemzés után visszalépett, és megkérdezte: oké, 
+00:13:25,761 --> 00:13:29,360
+hogyan lehet szisztematikusan egy-két percen belül kideríteni, mik ezek a kérdések.
 
 225
-00:14:28,358 --> 00:14:31,520
-mi a leghatékonyabb, amit tudok. elképzelhető, hogy erről van szó?
+00:13:29,880 --> 00:13:31,697
+Remélhetőleg ez a vázlat elegendő ahhoz, hogy értékeljük 
 
 226
-00:14:32,620 --> 00:14:37,495
-Arról is őszintén beszélt, mennyire fontos, hogy már a paritásellenőrzés járt a fejében, 
+00:13:31,697 --> 00:13:33,260
+az itt fejlesztendő tevékenységünk hatékonyságát.
 
 227
-00:14:37,495 --> 00:14:41,220
-ami az 1940-es években sokkal kevésbé volt elterjedt, mint manapság.
+00:13:33,260 --> 00:13:37,579
+Az első dolog, a nyolc kiemelt paritásbit kivételével, 
 
 228
-00:14:41,920 --> 00:14:45,842
-A könyvben vagy fél tucatszor hivatkozik Louis Pasteur idézetére, 
+00:13:37,579 --> 00:13:41,820
+bármi lehet, bármilyen üzenetet vagy adatot hordozhat.
 
 229
-00:14:45,842 --> 00:14:48,220
-a szerencse a felkészült elmének kedvez.
+00:13:41,820 --> 00:13:45,687
+A 8 bit redundáns abban az értelemben, hogy teljesen az üzenet többi része 
 
 230
-00:14:49,320 --> 00:14:52,784
-Az okos ötletek gyakran megtévesztően egyszerűnek tűnnek utólag visszagondolva, 
+00:13:45,687 --> 00:13:50,020
+határozza meg őket, de ez sokkal okosabb módszer, mint az üzenet egészének másolása.
 
 231
-00:14:52,784 --> 00:14:54,300
-ami miatt könnyen alulértékelhetők.
+00:13:53,600 --> 00:13:56,041
+És mégis, ennyire kevés feladással képes lenne 
 
 232
-00:14:54,960 --> 00:14:57,278
-Jelenleg őszintén remélem, hogy a Hamming-kódok, 
+00:13:56,041 --> 00:13:58,380
+azonosítani és kijavítani bármelyik bithibát.
 
 233
-00:14:57,278 --> 00:15:01,300
-vagy legalábbis az ilyen kódok lehetősége, szinte magától értetődőnek tűnik számodra.
+00:13:59,200 --> 00:14:00,400
+Hát majdnem.
 
 234
-00:15:01,660 --> 00:15:04,311
-De nem szabad becsapnia magát azzal, hogy azt gondolja, 
+00:14:00,960 --> 00:14:04,787
+Oké, itt az egyetlen probléma az, hogy ha a négy paritásellenőrzés egyike sem 
 
 235
-00:15:04,311 --> 00:15:06,820
-hogy ezek valójában nyilvánvalóak, mert biztosan nem.
+00:14:04,787 --> 00:14:08,910
+észlel hibát, ami azt jelenti, hogy a speciálisan kiválasztott 8 bites részhalmazok 
 
 236
-00:15:07,880 --> 00:15:11,257
-Az okos ötletek megtévesztően egyszerűnek tűnnek, részben az az oka, 
+00:14:08,910 --> 00:14:12,148
+mindegyikének páros paritása van, ahogy a küldő szándéka szerint, 
 
 237
-00:15:11,257 --> 00:15:14,978
-hogy mindig csak a végeredményt látjuk, tisztázzuk azt, ami rendetlen volt, 
+00:14:12,148 --> 00:14:16,369
+akkor ez vagy azt jelenti, hogy egyáltalán nem volt hiba. , vagy leszűkít minket a 0. 
 
 238
-00:15:14,978 --> 00:15:18,111
-soha nem említjük meg az összes rossz fordulatot, alábecsüljük, 
+00:14:16,369 --> 00:14:16,860
+pozícióba.
 
 239
-00:15:18,111 --> 00:15:21,538
-hogy a felfedezhető lehetőségek mekkora tere van a probléma kezdetén. 
+00:14:17,740 --> 00:14:21,750
+Négy igen vagy nem kérdés esetén 16 lehetséges kimenetelünk van a 
 
 240
-00:15:21,538 --> 00:15:22,860
-megoldási folyamat, mindez.
+00:14:21,750 --> 00:14:26,673
+paritásellenőrzésünkhöz, és ez elsőre tökéletesnek tűnik a blokk 16 pozíciójából 
 
 241
-00:15:23,820 --> 00:15:24,900
-De ez általánosságban igaz.
+00:14:26,673 --> 00:14:31,900
+1 pontos meghatározásához, de közölnie kell a 17. eredményt is, a nem hibát. feltétel.
 
 242
-00:15:24,900 --> 00:15:27,766
-Azt hiszem, néhány különleges találmánynak van egy másik, 
+00:14:33,020 --> 00:14:37,300
+A megoldás itt valójában nagyon egyszerű, csak felejtsd el teljesen a 0. bitet.
 
 243
-00:15:27,766 --> 00:15:30,040
-mélyebb oka is annak, hogy alulbecsüljük őket.
+00:14:37,840 --> 00:14:40,711
+Tehát amikor elvégezzük a négy paritásellenőrzésünket, és azt látjuk, 
 
 244
-00:15:30,840 --> 00:15:35,237
-Az információ bitekben való gondolkodása csak 1948-ra vált igazán teljes elméletté, 
+00:14:40,711 --> 00:14:43,460
+hogy mindegyik páros, az egyértelműen azt jelenti, hogy nincs hiba.
 
 245
-00:15:35,237 --> 00:15:38,640
-Claude Shannon információelméletről szóló alapvető tanulmányával.
+00:14:44,240 --> 00:14:47,484
+Ez azt jelenti, hogy ahelyett, hogy egy 16 bites blokkal dolgoznánk, 
 
 246
-00:15:39,280 --> 00:15:42,540
-Ez lényegében egybeesett azzal, amikor Hamming kidolgozta az algoritmusát.
+00:14:47,484 --> 00:14:51,574
+mi egy 15 bites blokkkal dolgozunk, ahol a bitek közül 11 szabadon hordozhat üzenetet, 
 
 247
-00:15:43,300 --> 00:15:46,483
-Ez ugyanaz az alapdolgozat, amely bizonyos értelemben megmutatta, 
+00:14:51,574 --> 00:14:53,220
+és közülük 4 redundancia miatt van.
 
 248
-00:15:46,483 --> 00:15:49,667
-hogy a hatékony hibajavítás mindig lehetséges, függetlenül attól, 
+00:14:53,780 --> 00:15:00,200
+És ezzel most megvan, amit az üzletemberek 15-11 Hamming-kódként emlegetnének.
 
 249
-00:15:49,667 --> 00:15:52,900
-hogy mekkora a valószínűsége a bitváltásnak, legalábbis elméletben.
+00:15:00,460 --> 00:15:03,448
+Ennek ellenére jó, hogy van egy blokkméret, amely 2-es tiszta hatványt jelent, 
 
 250
-00:15:53,700 --> 00:15:57,663
-Shannon és Hamming egyébként a Bell Labs-ban osztozott egy irodában, annak ellenére, 
+00:15:03,448 --> 00:15:05,718
+és van egy okos módszer, amellyel megtarthatjuk a 0. bitet, 
 
 251
-00:15:57,663 --> 00:16:01,160
-hogy nagyon különböző dolgokon dolgoztak, ami itt aligha tűnik véletlennek.
+00:15:05,718 --> 00:15:08,140
+és rávehetjük, hogy egy kis plusz munkát végezzen el helyettünk.
 
 252
-00:16:02,380 --> 00:16:05,819
-Gyorsan előre több évtizedet, és manapság sokan annyira elmerülünk 
+00:15:08,700 --> 00:15:11,335
+Ha paritásbitként használjuk az egész blokkon, 
 
 253
-00:16:05,819 --> 00:16:08,386
-a bitekről és információkról való gondolkodásban, 
+00:15:11,335 --> 00:15:15,540
+akkor ténylegesen felismerjük a 2 bites hibákat, bár nem tudjuk kijavítani.
 
 254
-00:16:08,386 --> 00:16:12,340
-hogy könnyű figyelmen kívül hagyni, mennyire eltérő volt ez a gondolkodásmód.
+00:15:16,160 --> 00:15:16,820
+Íme, hogyan működik.
 
 255
-00:16:13,100 --> 00:16:17,449
-Ironikus módon azok az ötletek, amelyek a legmélyebben alakítják a jövő nemzedékének 
+00:15:17,180 --> 00:15:20,916
+Miután beállítottuk a négy speciális hibajavító bitet, beállítjuk azt a 0-at, 
 
 256
-00:16:17,449 --> 00:16:20,980
-gondolkodásmódját, végül egyszerűbbnek tekintik a jövő generációját, 
+00:15:20,916 --> 00:15:24,940
+hogy a teljes blokk paritása páros legyen, akárcsak egy normál paritásellenőrzésnél.
 
 257
-00:16:20,980 --> 00:16:22,260
-mint amilyenek valójában.
+00:15:25,700 --> 00:15:29,775
+Most, ha egyetlen bites hiba van, akkor a teljes blokk paritása páratlanra vált, 
+
+258
+00:15:29,775 --> 00:15:33,600
+de a négy hibajavító ellenőrzésnek köszönhetően ezt mindenképpen megfognánk.
+
+259
+00:15:34,160 --> 00:15:39,086
+Ha azonban két hiba van, akkor a teljes paritás vissza fog váltani párosra, 
+
+260
+00:15:39,086 --> 00:15:44,791
+de a vevő továbbra is látja, hogy legalább valami hiba történt a négy paritásellenőrzés 
+
+261
+00:15:44,791 --> 00:15:45,180
+miatt.
+
+262
+00:15:45,180 --> 00:15:47,816
+Tehát ha összességében egyenletes paritást észlelnek, 
+
+263
+00:15:47,816 --> 00:15:51,186
+de a többi ellenőrzésnél valami nem nulla történik, akkor azt jelzi, 
+
+264
+00:15:51,186 --> 00:15:52,700
+hogy legalább két hiba történt.
+
+265
+00:15:53,520 --> 00:15:54,000
+Hát nem okos?
+
+266
+00:15:54,300 --> 00:15:57,175
+Annak ellenére, hogy ezeket a 2 bites hibákat nem tudjuk kijavítani, 
+
+267
+00:15:57,175 --> 00:16:00,426
+pusztán az egyetlen zavaró 0. bit visszaállításával lehetővé teszi számunkra, 
+
+268
+00:16:00,426 --> 00:16:01,260
+hogy észleljük őket.
+
+269
+00:16:02,260 --> 00:16:05,220
+Ez meglehetősen szabványos, kiterjesztett Hamming-kódként ismert.
+
+270
+00:16:06,540 --> 00:16:09,313
+Technikailag szólva, most már teljes leírása van arról, 
+
+271
+00:16:09,313 --> 00:16:12,880
+hogy mit csinál egy Hamming-kód, legalábbis egy 16 bites blokk esetében.
+
+272
+00:16:12,880 --> 00:16:16,889
+De azt hiszem, sokkal elégedettebb lesz, ha ellenőrizni fogja a megértését, 
+
+273
+00:16:16,889 --> 00:16:21,320
+és mindent megszilárdít idáig úgy, hogy egy teljes példát tesz az elejétől a végéig.
+
+274
+00:16:22,080 --> 00:16:24,300
+De végigcsinálom veled, hogy ellenőrizd magad.
+
+275
+00:16:25,120 --> 00:16:27,838
+Üzenet beállításához, legyen szó szó szerinti üzenetről, 
+
+276
+00:16:27,838 --> 00:16:30,223
+amelyet térben fordít le, vagy bizonyos adatokat, 
+
+277
+00:16:30,223 --> 00:16:32,752
+amelyeket idővel tárolni szeretne, az első lépés az, 
+
+278
+00:16:32,752 --> 00:16:34,660
+hogy fel kell osztani 11 bites részekre.
+
+279
+00:16:35,580 --> 00:16:39,760
+Minden egyes darab egy hibaálló 16 bites blokkba kerül.
+
+280
+00:16:39,760 --> 00:16:43,220
+Tehát vegyük ezt példaként, és dolgozzuk ki ténylegesen.
+
+281
+00:16:43,740 --> 00:16:44,740
+Hajrá, tényleg tedd meg!
+
+282
+00:16:44,740 --> 00:16:47,020
+Álljunk meg, és próbáljuk összerakni ezt a blokkot.
+
+283
+00:16:52,720 --> 00:16:53,680
+Oké, készen állsz?
+
+284
+00:16:54,240 --> 00:16:58,650
+Ne feledje, hogy a 0 pozíció a 2 többi hatványával együtt hibajavítási feladatra van 
+
+285
+00:16:58,650 --> 00:17:03,320
+fenntartva, tehát először az üzenetbiteket az összes többi helyre, sorrendben helyezze el.
+
+286
+00:17:05,339 --> 00:17:08,790
+Ennek a csoportnak páros paritásúnak kell lennie, ami már így is van, 
+
+287
+00:17:08,790 --> 00:17:12,339
+tehát azt a paritásbitet az 1-es pozícióban 0-ra kellett volna állítani.
+
+288
+00:17:13,020 --> 00:17:15,450
+A következő csoport páratlan paritással kezdődik, 
+
+289
+00:17:15,450 --> 00:17:17,880
+ezért a paritásbitjét 1-re kellett volna állítani.
+
+290
+00:17:19,160 --> 00:17:21,605
+Az ezt követő csoport páratlan paritással kezdődik, 
+
+291
+00:17:21,605 --> 00:17:24,240
+tehát ismét 1-re kellett volna állítani a paritásbitjét.
+
+292
+00:17:24,780 --> 00:17:27,318
+És az utolsó csoportnak is van páratlan paritása, 
+
+293
+00:17:27,318 --> 00:17:30,060
+vagyis azt a bitet a 8-as pozícióban 1-re állítjuk be.
+
+294
+00:17:31,300 --> 00:17:35,200
+Utolsó lépésként a teljes blokk páros paritású, 
+
+295
+00:17:35,200 --> 00:17:40,320
+vagyis beállíthatja a 0 bitszámot, az átfogó paritásbitet 0-ra.
+
+296
+00:17:41,340 --> 00:17:44,740
+Tehát amikor ez a blokk elküldésre kerül, a négy speciális 
+
+297
+00:17:44,740 --> 00:17:48,140
+részhalmaz és a blokk egészének paritása páros vagy 0 lesz.
+
+298
+00:17:48,820 --> 00:17:52,180
+A gyakorlat második részeként játsszuk a befogadó szerepét.
+
+299
+00:17:53,480 --> 00:17:56,929
+Természetesen ez azt jelentené, hogy még nem tudja, mi ez az üzenet, 
+
+300
+00:17:56,929 --> 00:17:59,780
+talán néhányan megjegyezték, de tegyük fel, hogy még nem.
+
+301
+00:18:00,020 --> 00:18:04,805
+Azt fogom tenni, hogy megváltoztatom a 0, 1 vagy 2 bitet ebben a blokkban, 
+
+302
+00:18:04,805 --> 00:18:07,740
+majd megkérem, hogy találja ki, mit csináltam.
+
+303
+00:18:08,260 --> 00:18:10,810
+Tehát ismét álljon meg, és próbálja meg megoldani.
+
+304
+00:18:18,790 --> 00:18:23,677
+Oké, tehát Ön, mint vevő, most ellenőrizze az első paritáscsoportot, és láthatja, 
+
+305
+00:18:23,677 --> 00:18:27,910
+hogy az páros, tehát minden létező hibának páros oszlopban kell lennie.
+
+306
+00:18:29,690 --> 00:18:33,154
+A következő ellenőrzés páratlan számot ad nekünk, jelezve, 
+
+307
+00:18:33,154 --> 00:18:37,030
+hogy legalább egy hiba van, és leszűkítve erre a konkrét oszlopra.
+
+308
+00:18:38,550 --> 00:18:41,790
+A harmadik ellenőrzés kiegyenlített, ami még tovább csökkenti a lehetőségeket.
+
+309
+00:18:42,650 --> 00:18:46,767
+Az utolsó paritásellenőrzés pedig páratlan, és azt jelzi, hogy valahol alul van egy hiba, 
+
+310
+00:18:46,767 --> 00:18:49,650
+amiről mostanra láthatjuk, hogy a 10-es pozícióban kell lennie.
+
+311
+00:18:51,490 --> 00:18:55,407
+Sőt, az egész blokk paritása furcsa, ami azt a bizonyosságot ad nekünk, 
+
+312
+00:18:55,407 --> 00:18:57,530
+hogy egy átfordulás volt, és nem kettő.
+
+313
+00:18:58,070 --> 00:18:59,970
+Ha három vagy több, akkor minden fogadás megszűnik.
+
+314
+00:19:01,310 --> 00:19:05,550
+A 10-es számú bit kijavítása után a korrekcióhoz nem használt 11 bitet 
+
+315
+00:19:05,550 --> 00:19:09,014
+kihúzva megkapjuk az eredeti üzenet megfelelő szegmensét, 
+
+316
+00:19:09,014 --> 00:19:14,390
+amely ha visszatekerjük és összehasonlítjuk, valóban pontosan az, amivel kezdtük a példát.
+
+317
+00:19:15,710 --> 00:19:19,487
+És most, hogy tudja, hogyan kell mindezt kézzel megtenni, szeretném megmutatni, 
+
+318
+00:19:19,487 --> 00:19:23,170
+hogyan hajthatja végre ennek a logikának a lényegét egyetlen Python-kódsorral.
+
+319
+00:19:23,870 --> 00:19:28,226
+Látod, amit még nem mondtam el, az az, hogy valójában mennyire elegáns ez az algoritmus, 
+
+320
+00:19:28,226 --> 00:19:31,407
+milyen egyszerű rávenni a gépet, hogy rámutasson a hiba helyére, 
+
+321
+00:19:31,407 --> 00:19:35,617
+hogyan lehet szisztematikusan skálázni, és hogyan tudjuk keretbe foglalni az egészet. 
+
+322
+00:19:35,617 --> 00:19:38,750
+ez egyetlen művelet, nem pedig több különálló paritásellenőrzés.
+
+323
+00:19:39,430 --> 00:19:41,310
+Ha szeretnéd megérteni, mire gondolok, csatlakozz hozzám a 2. részhez.
 
