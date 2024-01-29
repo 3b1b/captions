@@ -1,492 +1,692 @@
 1
-00:00:00,000 --> 00:00:04,800
-Last week I put up this video about solving the game Wordle, or at least trying to solve it,
+00:00:00,000 --> 00:00:03,194
+Last week I put up this video about solving the game Wordle, 
 
 2
-00:00:04,800 --> 00:00:09,920
-using information theory. And I wanted to add a quick, what should we call this, an addendum?
+00:00:03,194 --> 00:00:06,180
+or at least trying to solve it, using information theory.
 
 3
-00:00:09,920 --> 00:00:14,240
-A confession? Basically I just want to explain a place where I made a mistake.
+00:00:06,580 --> 00:00:09,989
+And I wanted to add a quick, what should we call this, an addendum, 
 
 4
-00:00:14,240 --> 00:00:18,880
-It turns out there was a very slight bug in the code that I was running to recreate Wordle and
+00:00:09,989 --> 00:00:13,900
+a confession, basically I just want to explain a place where I made a mistake.
 
 5
-00:00:18,880 --> 00:00:23,040
-then run all of the algorithms to solve it and test their performance. And it's one of those
+00:00:14,460 --> 00:00:18,298
+It turns out there was a very slight bug in the code that I was running to recreate 
 
 6
-00:00:23,040 --> 00:00:27,760
-bugs that affects a very small percentage of cases, so it was easy to miss, and it has only
+00:00:18,298 --> 00:00:22,000
+Wordle and then run all of the algorithms to solve it and test their performance.
 
 7
-00:00:27,760 --> 00:00:32,080
-a very slight effect that for the most part doesn't really matter. Basically it had to do
+00:00:22,600 --> 00:00:25,940
+And it's one of those bugs that affects a very small percentage of cases, 
 
 8
-00:00:32,080 --> 00:00:36,880
-with how you assign a color to a guess that has multiple different letters in it. For example,
+00:00:25,940 --> 00:00:29,868
+so it was easy to miss, and it has only a slight effect that for the most part doesn't 
 
 9
-00:00:36,880 --> 00:00:42,080
-if you guess speed and the true answer is abide, how should you color those two e's from the guess?
+00:00:29,868 --> 00:00:30,500
+really matter.
 
 10
-00:00:42,800 --> 00:00:46,640
-Well the way that it works with the Wordle conventions is that the first e would be colored
+00:00:31,220 --> 00:00:33,740
+Basically it had to do with how you assign a color 
 
 11
-00:00:46,640 --> 00:00:51,120
-yellow, and the second one would be colored gray. You might think of that first one as matching up
+00:00:33,740 --> 00:00:36,360
+to a guess that has multiple different letters in it.
 
 12
-00:00:51,120 --> 00:00:56,000
-with something from the true answer, and the grayness is telling you there is no second e.
+00:00:36,520 --> 00:00:39,597
+For example if you guess speed and the true answer is abide, 
 
 13
-00:00:56,000 --> 00:01:01,200
-By contrast, if the answer was something like erase, both of those e's would be colored yellow,
+00:00:39,597 --> 00:00:42,120
+how should you color those two e's from the guess?
 
 14
-00:01:01,200 --> 00:01:05,920
-telling you that there is a first e in a different location, and there's a second e also in a
+00:00:43,060 --> 00:00:45,920
+Well the way that it works with the Wordle conventions is that the 
 
 15
-00:01:05,920 --> 00:01:10,960
-different location. Similarly if one of the e's hits and it's green, then that second one would
+00:00:45,920 --> 00:00:49,080
+first e would be colored yellow, and the second one would be colored gray.
 
 16
-00:01:10,960 --> 00:01:17,280
-be gray in the case where the true answer has no second e, but it would be yellow in the case where
+00:00:49,600 --> 00:00:53,262
+You might think of that first one as matching up with something from the true answer, 
 
 17
-00:01:17,280 --> 00:01:21,920
-there is a second e and it's just in a different location. Long story short, somewhere along the
+00:00:53,262 --> 00:00:55,520
+and the grayness is telling you there is no second e.
 
 18
-00:01:21,920 --> 00:01:26,240
-way I accidentally introduced behavior that differs from these conventions slightly.
+00:00:55,520 --> 00:00:58,375
+By contrast, if the answer was something like erase, 
 
 19
-00:01:26,960 --> 00:01:31,680
-Honestly it was really dumb. Basically at some point in the middle of the project I wanted to
+00:00:58,375 --> 00:01:02,092
+both of those e's would be colored yellow, telling you that there is 
 
 20
-00:01:31,680 --> 00:01:35,840
-speed up some of the computations, and I was trying a little trick for how it computed the
+00:01:02,092 --> 00:01:06,780
+a first e in a different location, and there's a second e also in a different location.
 
 21
-00:01:35,840 --> 00:01:40,640
-value for this pattern between any given pair of words, and you know I just didn't really think it
+00:01:07,300 --> 00:01:09,967
+Similarly if one of the e's hits and it's green, 
 
 22
-00:01:40,640 --> 00:01:45,600
-through and it introduced this slight change. The ironic part is that in the end the actual way to
+00:01:09,967 --> 00:01:14,650
+then that second one would be gray in the case where the true answer has no second e, 
 
 23
-00:01:45,600 --> 00:01:50,080
-make things fastest is to pre-compute all those patterns so that everything is just a lookup,
+00:01:14,650 --> 00:01:18,896
+but it would be yellow in the case where there is a second e and it's just in 
 
 24
-00:01:50,080 --> 00:01:54,000
-and so it wouldn't matter how long it takes to do each one, especially if you're writing hard
+00:01:18,896 --> 00:01:20,040
+a different location.
 
 25
-00:01:54,000 --> 00:01:59,040
-to read buggy code to make it happen. You know, you live and you learn. As far as how this affects
+00:01:20,700 --> 00:01:26,400
+Long story short, somewhere along the convention slightly.
 
 26
-00:01:59,040 --> 00:02:03,760
-the actual video, I mean very little of substance really changes. Of course the main lessons about
+00:01:27,100 --> 00:01:28,540
+Honestly it was really dumb.
 
 27
-00:02:03,760 --> 00:02:08,160
-what is information, what is entropy, all that stays the same. Every now and then if I'm showing
+00:01:28,880 --> 00:01:32,282
+Basically at some point in the middle of the project I wanted to speed up 
 
 28
-00:02:08,160 --> 00:02:13,360
-on screen some distribution associated with a given word, that distribution might actually be
+00:01:32,282 --> 00:01:35,868
+some of the computations, and I was trying a little trick for how it computed 
 
 29
-00:02:13,360 --> 00:02:18,000
-a little bit off because some of the buckets associated with various patterns should include
+00:01:35,868 --> 00:01:38,627
+the value for this pattern between any given pair of words, 
 
 30
-00:02:18,000 --> 00:02:22,960
-either more or fewer true answers. Even then it doesn't really come up because it was very rare
+00:01:38,627 --> 00:01:42,720
+and you know I just didn't really think it through, and it introduced this slight change.
 
 31
-00:02:22,960 --> 00:02:28,400
-that I would be showing a word that had multiple letters that also hit this edge case. But one of
+00:01:43,220 --> 00:01:46,170
+The ironic part is that in the end the actual way to make things 
 
 32
-00:02:28,400 --> 00:02:33,680
-the very few things of substance that does change and that arguably does matter a fair bit was the
+00:01:46,170 --> 00:01:49,893
+fastest is to pre-compute all those patterns so that everything is just a lookup, 
 
 33
-00:02:33,680 --> 00:02:40,240
-final conclusion around how if we want to find the optimal possible score for the wordle answer list,
+00:01:49,893 --> 00:01:52,616
+and so it wouldn't matter how long it takes to do each one, 
 
 34
-00:02:40,240 --> 00:02:45,120
-what opening guess does such an algorithm use? In the video I said the best performance that I
+00:01:52,616 --> 00:01:55,840
+especially if you're writing hard to read buggy code to make it happen.
 
 35
-00:02:45,120 --> 00:02:50,160
-could find came from opening with the word crane, which was true only in the sense that the
+00:01:56,400 --> 00:01:57,240
+You know, you live and you learn.
 
 36
-00:02:50,160 --> 00:02:55,120
-algorithms were playing a very slightly different game. After fixing it and rerunning it all, there
+00:01:58,040 --> 00:02:00,236
+As far as how this affects the actual video, I 
 
 37
-00:02:55,120 --> 00:03:00,000
-is a different answer for what the theoretically optimal first guess is for this particular list.
+00:02:00,236 --> 00:02:02,340
+mean very little of substance really changes.
 
 38
-00:03:00,800 --> 00:03:06,560
-And look, I know that you know that the point of the video is not to find some technically
+00:02:02,660 --> 00:02:04,876
+Of course the main lessons about what is information, 
 
 39
-00:03:06,560 --> 00:03:11,760
-optimal answer to some random online game. The point of the video is to shamelessly hop on the
+00:02:04,876 --> 00:02:06,560
+what is entropy, all that stays the same.
 
 40
-00:03:11,760 --> 00:03:16,240
-bandwagon of an internet trend to sneak attack people with an information theory lesson.
+00:02:06,860 --> 00:02:11,399
+Every now and then if I'm showing on screen some distribution associated with a given 
 
 41
-00:03:16,240 --> 00:03:20,160
-And that's all good, I stand by that part. But I know how the internet works, and for a lot of
+00:02:11,399 --> 00:02:15,991
+word, that distribution might actually be a little bit off because some of the buckets 
 
 42
-00:03:20,160 --> 00:03:26,160
-people the one main takeaway was what is the best opener for the game wordle. And I get it, I walked
+00:02:15,991 --> 00:02:20,320
+associated with various patterns should include either more or fewer true answers.
 
 43
-00:03:26,160 --> 00:03:30,480
-into that because I put it in the thumbnail, but presumably you can forgive me if I want to add a
+00:02:20,840 --> 00:02:23,920
+Even then it doesn't really come up because it was very rare that I would 
 
 44
-00:03:30,480 --> 00:03:35,120
-little correction here. And a more meaningful reason to circle back to all this actually
+00:02:23,920 --> 00:02:26,960
+be showing a word that had multiple letters that also hit this edge case.
 
 45
-00:03:35,120 --> 00:03:39,440
-is that I never really talked about what went into that final analysis. And it's interesting
+00:02:27,680 --> 00:02:31,204
+But one of the very few things of substance that does change, 
 
 46
-00:03:39,440 --> 00:03:44,560
-as a sublesson in its own right, so it's worth doing here. Now if you'll recall, most of our
+00:02:31,204 --> 00:02:35,979
+and that arguably does matter a fair bit, was the final conclusion around how if we 
 
 47
-00:03:44,560 --> 00:03:49,120
-time last video was spent on the challenge of trying to write an algorithm to solve wordle
+00:02:35,979 --> 00:02:39,845
+want to find the optimal possible score for the wordle answer list, 
 
 48
-00:03:49,120 --> 00:03:54,320
-that did not use the official list of all possible answers. To my taste, that feels a bit like
+00:02:39,845 --> 00:02:42,460
+what opening guess does such an algorithm use?
 
 49
-00:03:54,320 --> 00:03:59,280
-overfitting to a test set, and what's more fun is building something that's resilient. This is why
+00:02:43,080 --> 00:02:46,191
+In the video I said the best performance that I could find came 
 
 50
-00:03:59,280 --> 00:04:03,920
-we went through the whole process of looking at relative word frequencies in the English language
+00:02:46,191 --> 00:02:49,448
+from opening with the word crane, which was true only in the sense 
 
 51
-00:04:03,920 --> 00:04:09,120
-to come up with some notion of how likely each one would be to be included as a final answer.
+00:02:49,448 --> 00:02:52,560
+that the algorithms were playing a very slightly different game.
 
 52
-00:04:09,120 --> 00:04:13,680
-However, for what we're doing here, where we're just trying to find an absolute best performance
+00:02:53,160 --> 00:02:56,635
+After fixing it and rerunning it all, there is a different answer for 
 
 53
-00:04:13,680 --> 00:04:19,120
-period, I am incorporating that official list and just shamelessly overfitting to the test set,
+00:02:56,635 --> 00:03:00,160
+what the theoretically optimal first guess is for this particular list.
 
 54
-00:04:19,120 --> 00:04:23,520
-which is to say we know with certainty whether a word is included or not, and we can assign a
+00:03:01,000 --> 00:03:05,019
+And look, I know that you know that the point of the video is not 
 
 55
-00:04:23,520 --> 00:04:28,560
-uniform probability to each one. If you'll remember, the first step in all of this was to
+00:03:05,019 --> 00:03:09,100
+to find some technically optimal answer to some random online game.
 
 56
-00:04:28,560 --> 00:04:34,080
-say for a particular opening guess, maybe something like my old favorite, crane, how likely is it that
+00:03:09,460 --> 00:03:12,588
+The point of the video is to shamelessly hop on the bandwagon of an 
 
 57
-00:04:34,080 --> 00:04:38,560
-you would see each of the possible patterns? And in this context, where we are shamelessly
+00:03:12,588 --> 00:03:15,900
+internet trend to sneak attack people with an information theory lesson.
 
 58
-00:04:38,560 --> 00:04:43,440
-overfitting to the wordle answer list, all that involves is counting how many of the possible
+00:03:16,320 --> 00:03:18,000
+And that's all good, I stand by that part.
 
 59
-00:04:43,440 --> 00:04:48,240
-answers give each one of these patterns. And then of course most of our time was spent on this kind
+00:03:18,200 --> 00:03:21,325
+But I know how the internet works, and for a lot of people the 
 
 60
-00:04:48,240 --> 00:04:53,040
-of funny looking formula to quantify the amount of information that you would get from this guess
+00:03:21,325 --> 00:03:24,600
+one main takeaway was what is the best opener for the game wordle.
 
 61
-00:04:53,040 --> 00:04:57,520
-that basically involves going through each one of those buckets and saying how much information
+00:03:25,280 --> 00:03:28,387
+And I get it, I walked into that because I put it in the thumbnail, 
 
 62
-00:04:57,520 --> 00:05:02,720
-would you gain that has this log expression that is a fanciful way of saying how many times would
+00:03:28,387 --> 00:03:31,860
+but presumably you can forgive me if I want to add a little correction here.
 
 63
-00:05:02,720 --> 00:05:08,160
-you cut your space of possibilities in half if you observed a given pattern. We take a weighted
+00:03:31,980 --> 00:03:35,475
+And a more meaningful reason to circle back to all this actually is that 
 
 64
-00:05:08,160 --> 00:05:12,800
-average of all of those and it gives us a measure of how much we expect to learn from this first
+00:03:35,475 --> 00:03:38,540
+I never really talked about what went into that final analysis, 
 
 65
-00:05:12,800 --> 00:05:17,920
-guess. In a moment we'll go deeper than this, but if you simply search through all 13,000 different
+00:03:38,540 --> 00:03:42,420
+and it's interesting as a sublesson in its own right, so that's worth doing here.
 
 66
-00:05:17,920 --> 00:05:22,880
-words that you could start with and you ask which one has the highest expected information,
+00:03:43,140 --> 00:03:46,179
+Now if you'll recall, most of our time last video was spent 
 
 67
-00:05:22,880 --> 00:05:28,400
-it turns out the best possible answer is soar, which doesn't really look like a real word,
+00:03:46,179 --> 00:03:49,116
+on the challenge of trying to write an algorithm to solve 
 
 68
-00:05:28,400 --> 00:05:36,640
-but I guess it's an obsolete term for a baby hawk. The top 15 openers by this metric happen
+00:03:49,116 --> 00:03:52,460
+wordle that did not use the official list of all possible answers.
 
 69
-00:05:36,640 --> 00:05:41,680
-to look like this, but these are not necessarily the best opening guesses because they're only
+00:03:52,980 --> 00:03:55,775
+To my taste that feels a bit like overfitting to a test set, 
 
 70
-00:05:41,680 --> 00:05:46,960
-looking one step in with the heuristic of expected information to try to estimate what the true score
+00:03:55,775 --> 00:03:58,480
+and what's more fun is building something that's resilient.
 
 71
-00:05:46,960 --> 00:05:52,000
-will be. But there's few enough patterns that we can do an exhaustive search two steps in.
+00:03:58,900 --> 00:04:02,251
+This is why we went through the whole process of looking at relative 
 
 72
-00:05:52,000 --> 00:05:56,640
-For example, let's say you opened with soar and the pattern you happen to see was the most likely
+00:04:02,251 --> 00:04:05,602
+word frequencies in the English language to come up with some notion 
 
 73
-00:05:56,640 --> 00:06:02,240
-one, all grays, then you can run identical analysis from that point. For a given proposed
+00:04:05,602 --> 00:04:08,760
+of how likely each one would be to be included as a final answer.
 
 74
-00:06:02,240 --> 00:06:07,360
-second guess, something like kitty, what's the distribution across all patterns in that restricted
+00:04:09,400 --> 00:04:13,427
+However, for what we're doing here, where we're just trying to find an absolute 
 
 75
-00:06:07,360 --> 00:06:11,920
-case where we're restricted only to the words that would produce all grays for soar, and then we
+00:04:13,427 --> 00:04:17,656
+best performance period, I am incorporating that official list and just shamelessly 
 
 76
-00:06:11,920 --> 00:06:17,440
-measure the flatness of that distribution using this expected information formula, and we do that
+00:04:17,656 --> 00:04:21,583
+overfitting to the test set, which is to say we know with certainty whether a 
 
 77
-00:06:17,440 --> 00:06:23,680
-for all 13,000 possible words that we could use as a second guess. Doing this we can find the optimal
+00:04:21,583 --> 00:04:25,460
+word is included or not, and we can assign a uniform probability to each one.
 
 78
-00:06:23,680 --> 00:06:28,080
-second guess in that scenario and the amount of information we were expected to get from it,
+00:04:26,440 --> 00:04:29,638
+If you'll remember, the first step in all of this was to say for a 
 
 79
-00:06:28,640 --> 00:06:32,880
-and if we wash rinse and repeat and do this for all of the different possible patterns that you
+00:04:29,638 --> 00:04:33,028
+particular opening guess, maybe something like my old favorite, crane, 
 
 80
-00:06:32,880 --> 00:06:37,680
-might see, we get a full map of all the best possible second guesses together with the
+00:04:33,028 --> 00:04:36,180
+how likely is it that you would see each of the possible patterns?
 
 81
-00:06:37,680 --> 00:06:46,640
-expected information of each. From there, if you take a weighted average of all those second step
+00:04:36,680 --> 00:04:40,769
+And in this context, where we are shamelessly overfitting to the wordle answer list, 
 
 82
-00:06:46,640 --> 00:06:51,760
-values, weighted according to how likely you are to fall into that bucket, it gives you a measure
+00:04:40,769 --> 00:04:44,907
+all that involves is counting how many of the possible answers give each one of these 
 
 83
-00:06:51,760 --> 00:06:57,440
-of how much information you're likely to gain from the guess soar after the second step. When
+00:04:44,907 --> 00:04:45,340
+patterns.
 
 84
-00:06:57,440 --> 00:07:02,400
-we use this two-step metric as our new means of ranking, the list gets shaken up a bit. Soar is
+00:04:45,980 --> 00:04:50,074
+And then of course most of our time was spent on this kind of funny looking formula 
 
 85
-00:07:02,400 --> 00:07:09,040
-no longer first place, it falls back to 14th, and instead what rises to the top is slain. Again,
+00:04:50,074 --> 00:04:54,362
+to quantify the amount of information that you would get from this guess that basically 
 
 86
-00:07:09,040 --> 00:07:16,000
-doesn't feel very real, and it looks like it is a British term for a spade that's used for cutting
+00:04:54,362 --> 00:04:58,603
+involves going through each one of those buckets and saying how much information would 
 
 87
-00:07:16,000 --> 00:07:22,320
-turf. Alright, but as you can see it is a really tight race among all of these top contenders for
+00:04:58,603 --> 00:05:02,843
+you gain, that has this log expression that is a fanciful way of saying how many times 
 
 88
-00:07:22,320 --> 00:07:27,600
-who gains the most information after those two steps. And even still, these are not necessarily
+00:05:02,843 --> 00:05:06,840
+would you cut your space of possibilities in half if you observed a given pattern.
 
 89
-00:07:27,600 --> 00:07:32,000
-the best opening guesses, because information is just the heuristic, it's not telling us the
+00:05:07,600 --> 00:05:10,390
+We take a weighted average of all of those and it gives us a 
 
 90
-00:07:32,000 --> 00:07:37,120
-actual score if you actually play the game. What I did is I ran the simulation of playing
+00:05:10,390 --> 00:05:13,180
+measure of how much we expect to learn from this first guess.
 
 91
-00:07:37,120 --> 00:07:44,400
-all 2315 possible wordle games with all possible answers on the top 250 from this list.
+00:05:13,560 --> 00:05:18,509
+In a moment we'll go deeper than this, but if you simply search through all 13,000 
 
 92
-00:07:46,160 --> 00:07:51,120
-And by doing this, seeing how they actually perform, the one that ends up very marginally
+00:05:18,509 --> 00:05:23,280
+different words that you could start with and you ask which one has the highest 
 
 93
-00:07:51,120 --> 00:08:03,280
-with the best possible score turns out to be Salé, which is an alternate spelling for Salé,
+00:05:23,280 --> 00:05:27,394
+expected information, it turns out the best possible answer is soar, 
 
 94
-00:08:04,240 --> 00:08:10,080
-which is a light medieval helmet. Alright, if that feels a little bit too fake for you,
+00:05:27,394 --> 00:05:32,284
+which doesn't really look like a real word, but I guess it's an obsolete term for 
 
 95
-00:08:10,080 --> 00:08:15,760
-which it does for me, you'll be happy to know that Trace and Crate give almost identical performance.
+00:05:32,284 --> 00:05:33,000
+a baby hawk.
 
 96
-00:08:16,240 --> 00:08:21,040
-Each of them has the benefit of obviously being a real word, so there is one day when you get it
+00:05:34,040 --> 00:05:37,332
+The top 15 openers by this metric happen to look like this, 
 
 97
-00:08:21,040 --> 00:08:26,480
-right on the first guess, since both are actual wordle answers. This move from sorting based on
+00:05:37,332 --> 00:05:41,942
+but these are not necessarily the best opening guesses because they're only looking 
 
 98
-00:08:26,480 --> 00:08:31,200
-the best two-step entropies to sorting based on the lowest average score also shakes up the list,
+00:05:41,942 --> 00:05:46,497
+one step in with the heuristic of expected information to try to estimate what the 
 
 99
-00:08:31,200 --> 00:08:36,000
-but not nearly as much. For example, Salé was previously third place before it bubbles to the
+00:05:46,497 --> 00:05:47,540
+true score will be.
 
 100
-00:08:36,000 --> 00:08:41,200
-top, and Crate and Trace were both fourth and fifth. If you're curious, you can get slightly
+00:05:47,920 --> 00:05:51,680
+But there's few enough patterns that we can do an exhaustive search two steps in.
 
 101
-00:08:41,200 --> 00:08:45,120
-better performance from here by doing a little brute forcing. There's a very nice blog post by
+00:05:52,160 --> 00:05:56,401
+For example let's say you opened with soar and the pattern you happen to see was 
 
 102
-00:08:45,120 --> 00:08:49,600
-Jonathan Olson, if you're curious about this, where he also lets you explore what the optimal
+00:05:56,401 --> 00:06:00,800
+the most likely one, all grays, then you can run identical analysis from that point.
 
 103
-00:08:49,600 --> 00:08:53,600
-following guesses are for a few of the starting words based on these optimal algorithms.
+00:06:01,320 --> 00:06:04,327
+For a given proposed second guess, something like kitty, 
 
 104
-00:08:55,040 --> 00:08:59,040
-Stepping back from all this though, I'm told by some people that it quote
+00:06:04,327 --> 00:06:08,231
+what's the distribution across all patterns in that restricted case where 
 
 105
-00:08:59,040 --> 00:09:03,920
-ruins the game to overanalyze it like this and try to find an optimal opening guess.
+00:06:08,231 --> 00:06:12,134
+we're restricted only to the words that would produce all grays for soar, 
 
 106
-00:09:03,920 --> 00:09:07,680
-You know, it feels kind of dirty if you use that opening guess after learning it,
+00:06:12,134 --> 00:06:16,038
+and then we measure the flatness of that distribution using this expected 
 
 107
-00:09:07,680 --> 00:09:12,400
-and it feels inefficient if you don't. But the thing is, I don't actually think this is the best
+00:06:16,038 --> 00:06:19,942
+information formula, and we do that for all 13,000 possible words that we 
 
 108
-00:09:12,400 --> 00:09:16,880
-opener for a human playing the game. For one thing, you would need to know what the optimal
+00:06:19,942 --> 00:06:21,420
+could use as a second guess.
 
 109
-00:09:16,880 --> 00:09:22,160
-second guess is for each one of the patterns that you see. And more importantly, all of this is in a
+00:06:22,120 --> 00:06:25,252
+Doing this we can find the optimal second guess in that scenario 
 
 110
-00:09:22,160 --> 00:09:27,440
-setting where we are absurdly overfit to the official wordle answer list. The moment that,
+00:06:25,252 --> 00:06:28,240
+and the amount of information we were expected to get from it.
 
 111
-00:09:27,440 --> 00:09:32,240
-say, the New York Times chooses to change what that list is under the hood, all of this would go
+00:06:28,760 --> 00:06:32,157
+And if we wash rinse and repeat and do this for all of the different 
 
 112
-00:09:32,240 --> 00:09:36,720
-out the window. The way that we humans play the game is just very different from what any of these
+00:06:32,157 --> 00:06:35,703
+possible patterns that you might see, we get a full map of all the best 
 
 113
-00:09:36,720 --> 00:09:41,440
-algorithms are doing. We don't have the word list memorized, we're not doing exhaustive searches,
+00:06:35,703 --> 00:06:39,200
+possible second guesses together with the expected information of each.
 
 114
-00:09:41,440 --> 00:09:45,520
-we get intuition from things like what are the vowels and how are they placed.
+00:06:43,180 --> 00:06:47,255
+From there, if you take a weighted average of all those second step values, 
 
 115
-00:09:45,520 --> 00:09:50,080
-I would actually be most happy if those of you watching this video promptly forgot what happens
+00:06:47,255 --> 00:06:50,847
+weighted according to how likely you are to fall into that bucket, 
 
 116
-00:09:50,080 --> 00:09:54,880
-to be the technically best opening guess, and instead came out remembering things like how
+00:06:50,847 --> 00:06:55,352
+it gives you a measure of how much information you're likely to gain from the guess 
 
 117
-00:09:54,880 --> 00:09:59,440
-do you quantify information, or the fact that you should look out for when a greedy algorithm
+00:06:55,352 --> 00:06:56,800
+soar after the second step.
 
 118
-00:09:59,440 --> 00:10:02,960
-falls short of the globally best performance that you would get from a deeper search.
+00:06:57,380 --> 00:07:00,345
+When we use this two-step metric as our new means of ranking, 
 
 119
-00:10:03,520 --> 00:10:07,920
-For my taste at least, the joy of writing algorithms to try to play games actually has very
+00:07:00,345 --> 00:07:01,780
+the list gets shaken up a bit.
 
 120
-00:10:07,920 --> 00:10:12,800
-little bearing on how I like to play those games as a human. The point of writing algorithms for
+00:07:02,080 --> 00:07:05,186
+Soar is no longer first place, it falls back to 14th, 
 
 121
-00:10:12,800 --> 00:10:17,280
-all this is not to affect the way that we play the game, it's still just a fun word game. It's
+00:07:05,186 --> 00:07:07,660
+and instead what rises to the top is slain.
 
 122
-00:10:17,280 --> 00:10:22,160
-to hone in our muscles for writing algorithms in more meaningful contexts elsewhere.
+00:07:08,640 --> 00:07:12,475
+Again, doesn't feel very real, and it looks like it is 
 
 123
-00:10:37,920 --> 00:10:38,420
-you
+00:07:12,475 --> 00:07:16,380
+a British term for a spade that's used for cutting turf.
+
+124
+00:07:17,200 --> 00:07:21,205
+All right, but as you can see, it is a really tight race among all of these 
+
+125
+00:07:21,205 --> 00:07:25,000
+top contenders for who gains the most information after those two steps.
+
+126
+00:07:25,700 --> 00:07:28,870
+And even still, these are not necessarily the best opening guesses, 
+
+127
+00:07:28,870 --> 00:07:32,927
+because information is just the heuristic, it's not telling us the actual score if you 
+
+128
+00:07:32,927 --> 00:07:34,000
+actually play the game.
+
+129
+00:07:34,580 --> 00:07:39,411
+What I did is I ran the simulation of playing all 2315 possible 
+
+130
+00:07:39,411 --> 00:07:44,620
+Wurtle games with all possible answers on the top 250 from this list.
+
+131
+00:07:46,460 --> 00:07:50,900
+And by doing this, seeing how they actually perform, 
+
+132
+00:07:50,900 --> 00:07:58,272
+the one that ends up very marginally with the best possible score turns out to be Salé, 
+
+133
+00:07:58,272 --> 00:08:03,215
+which is, let's see, Salé, an alternate spelling for Salé, 
+
+134
+00:08:03,215 --> 00:08:05,980
+which is a light medieval helmet.
+
+135
+00:08:06,980 --> 00:08:10,954
+All right, if that feels a little too fake for you, which it does for me, 
+
+136
+00:08:10,954 --> 00:08:15,251
+you'll be happy to know that trace and crate give almost identical performance, 
+
+137
+00:08:15,251 --> 00:08:18,742
+and each of them has the benefit of obviously being a real word, 
+
+138
+00:08:18,742 --> 00:08:22,072
+so there is one day when you get it right on the first guess, 
+
+139
+00:08:22,072 --> 00:08:24,060
+since both are actual Wurtle answers.
+
+140
+00:08:25,020 --> 00:08:28,764
+This move from sorting based on the best two-step entropies to sorting based 
+
+141
+00:08:28,764 --> 00:08:32,460
+on the lowest average score also shakes up the list, but not nearly as much.
+
+142
+00:08:32,659 --> 00:08:36,606
+For example, Salé was previously third place before it bubbles to the top, 
+
+143
+00:08:36,606 --> 00:08:39,080
+and crate and trace were both fourth and fifth.
+
+144
+00:08:39,640 --> 00:08:41,538
+If you're curious, you can get slightly better 
+
+145
+00:08:41,538 --> 00:08:43,720
+performance from here by doing a little brute forcing.
+
+146
+00:08:44,100 --> 00:08:47,612
+There's a very nice blog post by Jonathan Olson, if you're curious about this, 
+
+147
+00:08:47,612 --> 00:08:50,725
+where he also lets you explore what the optimal following guesses are 
+
+148
+00:08:50,725 --> 00:08:53,660
+for a few of the starting words based on these optimal algorithms.
+
+149
+00:08:55,180 --> 00:08:59,443
+Stepping back from all this though, I'm told by some people that it quote ruins 
+
+150
+00:08:59,443 --> 00:09:03,600
+the game to overanalyze it like this and try to find an optimal opening guess.
+
+151
+00:09:04,260 --> 00:09:07,756
+It feels kinda dirty if you use that opening guess after learning it, 
+
+152
+00:09:07,756 --> 00:09:10,603
+and it feels inefficient if you don't, but the thing is, 
+
+153
+00:09:10,603 --> 00:09:14,400
+I don't actually think this is the best opener for a human playing the game.
+
+154
+00:09:14,880 --> 00:09:17,324
+For one thing, you would need to know what the optimal 
+
+155
+00:09:17,324 --> 00:09:19,680
+second guess is for each one of the patterns you see.
+
+156
+00:09:20,260 --> 00:09:23,230
+And more importantly, all of this is in a setting where 
+
+157
+00:09:23,230 --> 00:09:26,360
+we are absurdly overfit to the official Wurtle answer list.
+
+158
+00:09:26,580 --> 00:09:29,705
+The moment that, say, the New York Times chooses to change what 
+
+159
+00:09:29,705 --> 00:09:32,880
+that list is under the hood, all of this would go out the window.
+
+160
+00:09:33,580 --> 00:09:35,551
+The way that we humans play the game is just very 
+
+161
+00:09:35,551 --> 00:09:37,680
+different from what any of these algorithms are doing.
+
+162
+00:09:38,020 --> 00:09:41,180
+We don't have the word list memorized, we're not doing exhaustive searches.
+
+163
+00:09:41,340 --> 00:09:45,080
+We get intuition from things like what are the vowels, and how are they placed.
+
+164
+00:09:45,640 --> 00:09:49,265
+I would actually be most happy if those of you watching this video promptly 
+
+165
+00:09:49,265 --> 00:09:52,223
+forgot what happens to be the technically best opening guess, 
+
+166
+00:09:52,223 --> 00:09:55,944
+and instead came out remembering things like how do you quantify information, 
+
+167
+00:09:55,944 --> 00:09:59,331
+or the fact that you should look out for when a greedy algorithm falls 
+
+168
+00:09:59,331 --> 00:10:03,100
+short of the globally best performance that you would get from a deeper search.
+
+169
+00:10:03,700 --> 00:10:07,137
+For my taste at least, the joy of writing algorithms to try to play games 
+
+170
+00:10:07,137 --> 00:10:10,760
+actually has very little bearing on how I like to play those games as a human.
+
+171
+00:10:11,300 --> 00:10:14,018
+The point of writing algorithms for all this is not to affect 
+
+172
+00:10:14,018 --> 00:10:16,780
+the way that we play the game, it's still just a fun word game.
+
+173
+00:10:17,100 --> 00:10:20,720
+It's to hone in our muscles for writing algorithms in more meaningful contexts elsewhere.
 

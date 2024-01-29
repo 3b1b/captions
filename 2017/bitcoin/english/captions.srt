@@ -1,1148 +1,1500 @@
 1
-00:00:00,000 --> 00:00:09,660
-What does it mean to have a Bitcoin? Many people have heard of Bitcoin, that it's
+00:00:03,899 --> 00:00:06,480
+What does it mean to have a Bitcoin?
 
 2
-00:00:09,660 --> 00:00:14,120
-a fully digital currency with no government to issue it, that no banks need to manage
+00:00:07,420 --> 00:00:11,313
+Many people have heard of Bitcoin, that it's a fully digital currency 
 
 3
-00:00:14,120 --> 00:00:19,800
-accounts and verify transactions, and that no one really knows who invented it. And yet
+00:00:11,313 --> 00:00:15,206
+with no government to issue it, that no banks need to manage accounts 
 
 4
-00:00:19,800 --> 00:00:25,320
-many people don't know the answer to this question, at least not in full. To get there,
+00:00:15,206 --> 00:00:19,100
+and verify transactions, and that no one really knows who invented it.
 
 5
-00:00:25,320 --> 00:00:29,940
-and to make sure that the technical details underlying the answer actually feel motivated,
+00:00:19,380 --> 00:00:23,280
+And yet many people don't know the answer to this question, at least not in full.
 
 6
-00:00:29,980 --> 00:00:34,660
-we're going to walk through, step by step, how you might have invented your own version
+00:00:24,100 --> 00:00:27,867
+To get there, and to make sure that the technical details underlying 
 
 7
-00:00:34,660 --> 00:00:38,880
-of Bitcoin. We'll start with you keeping track of payments with your friends using
+00:00:27,867 --> 00:00:31,417
+the answer actually feel motivated, we're going to walk through, 
 
 8
-00:00:38,880 --> 00:00:43,580
-a communal ledger, and then as you start to trust your friends and the world around you
+00:00:31,417 --> 00:00:35,240
+step by step, how you might have invented your own version of Bitcoin.
 
 9
-00:00:43,580 --> 00:00:47,900
-less and less, and if you're clever enough to bring in a few ideas from cryptography
+00:00:36,140 --> 00:00:40,549
+We'll start with you keeping track of payments with your friends using a communal ledger, 
 
 10
-00:00:47,900 --> 00:00:52,900
-to help circumvent the need for trust, what you end up with is what's called a cryptocurrency.
+00:00:40,549 --> 00:00:44,664
+and then as you start to trust your friends and the world around you less and less, 
 
 11
-00:00:53,620 --> 00:01:00,120
-Bitcoin is just the first implemented example of a cryptocurrency, and now there are thousands
+00:00:44,664 --> 00:00:49,025
+and if you're clever enough to bring in a few ideas from cryptography to help circumvent 
 
 12
-00:01:00,120 --> 00:01:05,100
-more on exchanges with traditional currencies. Walking the path of inventing your own can
+00:00:49,025 --> 00:00:52,700
+the need for trust, what you end up with is what's called a cryptocurrency.
 
 13
-00:01:05,100 --> 00:01:09,540
-help to set the foundations for understanding some of the more recent players in the game,
+00:00:53,840 --> 00:00:57,983
+Bitcoin is just the first implemented example of a cryptocurrency, 
 
 14
-00:01:09,540 --> 00:01:14,660
-and recognizing when and why there's room for different design choices. In fact, one
+00:00:57,983 --> 00:01:02,560
+and now there are thousands more on exchanges with traditional currencies.
 
 15
-00:01:14,660 --> 00:01:18,560
-of the reasons I chose this topic is that in the last year there's been a huge amount
+00:01:03,300 --> 00:01:06,735
+Walking the path of inventing your own can help to set the foundations 
 
 16
-00:01:18,560 --> 00:01:25,280
-of attention, investment, and hype directed at these currencies. I'm not going to comment
+00:01:06,735 --> 00:01:09,784
+for understanding some of the more recent players in the game, 
 
 17
-00:01:25,280 --> 00:01:29,700
-or speculate on the current or future exchange rates, but I think we'd all agree that anyone
+00:01:09,784 --> 00:01:13,220
+and recognizing when and why there's room for different design choices.
 
 18
-00:01:29,700 --> 00:01:34,680
-looking to buy a cryptocurrency should really know what it is. And I don't just mean in
+00:01:14,100 --> 00:01:18,792
+In fact, one of the reasons I chose this topic is that in the last year there's 
 
 19
-00:01:34,680 --> 00:01:40,280
-terms of analogies with vague connections to gold mining, I mean an actual direct description
+00:01:18,792 --> 00:01:23,660
+been a huge amount of attention, investment, and hype directed at these currencies.
 
 20
-00:01:40,280 --> 00:01:46,920
-of what the computers are doing when we send, receive, and create cryptocurrencies.
+00:01:24,280 --> 00:01:28,379
+I'm not going to comment or speculate on the current or future exchange rates, 
 
 21
-00:01:46,920 --> 00:01:51,400
-One thing worth stressing is that even though you and I are going to dig into the details
+00:01:28,379 --> 00:01:33,049
+but I think we'd all agree that anyone looking to buy a cryptocurrency should really know 
 
 22
-00:01:51,400 --> 00:01:56,340
-here, and that takes meaningful time, you don't actually need to know those details
+00:01:33,049 --> 00:01:33,620
+what it is.
 
 23
-00:01:56,340 --> 00:02:00,580
-if you just want to use the cryptocurrency, just like you don't need to know the details
+00:01:33,920 --> 00:01:38,563
+And I don't just mean in terms of analogies with vague connections to gold mining, 
 
 24
-00:02:00,580 --> 00:02:05,400
-of what happens under the hood when you swipe a credit card. Like any digital payment, there's
+00:01:38,563 --> 00:01:43,150
+I mean an actual direct description of what the computers are doing when we send, 
 
 25
-00:02:05,400 --> 00:02:09,760
-lots of user-friendly applications that let you just send and receive the currencies without
+00:01:43,150 --> 00:01:45,220
+receive, and create cryptocurrencies.
 
 26
-00:02:09,760 --> 00:02:15,220
-thinking about what's going on. The difference is that the backbone underlying this is not
+00:01:46,300 --> 00:01:50,371
+One thing worth stressing is that even though you and I are going to dig into 
 
 27
-00:02:15,220 --> 00:02:20,700
-a bank that verifies transactions. Instead, it's a clever system of decentralized trustless
+00:01:50,371 --> 00:01:52,981
+the details here, and that takes meaningful time, 
 
 28
-00:02:20,700 --> 00:02:25,980
-verification based on some of the math born in cryptography.
+00:01:52,981 --> 00:01:57,679
+you don't actually need to know those details if you just want to use the cryptocurrency, 
 
 29
-00:02:25,980 --> 00:02:29,380
-But to start, I want you to actually set aside the thought of cryptocurrencies and all that
+00:01:57,679 --> 00:02:01,907
+just like you don't need to know the details of what happens under the hood when 
 
 30
-00:02:29,380 --> 00:02:33,700
-just for a few minutes. We're going to begin the story with something more down to earth,
+00:02:01,907 --> 00:02:03,160
+you swipe a credit card.
 
 31
-00:02:33,700 --> 00:02:39,380
-ledgers and digital signatures. If you and your friends exchange money pretty frequently,
+00:02:03,720 --> 00:02:07,491
+Like any digital payment, there's lots of user-friendly applications that let 
 
 32
-00:02:39,380 --> 00:02:43,580
-paying your share of the dinner bill and such, it can be inconvenient to exchange cash all
+00:02:07,491 --> 00:02:11,360
+you just send and receive the currencies without thinking about what's going on.
 
 33
-00:02:43,580 --> 00:02:46,940
-the time. So you might keep a communal ledger that records
+00:02:11,660 --> 00:02:15,994
+The difference is that the backbone underlying this is not a bank that 
 
 34
-00:02:46,940 --> 00:02:52,820
-all the payments you intend to make some point in the future. Alice pays Bob $20, Bob pays
+00:02:15,994 --> 00:02:20,206
+verifies transactions, instead it's a clever system of decentralized 
 
 35
-00:02:52,820 --> 00:02:57,860
-Charlie $40, things like that. This ledger is going to be something public and accessible
+00:02:20,206 --> 00:02:24,480
+trustless verification based on some of the math born in cryptography.
 
 36
-00:02:57,860 --> 00:03:02,620
-to everyone, like a website where anyone can go and add new lines.
+00:02:25,900 --> 00:02:28,230
+But to start I want you to actually set aside the thought 
 
 37
-00:03:02,620 --> 00:03:06,100
-And let's say at the end of every month you all get together, look at the list of
+00:02:28,230 --> 00:02:30,480
+of cryptocurrencies and all that just for a few minutes.
 
 38
-00:03:06,100 --> 00:03:10,580
-transactions, and settle up. If you spent more than you received, you put that money
+00:02:31,080 --> 00:02:34,005
+We're going to begin the story with something more down to earth, 
 
 39
-00:03:10,580 --> 00:03:15,480
-in the pot, and if you received more than you spent, you take that money out.
+00:02:34,005 --> 00:02:35,380
+ledgers and digital signatures.
 
 40
-00:03:15,480 --> 00:03:20,280
-So the protocol for being part of this very simple system might look like this. Anyone
+00:02:36,340 --> 00:02:39,284
+If you and your friends exchange money pretty frequently, 
 
 41
-00:03:20,280 --> 00:03:24,900
-can add lines to the ledger, and at the end of every month you all get together and settle
+00:02:39,284 --> 00:02:41,669
+paying your share of the dinner bill and such, 
 
 42
-00:03:24,900 --> 00:03:28,300
-up. Now one problem with a public ledger like
+00:02:41,669 --> 00:02:44,360
+it can be inconvenient to exchange cash all the time.
 
 43
-00:03:28,300 --> 00:03:33,920
-this is that anyone can add a line. So what's to prevent Bob from going and writing Alice
+00:02:44,720 --> 00:02:47,423
+So you might keep a communal ledger that records all the 
 
 44
-00:03:33,920 --> 00:03:39,940
-pays Bob $100 without Alice approving? How are we supposed to trust that all of these
+00:02:47,423 --> 00:02:50,080
+payments you intend to make at some point in the future.
 
 45
-00:03:39,940 --> 00:03:45,020
-transactions are what the sender meant them to be?
+00:02:50,620 --> 00:02:55,100
+Alice pays Bob $20, Bob pays Charlie $40, things like that.
 
 46
-00:03:45,020 --> 00:03:50,660
-This is where the first bit of cryptography comes in, digital signatures. Like handwritten
+00:02:55,500 --> 00:02:59,094
+This ledger is going to be something public and accessible to everyone, 
 
 47
-00:03:50,660 --> 00:03:55,800
-signatures, the idea here is that Alice should be able to add something next to that transaction
+00:02:59,094 --> 00:03:01,740
+like a website where anyone can go and add new lines.
 
 48
-00:03:55,800 --> 00:04:01,260
-that proves she has seen it and approved of it, and it should be infeasible for anyone
+00:03:02,480 --> 00:03:05,557
+And let's say at the end of every month you all get together, 
 
 49
-00:04:01,260 --> 00:04:07,380
-else to forge that signature. At first, it might seem like a digital signature
+00:03:05,557 --> 00:03:07,940
+look at the list of transactions, and settle up.
 
 50
-00:04:07,380 --> 00:04:12,620
-shouldn't even be possible. I mean, whatever data makes up that signature can just be read
+00:03:08,280 --> 00:03:11,409
+If you spent more than you received, you put that money in the pot, 
 
 51
-00:04:12,620 --> 00:04:17,460
-and copied by a computer. So how do you prevent forgeries?
+00:03:11,409 --> 00:03:14,400
+and if you received more than you spent, you take that money out.
 
 52
-00:04:17,460 --> 00:04:22,180
-The way this works is that everyone generates what's called a public-key-private-key pair,
+00:03:15,460 --> 00:03:19,360
+So the protocol for being part of this very simple system might look like this.
 
 53
-00:04:22,180 --> 00:04:26,420
-each of which looks like some string of bits. The private key is sometimes also called a
+00:03:20,020 --> 00:03:22,716
+Anyone can add lines to the ledger, and at the end 
 
 54
-00:04:26,420 --> 00:04:32,460
-secret key, so we can abbreviate it as SK while abbreviating the public key as PK.
+00:03:22,716 --> 00:03:25,360
+of every month you all get together and settle up.
 
 55
-00:04:32,460 --> 00:04:37,140
-Now as the name suggests, this secret key is something you want to keep to yourself.
+00:03:26,300 --> 00:03:30,760
+Now one problem with a public ledger like this is that anyone can add a line.
 
 56
-00:04:37,140 --> 00:04:41,940
-In the real world, your handwritten signature looks the same no matter what document you're
+00:03:31,020 --> 00:03:34,098
+So what's to prevent Bob from going and writing 
 
 57
-00:04:41,940 --> 00:04:46,780
-signing. But a digital signature is actually much stronger, because it changes for different
+00:03:34,098 --> 00:03:36,920
+Alice pays Bob $100 without Alice approving?
 
 58
-00:04:46,780 --> 00:04:53,420
-messages. It looks like some string of 1s and 0s, commonly something like 256 bits,
+00:03:37,780 --> 00:03:40,406
+How are we supposed to trust that all of these 
 
 59
-00:04:53,420 --> 00:04:58,700
-and altering the message even slightly completely changes what the signature on that message
+00:03:40,406 --> 00:03:43,200
+transactions are what the sender meant them to be?
 
 60
-00:04:58,700 --> 00:05:03,220
-should look like. Speaking a little more formally, producing
+00:03:44,580 --> 00:03:48,540
+Well this is where the first bit of cryptography comes in, digital signatures.
 
 61
-00:05:03,220 --> 00:05:08,200
-a signature involves a function that depends both on the message itself and on your private
+00:03:49,480 --> 00:03:53,847
+Like handwritten signatures, the idea here is that Alice should be able to add 
 
 62
-00:05:08,200 --> 00:05:13,540
-key. The private key ensures that only you can produce that signature, and the fact that
+00:03:53,847 --> 00:03:58,436
+something next to that transaction that proves that she has seen it and that she's 
 
 63
-00:05:13,540 --> 00:05:18,420
-it depends on the message means that no one can just copy one of your signatures and forge
+00:03:58,436 --> 00:04:03,080
+approved of it, and it should be infeasible for anyone else to forge that signature.
 
 64
-00:05:18,420 --> 00:05:23,320
-it on another message. Hand-in-hand with this is a second function
+00:04:04,300 --> 00:04:08,580
+At first, it might seem like a digital signature shouldn't even be possible.
 
 65
-00:05:23,320 --> 00:05:27,820
-used to verify that a signature is valid, and this is where the public key comes into
+00:04:09,220 --> 00:04:13,860
+I mean, whatever data makes up that signature can just be read and copied by a computer.
 
 66
-00:05:27,820 --> 00:05:33,460
-play. All it does is output true or false to indicate if this was a signature produced
+00:04:14,400 --> 00:04:16,140
+So how do you prevent forgeries?
 
 67
-00:05:33,460 --> 00:05:37,860
-by the private key associated with the public key you're using for verification.
+00:04:17,320 --> 00:04:20,570
+Well the way this works is that everyone generates what's called a 
 
 68
-00:05:37,860 --> 00:05:43,260
-I won't go into the details of how exactly both these functions work, but the idea is
+00:04:20,570 --> 00:04:24,160
+public key-private key pair, each of which looks like some string of bits.
 
 69
-00:05:43,260 --> 00:05:48,260
-that it should be completely infeasible to find a valid signature if you don't know
+00:04:24,800 --> 00:04:27,660
+The private key is sometimes also called a secret key, 
 
 70
-00:05:48,260 --> 00:05:53,520
-the secret key. Specifically, there's no strategy better than just guessing and checking
+00:04:27,660 --> 00:04:31,300
+so we can abbreviate it as SK while abbreviating the public key as PK.
 
 71
-00:05:53,520 --> 00:05:59,080
-random signatures, which you can check using the public key everyone knows.
+00:04:32,340 --> 00:04:36,220
+As the name suggests, this secret key is something you want to keep to yourself.
 
 72
-00:05:59,080 --> 00:06:04,500
-Now think about how many signatures there are with a length of 256 bits. That's 2
+00:04:37,060 --> 00:04:39,483
+In the real world, your handwritten signature looks 
 
 73
-00:06:04,500 --> 00:06:11,520
-to the power of 256! This is a stupidly large number. To call it astronomically large would
+00:04:39,483 --> 00:04:41,720
+the same no matter what document you're signing.
 
 74
-00:06:11,520 --> 00:06:16,840
-be giving way too much credit to astronomy. In fact, I made a supplemental video devoted
+00:04:42,280 --> 00:04:44,835
+But a digital signature is actually much stronger, 
 
 75
-00:06:16,840 --> 00:06:20,480
-just to illustrating what a huge number this is.
+00:04:44,835 --> 00:04:46,940
+because it changes for different messages.
 
 76
-00:06:20,480 --> 00:06:24,680
-But here, let's just say that when you verify that a signature against a given message
+00:04:47,840 --> 00:04:52,682
+It looks like some string of 1s and 0s, commonly something like 256 bits, 
 
 77
-00:06:24,680 --> 00:06:29,900
-is valid, you can feel extremely confident that the only way someone could have produced
+00:04:52,682 --> 00:04:56,804
+and altering the message even slightly completely changes what 
 
 78
-00:06:29,900 --> 00:06:37,360
-it is if they knew the secret key associated with the public key you used for verification.
+00:04:56,804 --> 00:04:59,880
+the signature on that message should look like.
 
 79
-00:06:37,360 --> 00:06:41,880
-Making sure people sign transactions on the ledger is pretty good, but there's one slight
+00:05:00,840 --> 00:05:04,496
+Speaking a little more formally, producing a signature involves a 
 
 80
-00:06:41,880 --> 00:06:48,240
-loophole. If Alice signs a transaction like Alice pays Bob $100, even though Bob can't
+00:05:04,496 --> 00:05:08,540
+function that depends both on the message itself and on your private key.
 
 81
-00:06:48,240 --> 00:06:52,760
-forge Alice's signature on a new message, he could just copy that same line as many
+00:05:09,200 --> 00:05:12,697
+The private key ensures that only you can produce that signature, 
 
 82
-00:06:52,760 --> 00:06:58,040
-times as he wants. That message-signature combination remains valid.
+00:05:12,697 --> 00:05:16,195
+and the fact that it depends on the message means that no one can 
 
 83
-00:06:58,040 --> 00:07:02,780
-To get around this, we make it so that when you sign a transaction, the message has to
+00:05:16,195 --> 00:05:19,640
+just copy one of your signatures and forge it on another message.
 
 84
-00:07:02,780 --> 00:07:08,860
-also include some sort of unique ID associated with that transaction. That way, if Alice
+00:05:21,000 --> 00:05:25,599
+Hand-in-hand with this is a second function used to verify that a signature is valid, 
 
 85
-00:07:08,860 --> 00:07:14,480
-pays Bob $100 multiple times, each one of those lines on the ledger requires a completely
+00:05:25,599 --> 00:05:28,220
+and this is where the public key comes into play.
 
 86
-00:07:14,480 --> 00:07:18,400
-new signature.
+00:05:29,200 --> 00:05:33,506
+All it does is output true or false to indicate if this was a signature produced 
 
 87
-00:07:18,400 --> 00:07:23,600
-Digital signatures remove a huge aspect of trust in this initial protocol. But even still,
+00:05:33,506 --> 00:05:37,760
+by the private key associated with the public key you're using for verification.
 
 88
-00:07:23,600 --> 00:07:27,880
-if you were to really do this, you would be relying on an honor system of sorts. Namely,
+00:05:38,640 --> 00:05:42,650
+I won't go into the details of how exactly both these functions work, 
 
 89
-00:07:27,880 --> 00:07:31,860
-you're trusting that everyone will actually follow through and settle up in cash at the
+00:05:42,650 --> 00:05:46,031
+but the idea is that it should be completely infeasible to 
 
 90
-00:07:31,860 --> 00:07:37,680
-end of each month. What if, for example, Charlie racks up thousands of dollars in debt and
+00:05:46,031 --> 00:05:49,240
+find a valid signature if you don't know the secret key.
 
 91
-00:07:37,680 --> 00:07:43,520
-just refuses to show up? The only real reason to revert back to cash to settle up is if
+00:05:50,060 --> 00:05:53,762
+Specifically, there's no strategy better than just guessing and checking 
 
 92
-00:07:43,560 --> 00:07:50,560
-some people owe a lot of money. So maybe you have the clever idea that you never actually
+00:05:53,762 --> 00:05:57,820
+random signatures, which you can check using the public key that everyone knows.
 
 93
-00:07:50,720 --> 00:07:55,160
-have to settle up in cash as long as you have some way to prevent people from spending too
+00:05:58,980 --> 00:06:03,200
+Now think about how many signatures there are with a length of 256 bits.
 
 94
-00:07:55,160 --> 00:08:01,160
-much more than they take in. Maybe you start by having everyone pay $100 into the pot,
+00:06:03,840 --> 00:06:06,180
+That's 2 to the power of 256!
 
 95
-00:08:01,160 --> 00:08:06,920
-and then have the first few lines of the ledger read Alice gets $100, Bob gets $100, Charlie
+00:06:07,140 --> 00:06:09,560
+This is a stupidly large number.
 
 96
-00:08:06,920 --> 00:08:09,280
-gets $100, etc.
+00:06:09,860 --> 00:06:13,640
+To call it astronomically large would be giving way too much credit to astronomy.
 
 97
-00:08:09,280 --> 00:08:14,600
-Now, just don't accept any transactions where someone is spending more than they already
+00:06:14,260 --> 00:06:17,173
+In fact, I made a supplemental video devoted just 
 
 98
-00:08:14,600 --> 00:08:21,600
-have on that ledger. For example, if the first two transactions are Charlie pays Alice $50
+00:06:17,173 --> 00:06:19,680
+to illustrating what a huge number this is.
 
 99
-00:08:22,200 --> 00:08:28,880
-and Charlie pays Bob $50, if he were to try to add Charlie pays you $20, that would be
+00:06:20,380 --> 00:06:25,230
+Right here, let's just say that when you verify that a signature against a given message 
 
 100
-00:08:28,880 --> 00:08:35,880
-invalid, as invalid as if he had never signed it. Notice, this means that verifying a transaction
+00:06:25,230 --> 00:06:30,080
+is valid, you can feel extremely confident that the only way someone could have produced 
 
 101
-00:08:35,920 --> 00:08:42,200
-requires knowing the full history of transactions up to that point. This is also going to be
+00:06:30,080 --> 00:06:34,331
+it is if they knew the secret key associated with the public key you used for 
 
 102
-00:08:42,200 --> 00:08:47,200
-true in cryptocurrencies, though there is a little room for optimization.
+00:06:34,331 --> 00:06:35,040
+verification.
 
 103
-00:08:47,200 --> 00:08:53,360
-What's interesting here is that this step removes the connection between the ledger
+00:06:37,120 --> 00:06:40,557
+Making sure people sign transactions on the ledger is pretty good, 
 
 104
-00:08:53,360 --> 00:08:59,760
-and actual physical US dollars. In theory, if everyone in the world was using this ledger,
+00:06:40,557 --> 00:06:42,200
+but there's one slight loophole.
 
 105
-00:08:59,760 --> 00:09:03,960
-you could live your whole life just sending and receiving money on this ledger without
+00:06:42,720 --> 00:06:46,087
+If Alice signs a transaction like Alice pays Bob $100, 
 
 106
-00:09:04,160 --> 00:09:09,160
-having to convert to real US dollars. In fact, to emphasize this point, let's
+00:06:46,087 --> 00:06:50,006
+even though Bob can't forge Alice's signature on a new message, 
 
 107
-00:09:09,160 --> 00:09:15,680
-start referring to the quantities on the ledger as ledger dollars, or LD for short. You are
+00:06:50,006 --> 00:06:53,680
+he could just copy that same line as many times as he wants.
 
 108
-00:09:15,680 --> 00:09:21,520
-free to exchange ledger dollars for real US dollars. For example, Alice gives Bob a $10
+00:06:54,300 --> 00:06:57,220
+That message-signature combination remains valid.
 
 109
-00:09:21,520 --> 00:09:26,560
-bill in the real world in exchange for him adding and signing the transaction Bob pays
+00:06:57,920 --> 00:07:02,054
+To get around this, we make it so that when you sign a transaction, 
 
 110
-00:09:26,560 --> 00:09:33,460
-Alice 10 ledger dollars to this communal ledger. But exchanges like that aren't guaranteed
+00:07:02,054 --> 00:07:07,100
+the message has to include some sort of unique ID associated with that transaction.
 
 111
-00:09:33,460 --> 00:09:38,500
-by the protocol. It's now more analogous to how you might exchange dollars for euros
+00:07:07,840 --> 00:07:10,843
+That way, if Alice pays Bob $100 multiple times, 
 
 112
-00:09:38,500 --> 00:09:44,940
-or any other currency on the open market. It's just its own independent thing.
+00:07:10,843 --> 00:07:15,380
+each one of those lines on the ledger requires a completely new signature.
 
 113
-00:09:44,940 --> 00:09:50,980
-This is the first important thing to understand about Bitcoin, or any other cryptocurrency.
+00:07:16,760 --> 00:07:21,940
+Great, digital signatures remove a huge aspect of trust in this initial protocol.
 
 114
-00:09:50,980 --> 00:09:57,980
-What it is is a ledger. The history of transactions is the currency. Of course, with Bitcoin,
+00:07:22,380 --> 00:07:24,778
+But even still, if you were to really do this, 
 
 115
-00:09:58,660 --> 00:10:02,640
-money doesn't enter the ledger with people buying in using cash. I'll get to how new
+00:07:24,778 --> 00:07:27,280
+you would be relying on an honor system of sorts.
 
 116
-00:10:02,640 --> 00:10:07,320
-money enters the ledger in a few minutes. But before that, there's actually an even
+00:07:27,720 --> 00:07:30,318
+Namely, you're trusting that everyone will actually follow 
 
 117
-00:10:07,320 --> 00:10:12,240
-more significant difference between our current system of ledger dollars and how cryptocurrencies
+00:07:30,318 --> 00:07:32,740
+through and settle up in cash at the end of each month.
 
 118
-00:10:12,240 --> 00:10:15,120
-work. So far, I've said this ledger is in some
+00:07:33,560 --> 00:07:36,581
+What if, for example, Charlie racks up thousands 
 
 119
-00:10:15,120 --> 00:10:20,020
-public place, like a website where anyone can add new lines. But that would require
+00:07:36,581 --> 00:07:39,480
+of dollars in debt and just refuses to show up?
 
 120
-00:10:20,020 --> 00:10:25,960
-trusting a central location, namely, who hosts the website, who controls the rules of adding
+00:07:40,120 --> 00:07:43,700
+The only real reason to revert back to cash to 
 
 121
-00:10:25,960 --> 00:10:31,880
-new lines. To remove that bit of trust, we'll have everybody keep their own copy of the
+00:07:43,700 --> 00:07:47,280
+settle up is if some people owe a lot of money.
 
 122
-00:10:31,880 --> 00:10:37,640
-ledger. Then when you want to make a transaction, like Alice pays Bob 100 Ledger Dollars, you
+00:07:47,860 --> 00:07:52,185
+So maybe you have the clever idea that you never actually have to settle up in cash as 
 
 123
-00:10:37,640 --> 00:10:44,640
-do broadcast that out into the world for people to hear and record on their own private ledgers.
+00:07:52,185 --> 00:07:56,660
+long as you have some way to prevent people from spending too much more than they take in.
 
 124
-00:10:45,240 --> 00:10:50,720
-But unless you do something more, this system is absurdly bad. How could you get everyone
+00:07:57,340 --> 00:08:01,127
+Maybe you start by having everyone pay $100 into the pot, 
 
 125
-00:10:50,720 --> 00:10:55,900
-to agree on what the right ledger is? When Bob receives a transaction, like Alice pays
+00:08:01,127 --> 00:08:06,678
+and then have the first few lines of the ledger read Alice gets $100, Bob gets $100, 
 
 126
-00:10:55,900 --> 00:11:00,820
-Bob 10 Ledger Dollars, how can he be sure that everyone else received and believes that
+00:08:06,678 --> 00:08:08,180
+Charlie gets $100, etc.
 
 127
-00:11:00,820 --> 00:11:05,220
-same transaction? That he'll be able to later on go to Charlie and use those same
+00:08:09,020 --> 00:08:12,477
+Now, just don't accept any transactions where someone 
 
 128
-00:11:05,220 --> 00:11:10,500
-10 Ledger Dollars to make a transaction? Really, imagine yourself just listening to
+00:08:12,477 --> 00:08:16,000
+is spending more than they already have on that ledger.
 
 129
-00:11:10,500 --> 00:11:15,860
-transactions being broadcast. How can you be sure that everyone else is recording the
+00:08:16,840 --> 00:08:21,729
+For example, if the first two transactions are Charlie pays Alice 
 
 130
-00:11:15,860 --> 00:11:21,660
-same transactions and in the same order? This is really the heart of the issue. This
+00:08:21,729 --> 00:08:27,433
+$50 and Charlie pays Bob $50, if he were to try to add Charlie pays you $20, 
 
 131
-00:11:21,660 --> 00:11:26,740
-is an interesting puzzle. Can you come up with a protocol for how to accept or reject
+00:08:27,433 --> 00:08:32,100
+that would be invalid, as invalid as if he had never signed it.
 
 132
-00:11:26,780 --> 00:11:31,940
-transactions and in what order, so that you can feel confident that anyone else in the
+00:08:32,940 --> 00:08:36,041
+Notice, this means verifying a transaction requires 
 
 133
-00:11:31,940 --> 00:11:36,980
-world who's following that same protocol has a personal ledger that looks the same
+00:08:36,041 --> 00:08:39,500
+knowing the full history of transactions up to that point.
 
 134
-00:11:36,980 --> 00:11:43,980
-as yours? This is the problem addressed in the original Bitcoin paper.
+00:08:40,159 --> 00:08:43,178
+This is also going to be true in cryptocurrencies, 
 
 135
-00:11:44,620 --> 00:11:49,300
-At a high level, the solution that Bitcoin offers is to trust whichever ledger has the
+00:08:43,178 --> 00:08:45,960
+though there is a little room for optimization.
 
 136
-00:11:49,300 --> 00:11:54,700
-most computational work put into it. I'll take a moment to explain exactly what that
+00:08:48,380 --> 00:08:51,770
+What's interesting here is that this step removes the 
 
 137
-00:11:54,700 --> 00:12:00,660
-means. It involves a cryptographic hash function. The general idea that we'll build to is
+00:08:51,770 --> 00:08:55,600
+connection between the ledger and actual physical US dollars.
 
 138
-00:12:00,660 --> 00:12:06,140
-that if you use computational work as a basis for what to trust, you can make it so that
+00:08:56,200 --> 00:08:59,482
+In theory, if everyone in the world was using this ledger, 
 
 139
-00:12:06,140 --> 00:12:11,460
-fraudulent transactions and conflicting ledgers would require an infeasible amount of computation
+00:08:59,482 --> 00:09:03,043
+you could live your whole life just sending and receiving money 
 
 140
-00:12:11,460 --> 00:12:16,340
-to bring about. Again, I'll remind you that this is getting well into the weeds beyond
+00:09:03,043 --> 00:09:06,660
+on this ledger without ever having to convert to real US dollars.
 
 141
-00:12:16,340 --> 00:12:20,240
-what anyone would need to know just to use a currency like this.
+00:09:07,580 --> 00:09:10,784
+In fact, to emphasize this point, let's start referring to 
 
 142
-00:12:20,240 --> 00:12:25,280
-But it's a really cool idea, and if you understand it, you understand the heart of Bitcoin and
+00:09:10,784 --> 00:09:14,260
+the quantities on the ledger as ledger dollars, or LD for short.
 
 143
-00:12:25,280 --> 00:12:30,880
-of other cryptocurrencies. So first things first, what's a hash function?
+00:09:14,820 --> 00:09:18,660
+You are of course free to exchange ledger dollars for real US dollars.
 
 144
-00:12:30,880 --> 00:12:34,600
-The inputs for one of these functions can be any kind of message or file, it really
+00:09:19,060 --> 00:09:24,353
+For example, maybe Alice gives Bob a $10 bill in the real world in exchange for him 
 
 145
-00:12:34,600 --> 00:12:39,200
-doesn't matter. And the output is a string of bits with some kind of fixed length, like
+00:09:24,353 --> 00:09:29,520
+adding and signing the transaction $10 Bob pays Alice $10 to this communal ledger.
 
 146
-00:12:39,200 --> 00:12:46,240
-256 bits. This output is called the hash, or digest of the message. And the intent is
+00:09:30,720 --> 00:09:34,220
+But exchanges like that are not guaranteed by the protocol.
 
 147
-00:12:46,240 --> 00:12:52,400
-that it looks random. It's not random, it always gives the same output for a given input.
+00:09:34,720 --> 00:09:37,398
+It's now more analogous to how you might exchange 
 
 148
-00:12:52,400 --> 00:12:58,040
-But the idea is that if you slightly change the input, maybe editing just one of the characters,
+00:09:37,398 --> 00:09:40,560
+dollars for Euros or any other currency on the open market.
 
 149
-00:12:58,040 --> 00:13:03,040
-the resulting hash changes completely. In fact, for the hash function I'm showing
+00:09:41,180 --> 00:09:43,800
+It's just its own independent thing.
 
 150
-00:13:03,040 --> 00:13:10,520
-here called SHA256, the way the output changes as you slightly change that input is entirely
+00:09:44,580 --> 00:09:48,180
+This is the first important thing to understand about Bitcoin, 
 
 151
-00:13:10,520 --> 00:13:17,480
-unpredictable. You see, this is not just any hash function, it's a cryptographic hash function.
+00:09:48,180 --> 00:09:49,780
+or any other cryptocurrency.
 
 152
-00:13:17,480 --> 00:13:22,120
-That means it's infeasible to compute in the reverse direction. If I show you some
+00:09:49,780 --> 00:09:52,420
+What it is, is a ledger.
 
 153
-00:13:22,120 --> 00:13:28,880
-string of 1s and 0s, and ask you to find an input so that the SHA256 hash of that input
+00:09:53,180 --> 00:09:55,980
+The history of transactions is the currency.
 
 154
-00:13:28,880 --> 00:13:35,280
-gives this exact string of bits, you will have no better method than to just guess and check.
+00:09:57,160 --> 00:10:01,560
+Of course, with Bitcoin, money doesn't enter the ledger with people buying in using cash.
 
 155
-00:13:35,280 --> 00:13:39,680
-And again, if you want to feel for how much computation would be needed to go through
+00:10:02,000 --> 00:10:04,820
+I'll get to how new money enters the ledger in just a few minutes.
 
 156
-00:13:39,680 --> 00:13:45,160
-two to the 256 guesses, just take a look at the supplement video. I actually had way
+00:10:05,540 --> 00:10:08,842
+But before that, there's actually an even more significant difference 
 
 157
-00:13:45,160 --> 00:13:51,000
-too much fun writing that thing. You might think that if you just really dig
+00:10:08,842 --> 00:10:12,380
+between our current system of ledger dollars and how cryptocurrencies work.
 
 158
-00:13:51,000 --> 00:13:55,760
-into the details of how exactly this function works, you could reverse engineer the appropriate
+00:10:13,020 --> 00:10:16,087
+So far, I've said that this ledger is in some public place, 
 
 159
-00:13:55,760 --> 00:14:01,440
-input without having to guess and check. But no one has ever figured out a way to do that.
+00:10:16,087 --> 00:10:18,440
+like a website where anyone can add new lines.
 
 160
-00:14:01,440 --> 00:14:06,400
-Interestingly, there's no cold hard rigorous proof that it's hard to compute in the reverse
+00:10:19,220 --> 00:10:22,810
+But that would require trusting a central location, namely, 
 
 161
-00:14:06,400 --> 00:14:12,480
-direction. And yet, a huge amount of modern security depends on cryptographic hash functions
+00:10:22,810 --> 00:10:26,760
+who hosts the website, who controls the rules of adding new lines.
 
 162
-00:14:12,480 --> 00:14:16,920
-and the idea that they have this property. If you were to look at what algorithms underlie
+00:10:27,340 --> 00:10:31,960
+To remove that bit of trust, we'll have everybody keep their own copy of the ledger.
 
 163
-00:14:16,920 --> 00:14:21,040
-the secure connection that your browser is making with YouTube right now, or that it
+00:10:32,660 --> 00:10:37,015
+Then when you want to make a transaction, like Alice pays Bob $100, 
 
 164
-00:14:21,040 --> 00:14:27,440
-makes with your bank, you will likely see the name SHA256 show up in there.
+00:10:37,015 --> 00:10:42,395
+you broadcast that out into the world for people to hear and to record on their own 
 
 165
-00:14:27,440 --> 00:14:32,080
-For right now, our focus will just be on how such a function can prove that a particular
+00:10:42,395 --> 00:10:43,420
+private ledgers.
 
 166
-00:14:32,080 --> 00:14:38,360
-list of transactions is associated with a large amount of computational effort.
+00:10:44,840 --> 00:10:49,260
+But unless you do something more, this system is absurdly bad.
 
 167
-00:14:38,360 --> 00:14:43,180
-Imagine someone shows you a list of transactions, and they say, hey, I found a special number
+00:10:49,820 --> 00:10:52,740
+How could you get everyone to agree on what the right ledger is?
 
 168
-00:14:43,180 --> 00:14:48,680
-so that when you put that number at the end of this list of transactions and apply SHA256
+00:10:53,440 --> 00:10:56,853
+When Bob receives a transaction, like Alice pays Bob $10, 
 
 169
-00:14:48,680 --> 00:14:54,620
-to the entire thing, the first 30 bits of that output are all zeros. How hard do you
+00:10:56,853 --> 00:11:01,680
+how can he be sure that everyone else received and believes that same transaction?
 
 170
-00:14:54,620 --> 00:15:00,400
-think it was for them to find that number? For a random message, the probability that
+00:11:02,340 --> 00:11:07,200
+That he'll be able to later on go to Charlie and use those same $10 to make a transaction?
 
 171
-00:15:00,400 --> 00:15:07,720
-a hash happens to start with 30 successive zeros is 1 in 230, which is about 1 in a
+00:11:08,240 --> 00:11:12,060
+Really, imagine yourself just listening to transactions being broadcast.
 
 172
-00:15:07,720 --> 00:15:13,720
-billion. And because SHA256 is a cryptographic hash function, the only way to find a special
+00:11:12,760 --> 00:11:15,717
+How can you be sure that everyone else is recording 
 
 173
-00:15:13,720 --> 00:15:18,680
-number like that is just guessing and checking. So this person almost certainly had to go
+00:11:15,717 --> 00:11:18,220
+the same transactions and in the same order?
 
 174
-00:15:18,680 --> 00:15:23,620
-through about a billion different numbers before finding this special one. And once
+00:11:19,420 --> 00:11:21,360
+This is really the heart of the issue.
 
 175
-00:15:23,620 --> 00:15:27,800
-you know that number, it's really quick to verify, you just run the hash and see that
+00:11:21,600 --> 00:11:22,740
+This is an interesting puzzle.
 
 176
-00:15:27,800 --> 00:15:31,800
-there are 30 zeros. So in other words, you can verify that they
+00:11:23,420 --> 00:11:27,798
+Can you come up with a protocol for how to accept or reject transactions, 
 
 177
-00:15:31,800 --> 00:15:37,420
-went through a large amount of work, but without having to go through that same effort yourself.
+00:11:27,798 --> 00:11:32,531
+and in what order, so that you can feel confident that anyone else in the world 
 
 178
-00:15:37,420 --> 00:15:42,740
-This is called a proof of work. And importantly, all of this work is intrinsically tied to
+00:11:32,531 --> 00:11:37,620
+who's following that same protocol has a personal ledger that looks the same as yours?
 
 179
-00:15:42,740 --> 00:15:48,240
-the list of transactions. If you change one of those transactions, even slightly, it would
+00:11:38,300 --> 00:11:41,580
+This is the problem addressed in the original Bitcoin paper.
 
 180
-00:15:48,240 --> 00:15:52,720
-completely change the hash. So you'd have to go through another billion guesses to find
+00:11:44,060 --> 00:11:48,142
+At a high level, the solution that Bitcoin offers is to trust 
 
 181
-00:15:52,720 --> 00:15:59,680
-a new proof of work, a new number that makes it so that the hash of the list starts with
+00:11:48,142 --> 00:11:52,160
+whichever ledger has the most computational work put into it.
 
 182
-00:15:59,680 --> 00:16:03,480
-30 zeros. So now think back to our distributed ledger
+00:11:52,540 --> 00:11:54,860
+I'll take a moment to explain exactly what that means.
 
 183
-00:16:03,480 --> 00:16:08,340
-situation. Everyone is there broadcasting transactions, and we want a way for them to
+00:11:55,320 --> 00:11:58,120
+It involves a cryptographic hash function.
 
 184
-00:16:08,340 --> 00:16:14,080
-agree on what the correct ledger is. As I said, the core idea behind the original Bitcoin
+00:11:58,460 --> 00:12:03,027
+The general idea that we'll build to is that if you use computational work as 
 
 185
-00:16:14,080 --> 00:16:19,440
-paper is to have everyone trust whichever ledger has the most work put into it.
+00:12:03,027 --> 00:12:07,653
+a basis for what to trust, you can make it so that fraudulent transactions and 
 
 186
-00:16:19,440 --> 00:16:24,060
-The way this works is to first organize a given ledger into blocks, where each block
+00:12:07,653 --> 00:12:12,280
+conflicting ledgers require an infeasible amount of computation to bring about.
 
 187
-00:16:24,060 --> 00:16:29,080
-consists of a list of transactions together with a proof of work, that is, a special number
+00:12:13,040 --> 00:12:16,140
+Again, I'll remind you that this is getting well into the weeds 
 
 188
-00:16:29,080 --> 00:16:33,960
-so that the hash of the whole block starts with a bunch of zeros. For the moment, let's
+00:12:16,140 --> 00:12:19,580
+beyond what anyone would need to know just to use a currency like this.
 
 189
-00:16:33,960 --> 00:16:39,340
-say it has to start with 60 zeros, but later we'll return back to a more systematic way
+00:12:20,120 --> 00:12:22,935
+But it's a really cool idea, and if you understand it, 
 
 190
-00:16:39,340 --> 00:16:43,920
-you might want to choose that number. In the same way that a transaction is only
+00:12:22,935 --> 00:12:26,160
+you understand the heart of Bitcoin and other cryptocurrencies.
 
 191
-00:16:43,920 --> 00:16:48,660
-considered valid when it's signed by the sender, a block is only considered valid if
+00:12:28,100 --> 00:12:29,940
+So first things first, what's a hash function?
 
 192
-00:16:48,660 --> 00:16:53,280
-it has a proof of work. Also, to make sure there's a standard order
+00:12:30,800 --> 00:12:37,787
+The inputs for one of these functions can be any kind of message or file, 
 
 193
-00:16:53,280 --> 00:16:58,380
-to these blocks, we'll make it so that a block has to contain the hash of the previous
+00:12:37,787 --> 00:12:40,620
+it really looks like 256 bits.
 
 194
-00:16:58,380 --> 00:17:03,620
-block at its header. That way, if you were to go back and change any one of the blocks,
+00:12:41,180 --> 00:12:45,027
+This output is called the hash or digest of the message, 
 
 195
-00:17:03,620 --> 00:17:08,380
-or to swap the order of two blocks, it would change the block that comes after it, which
+00:12:45,027 --> 00:12:47,660
+and the intent is that it looks random.
 
 196
-00:17:08,380 --> 00:17:14,140
-changes that block's hash, which changes the one that comes after it, and so on.
+00:12:48,000 --> 00:12:51,660
+It's not random, it always gives the same output for a given input.
 
 197
-00:17:14,140 --> 00:17:18,300
-That would require redoing all of the work, finding a new special number for each of these
+00:12:52,200 --> 00:12:55,418
+But the idea is that if you slightly change the input, 
 
 198
-00:17:18,340 --> 00:17:24,080
-blocks that makes their hashes start with 60 zeros. Because blocks are chained together
+00:12:55,418 --> 00:13:00,100
+maybe editing just one of the characters, the resulting hash changes completely.
 
 199
-00:17:24,080 --> 00:17:30,160
-like this, instead of calling it a ledger, it's common to call it a block chain.
+00:13:00,820 --> 00:13:05,321
+In fact, for the hash function I'm showing here, called SHA256, 
 
 200
-00:17:30,160 --> 00:17:35,340
-As part of our updated protocol, we'll now allow anyone in the world to be a block creator.
+00:13:05,321 --> 00:13:11,440
+the way the output changes as you slightly change that input is entirely unpredictable.
 
 201
-00:17:35,340 --> 00:17:39,300
-What that means is that they're going to listen for transactions being broadcast, collect
+00:13:12,440 --> 00:13:17,060
+You see, this is not just any hash function, it's a cryptographic hash function.
 
 202
-00:17:39,300 --> 00:17:43,760
-them into some block, and then do a whole bunch of work to find a special number that
+00:13:17,340 --> 00:13:20,660
+That means it's infeasible to compute in the reverse direction.
 
 203
-00:17:43,760 --> 00:17:48,800
-makes the hash of that block start with 60 zeros. Once they find it, they broadcast out
+00:13:21,260 --> 00:13:29,324
+If I show you some string of 1s and 0s and ask you to find an input to the SHA256 hash, 
 
 204
-00:17:48,800 --> 00:17:53,640
-the block they found. To reward a block creator for all this work,
+00:13:29,324 --> 00:13:34,640
+you'll have no better method than to just guess and check.
 
 205
-00:17:53,640 --> 00:17:57,960
-when she puts together a block, we'll allow her to include a very special transaction
+00:13:35,700 --> 00:13:39,917
+And again, if you want to feel for how much computation would be needed 
 
 206
-00:17:57,960 --> 00:18:03,720
-at the top of it, in which she gets, say, 10 ledger dollars out of thin air. This is
+00:13:39,917 --> 00:13:43,900
+to go through 256 guesses, just take a look at the supplement video.
 
 207
-00:18:03,720 --> 00:18:08,340
-called the block reward, and it's an exception to our usual rules about whether or not to
+00:13:44,380 --> 00:13:46,660
+I actually had way too much fun writing that thing.
 
 208
-00:18:08,340 --> 00:18:13,780
-accept transactions. It doesn't come from anyone, so it doesn't have to be signed.
+00:13:48,560 --> 00:13:53,040
+You might think that if you just really dig into the details of how exactly this function 
 
 209
-00:18:13,780 --> 00:18:18,900
-It also means that the total number of ledger dollars in our economy increases with each
+00:13:53,040 --> 00:13:57,520
+works, you could reverse engineer the appropriate input without having to guess and check.
 
 210
-00:18:18,900 --> 00:18:25,340
-new block. Creating blocks is often called mining, since it requires doing a lot of work,
+00:13:58,240 --> 00:14:00,840
+But no one has ever figured out a way to do that.
 
 211
-00:18:25,340 --> 00:18:29,220
-and it introduces new bits of currency into the economy.
+00:14:01,600 --> 00:14:04,280
+Interestingly, there's no cold hard rigorous proof 
 
 212
-00:18:29,220 --> 00:18:33,680
-But when you hear or read about miners, keep in mind that what they're really doing is
+00:14:04,280 --> 00:14:06,960
+that it's hard to compute in the reverse direction.
 
 213
-00:18:33,680 --> 00:18:39,160
-listening for transactions, creating blocks, broadcasting those blocks, and getting rewarded
+00:14:07,620 --> 00:14:11,175
+And yet, a huge amount of modern security depends on cryptographic 
 
 214
-00:18:39,160 --> 00:18:44,220
-with new money for doing so. From the miners' perspective, each block
+00:14:11,175 --> 00:14:14,200
+hash functions and the idea that they have this property.
 
 215
-00:18:44,220 --> 00:18:48,360
-is kind of like a miniature lottery, where everyone is guessing numbers as fast as they
+00:14:14,940 --> 00:14:18,643
+If you were to look at what algorithms underlie the secure connection 
 
 216
-00:18:48,360 --> 00:18:54,040
-can until one lucky individual finds a special number that makes the hash of the block start
+00:14:18,643 --> 00:14:21,395
+that your browser is making with YouTube right now, 
 
 217
-00:18:54,040 --> 00:18:59,720
-with many zeros, and they get the reward. For anyone else who just wants to use this
+00:14:21,395 --> 00:14:25,840
+or that it makes with your bank, you'll likely see the name SHA256 show up in there.
 
 218
-00:18:59,720 --> 00:19:04,280
-system to make payments, instead of listening for transactions, they all start listening
+00:14:27,340 --> 00:14:32,318
+For right now, our focus will be on how such a function can prove that a particular 
 
 219
-00:19:04,280 --> 00:19:09,040
-just for blocks being broadcast by miners and updating their own personal copies of
+00:14:32,318 --> 00:14:37,000
+list of transactions is associated with a large amount of computational effort.
 
 220
-00:19:09,040 --> 00:19:13,280
-the blockchain. Now the key addition to our protocol is that
+00:14:38,040 --> 00:14:42,152
+Imagine someone shows you a list of transactions, and they say, hey, 
 
 221
-00:19:13,280 --> 00:19:18,680
-if you hear two distinct blockchains with conflicting transaction histories, you defer
+00:14:42,152 --> 00:14:47,219
+I found a special number so that when you put that number at the end of this list of 
 
 222
-00:19:18,680 --> 00:19:24,400
-to the longest one, the one with the most work put into it. If there's a tie, just
+00:14:47,219 --> 00:14:50,318
+transactions, and apply SHA256 to the entire thing, 
 
 223
-00:19:24,400 --> 00:19:28,800
-wait until you hear an additional block that makes one of them longer.
+00:14:50,318 --> 00:14:53,120
+the first 30 bits of that output are all zeros.
 
 224
-00:19:28,800 --> 00:19:32,780
-So even though there's no central authority, and everyone is maintaining their own copy
+00:14:54,100 --> 00:14:56,700
+How hard do you think it was for them to find that number?
 
 225
-00:19:32,780 --> 00:19:37,620
-of the blockchain, if everyone agrees to give preference to whichever blockchain has the
+00:14:58,060 --> 00:15:02,528
+Well, for a random message, the probability that a hash happens to start 
 
 226
-00:19:37,620 --> 00:19:43,680
-most work put into it, we have a way to arrive at decentralized consensus.
+00:15:02,528 --> 00:15:07,180
+with 30 successive zeros is 1 in 2 to the 30, which is about 1 in a billion.
 
 227
-00:19:43,680 --> 00:19:47,680
-To see why this makes for a trustworthy system, and to understand at what point you should
+00:15:08,200 --> 00:15:11,290
+And because SHA256 is a cryptographic hash function, 
 
 228
-00:19:47,680 --> 00:19:52,080
-trust that a payment is legit, it's really helpful to walk through exactly what it would
+00:15:11,290 --> 00:15:15,840
+the only way to find a special number like that is just guessing and checking.
 
 229
-00:19:52,080 --> 00:19:58,400
-take to fool someone using this system. Maybe Alice is trying to fool Bob with a fraudulent
+00:15:16,660 --> 00:15:19,520
+So this person almost certainly had to go through about a 
 
 230
-00:19:58,400 --> 00:20:04,520
-block, namely she tries to send him one that includes her paying him 100 Ledger dollars,
+00:15:19,520 --> 00:15:22,380
+billion different numbers before finding this special one.
 
 231
-00:20:04,520 --> 00:20:08,720
-but without broadcasting that block to the rest of the network. That way everyone else
+00:15:23,380 --> 00:15:26,253
+And once you know that number, it's really quick to verify, 
 
 232
-00:20:08,720 --> 00:20:14,280
-still thinks she has those 100 Ledger dollars. To do this, she would have to find a valid
+00:15:26,253 --> 00:15:28,840
+you just run the hash and see that there are 30 zeros.
 
 233
-00:20:14,280 --> 00:20:19,640
-proof of work before all the other miners, each working on their own block. And that
+00:15:29,800 --> 00:15:33,618
+So in other words, you can verify that they went through a large amount of work, 
 
 234
-00:20:19,640 --> 00:20:23,960
-could definitely happen, maybe Alice just happens to win this miniature lottery before
+00:15:33,618 --> 00:15:36,400
+but without having to go through that same effort yourself.
 
 235
-00:20:23,960 --> 00:20:30,120
-everyone else. But Bob is still going to be hearing the broadcasts made by other miners,
+00:15:37,200 --> 00:15:38,800
+This is called a proof of work.
 
 236
-00:20:30,120 --> 00:20:35,400
-so to keep him believing this fraudulent block, Alice would have to do all the work herself
+00:15:39,460 --> 00:15:44,220
+And importantly, all of this work is intrinsically tied to the list of transactions.
 
 237
-00:20:35,400 --> 00:20:40,180
-to keep adding blocks on this special fork in Bob's blockchain that's different from
+00:15:44,900 --> 00:15:47,785
+If you change one of those transactions, even slightly, 
 
 238
-00:20:40,180 --> 00:20:45,520
-what he's hearing from the rest of the miners. Remember, as per the protocol, Bob always
+00:15:47,785 --> 00:15:49,640
+it would completely change the hash.
 
 239
-00:20:45,520 --> 00:20:51,120
-trusts the longest chain he knows about. Alice might be able to keep this up for a
+00:15:50,080 --> 00:15:54,427
+So you'd have to go through another billion guesses to find a new proof of work, 
 
 240
-00:20:51,120 --> 00:20:56,320
-few blocks if just by chance she finds blocks more quickly than the rest of the miners on
+00:15:54,427 --> 00:15:57,862
+a new number that makes it so that the hash of the altered list 
 
 241
-00:20:56,320 --> 00:21:02,480
-the network all combined. But unless she has close to 50% of the computing resources among
+00:15:57,862 --> 00:16:00,600
+together with this new number starts with 30 zeros.
 
 242
-00:21:02,480 --> 00:21:07,600
-all of the miners, the probability becomes overwhelming that the blockchain that all
+00:16:01,500 --> 00:16:04,100
+So now think back to our distributed ledger situation.
 
 243
-00:21:07,600 --> 00:21:12,840
-of the other miners are working on grows faster than the single fraudulent blockchain Alice
+00:16:04,680 --> 00:16:07,816
+Everyone is there broadcasting transactions and we want 
 
 244
-00:21:12,840 --> 00:21:17,960
-is feeding to Bob. So after enough time, Bob's just going to
+00:16:07,816 --> 00:16:10,840
+a way for them to agree on what the correct ledger is.
 
 245
-00:21:17,960 --> 00:21:22,160
-reject what he's hearing from Alice in favor of the longer chain that everyone else is
+00:16:12,100 --> 00:16:15,330
+As I mentioned, the idea behind the original Bitcoin paper is to 
 
 246
-00:21:22,160 --> 00:21:29,720
-working on. Notice, that means you shouldn't necessarily trust a new block you hear immediately,
+00:16:15,330 --> 00:16:18,660
+have everyone trust whichever ledger has the most work put into it.
 
 247
-00:21:29,720 --> 00:21:34,800
-instead you should wait for several new blocks to be added on top of it. If you still haven't
+00:16:19,280 --> 00:16:22,906
+The way this works is to first organize a given ledger into blocks, 
 
 248
-00:21:34,800 --> 00:21:39,200
-heard of any longer blockchains, you can trust that this block is part of the same chain
+00:16:22,906 --> 00:16:27,280
+where each block consists of a list of transactions together with a proof of work.
 
 249
-00:21:39,200 --> 00:21:46,000
-that everyone else is using. And with that, we've hit all the main ideas.
+00:16:27,720 --> 00:16:30,035
+That is, a special number so that the hash of 
 
 250
-00:21:46,040 --> 00:21:50,960
-This distributed ledger system based on a proof of work is more or less how the Bitcoin
+00:16:30,035 --> 00:16:32,300
+the whole block starts with a bunch of zeros.
 
 251
-00:21:50,960 --> 00:21:55,800
-protocol works, and how many other cryptocurrencies work. There's just a few details to clear
+00:16:33,140 --> 00:16:38,358
+For the moment, let's say it has to start with 60 zeros, 
 
 252
-00:21:55,800 --> 00:21:59,760
-up. Earlier I said that the proof of work might be to find a special number so that
+00:16:38,358 --> 00:16:45,500
+but later we'll return back to a more systematic way you might want to change.
 
 253
-00:21:59,760 --> 00:22:04,920
-the hash of the block starts with 60 zeros. Well, the way the actual Bitcoin protocol
+00:16:45,900 --> 00:16:50,040
+A block is only considered valid if it has a proof of work.
 
 254
-00:22:04,920 --> 00:22:10,160
-works is to periodically change that number of zeros so that it should take, on average,
+00:16:50,960 --> 00:16:54,393
+Also, to make sure there's a standard order to these blocks, 
 
 255
-00:22:10,160 --> 00:22:15,960
-10 minutes to find a new block. So as there are more and more miners added to the network,
+00:16:54,393 --> 00:16:59,460
+we'll make it so that a block has to contain the hash of the previous block at its header.
 
 256
-00:22:16,000 --> 00:22:20,880
-the challenge gets harder and harder in such a way that this miniature lottery only has
+00:17:00,060 --> 00:17:03,857
+That way, if you were to go back and change any one of the blocks, 
 
 257
-00:22:20,880 --> 00:22:27,280
-about one winner every 10 minutes. Many newer cryptocurrencies have much shorter block times
+00:17:03,857 --> 00:17:08,562
+or to swap the order of two blocks, it would change the block that comes after it, 
 
 258
-00:22:27,280 --> 00:22:30,800
-than that. And all of the money in Bitcoin ultimately
+00:17:08,562 --> 00:17:13,380
+which changes the block's hash, which changes the one that comes after it, and so on.
 
 259
-00:22:30,800 --> 00:22:36,400
-comes from some block reward. In the beginning, these rewards were 50 Bitcoin per block. There's
+00:17:13,980 --> 00:17:17,804
+That would require redoing all of the work, finding a new special number 
 
 260
-00:22:36,400 --> 00:22:40,280
-actually a great website you can go to called Block Explorer that makes it easy to look
+00:17:17,804 --> 00:17:21,420
+for each of these blocks that makes their hashes start with 60 zeros.
 
 261
-00:22:40,280 --> 00:22:45,080
-through the Bitcoin blockchain. And if you look at the very first few blocks on the chain,
+00:17:22,440 --> 00:17:24,843
+Because blocks are chained together like this, 
 
 262
-00:22:45,080 --> 00:22:50,480
-they contain no transactions other than that 50 Bitcoin reward to the miner. But every
+00:17:24,843 --> 00:17:28,319
+instead of calling it a ledger, it's common to call it a blockchain.
 
 263
-00:22:50,480 --> 00:22:57,720
-210,000 blocks, which is about every 4 years, that reward gets cut in half. So right now,
+00:17:30,080 --> 00:17:32,416
+As part of our updated protocol, we'll now allow 
 
 264
-00:22:57,720 --> 00:23:03,400
-the reward is 12.5 Bitcoin per block. And because this reward decreases geometrically
+00:17:32,416 --> 00:17:34,420
+anyone in the world to be a block creator.
 
 265
-00:23:03,400 --> 00:23:09,920
-over time, it means there will never be more than 21 million Bitcoin in existence.
+00:17:35,240 --> 00:17:39,219
+What that means is that they're going to listen for transactions being broadcast, 
 
 266
-00:23:09,920 --> 00:23:14,940
-However, this doesn't mean that miners will stop earning money. In addition to the block
+00:17:39,219 --> 00:17:42,811
+collect them into some block, and then do a whole bunch of work to find a 
 
 267
-00:23:14,940 --> 00:23:19,760
-reward, miners can also pick up transaction fees. The way this works is that whenever
+00:17:42,811 --> 00:17:46,160
+special number that makes the hash of that block start with 60 zeros.
 
 268
-00:23:19,760 --> 00:23:25,100
-you make a payment, you can purely optionally include a transaction fee with it that will
+00:17:46,960 --> 00:17:49,900
+Once they find it, they broadcast out the block they found.
 
 269
-00:23:25,100 --> 00:23:30,620
-go to the miner of whichever block includes that payment. The reason you might do that
+00:17:50,860 --> 00:17:55,204
+To reward a block creator for all this work, when she puts together a block, 
 
 270
-00:23:30,620 --> 00:23:35,780
-is to incentivize miners to actually include the transaction you broadcast into the next
+00:17:55,204 --> 00:17:59,267
+we'll allow her to include a very special transaction at the top of it, 
 
 271
-00:23:35,780 --> 00:23:39,160
-block. You see, in Bitcoin, each block is limited
+00:17:59,267 --> 00:18:02,540
+in which she gets, say, 10 ledger dollars out of thin air.
 
 272
-00:23:39,160 --> 00:23:47,120
-to about 2400 transactions, which many critics argue is unnecessarily restrictive. For comparison,
+00:18:03,080 --> 00:18:06,186
+This is called the block reward, and it's an exception to 
 
 273
-00:23:47,120 --> 00:23:53,080
-Visa processes an average of about 1700 transactions per second, and they're capable of handling
+00:18:06,186 --> 00:18:09,400
+our usual rules about whether or not to accept transactions.
 
 274
-00:23:53,080 --> 00:24:00,020
-more than 24,000 per second. This comparatively slow processing on Bitcoin makes for higher
+00:18:10,040 --> 00:18:12,920
+It doesn't come from anyone, so it doesn't have to be signed.
 
 275
-00:24:00,020 --> 00:24:05,280
-transaction fees, since that's what determines which transactions miners choose to include
+00:18:13,660 --> 00:18:16,429
+It also means that the total number of ledger 
 
 276
-00:24:05,280 --> 00:24:10,760
-in a new block. All of this is far from a comprehensive coverage
+00:18:16,429 --> 00:18:19,620
+dollars in our economy increases with each new block.
 
 277
-00:24:10,760 --> 00:24:15,180
-of cryptocurrencies. There are still many nuances and alternate design choices that
+00:18:20,900 --> 00:18:25,160
+Creating blocks is often called mining, since it requires doing a lot of work, 
 
 278
-00:24:15,180 --> 00:24:19,760
-I haven't even touched. But my hope is that this can provide a stable, Wait-but-why-style
+00:18:25,160 --> 00:18:28,180
+and it introduces new bits of currency into the economy.
 
 279
-00:24:19,760 --> 00:24:25,320
-tree-trunk of understanding for anyone looking to add a few more branches with further reading.
+00:18:29,020 --> 00:18:33,088
+But when you hear or read about miners, keep in mind that what they're 
 
 280
-00:24:25,320 --> 00:24:29,200
-Like I said at the start, one of the motives behind this is that a lot of money has started
+00:18:33,088 --> 00:18:36,584
+really doing is listening for transactions, creating blocks, 
 
 281
-00:24:29,200 --> 00:24:33,080
-flowing towards cryptocurrencies. And even though I don't want to make any claims about
+00:18:36,584 --> 00:18:40,940
+broadcasting those blocks, and getting rewarded with new money for doing so.
 
 282
-00:24:33,080 --> 00:24:37,100
-whether that's a good or bad investment, I really do think it's healthy for people
+00:18:41,780 --> 00:18:45,706
+From the miners' perspective, each block is like a miniature lottery, 
 
 283
-00:24:37,100 --> 00:24:41,640
-getting into the game to at least know the fundamentals of the technology.
+00:18:45,706 --> 00:18:48,847
+where everyone is guessing numbers as fast as they can, 
 
 284
-00:24:41,640 --> 00:24:46,160
-As always, my sincerest thanks to those of you making this channel possible on Patreon.
+00:18:48,847 --> 00:18:53,503
+until one lucky individual finds a special number that makes the hash of the block 
 
 285
-00:24:46,160 --> 00:24:50,440
-I understand that not everyone is in a position to contribute, but if you're still interested
+00:18:53,503 --> 00:18:56,140
+start with many zeros, and they get the reward.
 
 286
-00:24:50,440 --> 00:24:54,480
-in helping out, one of the best ways to do that is simply to share videos that you think
+00:18:57,620 --> 00:19:01,131
+For anyone else who just wants to use this system to make payments, 
 
 287
-00:24:54,480 --> 00:24:59,520
-might be interesting or helpful to others. I know you know that, but it really does help.
+00:19:01,131 --> 00:19:05,262
+instead of listening for transactions, they all start listening just for blocks 
+
+288
+00:19:05,262 --> 00:19:09,600
+being broadcast by miners, and updating their own personal copies of the blockchain.
+
+289
+00:19:10,560 --> 00:19:14,309
+Now the key addition to our protocol is that if you hear two 
+
+290
+00:19:14,309 --> 00:19:18,058
+distinct blockchains with conflicting transaction histories, 
+
+291
+00:19:18,058 --> 00:19:22,300
+you defer to the longest one, the one with the most work put into it.
+
+292
+00:19:22,860 --> 00:19:25,263
+If there's a tie, just wait until you hear an 
+
+293
+00:19:25,263 --> 00:19:27,720
+additional block that makes one of them longer.
+
+294
+00:19:28,720 --> 00:19:33,323
+So even though there's no central authority, and everyone is maintaining their own 
+
+295
+00:19:33,323 --> 00:19:38,092
+copy of the blockchain, if everyone agrees to give preference to whichever blockchain 
+
+296
+00:19:38,092 --> 00:19:42,640
+has the most work put into it, we have a way to arrive at decentralized consensus.
+
+297
+00:19:43,560 --> 00:19:45,901
+To see why this makes for a trustworthy system, 
+
+298
+00:19:45,901 --> 00:19:49,510
+and to understand at what point you should trust that a payment is legit, 
+
+299
+00:19:49,510 --> 00:19:53,168
+it's actually really helpful to walk through exactly what it would take to 
+
+300
+00:19:53,168 --> 00:19:54,680
+fool someone using this system.
+
+301
+00:19:55,600 --> 00:19:58,967
+Maybe Alice is trying to fool Bob with a fraudulent block, 
+
+302
+00:19:58,967 --> 00:20:03,648
+namely she tries to send him one that includes her paying him 100 Ledger dollars, 
+
+303
+00:20:03,648 --> 00:20:07,301
+but without broadcasting that block to the rest of the network, 
+
+304
+00:20:07,301 --> 00:20:11,240
+that way everyone else still thinks she has those 100 Ledger dollars.
+
+305
+00:20:11,960 --> 00:20:16,857
+To do this, she would have to find a valid proof of work before all the other miners, 
+
+306
+00:20:16,857 --> 00:20:18,680
+each working on their own block.
+
+307
+00:20:19,500 --> 00:20:21,966
+And that could definitely happen, maybe Alice just 
+
+308
+00:20:21,966 --> 00:20:24,820
+happens to win this miniature lottery before everyone else.
+
+309
+00:20:25,680 --> 00:20:29,736
+But Bob is still going to be hearing the broadcasts made by other miners, 
+
+310
+00:20:29,736 --> 00:20:32,367
+so to keep him believing this fraudulent block, 
+
+311
+00:20:32,367 --> 00:20:36,423
+Alice would have to do all the work herself to keep adding blocks on this 
+
+312
+00:20:36,423 --> 00:20:40,425
+special fork in Bob's blockchain that's different from what he's hearing 
+
+313
+00:20:40,425 --> 00:20:41,960
+from the rest of the miners.
+
+314
+00:20:42,740 --> 00:20:48,260
+Remember, as per the protocol, Bob always trusts the longest chain he knows about.
+
+315
+00:20:49,260 --> 00:20:53,291
+Alice might be able to keep this up for a few blocks if just by chance she 
+
+316
+00:20:53,291 --> 00:20:57,700
+finds blocks more quickly than the rest of the miners on the network all combined.
+
+317
+00:20:58,480 --> 00:21:03,480
+But unless she has close to 50% of the computing resources among all of the miners, 
+
+318
+00:21:03,480 --> 00:21:08,422
+the probability becomes overwhelming that the blockchain that all the other miners 
+
+319
+00:21:08,422 --> 00:21:13,780
+are working on grows faster than the single fraudulent blockchain Alice is feeding to Bob.
+
+320
+00:21:15,000 --> 00:21:19,009
+So after enough time, Bob will just reject what he's hearing from 
+
+321
+00:21:19,009 --> 00:21:23,140
+Alice in favor of the longer chain that everyone else is working on.
+
+322
+00:21:23,960 --> 00:21:28,920
+Notice, that means you shouldn't necessarily trust a new block you hear immediately.
+
+323
+00:21:29,500 --> 00:21:33,400
+Instead, you should wait for several new blocks to be added on top of it.
+
+324
+00:21:33,820 --> 00:21:36,449
+If you still haven't heard of any longer blockchains, 
+
+325
+00:21:36,449 --> 00:21:40,540
+you can trust that this block is part of the same chain that everyone else is using.
+
+326
+00:21:42,120 --> 00:21:45,220
+And with that, we've hit all the main ideas.
+
+327
+00:21:45,780 --> 00:21:49,702
+This distributed ledger system based on a proof of work is more or less 
+
+328
+00:21:49,702 --> 00:21:53,680
+how the Bitcoin protocol works, and how many other cryptocurrencies work.
+
+329
+00:21:54,300 --> 00:21:56,160
+There's just a few details to clear up.
+
+330
+00:21:56,300 --> 00:21:59,210
+Earlier I said that the proof of work might be to find a 
+
+331
+00:21:59,210 --> 00:22:02,580
+special number so that the hash of the block starts with 60 zeros.
+
+332
+00:22:03,220 --> 00:22:07,530
+Well, the way the actual Bitcoin protocol works is to periodically change 
+
+333
+00:22:07,530 --> 00:22:11,900
+that number of zeros so that it should take 10 minutes to find a new block.
+
+334
+00:22:12,780 --> 00:22:16,098
+So as there are more and more miners added to the network, 
+
+335
+00:22:16,098 --> 00:22:19,529
+the challenge gets harder and harder in such a way that this 
+
+336
+00:22:19,529 --> 00:22:22,960
+miniature lottery only has about one winner every 10 minutes.
+
+337
+00:22:23,920 --> 00:22:27,880
+Many newer cryptocurrencies have much shorter block times than that.
+
+338
+00:22:28,580 --> 00:22:32,460
+And all of the money in Bitcoin ultimately comes from some block reward.
+
+339
+00:22:32,920 --> 00:22:35,740
+In the beginning, these rewards were 50 Bitcoin per block.
+
+340
+00:22:36,140 --> 00:22:38,729
+There's a great website called Block Explorer that 
+
+341
+00:22:38,729 --> 00:22:41,420
+makes it easy to look through the Bitcoin blockchain.
+
+342
+00:22:41,960 --> 00:22:45,141
+And if you look at the very first few blocks on the chain, 
+
+343
+00:22:45,141 --> 00:22:49,240
+they contain no transactions other than that 50 Bitcoin reward to the miner.
+
+344
+00:22:49,860 --> 00:22:56,340
+But every 210,000 blocks, which is about every 4 years, that reward gets cut in half.
+
+345
+00:22:56,860 --> 00:23:00,140
+So right now, the reward is 12.5 Bitcoin per block.
+
+346
+00:23:00,720 --> 00:23:04,623
+And because this reward decreases geometrically over time, 
+
+347
+00:23:04,623 --> 00:23:09,320
+it means there will never be more than 21 million Bitcoin in existence.
+
+348
+00:23:10,280 --> 00:23:13,280
+However, this doesn't mean miners will stop earning money.
+
+349
+00:23:13,820 --> 00:23:17,940
+In addition to the block reward, miners can also pick up transaction fees.
+
+350
+00:23:18,520 --> 00:23:21,494
+The way this works is that whenever you make a payment, 
+
+351
+00:23:21,494 --> 00:23:24,681
+you can purely optionally include a transaction fee with it 
+
+352
+00:23:24,681 --> 00:23:28,240
+that will go to the miner of whichever block includes that payment.
+
+353
+00:23:29,020 --> 00:23:32,692
+The reason you might do that is to incentivize miners to actually 
+
+354
+00:23:32,692 --> 00:23:35,920
+include the transaction you broadcast into the next block.
+
+355
+00:23:36,440 --> 00:23:41,313
+You see, in Bitcoin, each block is limited to about 2400 transactions, 
+
+356
+00:23:41,313 --> 00:23:45,020
+which many critics argue is unnecessarily restrictive.
+
+357
+00:23:45,860 --> 00:23:51,294
+For comparison, Visa processes an average of about 1700 transactions per second, 
+
+358
+00:23:51,294 --> 00:23:55,320
+and they're capable of handling more than 24,000 per second.
+
+359
+00:23:56,020 --> 00:24:00,899
+This comparatively slow processing on Bitcoin makes for higher transaction fees, 
+
+360
+00:24:00,899 --> 00:24:06,200
+since that's what determines which transactions miners choose to include in a new block.
+
+361
+00:24:07,820 --> 00:24:11,500
+All of this is far from a comprehensive coverage of cryptocurrencies.
+
+362
+00:24:12,160 --> 00:24:16,180
+There are still many nuances and alternate design choices that I haven't even touched.
+
+363
+00:24:16,640 --> 00:24:20,402
+But my hope is that this can provide a stable WaitButWhy-style tree-trunk of 
+
+364
+00:24:20,402 --> 00:24:24,360
+understanding for anyone looking to add a few more branches with further reading.
+
+365
+00:24:25,180 --> 00:24:28,968
+Like I said at the start, one of the motives behind this is that a lot of money has 
+
+366
+00:24:28,968 --> 00:24:32,712
+started flowing towards cryptocurrencies, and even though I don't want to make any 
+
+367
+00:24:32,712 --> 00:24:35,147
+claims about whether that's a good or bad investment, 
+
+368
+00:24:35,147 --> 00:24:38,981
+I really do think it's healthy for people getting into the game to at least know the 
+
+369
+00:24:38,981 --> 00:24:40,380
+fundamentals of the technology.
+
+370
+00:24:41,340 --> 00:24:45,420
+As always, my sincerest thanks to those of you making this channel possible on Patreon.
+
+371
+00:24:46,080 --> 00:24:49,036
+I understand that not everyone is in a position to contribute, 
+
+372
+00:24:49,036 --> 00:24:51,242
+but if you're still interested in helping out, 
+
+373
+00:24:51,242 --> 00:24:54,668
+one of the best ways to do that is simply to share videos that you think 
+
+374
+00:24:54,668 --> 00:24:56,640
+might be interesting or helpful to others.
+
+375
+00:24:57,280 --> 00:24:59,320
+I know you know that, but it really does help.
 

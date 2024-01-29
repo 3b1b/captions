@@ -1,768 +1,768 @@
 1
-00:00:00,000 --> 00:00:04,552
-Itt foglalkozunk a visszaterjesztéssel, a neurális
+00:00:04,060 --> 00:00:06,336
+Itt foglalkozunk a visszaterjesztéssel, a neurális 
 
 2
-00:00:04,552 --> 00:00:09,640
-hálózatok tanulási folyamatának alapvető algoritmusával.
+00:00:06,336 --> 00:00:08,880
+hálózatok tanulási folyamatának alapvető algoritmusával. 
 
 3
-00:00:09,640 --> 00:00:13,977
-Miután röviden összefoglalom, hol tartunk, először egy intuitív áttekintést teszek arról,
+00:00:09,400 --> 00:00:13,648
+Miután röviden összefoglalom, hol tartunk, először egy intuitív áttekintést teszek arról, 
 
 4
-00:00:13,977 --> 00:00:17,400
-hogy mit is csinál az algoritmus, a képletekre való hivatkozás nélkül.
+00:00:13,648 --> 00:00:17,000
+hogy mit is csinál az algoritmus, a képletekre való hivatkozás nélkül. 
 
 5
-00:00:17,400 --> 00:00:20,550
-Aztán azok számára, akik szeretnének belemerülni a matematikába,
+00:00:17,660 --> 00:00:20,203
+Aztán azok számára, akik szeretnének belemerülni a matematikába, 
 
 6
-00:00:20,550 --> 00:00:24,040
-a következő videó a mindezek alapjául szolgáló kalkulussal foglalkozik.
+00:00:20,203 --> 00:00:23,020
+a következő videó a mindezek alapjául szolgáló kalkulussal foglalkozik. 
 
 7
-00:00:24,040 --> 00:00:27,582
-Ha megnézte az utolsó két videót, vagy ha csak a megfelelő háttérrel ugrik be,
+00:00:23,820 --> 00:00:27,432
+Ha megnézte az utolsó két videót, vagy ha csak a megfelelő háttérrel ugrik be, 
 
 8
-00:00:27,582 --> 00:00:31,080
-akkor tudja, mi az a neurális hálózat, és hogyan továbbítja az információkat.
+00:00:27,432 --> 00:00:31,000
+akkor tudja, mi az a neurális hálózat, és hogyan továbbítja az információkat. 
 
 9
-00:00:31,080 --> 00:00:34,919
-Itt a klasszikus példát tesszük a kézzel írt számjegyek felismerésére,
+00:00:31,680 --> 00:00:35,294
+Itt a klasszikus példát tesszük a kézzel írt számjegyek felismerésére, 
 
 10
-00:00:34,919 --> 00:00:38,704
-amelyek pixelértékei a hálózat első rétegébe kerülnek, 784 neuronnal,
+00:00:35,294 --> 00:00:38,858
+amelyek pixelértékei a hálózat első rétegébe kerülnek, 784 neuronnal, 
 
 11
-00:00:38,704 --> 00:00:41,408
-és bemutattam egy hálózatot két rejtett réteggel,
+00:00:38,858 --> 00:00:41,403
+és bemutattam egy hálózatot két rejtett réteggel, 
 
 12
-00:00:41,408 --> 00:00:46,167
-amelyek mindegyike mindössze 16 neuronból áll, és egy kimenet. 10 neuronból álló réteg,
+00:00:41,403 --> 00:00:45,883
+amelyek mindegyike mindössze 16 neuronból áll, és egy kimenet. 10 neuronból álló réteg, 
 
 13
-00:00:46,167 --> 00:00:49,520
-jelezve, hogy a hálózat melyik számjegyet választja válaszul.
+00:00:45,883 --> 00:00:49,040
+jelezve, hogy a hálózat melyik számjegyet választja válaszul. 
 
 14
-00:00:49,520 --> 00:00:52,727
-Azt is elvárom tőled, hogy megértsd a gradiens süllyedést,
+00:00:50,040 --> 00:00:52,905
+Azt is elvárom tőled, hogy megértsd a gradiens süllyedést, 
 
 15
-00:00:52,727 --> 00:00:56,751
-amint azt az utolsó videóban leírtuk, és hogyan értjük tanulás alatt azt,
+00:00:52,905 --> 00:00:56,500
+amint azt az utolsó videóban leírtuk, és hogyan értjük tanulás alatt azt, 
 
 16
-00:00:56,751 --> 00:01:01,101
-hogy meg akarjuk találni, mely súlyok és torzítások minimalizálnak egy bizonyos
+00:00:56,500 --> 00:01:00,385
+hogy meg akarjuk találni, mely súlyok és torzítások minimalizálnak egy bizonyos 
 
 17
-00:01:01,101 --> 00:01:02,080
-költségfüggvényt.
+00:01:00,385 --> 00:01:01,260
+költségfüggvényt. 
 
 18
-00:01:02,080 --> 00:01:06,711
-Gyors emlékeztetőként, egyetlen betanítási példa költségéhez vegye
+00:01:02,040 --> 00:01:06,355
+Gyors emlékeztetőként, egyetlen betanítási példa költségéhez vegye 
 
 19
-00:01:06,711 --> 00:01:11,066
-ki a hálózat által adott kimenetet a kívánt kimenettel együtt,
+00:01:06,355 --> 00:01:10,413
+ki a hálózat által adott kimenetet a kívánt kimenettel együtt, 
 
 20
-00:01:11,066 --> 00:01:15,560
-és adja össze az egyes összetevők közötti különbségek négyzetét.
+00:01:10,413 --> 00:01:14,600
+és adja össze az egyes összetevők közötti különbségek négyzetét. 
 
 21
-00:01:15,560 --> 00:01:18,587
-Ha ezt megteszi a több tízezer képzési példájához,
+00:01:15,380 --> 00:01:18,472
+Ha ezt megteszi a több tízezer képzési példájához, 
 
 22
-00:01:18,587 --> 00:01:23,040
-és átlagolja az eredményeket, akkor ez megadja a hálózat teljes költségét.
+00:01:18,472 --> 00:01:23,020
+és átlagolja az eredményeket, akkor ez megadja a hálózat teljes költségét. 
 
 23
-00:01:23,040 --> 00:01:28,561
-Mintha nem lenne elég ezen gondolkodni, ahogy az utolsó videóban is le van írva,
+00:01:23,020 --> 00:01:27,235
+Mintha nem lenne elég ezen gondolkodni, ahogy az utolsó videóban is le van írva, 
 
 24
-00:01:28,561 --> 00:01:32,991
-a keresett dolog ennek a költségfüggvénynek a negatív gradiense,
+00:01:27,235 --> 00:01:30,617
+a keresett dolog ennek a költségfüggvénynek a negatív gradiense, 
 
 25
-00:01:32,991 --> 00:01:38,104
-amely megmondja, hogyan kell módosítania az összes súlyozást és torzítást,
+00:01:30,617 --> 00:01:34,521
+amely megmondja, hogyan kell módosítania az összes súlyozást és torzítást, 
 
 26
-00:01:38,104 --> 00:01:43,080
-ezeket a kapcsolatokat a költségek leghatékonyabb csökkentése érdekében.
+00:01:34,521 --> 00:01:38,320
+ezeket a kapcsolatokat a költségek leghatékonyabb csökkentése érdekében. 
 
 27
-00:01:43,080 --> 00:01:46,450
-A backpropagation, ennek a videónak a témája, egy algoritmus
+00:01:43,260 --> 00:01:46,527
+A backpropagation, ennek a videónak a témája, egy algoritmus 
 
 28
-00:01:46,450 --> 00:01:49,600
-ennek az őrülten bonyolult gradiensnek a kiszámításához.
+00:01:46,527 --> 00:01:49,580
+ennek az őrülten bonyolult gradiensnek a kiszámításához. 
 
 29
-00:01:49,600 --> 00:01:53,088
-Az utolsó videó egyetlen gondolata, amit nagyon szeretném,
+00:01:49,580 --> 00:01:52,831
+Az utolsó videó egyetlen gondolata, amit nagyon szeretném, 
 
 30
-00:01:53,088 --> 00:01:57,878
-ha most szilárdan a fejedben tartsd, az az, hogy mivel a gradiens vektort 13 000
+00:01:52,831 --> 00:01:57,296
+ha most szilárdan a fejedben tartsd, az az, hogy mivel a gradiens vektort 13 000 
 
 31
-00:01:57,878 --> 00:02:02,018
-dimenziós iránynak tekinteni, enyhén szólva túlmutat a képzeletünkön,
+00:01:57,296 --> 00:02:01,154
+dimenziós iránynak tekinteni, enyhén szólva túlmutat a képzeletünkön, 
 
 32
-00:02:02,018 --> 00:02:04,620
-van egy másik ahogyan gondolkodhatsz rajta.
+00:02:01,154 --> 00:02:03,580
+van egy másik ahogyan gondolkodhatsz rajta. 
 
 33
-00:02:04,620 --> 00:02:07,747
-Az egyes komponensek nagysága itt megmutatja, hogy a
+00:02:04,600 --> 00:02:07,354
+Az egyes komponensek nagysága itt megmutatja, hogy a 
 
 34
-00:02:07,747 --> 00:02:11,820
-költségfüggvény mennyire érzékeny az egyes súlyokra és torzításokra.
+00:02:07,354 --> 00:02:10,940
+költségfüggvény mennyire érzékeny az egyes súlyokra és torzításokra. 
 
 35
-00:02:11,820 --> 00:02:16,285
-Tegyük fel például, hogy végigmegy azon a folyamaton, amelyet leírok,
+00:02:11,800 --> 00:02:16,070
+Tegyük fel például, hogy végigmegy azon a folyamaton, amelyet leírok, 
 
 36
-00:02:16,285 --> 00:02:21,070
-és kiszámítja a negatív gradienst, és az ezen az élen lévő súlyhoz tartozó
+00:02:16,070 --> 00:02:20,646
+és kiszámítja a negatív gradienst, és az ezen az élen lévő súlyhoz tartozó 
 
 37
-00:02:21,070 --> 00:02:26,748
-összetevő itt 3 lesz. 2, míg az ehhez az élhez tartozó komponens itt 0-ként jelenik meg.
+00:02:20,646 --> 00:02:26,076
+összetevő itt 3 lesz. 2, míg az ehhez az élhez tartozó komponens itt 0-ként jelenik meg. 
 
 38
-00:02:26,748 --> 00:02:26,940
-1.
+00:02:26,076 --> 00:02:26,260
+1. 
 
 39
-00:02:26,940 --> 00:02:31,583
-Ezt úgy értelmeznéd, hogy a függvény költsége 32-szer érzékenyebb az
+00:02:26,820 --> 00:02:30,865
+Ezt úgy értelmeznéd, hogy a függvény költsége 32-szer érzékenyebb az 
 
 40
-00:02:31,583 --> 00:02:36,293
-első súly változásaira, tehát ha egy kicsit mozgatnád ezt az értéket,
+00:02:30,865 --> 00:02:34,969
+első súly változásaira, tehát ha egy kicsit mozgatnád ezt az értéket, 
 
 41
-00:02:36,293 --> 00:02:41,609
-az némi változást fog okozni a költségekben, és ez a változás 32-szer nagyobb,
+00:02:34,969 --> 00:02:39,600
+az némi változást fog okozni a költségekben, és ez a változás 32-szer nagyobb, 
 
 42
-00:02:41,609 --> 00:02:45,580
-mint amit az adott második súlynak ugyanaz a mozgása adna.
+00:02:39,600 --> 00:02:43,060
+mint amit az adott második súlynak ugyanaz a mozgása adna. 
 
 43
-00:02:45,580 --> 00:02:50,363
-Személy szerint, amikor először tanultam a visszaszaporításról,
+00:02:48,420 --> 00:02:51,839
+Személy szerint, amikor először tanultam a visszaszaporításról, 
 
 44
-00:02:50,363 --> 00:02:55,820
-azt hiszem, a legzavaróbb szempont az egész jelölése és indexelése volt.
+00:02:51,839 --> 00:02:55,740
+azt hiszem, a legzavaróbb szempont az egész jelölése és indexelése volt. 
 
 45
-00:02:55,820 --> 00:02:59,933
-De ha egyszer kibontja, hogy ennek az algoritmusnak az egyes részei valójában
+00:02:56,220 --> 00:02:59,816
+De ha egyszer kibontja, hogy ennek az algoritmusnak az egyes részei valójában 
 
 46
-00:02:59,933 --> 00:03:04,575
-mit csinálnak, minden egyes hatás, amelyet kifejtenek, valójában meglehetősen intuitív,
+00:02:59,816 --> 00:03:03,873
+mit csinálnak, minden egyes hatás, amelyet kifejtenek, valójában meglehetősen intuitív, 
 
 47
-00:03:04,575 --> 00:03:07,740
-csak arról van szó, hogy sok apró beállítás kerül egymásra.
+00:03:03,873 --> 00:03:06,640
+csak arról van szó, hogy sok apró beállítás kerül egymásra. 
 
 48
-00:03:07,740 --> 00:03:11,879
-Úgyhogy a jelölések teljes figyelmen kívül hagyásával kezdem a dolgokat,
+00:03:07,740 --> 00:03:11,338
+Úgyhogy a jelölések teljes figyelmen kívül hagyásával kezdem a dolgokat, 
 
 49
-00:03:11,879 --> 00:03:16,812
-és csak végig kell lépnem az egyes edzési példák súlyozására és torzításaira gyakorolt
+00:03:11,338 --> 00:03:15,627
+és csak végig kell lépnem az egyes edzési példák súlyozására és torzításaira gyakorolt 
 
 50
-00:03:16,812 --> 00:03:17,380
-hatásain.
+00:03:15,627 --> 00:03:16,120
+hatásain. 
 
 51
-00:03:17,380 --> 00:03:22,400
-Mivel a költségfüggvény magában foglalja egy bizonyos példánkénti költség átlagolását
+00:03:17,020 --> 00:03:21,921
+Mivel a költségfüggvény magában foglalja egy bizonyos példánkénti költség átlagolását 
 
 52
-00:03:22,400 --> 00:03:27,070
-a több tízezer képzési példában, az is, hogy hogyan állítjuk be a súlyokat és a
+00:03:21,921 --> 00:03:26,480
+a több tízezer képzési példában, az is, hogy hogyan állítjuk be a súlyokat és a 
 
 53
-00:03:27,070 --> 00:03:31,740
-torzításokat egyetlen gradiens süllyedési lépéshez, minden egyes példától függ.
+00:03:26,480 --> 00:03:31,040
+torzításokat egyetlen gradiens süllyedési lépéshez, minden egyes példától függ. 
 
 54
-00:03:31,740 --> 00:03:35,722
-Illetve elvileg kellene, de a számítási hatékonyság érdekében később teszünk
+00:03:31,680 --> 00:03:35,368
+Illetve elvileg kellene, de a számítási hatékonyság érdekében később teszünk 
 
 55
-00:03:35,722 --> 00:03:39,860
-egy kis trükköt, hogy ne kelljen minden egyes példát eltalálni minden lépésnél.
+00:03:35,368 --> 00:03:39,200
+egy kis trükköt, hogy ne kelljen minden egyes példát eltalálni minden lépésnél. 
 
 56
-00:03:39,860 --> 00:03:45,381
-Más esetekben jelenleg csak egyetlen példára összpontosítjuk figyelmünket,
+00:03:39,200 --> 00:03:44,593
+Más esetekben jelenleg csak egyetlen példára összpontosítjuk figyelmünket, 
 
 57
-00:03:45,381 --> 00:03:46,780
-erre a 2-es képre.
+00:03:44,593 --> 00:03:45,960
+erre a 2-es képre. 
 
 58
-00:03:46,780 --> 00:03:49,233
-Milyen hatással lehet ennek az egyetlen edzési
+00:03:46,720 --> 00:03:49,074
+Milyen hatással lehet ennek az egyetlen edzési 
 
 59
-00:03:49,233 --> 00:03:51,740
-példának a súlyok és a torzítások beállítására?
+00:03:49,074 --> 00:03:51,480
+példának a súlyok és a torzítások beállítására? 
 
 60
-00:03:51,740 --> 00:03:56,690
-Tegyük fel, hogy egy olyan ponton vagyunk, ahol a hálózat még nem megfelelően képzett,
+00:03:52,680 --> 00:03:56,859
+Tegyük fel, hogy egy olyan ponton vagyunk, ahol a hálózat még nem megfelelően képzett, 
 
 61
-00:03:56,690 --> 00:03:59,877
-így a kimenet aktiválásai elég véletlenszerűek lesznek,
+00:03:56,859 --> 00:03:59,549
+így a kimenet aktiválásai elég véletlenszerűek lesznek, 
 
 62
-00:03:59,877 --> 00:04:02,780
-talán valami 0-nak. 5, 0.8, 0.2, tovább és tovább.
+00:03:59,549 --> 00:04:02,000
+talán valami 0-nak. 5, 0.8, 0.2, tovább és tovább. 
 
 63
-00:04:02,780 --> 00:04:05,860
-Ezeket az aktiválásokat közvetlenül nem tudjuk megváltoztatni,
+00:04:02,520 --> 00:04:05,454
+Ezeket az aktiválásokat közvetlenül nem tudjuk megváltoztatni, 
 
 64
-00:04:05,860 --> 00:04:09,575
-csak a súlyokra és torzításokra van befolyásunk, de hasznos nyomon követni,
+00:04:05,454 --> 00:04:08,993
+csak a súlyokra és torzításokra van befolyásunk, de hasznos nyomon követni, 
 
 65
-00:04:09,575 --> 00:04:13,340
-hogy az adott kimeneti rétegen milyen módosításokat szeretnénk végrehajtani.
+00:04:08,993 --> 00:04:12,580
+hogy az adott kimeneti rétegen milyen módosításokat szeretnénk végrehajtani. 
 
 66
-00:04:13,340 --> 00:04:17,489
-És mivel azt akarjuk, hogy a képet 2-esnek minősítse, azt akarjuk,
+00:04:13,360 --> 00:04:17,280
+És mivel azt akarjuk, hogy a képet 2-esnek minősítse, azt akarjuk, 
 
 67
-00:04:17,489 --> 00:04:21,700
-hogy a harmadik érték felfelé, míg az összes többi lefelé kerüljön.
+00:04:17,280 --> 00:04:21,260
+hogy a harmadik érték felfelé, míg az összes többi lefelé kerüljön. 
 
 68
-00:04:21,700 --> 00:04:26,187
-Ezen túlmenően, ezeknek a lökéseknek a méretének arányosnak kell lennie azzal,
+00:04:22,060 --> 00:04:25,988
+Ezen túlmenően, ezeknek a lökéseknek a méretének arányosnak kell lennie azzal, 
 
 69
-00:04:26,187 --> 00:04:30,220
-hogy az egyes aktuális értékek milyen távolságra vannak a célértéktől.
+00:04:25,988 --> 00:04:29,520
+hogy az egyes aktuális értékek milyen távolságra vannak a célértéktől. 
 
 70
-00:04:30,220 --> 00:04:35,935
-Például a 2-es számú neuron aktiválásának növekedése bizonyos értelemben fontosabb,
+00:04:30,220 --> 00:04:35,375
+Például a 2-es számú neuron aktiválásának növekedése bizonyos értelemben fontosabb, 
 
 71
-00:04:35,935 --> 00:04:42,060
-mint a 8-as számú neuron csökkenése, amely már elég közel van ahhoz, ahol lennie kellene.
+00:04:35,375 --> 00:04:40,900
+mint a 8-as számú neuron csökkenése, amely már elég közel van ahhoz, ahol lennie kellene. 
 
 72
-00:04:42,060 --> 00:04:45,554
-Tehát tovább közelítve csak erre az egyetlen neuronra koncentráljunk,
+00:04:42,040 --> 00:04:45,175
+Tehát tovább közelítve csak erre az egyetlen neuronra koncentráljunk, 
 
 73
-00:04:45,554 --> 00:04:47,900
-arra, amelynek aktiválását szeretnénk növelni.
+00:04:45,175 --> 00:04:47,280
+arra, amelynek aktiválását szeretnénk növelni. 
 
 74
-00:04:47,900 --> 00:04:52,432
-Ne feledje, hogy az aktiválás az előző réteg összes aktiválásának egy bizonyos
+00:04:48,180 --> 00:04:52,343
+Ne feledje, hogy az aktiválás az előző réteg összes aktiválásának egy bizonyos 
 
 75
-00:04:52,432 --> 00:04:55,760
-súlyozott összegeként van definiálva, plusz egy torzítás,
+00:04:52,343 --> 00:04:55,400
+súlyozott összegeként van definiálva, plusz egy torzítás, 
 
 76
-00:04:55,760 --> 00:04:58,686
-amely azután valami olyasmihez van csatlakoztatva,
+00:04:55,400 --> 00:04:58,088
+amely azután valami olyasmihez van csatlakoztatva, 
 
 77
-00:04:58,686 --> 00:05:01,900
-mint a szigmoid squishification függvény vagy egy ReLU.
+00:04:58,088 --> 00:05:01,040
+mint a szigmoid squishification függvény vagy egy ReLU. 
 
 78
-00:05:01,900 --> 00:05:05,103
-Tehát három különböző út áll rendelkezésre, amelyek
+00:05:01,640 --> 00:05:04,437
+Tehát három különböző út áll rendelkezésre, amelyek 
 
 79
-00:05:05,103 --> 00:05:08,060
-összefoghatnak az aktiválás növelése érdekében.
+00:05:04,437 --> 00:05:07,020
+összefoghatnak az aktiválás növelése érdekében. 
 
 80
-00:05:08,060 --> 00:05:15,300
-Növelheti a torzítást, növelheti a súlyokat, és módosíthatja az előző réteg aktiválásait.
+00:05:07,440 --> 00:05:14,040
+Növelheti a torzítást, növelheti a súlyokat, és módosíthatja az előző réteg aktiválásait. 
 
 81
-00:05:15,300 --> 00:05:18,037
-Arra összpontosítva, hogyan kell beállítani a súlyokat,
+00:05:14,940 --> 00:05:17,571
+Arra összpontosítva, hogyan kell beállítani a súlyokat, 
 
 82
-00:05:18,037 --> 00:05:21,460
-figyelje meg, hogy a súlyok valójában milyen mértékben befolyásolják.
+00:05:17,571 --> 00:05:20,860
+figyelje meg, hogy a súlyok valójában milyen mértékben befolyásolják. 
 
 83
-00:05:21,460 --> 00:05:27,022
-Az előző réteg legfényesebb neuronjaival való kapcsolatoknak van a legnagyobb hatása,
+00:05:21,440 --> 00:05:25,717
+Az előző réteg legfényesebb neuronjaival való kapcsolatoknak van a legnagyobb hatása, 
 
 84
-00:05:27,022 --> 00:05:31,420
-mivel ezek a súlyok megszorozódnak a nagyobb aktiválási értékekkel.
+00:05:25,717 --> 00:05:29,100
+mivel ezek a súlyok megszorozódnak a nagyobb aktiválási értékekkel. 
 
 85
-00:05:31,420 --> 00:05:35,560
-Tehát, ha növelné az egyik súlyt, az valójában erősebb hatással van a
+00:05:31,460 --> 00:05:35,410
+Tehát, ha növelné az egyik súlyt, az valójában erősebb hatással van a 
 
 86
-00:05:35,560 --> 00:05:39,820
-végső költségfüggvényre, mint a halványabb neuronokkal való kapcsolatok
+00:05:35,410 --> 00:05:39,473
+végső költségfüggvényre, mint a halványabb neuronokkal való kapcsolatok 
 
 87
-00:05:39,820 --> 00:05:44,020
-súlyának növelése, legalábbis ami ezt az egy gyakorlati példát illeti.
+00:05:39,473 --> 00:05:43,480
+súlyának növelése, legalábbis ami ezt az egy gyakorlati példát illeti. 
 
 88
-00:05:44,020 --> 00:05:46,646
-Ne feledje, amikor gradiens süllyedésről beszélünk,
+00:05:44,420 --> 00:05:46,731
+Ne feledje, amikor gradiens süllyedésről beszélünk, 
 
 89
-00:05:46,646 --> 00:05:50,080
-nem csak azzal foglalkozunk, hogy az egyes komponensek felfelé vagy
+00:05:46,731 --> 00:05:49,753
+nem csak azzal foglalkozunk, hogy az egyes komponensek felfelé vagy 
 
 90
-00:05:50,080 --> 00:05:54,020
-lefelé mozduljanak el, hanem az is, hogy melyik adják a legtöbbet a pénzéért.
+00:05:49,753 --> 00:05:53,220
+lefelé mozduljanak el, hanem az is, hogy melyik adják a legtöbbet a pénzéért. 
 
 91
-00:05:54,020 --> 00:05:57,817
-Ez egyébként legalább valamelyest emlékeztet az idegtudomány egy elméletére,
+00:05:55,020 --> 00:05:58,382
+Ez egyébként legalább valamelyest emlékeztet az idegtudomány egy elméletére, 
 
 92
-00:05:57,817 --> 00:06:01,811
-amely szerint a neuronok biológiai hálózatai hogyan tanulnak, a hebbi elméletet,
+00:05:58,382 --> 00:06:01,918
+amely szerint a neuronok biológiai hálózatai hogyan tanulnak, a hebbi elméletet, 
 
 93
-00:06:01,811 --> 00:06:05,411
-amelyet gyakran a következő kifejezéssel foglalnak össze: az idegsejtek,
+00:06:01,918 --> 00:06:05,106
+amelyet gyakran a következő kifejezéssel foglalnak össze: az idegsejtek, 
 
 94
-00:06:05,411 --> 00:06:06,940
-amelyek együtt tüzelnek össze.
+00:06:05,106 --> 00:06:06,460
+amelyek együtt tüzelnek össze. 
 
 95
-00:06:06,940 --> 00:06:12,520
-Itt a legnagyobb súlynövekedés, a kapcsolatok legnagyobb erősödése a
+00:06:07,260 --> 00:06:12,270
+Itt a legnagyobb súlynövekedés, a kapcsolatok legnagyobb erősödése a 
 
 96
-00:06:12,520 --> 00:06:18,100
-legaktívabb és az aktívabbá tenni kívánt idegsejtek között történik.
+00:06:12,270 --> 00:06:17,280
+legaktívabb és az aktívabbá tenni kívánt idegsejtek között történik. 
 
 97
-00:06:18,100 --> 00:06:22,028
-Bizonyos értelemben azok a neuronok, amelyek tüzelnek, miközben 2-t látnak,
+00:06:17,940 --> 00:06:21,440
+Bizonyos értelemben azok a neuronok, amelyek tüzelnek, miközben 2-t látnak, 
 
 98
-00:06:22,028 --> 00:06:25,440
-erősebben kapcsolódnak azokhoz, amelyek tüzelnek, ha rágondolunk.
+00:06:21,440 --> 00:06:24,480
+erősebben kapcsolódnak azokhoz, amelyek tüzelnek, ha rágondolunk. 
 
 99
-00:06:25,440 --> 00:06:28,160
-Az egyértelműség kedvéért nem vagyok abban a helyzetben,
+00:06:25,400 --> 00:06:28,003
+Az egyértelműség kedvéért nem vagyok abban a helyzetben, 
 
 100
-00:06:28,160 --> 00:06:30,593
-hogy ilyen vagy olyan kijelentéseket tegyek arról,
+00:06:28,003 --> 00:06:30,332
+hogy ilyen vagy olyan kijelentéseket tegyek arról, 
 
 101
-00:06:30,593 --> 00:06:34,315
-hogy a mesterséges neuronhálózatok úgy viselkednek-e, mint a biológiai agyak,
+00:06:30,332 --> 00:06:33,895
+hogy a mesterséges neuronhálózatok úgy viselkednek-e, mint a biológiai agyak, 
 
 102
-00:06:34,315 --> 00:06:38,276
-és ez az ötlet összekapcsolja a vezetékeket, és néhány jelentőségteljes csillaggal
+00:06:33,895 --> 00:06:37,685
+és ez az ötlet összekapcsolja a vezetékeket, és néhány jelentőségteljes csillaggal 
 
 103
-00:06:38,276 --> 00:06:41,760
-együtt jár, de nagyon laza. hasonlattal, érdekesnek találom megjegyezni.
+00:06:37,685 --> 00:06:41,020
+együtt jár, de nagyon laza. hasonlattal, érdekesnek találom megjegyezni. 
 
 104
-00:06:41,760 --> 00:06:46,057
-Egyébként a harmadik módja annak, hogy fokozzuk ennek a neuronnak az aktiválását,
+00:06:41,940 --> 00:06:45,955
+Egyébként a harmadik módja annak, hogy fokozzuk ennek a neuronnak az aktiválását, 
 
 105
-00:06:46,057 --> 00:06:49,360
-az az, hogy megváltoztatjuk az előző réteg összes aktiválását.
+00:06:45,955 --> 00:06:49,040
+az az, hogy megváltoztatjuk az előző réteg összes aktiválását. 
 
 106
-00:06:49,360 --> 00:06:53,627
-Ugyanis, ha a pozitív súllyal rendelkező 2-es számjegyű neuronhoz
+00:06:49,040 --> 00:06:52,769
+Ugyanis, ha a pozitív súllyal rendelkező 2-es számjegyű neuronhoz 
 
 107
-00:06:53,627 --> 00:06:59,446
-kapcsolódó minden fényesebbé válna, és ha minden negatív súllyal kapcsolatos halványodna,
+00:06:52,769 --> 00:06:57,854
+kapcsolódó minden fényesebbé válna, és ha minden negatív súllyal kapcsolatos halványodna, 
 
 108
-00:06:59,446 --> 00:07:02,680
-akkor az a 2-es számjegyű neuron aktívabbá válna.
+00:06:57,854 --> 00:07:00,680
+akkor az a 2-es számjegyű neuron aktívabbá válna. 
 
 109
-00:07:02,680 --> 00:07:06,210
-És hasonlóan a súlyváltozásokhoz, a legtöbbet úgy érheti el,
+00:07:02,540 --> 00:07:05,888
+És hasonlóan a súlyváltozásokhoz, a legtöbbet úgy érheti el, 
 
 110
-00:07:06,210 --> 00:07:10,840
-ha olyan változtatásokat keres, amelyek arányosak a megfelelő súlyok méretével.
+00:07:05,888 --> 00:07:10,280
+ha olyan változtatásokat keres, amelyek arányosak a megfelelő súlyok méretével. 
 
 111
-00:07:10,840 --> 00:07:15,188
-Természetesen ezeket az aktiválásokat közvetlenül nem tudjuk befolyásolni,
+00:07:12,140 --> 00:07:15,244
+Természetesen ezeket az aktiválásokat közvetlenül nem tudjuk befolyásolni, 
 
 112
-00:07:15,188 --> 00:07:18,320
-csak a súlyokat és a torzításokat tudjuk ellenőrizni.
+00:07:15,244 --> 00:07:17,480
+csak a súlyokat és a torzításokat tudjuk ellenőrizni. 
 
 113
-00:07:18,320 --> 00:07:21,624
-De csakúgy, mint az utolsó rétegnél, hasznos feljegyezni,
+00:07:17,480 --> 00:07:21,370
+De csakúgy, mint az utolsó rétegnél, hasznos feljegyezni, 
 
 114
-00:07:21,624 --> 00:07:23,960
-hogy melyek ezek a kívánt változtatások.
+00:07:21,370 --> 00:07:24,120
+hogy melyek ezek a kívánt változtatások. 
 
 115
-00:07:23,960 --> 00:07:27,364
-De ne feledje, ha itt egy lépést kicsinyít, csak ez az,
+00:07:24,580 --> 00:07:27,167
+De ne feledje, ha itt egy lépést kicsinyít, csak ez az, 
 
 116
-00:07:27,364 --> 00:07:30,040
-amit a 2-es számjegyű kimeneti neuron akar.
+00:07:27,167 --> 00:07:29,200
+amit a 2-es számjegyű kimeneti neuron akar. 
 
 117
-00:07:30,040 --> 00:07:34,258
-Ne feledje, azt is szeretnénk, hogy az utolsó rétegben lévő összes
+00:07:29,760 --> 00:07:32,914
+Ne feledje, azt is szeretnénk, hogy az utolsó rétegben lévő összes 
 
 118
-00:07:34,258 --> 00:07:38,855
-többi neuron kevésbé legyen aktív, és ezeknek a többi kimeneti neuronnak
+00:07:32,914 --> 00:07:36,351
+többi neuron kevésbé legyen aktív, és ezeknek a többi kimeneti neuronnak 
 
 119
-00:07:38,855 --> 00:07:43,200
-megvan a maga gondolata arról, hogy mi történjen az utolsó réteggel.
+00:07:36,351 --> 00:07:39,600
+megvan a maga gondolata arról, hogy mi történjen az utolsó réteggel. 
 
 120
-00:07:43,200 --> 00:07:47,835
-Tehát ennek a 2-es számjegyű neuronnak a vágya összeadódik az összes
+00:07:42,700 --> 00:07:47,205
+Tehát ennek a 2-es számjegyű neuronnak a vágya összeadódik az összes 
 
 121
-00:07:47,835 --> 00:07:53,813
-többi kimeneti neuron azon vágyaival, hogy mi történjen ezzel a második-utolsó réteggel,
+00:07:47,205 --> 00:07:53,015
+többi kimeneti neuron azon vágyaival, hogy mi történjen ezzel a második-utolsó réteggel, 
 
 122
-00:07:53,813 --> 00:07:57,575
-ismét a megfelelő súlyok arányában, és annak arányában,
+00:07:53,015 --> 00:07:56,672
+ismét a megfelelő súlyok arányában, és annak arányában, 
 
 123
-00:07:57,575 --> 00:08:01,740
-hogy mennyire van szüksége az egyes neuronoknak. változtatni.
+00:07:56,672 --> 00:08:00,720
+hogy mennyire van szüksége az egyes neuronoknak. változtatni. 
 
 124
-00:08:01,740 --> 00:08:05,940
-Itt jön a képbe a visszafelé terjedés ötlete.
+00:08:01,600 --> 00:08:05,480
+Itt jön a képbe a visszafelé terjedés ötlete. 
 
 125
-00:08:05,940 --> 00:08:10,120
-Ha ezeket a kívánt hatásokat összeadjuk, akkor alapvetően egy listát kapunk
+00:08:05,820 --> 00:08:09,590
+Ha ezeket a kívánt hatásokat összeadjuk, akkor alapvetően egy listát kapunk 
 
 126
-00:08:10,120 --> 00:08:14,300
-azokról a lökésekről, amelyeket ezzel az utolsó réteggel szeretnénk elérni.
+00:08:09,590 --> 00:08:13,360
+azokról a lökésekről, amelyeket ezzel az utolsó réteggel szeretnénk elérni. 
 
 127
-00:08:14,300 --> 00:08:19,220
-És ha ezek megvannak, rekurzív módon alkalmazhatja ugyanazt a folyamatot a releváns
+00:08:14,220 --> 00:08:17,818
+És ha ezek megvannak, rekurzív módon alkalmazhatja ugyanazt a folyamatot a releváns 
 
 128
-00:08:19,220 --> 00:08:23,263
-súlyokra és torzításokra, amelyek meghatározzák ezeket az értékeket,
+00:08:17,818 --> 00:08:20,773
+súlyokra és torzításokra, amelyek meghatározzák ezeket az értékeket, 
 
 129
-00:08:23,263 --> 00:08:27,129
-megismételve ugyanazt a folyamatot, amelyen az imént végigmentem,
+00:08:20,773 --> 00:08:23,600
+megismételve ugyanazt a folyamatot, amelyen az imént végigmentem, 
 
 130
-00:08:27,129 --> 00:08:29,180
-és visszafelé haladva a hálózaton.
+00:08:23,600 --> 00:08:25,100
+és visszafelé haladva a hálózaton. 
 
 131
-00:08:29,180 --> 00:08:33,411
-És kicsit tovább kicsinyítve, ne feledje, hogy egyetlen edzési példa
+00:08:28,960 --> 00:08:33,039
+És kicsit tovább kicsinyítve, ne feledje, hogy egyetlen edzési példa 
 
 132
-00:08:33,411 --> 00:08:37,520
-csak így kívánja elmozdítani ezeket a súlyokat és elfogultságokat.
+00:08:33,039 --> 00:08:37,000
+csak így kívánja elmozdítani ezeket a súlyokat és elfogultságokat. 
 
 133
-00:08:37,520 --> 00:08:40,029
-Ha csak arra figyelnénk, hogy mit akar ez a 2,
+00:08:37,480 --> 00:08:39,655
+Ha csak arra figyelnénk, hogy mit akar ez a 2, 
 
 134
-00:08:40,029 --> 00:08:44,140
-akkor a hálózat végül arra ösztönözne, hogy minden képet 2-esnek minősítsen.
+00:08:39,655 --> 00:08:43,220
+akkor a hálózat végül arra ösztönözne, hogy minden képet 2-esnek minősítsen. 
 
 135
-00:08:44,140 --> 00:08:50,928
-Tehát ugyanazt a backprop rutint kell végrehajtania minden más edzési példánál,
+00:08:44,059 --> 00:08:48,523
+Tehát ugyanazt a backprop rutint kell végrehajtania minden más edzési példánál, 
 
 136
-00:08:50,928 --> 00:08:58,396
-rögzítve, hogy mindegyikük hogyan szeretné megváltoztatni a súlyokat és a torzításokat,
+00:08:48,523 --> 00:08:53,433
+rögzítve, hogy mindegyikük hogyan szeretné megváltoztatni a súlyokat és a torzításokat, 
 
 137
-00:08:58,396 --> 00:09:02,300
-és együtt átlagolja a kívánt változtatásokat.
+00:08:53,433 --> 00:08:56,000
+és együtt átlagolja a kívánt változtatásokat. 
 
 138
-00:09:02,300 --> 00:09:07,451
-Az egyes súlyokra és torzításokra vonatkozó átlagolt lökések itt található gyűjteménye,
+00:09:01,720 --> 00:09:06,829
+Az egyes súlyokra és torzításokra vonatkozó átlagolt lökések itt található gyűjteménye, 
 
 139
-00:09:07,451 --> 00:09:12,135
-lazán szólva, az utolsó videóban hivatkozott költségfüggvény negatív gradiense,
+00:09:06,829 --> 00:09:11,473
+lazán szólva, az utolsó videóban hivatkozott költségfüggvény negatív gradiense, 
 
 140
-00:09:12,135 --> 00:09:14,360
-vagy legalábbis valami azzal arányos.
+00:09:11,473 --> 00:09:13,680
+vagy legalábbis valami azzal arányos. 
 
 141
-00:09:14,360 --> 00:09:19,107
-Csak azért mondom lazán szólva, mert még nem kell mennyiségileg pontosítani
+00:09:14,380 --> 00:09:18,377
+Csak azért mondom lazán szólva, mert még nem kell mennyiségileg pontosítani 
 
 142
-00:09:19,107 --> 00:09:23,855
-ezeket a lökéseket, de ha megértetted az imént hivatkozott változtatásokat,
+00:09:18,377 --> 00:09:22,374
+ezeket a lökéseket, de ha megértetted az imént hivatkozott változtatásokat, 
 
 143
-00:09:23,855 --> 00:09:29,477
-miért nagyobbak egyesek arányosan nagyobbak, mint mások, és hogyan kell ezeket összeadni,
+00:09:22,374 --> 00:09:27,107
+miért nagyobbak egyesek arányosan nagyobbak, mint mások, és hogyan kell ezeket összeadni, 
 
 144
-00:09:29,477 --> 00:09:34,100
-akkor megérted a mechanikát. hogy valójában mit csinál a backpropagation.
+00:09:27,107 --> 00:09:31,000
+akkor megérted a mechanikát. hogy valójában mit csinál a backpropagation. 
 
 145
-00:09:34,100 --> 00:09:38,337
-Egyébként a gyakorlatban a számítógépeknek rendkívül sok időbe telik,
+00:09:33,960 --> 00:09:37,943
+Egyébként a gyakorlatban a számítógépeknek rendkívül sok időbe telik, 
 
 146
-00:09:38,337 --> 00:09:43,120
-hogy minden edzéspélda hatását összeadják minden gradiens süllyedési lépésnél.
+00:09:37,943 --> 00:09:42,440
+hogy minden edzéspélda hatását összeadják minden gradiens süllyedési lépésnél. 
 
 147
-00:09:43,120 --> 00:09:45,540
-Tehát itt van, amit általában csinálnak helyette.
+00:09:43,140 --> 00:09:44,820
+Tehát itt van, amit általában csinálnak helyette. 
 
 148
-00:09:45,540 --> 00:09:48,434
-Véletlenszerűen összekeveri az edzési adatokat,
+00:09:45,480 --> 00:09:48,042
+Véletlenszerűen összekeveri az edzési adatokat, 
 
 149
-00:09:48,434 --> 00:09:53,380
-és felosztja egy csomó mini kötegre, mondjuk mindegyiknek 100 edzési példája van.
+00:09:48,042 --> 00:09:52,420
+és felosztja egy csomó mini kötegre, mondjuk mindegyiknek 100 edzési példája van. 
 
 150
-00:09:53,380 --> 00:09:56,980
-Ezután kiszámít egy lépést a mini-köteg szerint.
+00:09:52,939 --> 00:09:57,280
+Ezután kiszámít egy lépést a mini-köteg szerint. 
 
 151
-00:09:56,980 --> 00:10:02,109
-Ez nem a költségfüggvény tényleges gradiense, amely az összes betanítási adattól függ,
+00:09:57,280 --> 00:10:02,061
+Ez nem a költségfüggvény tényleges gradiense, amely az összes betanítási adattól függ, 
 
 152
-00:10:02,109 --> 00:10:06,649
-nem ettől az apró részhalmaztól, tehát nem ez a leghatékonyabb lépés lefelé,
+00:10:02,061 --> 00:10:06,293
+nem ettől az apró részhalmaztól, tehát nem ez a leghatékonyabb lépés lefelé, 
 
 153
-00:10:06,649 --> 00:10:10,541
-de minden mini köteg elég jó közelítést ad, és ami még fontosabb.
+00:10:06,293 --> 00:10:09,921
+de minden mini köteg elég jó közelítést ad, és ami még fontosabb. 
 
 154
-00:10:10,541 --> 00:10:12,900
-jelentős számítási sebességet biztosít.
+00:10:09,921 --> 00:10:12,120
+jelentős számítási sebességet biztosít. 
 
 155
-00:10:12,900 --> 00:10:16,731
-Ha a megfelelő költségfelület alatt ábrázolná a hálózatának pályáját,
+00:10:12,820 --> 00:10:16,369
+Ha a megfelelő költségfelület alatt ábrázolná a hálózatának pályáját, 
 
 156
-00:10:16,731 --> 00:10:19,851
-az egy kicsit inkább olyan lenne, mint egy részeg ember,
+00:10:16,369 --> 00:10:19,259
+az egy kicsit inkább olyan lenne, mint egy részeg ember, 
 
 157
-00:10:19,851 --> 00:10:23,300
-aki céltalanul botorkál le a dombról, de gyors lépéseket tesz,
+00:10:19,259 --> 00:10:22,453
+aki céltalanul botorkál le a dombról, de gyors lépéseket tesz, 
 
 158
-00:10:23,300 --> 00:10:28,226
+00:10:22,453 --> 00:10:27,016
 nem pedig egy gondosan számító ember, aki meghatározza minden lépés pontos lefelé irányát.
 
 159
-00:10:28,226 --> 00:10:31,620
-mielőtt nagyon lassú és óvatos lépést tenne abba az irányba.
+00:10:27,016 --> 00:10:30,160
+ mielőtt nagyon lassú és óvatos lépést tenne abba az irányba. 
 
 160
-00:10:31,620 --> 00:10:35,200
-Ezt a technikát sztochasztikus gradiens süllyedésnek nevezik.
+00:10:31,540 --> 00:10:34,660
+Ezt a technikát sztochasztikus gradiens süllyedésnek nevezik. 
 
 161
-00:10:35,200 --> 00:10:40,400
-Sok minden történik itt, úgyhogy foglaljuk össze magunknak, jó?
+00:10:35,960 --> 00:10:39,620
+Sok minden történik itt, úgyhogy foglaljuk össze magunknak, jó? 
 
 162
-00:10:40,400 --> 00:10:43,248
-A visszapropagálás az az algoritmus, amely meghatározza,
+00:10:40,440 --> 00:10:43,158
+A visszapropagálás az az algoritmus, amely meghatározza, 
 
 163
-00:10:43,248 --> 00:10:46,895
-hogy egy edzési példa hogyan kívánja eltolni a súlyokat és torzításokat,
+00:10:43,158 --> 00:10:46,640
+hogy egy edzési példa hogyan kívánja eltolni a súlyokat és torzításokat, 
 
 164
-00:10:46,895 --> 00:10:50,293
-nemcsak abból a szempontból, hogy felfelé vagy lefelé kell-e menni,
+00:10:46,640 --> 00:10:49,884
+nemcsak abból a szempontból, hogy felfelé vagy lefelé kell-e menni, 
 
 165
-00:10:50,293 --> 00:10:54,191
-hanem abból a szempontból, hogy ezeknek a változásoknak milyen relatív aránya
+00:10:49,884 --> 00:10:53,604
+hanem abból a szempontból, hogy ezeknek a változásoknak milyen relatív aránya 
 
 166
-00:10:54,191 --> 00:10:56,240
-okozza a leggyorsabb csökkenést költség.
+00:10:53,604 --> 00:10:55,560
+okozza a leggyorsabb csökkenést költség. 
 
 167
-00:10:56,240 --> 00:10:59,429
-Egy igazi gradiens süllyedési lépés azt jelentené,
+00:10:56,260 --> 00:10:59,309
+Egy igazi gradiens süllyedési lépés azt jelentené, 
 
 168
-00:10:59,429 --> 00:11:03,243
-hogy ezt minden tíz és ezer képzési példánál meg kell tenni,
+00:10:59,309 --> 00:11:02,956
+hogy ezt minden tíz és ezer képzési példánál meg kell tenni, 
 
 169
-00:11:03,243 --> 00:11:07,621
-és átlagolni kell a kívánt változtatásokat, de ez számításilag lassú,
+00:11:02,956 --> 00:11:07,141
+és átlagolni kell a kívánt változtatásokat, de ez számításilag lassú, 
 
 170
-00:11:07,621 --> 00:11:11,936
-ezért ehelyett véletlenszerűen felosztja az adatokat mini kötegekre,
+00:11:07,141 --> 00:11:11,266
+ezért ehelyett véletlenszerűen felosztja az adatokat mini kötegekre, 
 
 171
-00:11:11,936 --> 00:11:14,000
-és minden lépést egy mini-tétel.
+00:11:11,266 --> 00:11:13,240
+és minden lépést egy mini-tétel. 
 
 172
-00:11:14,000 --> 00:11:19,207
-Az összes mini-kötegelt ismételten végignézve és végrehajtva ezeket a beállításokat,
+00:11:14,000 --> 00:11:18,438
+Az összes mini-kötegelt ismételten végignézve és végrehajtva ezeket a beállításokat, 
 
 173
-00:11:19,207 --> 00:11:23,251
-a költségfüggvény helyi minimuma felé közeledik, ami azt jelenti,
+00:11:18,438 --> 00:11:21,884
+a költségfüggvény helyi minimuma felé közeledik, ami azt jelenti, 
 
 174
-00:11:23,251 --> 00:11:27,540
-hogy a hálózat végül nagyon jó munkát fog végezni a képzési példákon.
+00:11:21,884 --> 00:11:25,540
+hogy a hálózat végül nagyon jó munkát fog végezni a képzési példákon. 
 
 175
-00:11:27,540 --> 00:11:32,845
-Tehát mindezekkel együtt minden kódsor, amely a backprop megvalósításához felhasználható,
+00:11:27,240 --> 00:11:32,200
+Tehát mindezekkel együtt minden kódsor, amely a backprop megvalósításához felhasználható, 
 
 176
-00:11:32,845 --> 00:11:37,680
-valójában megfelel valaminek, amit most láttál, legalábbis informális értelemben.
+00:11:32,200 --> 00:11:36,720
+valójában megfelel valaminek, amit most láttál, legalábbis informális értelemben. 
 
 177
-00:11:37,680 --> 00:11:40,881
-De néha csak a fele a sikernek tudnia, hogy mit csinál a matematika,
+00:11:37,560 --> 00:11:40,518
+De néha csak a fele a sikernek tudnia, hogy mit csinál a matematika, 
 
 178
-00:11:40,881 --> 00:11:44,780
-és csak az átkozott dolgot képviselni az, ahol minden zavarossá és zavarossá válik.
+00:11:40,518 --> 00:11:44,120
+és csak az átkozott dolgot képviselni az, ahol minden zavarossá és zavarossá válik. 
 
 179
-00:11:44,780 --> 00:11:47,574
-Tehát azok számára, akik szeretnének mélyebbre menni,
+00:11:44,860 --> 00:11:47,407
+Tehát azok számára, akik szeretnének mélyebbre menni, 
 
 180
-00:11:47,574 --> 00:11:51,818
-a következő videó ugyanazokat a gondolatokat járja át, amelyeket itt bemutattunk,
+00:11:47,407 --> 00:11:51,276
+a következő videó ugyanazokat a gondolatokat járja át, amelyeket itt bemutattunk, 
 
 181
-00:11:51,818 --> 00:11:55,907
-de a mögöttes kalkuláció tekintetében, ami remélhetőleg egy kicsit ismerősebbé
+00:11:51,276 --> 00:11:55,004
+de a mögöttes kalkuláció tekintetében, ami remélhetőleg egy kicsit ismerősebbé 
 
 182
-00:11:55,907 --> 00:11:57,460
-teszi a témát egyéb források.
+00:11:55,004 --> 00:11:56,420
+teszi a témát egyéb források. 
 
 183
-00:11:57,460 --> 00:12:01,181
-Előtte érdemes hangsúlyozni, hogy ahhoz, hogy ez az algoritmus működjön,
+00:11:57,340 --> 00:12:00,736
+Előtte érdemes hangsúlyozni, hogy ahhoz, hogy ez az algoritmus működjön, 
 
 184
-00:12:01,181 --> 00:12:05,055
-és ez a neurális hálózatokon kívül mindenféle gépi tanulásra is vonatkozik,
+00:12:00,736 --> 00:12:04,271
+és ez a neurális hálózatokon kívül mindenféle gépi tanulásra is vonatkozik, 
 
 185
-00:12:05,055 --> 00:12:06,840
-sok betanítási adatra van szükség.
+00:12:04,271 --> 00:12:05,900
+sok betanítási adatra van szükség. 
 
 186
-00:12:06,840 --> 00:12:10,880
-A mi esetünkben az egyik dolog, ami a kézzel írt számjegyeket ilyen szép példává teszi,
+00:12:06,420 --> 00:12:10,356
+A mi esetünkben az egyik dolog, ami a kézzel írt számjegyeket ilyen szép példává teszi, 
 
 187
-00:12:10,880 --> 00:12:13,864
-az az, hogy létezik az MNIST adatbázis, rengeteg olyan példával,
+00:12:10,356 --> 00:12:13,263
+az az, hogy létezik az MNIST adatbázis, rengeteg olyan példával, 
 
 188
-00:12:13,864 --> 00:12:15,380
-amelyeket emberek címkéztek fel.
+00:12:13,263 --> 00:12:14,740
+amelyeket emberek címkéztek fel. 
 
 189
-00:12:15,380 --> 00:12:18,610
-Tehát a gépi tanulásban dolgozók számára ismert gyakori kihívás az,
+00:12:15,300 --> 00:12:18,471
+Tehát a gépi tanulásban dolgozók számára ismert gyakori kihívás az, 
 
 190
-00:12:18,610 --> 00:12:21,746
-hogy megkapja a ténylegesen szükséges címkézett képzési adatokat,
+00:12:18,471 --> 00:12:21,549
+hogy megkapja a ténylegesen szükséges címkézett képzési adatokat, 
 
 191
-00:12:21,746 --> 00:12:25,689
-legyen szó akár több tízezer kép felcímkézéséről, vagy bármilyen más adattípusról,
+00:12:21,549 --> 00:12:25,420
+legyen szó akár több tízezer kép felcímkézéséről, vagy bármilyen más adattípusról, 
 
 192
-00:12:25,689 --> 00:12:27,400
-amellyel esetleg foglalkoznia kell.
+00:12:25,420 --> 00:12:27,100
+amellyel esetleg foglalkoznia kell. 
 

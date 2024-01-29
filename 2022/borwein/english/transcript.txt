@@ -1,114 +1,108 @@
-Sometimes it feels like the universe is just messing with you.
-I have up on screen here a sequence of computations, and don't worry, in a moment we're gonna unpack and visualize what each one is really saying.
-What I want you to notice is how the sequence follows a very predictable, if random, seeming pattern, and how each computation happens to equal pi.
-And if you were just messing around evaluating these on a computer for some reason, you might think that this was a pattern that would go on forever.
-But it doesn't.
-At some point it stops, and instead of equaling pi, you get a value which is just barely, barely less than pi.
-All right, let's dig into what's going on here.
-The main character in the story today is the function sine of x divided by x.
-This actually comes up commonly enough in math and engineering that it gets its own name, sinc, and the way you might think about it is by starting with a normal oscillating sine curve, and then sort of squishing it down as you get far away from zero by multiplying it by 1 over x.
-And the astute among you might ask about what happens at x equals 0, since when you plug that in it looks like dividing 0 by 0.
-And then the even more astute among you, maybe fresh out of a calculus class, could point out that for values closer and closer to 0, the function gets closer and closer to 1.
-So if we simply redefine the sinc function at 0 to equal 1, you get a nice continuous curve.
-All of that is a little by the by because the thing we actually care about is the integral of this curve from negative infinity to infinity, which you think of as meaning the area between the curve and the x-axis, or more precisely the signed area, meaning you add all the area bound by the positive parts of the graph in the x-axis, and you subtract all of the parts bound by the negative parts of the graph and the x-axis.
-Like we saw at the start, it happens to be the case that this evaluates to be exactly pi, which is nice and also a little weird, and it's not entirely clear how you would approach this with the usual tools of calculus.
-Towards the end of the video, I'll share the trick for how you would do this.
-Progressing on with the sequence I opened with, the next step is to take a copy of the sinc function, where you plug in x divided by 3, which will basically look like the same graph, but stretched out horizontally by a factor of 3.
-When we multiply these two functions together, we get a much more complicated wave whose mass seems to be more concentrated towards the middle, and with any usual functions you would expect this completely changes the area.
-You can't just randomly modify an integral like this and expect nothing to change.
-So already it's a little bit weird that this result also equals pi, that nothing has changed.
-That's another mystery you should add to your list.
-And the next step in the sequence was to take an even more stretched out version of the sinc function by a factor of 5, multiply that by what we already have, and again look at the signed area underneath the whole curve, which again equals pi.
-And it continues on like this.
-With each iteration, we stretch out by a new odd number and multiply that into what we have.
-One thing you might notice is how except at the input x equals 0, every single part of this function is progressively getting multiplied by something that's smaller than 1.
-So you would expect, as the sequence progresses, for things to get squished down more and more, and if anything you would expect the area to be getting smaller.
-Eventually that is exactly what happens, but what's bizarre is that it stays so stable for so long, and of course more pertinently, that when it does break at the value 15, it does so by the tiniest tiny amount.
-And before you go thinking this is the result of some numerical error, maybe because we're doing something with floating-point arithmetic, if you work this out more precisely, here is the exact value of that last integral, which is a certain fraction of pi where the numerator and the denominator are absurd.
-They're both around 400 billion billion billion.
-So this pattern was described in a paper by a father-son pair, Jonathan and David Borwein, which is very fun, and they mentioned how when a fellow researcher was computing these integrals using a computer algebra system, he assumed that this had to be some kind of bug.
-But it's not a bug, it is a real phenomenon, and it gets weirder than that actually.
-If we take all these integrals and include yet another factor, 2 cosine of x, which again you would think changes their values entirely, you can't just randomly multiply new things into an integral like this, it continues to equal pi for much much longer, and it's not until you get to the number 113 that it breaks.
-And when it breaks, it's by the most puny, absolutely subtle amount that you could imagine.
-So the natural question is, what on earth is going on here?
-And luckily, there actually is a really satisfying explanation for all this.
-The way I think I'll go about this is to show you a phenomenon that first looks completely unrelated, but it shows a similar pattern, where you have a value that stays really stable until you get to the number 113.
-You get to the number 15, and then it falters by just a tiny amount.
-And then after that, I'll show why this seemingly unrelated phenomenon is secretly the same as all our integral expressions but in disguise.
-So, turning our attention to what seems completely different, consider a function that I'm going to be calling rect of x, which is defined to equal 1 if the input is between negative one half and one half, and otherwise it's equal to 0.
-So the function is this boring step, basically.
-This will be the first in a sequence of functions that we define, so I'll call it f1 of x, and each new function in our sequence is going to be a kind of moving average of the previous function.
-So for example, the way this second iteration will be defined is to take this sliding window whose width is one third, and for a particular input x, when the window is centered at that input x, the value in my new function, drawn below, is defined to be equal to the average value of the first function above inside that window.
-So for example, when the window is far enough to the left, every value inside it is 0, so the graph on the bottom is showing 0.
-As soon as that window starts to go over the plateau a little bit, the average value is a little more than 0, and you see that in the graph below.
-And notice that when exactly half the window is over that plateau at 1 and half of it is at 0, the corresponding value in the bottom graph is one half, and you get the point.
-The important thing I want you to focus on is how when that window is entirely in the plateau above, where all the values are 1, then the average value is also 1, so we get this plateau on our function at the bottom.
-Let's call this bottom function f2 of x, and what I want you to think about is the length of the plateau for that second function.
-How wide should it be?
-If you think about it for a moment, the distance between the left edge of the top plateau and the left edge of the bottom plateau will be exactly half of the width of the window, so half of one third.
-And similarly on the right side, the distance between the edges of the plateaus is half of the window width, so overall it's 1 minus that window width, which is 1 minus a third.
-The value we're going to be computing, the thing that will look stable for a while before it breaks, is the value of this function at the input 0, which in both of these iterations is equal to 1 because it's inside that plateau.
-For the next iteration, we're going to take a moving average of that last function, but this time with a window whose width is one fifth.
-It's kind of fun to think about why as you slide around this window, you get a smoothed out version of the previous function.
-And again, the significant thing I want you to focus on is how when that window is entirely inside the plateau of the previous function, then by definition the bottom function is going to equal 1.
-This time, the length of that plateau on the bottom will be the length of the previous one, 1 minus a third, minus the window width, one fifth.
-The reasoning is the same as before, in order to go from the point where the middle of the window is on that top plateau to where the entirety of the window is inside that plateau, is half the window width, and likewise on the right side.
-And once more, the value to record is the output of this function when the input is 0, which again is exactly 1.
-The next iteration is a moving average with a window width of one seventh.
-The plateau gets smaller by that 1 over 7.
-Doing one more iteration with 1 over 9, the plateau gets smaller by that amount.
-And as we keep going, the plateau gets thinner and thinner.
-And also, notice how just outside of the plateau, the function is really really close to 1, because it's always been the result of an average between the plateau at 1 and the neighbors, which themselves are really really close to 1.
-The point at which all of this breaks is once we get to the iteration where we're sliding a window with width one fifteenth across the whole thing.
-At that point, the previous plateau is actually thinner than the window itself.
-So even at the input x equals 0, this moving average will have to be ever so slightly smaller than 1.
-And the only thing that's special about the number 15 here is that as we keep adding the reciprocals of these odd fractions, one third plus one fifth plus one seventh, on and on, it's once we get to one fifteenth that that sum grows to be bigger than 1.
-And in the context of our shrinking plateaus, having started with a plateau of width 1, it's now shrunk down so much that it'll disappear entirely.
-The point is, with this as a sequence of functions that we've defined by a seemingly random procedure, if I ask you to compute the values of all of these functions at the input 0, you get a pattern which initially looks stable, it's 1 1 1 1 1 1, but by the time we get to the eighth iteration, it falls short ever so slightly, just barely.
-This is analogous, and I claim more than just analogous, to the integrals we saw earlier, where we have a stable value at pi pi pi pi pi, until it falls short just barely.
-And as it happens, this constant from our moving average process that's ever so slightly smaller than 1 is exactly the factor that sits in front of pi in our series of integrals.
-So the two situations aren't just qualitatively similar, they're quantitatively the same as well.
-And when it comes to the case where we add the 2 cosine of x term inside the integral, which caused the pattern to last a lot longer before it broke down, in the analogy what that will correspond to is the same setup, but where the function we start with has an even longer plateau, stretching from x equals negative 1 up to 1, meaning its length is 2.
-So as you do this repeated moving average process, eating into it with these smaller and smaller windows, it takes a lot longer for them to eat into the whole plateau.
-More specifically, the relevant computation is to ask how long do you have to add these reciprocals of odd numbers until that sum becomes bigger than 2?
-And it turns out that you have to go until you hit the number 113, which will correspond to the fact that the integral pattern there continues until you hit 113.
-And by the way, I should emphasize that there is nothing special about these reciprocals of odd numbers, 1 third, 1 fifth, 1 seventh.
-That just happens to be the sequence of values highlighted by the Borweins in their paper that made the sequence mildly famous in nerd circles.
-More generally, we could be inserting any sequence of positive numbers into those sinc functions, and as long as the sum of those numbers is less than 1, our expression will equal pi.
-But as soon as they become bigger than 1, our expression drops a little below pi.
-And if you believe me that there's an analogy with these moving averages, you can hopefully see why.
-But of course, the burning question is why on earth should these two situations have anything to do with each other?
-From here, the argument does bring in two mildly heavy bits of machinery, namely Fourier transforms and convolutions.
-And the way I'd like to go about this is to spend the remainder of this video giving you a high-level sense of how the argument will go without necessarily assuming you're familiar with either of those two topics, and then to explain why the details are true in a video that's dedicated to convolutions.
-In particular, something called the convolution theorem, since it's incredibly beautiful and it's useful well beyond this specific, very esoteric question.
-To start, instead of focusing on this function sine of x divided by x, where we want to show why the signed area underneath its curve is equal to pi, we'll make a simple substitution where we replace the input x with pi times x, which has the effect of squishing the graph horizontally by a factor of pi, and so the area gets scaled down by a factor of pi, meaning our new goal is to show why this integral on the right is equal to exactly one.
-By the way, in some engineering contexts, people use the name sinc to refer to this function with the pi on the inside, since it's often very nice to have a normalized function, meaning the area under it is equal to one.
-The point is, showing this integral on the right is exactly the same thing as showing the integral on the left, it's just a change of variables.
-And likewise for all of the other ones in our sequence, go through each of them, replace the x with a pi times x, and from here the claim is that all these integrals are not just analogous to the moving average examples, but that both of these are two distinct ways of computing exactly the same thing.
-And the connection comes down to the fact that this sinc function, or the engineer sinc function with the pi on the inside, is related to the rect function using what's known as a Fourier transform.
-Now, if you've never heard of a Fourier transform, there are a few things that you can do about it.
-The way it's often described is that if you want to break down a function as the sum of a bunch of pure frequencies, or in the case of an infinite function, a continuous integral of a bunch of pure frequencies, the Fourier transform will tell you all the strength and phases for all those constituent parts.
-But all you really need to know here is that it is something which takes in one function and spits out a new function, and you often think of it as kind of rephrasing the information of your original function in a different language, like you're looking at it from a new perspective.
-For example, like I said, this sinc function written in this new language where you take a Fourier transform looks like our top hat rect function.
-And vice versa, by the way, this is a nice thing about Fourier transforms for functions that are symmetric about the y-axis, it is its own inverse.
-And actually, the slightly more general fact that we'll need to show is how when you transform the stretched out version of our sinc function, where you stretch it horizontally by a factor of k, what you get is a stretched and squished version of this rect function.
-But of course, all of these are just meaningless words and terminology unless you can actually do something upon making this translation.
-And the real idea behind why Fourier transforms are such a useful thing for math is that when you take statements and questions about a particular function, and then you look at what they correspond to with respect to the transformed version of that function, those statements and questions often look very, very different in this new language.
-And sometimes it makes the questions a lot easier to answer.
-For example, one very nice little fact, another thing on our list of things to show, is that if you want to compute the integral of some function from negative infinity to infinity, this signed area under the entirety of its curve, it's the same thing as simply evaluating the Fourier transformed version of that function at the input zero.
-This is a fact that will actually just pop right out of the definition.
-And it's representative of a more general vibe that every individual output of the Fourier transformed function on the right corresponds to some kind of global information about the original function on the left.
-In our specific case, it means if you believe me that this sinc function and the rect function are related with a Fourier transform like this, it explains the integral, which is otherwise a very tricky thing to compute, because it's saying all that signed area is the same thing as evaluating rect at zero, which is just one.
-Now, you could complain, surely this just moves the bump under the rug.
-Surely computing this Fourier transform, whatever that looks like, would be as hard as computing the original integral.
-But the idea is that there's lots of tips and tricks for computing these Fourier transforms.
-And moreover, that when you do, it tells you a lot more information than just that integral.
-You get a lot of bang for your buck out of doing the computation.
-Now, the other key fact that will explain the connection we're hunting for is that if you have two different functions and you take their product, and then you take the sum of the Fourier transform of that product, it will be the same thing as if you individually took the Fourier transforms of your original function and then combined them using a new kind of operation that we'll talk all about in the next video, known as a convolution.
-Now, even though there's a lot to be explained with convolutions, the upshot will be that in our specific case with these rectangular functions, taking a convolution looks just like one of the moving averages that we've been talking about this whole time, combined with our previous fact that integrating in one context looks like evaluating at zero in another context, if you believe me, that multiplying in one context corresponds to this new operation, convolutions, which for our example you should just think of as moving averages, that will explain why multiplying more and more of these sinc functions together can be thought about in terms of these progressive moving averages and always evaluating at zero, which in turn gives a really lovely intuition for why you would expect such a stable value before eventually something breaks down as the edges of the plateau inch closer and closer to the center.
-This last key fact, by the way, has a special name, it's called the convolution theorem, and again it's something that we'll go into much more deeply.
-I recognize that it's maybe a little unsatisfying to end things here by laying down three magical facts and saying everything follows from those, but hopefully this gives you a little glimpse of why powerful tools like Fourier transforms can be so useful for tricky problems.
+Sometimes it feels like the universe is just messing with you. 
+I have up on screen here a sequence of computations, and don't worry, in a moment we're gonna unpack and visualize what each one is really saying. 
+What I want you to notice is how the sequence follows a very predictable, if random, seeming pattern, and how each computation happens to equal pi. 
+And if you were just messing around evaluating these on a computer for some reason, you might think that this was a pattern that would go on forever. 
+But it doesn't. 
+At some point it stops, and instead of equaling pi, you get a value which is just barely, barely less than pi. 
+All right, let's dig into what's going on here. 
+The main character in the story today is the function sine of x divided by x. 
+This actually comes up commonly enough in math and engineering that it gets its own name, sinc, and the way you might think about it is by starting with a normal oscillating sine curve, and then sort of squishing it down as you get far away from zero by multiplying it by 1 over x. 
+And the astute among you might ask about what happens at x equals 0, since when you plug that in it looks like dividing 0 by 0. 
+And then the even more astute among you, maybe fresh out of a calculus class, could point out that for values closer and closer to 0, the function gets closer and closer to 1. 
+So if we simply redefine the sinc function at 0 to equal 1, you get a nice continuous curve. 
+All of that is a little by the by because the thing we actually care about is the integral of this curve from negative infinity to infinity, which you'd think of as meaning the area between the curve and the x-axis, or more precisely the signed area, meaning you add all the area bound by the positive parts of the graph in the x-axis, and you subtract all of the parts bound by the negative parts of the graph and the x-axis. 
+Like we saw at the start, it happens to be the case that this evaluates to be exactly pi, which is nice and also a little weird, and it's not entirely clear how you would approach this with the usual tools of calculus. 
+Towards the end of the video, I'll share the trick for how you would do this. 
+Progressing on with the sequence I opened with, the next step is to take a copy of the sinc function, where you plug in x divided by 3, which will basically look like the same graph, but stretched out horizontally by a factor of 3. 
+When we multiply these two functions together, we get a much more complicated wave whose mass seems to be more concentrated towards the middle, and with any usual functions you would expect this completely changes the area. 
+You can't just randomly modify an integral like this and expect nothing to change. 
+So already it's a little bit weird that this result also equals pi, that nothing has changed. 
+That's another mystery you should add to your list. 
+And the next step in the sequence was to take an even more stretched out version of the sinc function by a factor of 5, multiply that by what we already have, and again look at the signed area underneath the whole curve, which again equals pi. 
+And it continues on like this. 
+With each iteration, we stretch out by a new odd number and multiply that into what we have. 
+One thing you might notice is how except at the input x equals 0, every single part of this function is progressively getting multiplied by something that's smaller than 1. 
+So you would expect, as the sequence progresses, for things to get squished down more and more, and if anything you would expect the area to be getting smaller. 
+Eventually that is exactly what happens, but what's bizarre is that it stays so stable for so long, and of course more pertinently, that when it does break at the value 15, it does so by the tiniest tiny amount. 
+And before you go thinking this is the result of some numerical error, maybe because we're doing something with floating-point arithmetic, if you work this out more precisely, here is the exact value of that last integral, which is a certain fraction of pi where the numerator and the denominator are absurd. 
+They're both around 400 billion billion billion. 
+So this pattern was described in a paper by a father-son pair, Jonathan and David Borwein, which is very fun, and they mentioned how when a fellow researcher was computing these integrals using a computer algebra system, he assumed that this had to be some kind of bug. 
+But it's not a bug, it is a real phenomenon. 
+And it gets weirder than that actually. 
+If we take all these integrals and include yet another factor, 2 cosine of x, which again you would think changes their values entirely, you can't just randomly multiply new things into an integral like this, it continues to equal pi for much much longer, and it's not until you get to the number 113 that it breaks. 
+And when it breaks, it's by the most puny, absolutely subtle amount that you could imagine. 
+So the natural question is what on earth is going on here? 
+And luckily there actually is a really satisfying explanation for all this. 
+The way I think I'll go about this is to show you a phenomenon that first looks completely unrelated, but it shows a similar pattern where you have a value that stays really stable until you get to the number 15, and then it falters by just a tiny amount. 
+And then after that I'll show why this seemingly unrelated phenomenon is secretly the same as all our integral expressions, but in disguise. 
+So, turning our attention to what seems completely different, consider a function that I'm going to be calling rect of x, which is defined to equal 1 if the input is between negative 1 half and 1 half, and otherwise it's equal to 0. 
+So the function is this boring step, basically. 
+This will be the first in a sequence of functions that we define, so I'll call it f1 of x, and each new function in our sequence is going to be a kind of moving average of the previous function. 
+So for example, the way the second iteration will be defined is to take this sliding window whose width is 1 third, and for a particular input x, when the window is centered at that input x, the value in my new function drawn below is defined to be equal to the average value of the first function above inside that window. 
+So for example, when the window is far enough to the left, every value inside it is 0, so the graph on the bottom is showing 0. 
+As soon as that window starts to go over the plateau a little bit, the average value is a little more than 0, and you see that in the graph below. 
+And notice that when exactly half the window is over that plateau at 1 and half of it is at 0, the corresponding value in the bottom graph is 1 half, and you get the point. 
+The important thing I want you to focus on is how when that window is entirely in the plateau above, where all the values are 1, then the average value is also 1, so we get this plateau on our function at the bottom. 
+Let's call this bottom function f2 of x, and what I want you to think about is the length of the plateau for that second function. 
+How wide should it be? 
+If you think about it for a moment, the distance between the left edge of the top plateau and the left edge of the bottom plateau will be exactly half of the width of the window, so half of 1 third. 
+And similarly on the right side, the distance between the edges of the plateaus is half of the window width. 
+So overall it's 1 minus that window width, which is 1 minus 1 third. 
+The value we're going to be computing, the thing that will look stable for a while before it breaks, is the value of this function at the input 0, which in both of these iterations is equal to 1 because it's inside that plateau. 
+For the next iteration, we're going to take a moving average of that last function, but this time with the window whose width is 1 fifth. 
+It's kind of fun to think about why as you slide around this window you get a smoothed out version of the previous function, and again, the significant thing I want you to focus on is how when that window is entirely inside the plateau of the previous function, then by definition the bottom function is going to equal 1. 
+This time the length of that plateau on the bottom will be the length of the previous one, 1 minus 1 third, minus the window width, 1 fifth. 
+The reasoning is the same as before in order to go from the point where the middle of the window is on that top plateau to where the entirety of the window is inside that plateau is half the window width and likewise on the right side, and once more the value to record is the output of this function when the input is 0, which again is exactly 1. 
+The next iteration is a moving average with a window width of 1 seventh. 
+The plateau gets smaller by that 1 over 7. 
+Doing one more iteration with 1 over 9, the plateau gets smaller by that amount. 
+And as we keep going the plateau gets thinner and thinner. 
+And also notice how just outside of the plateau the function is really really close to 1 because it's always been the result of an average between the plateau at 1 and the neighbors, which themselves are really really close to 1. 
+The point at which all of this breaks is once we get to the iteration where we're sliding a window with width 1 15th across the whole thing. 
+At that point the previous plateau is actually thinner than the window itself. 
+So even at the input x equals 0, this moving average will have to be ever so slightly smaller than 1. 
+And the only thing that's special about the number 15 here is that as we keep adding the reciprocals of these odd fractions, 1 third plus 1 fifth plus 1 seventh on and on, it's once we get to 1 15th that that sum grows to be bigger than 1. 
+And in the context of our shrinking plateaus, having started with a plateau of width 1, it's now shrunk down so much that it'll disappear entirely. 
+The point is with this as a sequence of functions that we've defined by a seemingly random procedure, if I ask you to compute the values of all of these functions at the input 0, you get a pattern which initially looks stable. 
+It's 1 1 1 1 1 1 1, but by the time we get to the eighth iteration it falls short ever so slightly, just barely. 
+This is analogous, and I claim more than just analogous, to the integrals we saw earlier, where we have a stable value at pi pi pi pi pi until it falls short just barely. 
+And as it happens, this constant from our moving average process that's ever so slightly smaller than 1 is exactly the factor that sits in front of pi in our series of integrals. 
+So the two situations aren't just qualitatively similar, they're quantitatively the same as well. 
+And when it comes to the case where we add the 2 cosine of x term inside the integral, which caused the pattern to last a lot longer before it broke down, in the analogy what that will correspond to is the same setup, but where the function we start with has an even longer plateau, stretching from x equals negative 1 up to 1, meaning its length is 2. 
+So as you do this repeated moving average process, eating into it with these smaller and smaller windows, it takes a lot longer for them to eat into the whole plateau. 
+More specifically, the relevant computation is to ask how long do you have to add these reciprocals of odd numbers until that sum becomes bigger than 2? 
+And it turns out that you have to go until you hit the number 113, which will correspond to the fact that the integral pattern there continues until you hit 113. 
+And by the way, I should emphasize that there is nothing special about these reciprocals of odd numbers, 1 3rd, 1 5th, 1 7th. 
+That just happens to be the sequence of values highlighted by the Borweins in their paper that made the sequence mildly famous in nerd circles. 
+More generally, we could be inserting any sequence of positive numbers into those sinc functions, and as long as the sum of those numbers is less than 1, our expression will equal pi. 
+But as soon as they become bigger than 1, our expression drops a little below pi. 
+And if you believe me that there's an analogy with these moving averages, you can hopefully see why. 
+But of course, the burning question is why on earth should these two situations have anything to do with each other? 
+From here, the argument does bring in two mildly heavy bits of machinery, namely Fourier transforms and convolutions. 
+And the way I'd like to go about this is to spend the remainder of this video giving you a high-level sense of how the argument will go, without necessarily assuming you're familiar with either of those two topics, and then to explain why the details are true in a video that's dedicated to convolutions, in particular something called the convolution theorem, since it's incredibly beautiful and it's useful well beyond this specific, very esoteric question. 
+To start, instead of focusing on this function sine of x divided by x, where we want to show why the signed area underneath its curve is equal to pi, we'll make a simple substitution where we replace the input x with pi times x, which has the effect of squishing the graph horizontally by a factor of pi, and so the area gets scaled down by a factor of pi, meaning our new goal is to show why this integral on the right is equal to exactly 1. 
+By the way, in some engineering contexts, people use the name sinc to refer to this function with the pi on the inside, since it's often very nice to have a normalized function, meaning the area under it is equal to 1. 
+The point is, showing this integral on the right is exactly the same thing as showing the integral on the left, it's just a change of variables. 
+And likewise for all of the other ones in our sequence, go through each of them, replace the x with a pi times x, and from here the claim is that all these integrals are not just analogous to the moving average examples, but that both of these are two distinct ways of computing exactly the same thing. 
+And the connection comes down to the fact that this sinc function, or the engineer sinc function with the pi on the inside, is related to the rect function using what's known as a Fourier transform. 
+Now, if you've never heard of a Fourier transform, there are a few other videos on this channel all about it. 
+The way it's often described is that if you want to break down a function as the sum of a bunch of pure frequencies, or in the case of an infinite function, a continuous integral of a bunch of pure frequencies, the Fourier transform will tell you all the strength and phases for all those constituent parts. 
+But all you really need to know here is that it is something which takes in one function and spits out a new function, and you often think of it as kind of rephrasing the information of your original function in a different language, like you're looking at it from a new perspective. 
+For example, like I said, this sinc function written in this new language where you take a Fourier transform looks like our top hat rect function. 
+And vice versa, by the way. 
+This is a nice thing about Fourier transforms for functions that are symmetric about the y-axis, it is its own inverse, and actually the slightly more general fact that we'll need to show is how when you transform the stretched out version of our sinc function, where you stretch it horizontally by a factor of k, what you get is a stretched and squished version of this rect function. 
+But of course, all of these are just meaningless words and terminology, unless you can actually do something upon making this translation. 
+And the real idea behind why Fourier transforms are such a useful thing for math is that when you take statements and questions about a particular function, and then you look at what they correspond to with respect to the transformed version of that function, those statements and questions often look very very different in this new language, and sometimes it makes the questions a lot easier to answer. 
+For example, one very nice little fact, another thing on our list of things to show, is that if you want to compute the integral of some function from negative infinity to infinity, this signed area under the entirety of its curve, it's the same thing as simply evaluating the Fourier transformed version of that function at the input zero. 
+This is a fact that will actually just pop right out of the definition, and it's representative of a more general vibe that every individual output of the Fourier transform function on the right corresponds to some kind of global information about the original function on the left. 
+In our specific case, it means if you believe me that this sync function and the rect function are related with a Fourier transform like this, it explains the integral, which is otherwise a very tricky thing to compute, because it's saying all that signed area is the same thing as evaluating rect at zero, which is just one. 
+Now, you could complain, surely this just moves the bump under the rug. 
+Surely computing this Fourier transform, whatever that looks like, would be as hard as computing the original integral. 
+But the idea is that there's lots of tips and tricks for computing these Fourier transforms, and moreover, that when you do, it tells you a lot more information than just that integral. 
+You get a lot of bang for your buck out of doing the computation. 
+Now, the other key fact that will explain the connection we're hunting for is that if you have two different functions and you take their product, and then you take the Fourier transform of that product, it will be the same thing as if you individually took the Fourier transforms of your original function, and then combined them using a new kind of operation that we'll talk all about in the next video, known as a convolution. 
+Now, even though there's a lot to be explained with convolutions, the upshot will be that in our specific case with these rectangular functions, taking a convolution looks just like one of the moving averages that we've been talking about this whole time, combined with our previous fact that integrating in one context looks like evaluating at zero in another context, if you believe me that multiplying in one context corresponds to this new operation, convolutions, which for our example you should just think of as moving averages, that will explain why multiplying more and more of these sinc functions together can be thought about in terms of these progressive moving averages and always evaluating at zero, which in turn gives a really lovely intuition for why you would expect such a stable value before eventually something breaks down as the edges of the plateau inch closer and closer to the center. 
+This last key fact, by the way, has a special name. 
+It's called the convolution theorem, and again, it's something that we'll go into much more deeply. 
+I recognize that it's maybe a little unsatisfying to end things here by laying down three magical facts and saying everything follows from those, but hopefully this gives you a little glimpse of why powerful tools like Fourier transforms can be so useful for tricky problems. 
 It's a systematic way to provide a shift in perspective where hard problems can sometimes look easier.
-If nothing else, it hopefully provides some motivation to learn about these beautiful things like the convolution theorem.
-As one more tiny teaser, another fun consequence of this convolution theorem will be that it opens the doors for an algorithm that lets you compute the product of two large numbers very quickly, like way faster than you think should be even possible.
-So with that, I'll see you in the next video.

@@ -1,2084 +1,2084 @@
 1
-00:00:00,000 --> 00:00:03,302
-Trò chơi Wurdle đã lan truyền khá rộng rãi trong một hoặc hai tháng qua
+00:00:00,000 --> 00:00:03,187
+Trò chơi Wurdle đã lan truyền khá rộng rãi trong một hoặc hai tháng qua 
 
 2
-00:00:03,302 --> 00:00:05,596
-và không bao giờ người ta bỏ qua cơ hội học toán,
+00:00:03,187 --> 00:00:05,400
+và không bao giờ người ta bỏ qua cơ hội học toán, 
 
 3
-00:00:05,596 --> 00:00:08,899
-tôi chợt nhận ra rằng trò chơi này là một ví dụ trung tâm rất hay trong
+00:00:05,400 --> 00:00:08,587
+tôi chợt nhận ra rằng trò chơi này là một ví dụ trung tâm rất hay trong 
 
 4
-00:00:08,899 --> 00:00:11,652
-bài học về lý thuyết thông tin và đặc biệt là trò chơi này.
+00:00:08,587 --> 00:00:11,243
+bài học về lý thuyết thông tin và đặc biệt là trò chơi này. 
 
 5
-00:00:11,652 --> 00:00:13,120
-một chủ đề được gọi là entropy.
+00:00:11,243 --> 00:00:12,660
+một chủ đề được gọi là entropy. 
 
 6
-00:00:13,120 --> 00:00:16,331
-Bạn thấy đấy, giống như nhiều người, tôi bị cuốn hút vào câu đố,
+00:00:13,920 --> 00:00:16,730
+Bạn thấy đấy, giống như nhiều người, tôi bị cuốn hút vào câu đố, 
 
 7
-00:00:16,331 --> 00:00:19,691
-và giống như nhiều lập trình viên, tôi cũng bị cuốn hút vào việc cố
+00:00:16,730 --> 00:00:19,670
+và giống như nhiều lập trình viên, tôi cũng bị cuốn hút vào việc cố 
 
 8
-00:00:19,691 --> 00:00:23,200
-gắng viết một thuật toán để chơi trò chơi một cách tối ưu nhất có thể.
+00:00:19,670 --> 00:00:22,740
+gắng viết một thuật toán để chơi trò chơi một cách tối ưu nhất có thể. 
 
 9
-00:00:23,200 --> 00:00:26,129
-Và điều tôi nghĩ tôi sẽ làm ở đây chỉ là trao đổi với bạn một số
+00:00:23,180 --> 00:00:25,786
+Và điều tôi nghĩ tôi sẽ làm ở đây chỉ là trao đổi với bạn một số 
 
 10
-00:00:26,129 --> 00:00:29,555
-quy trình của tôi trong đó và giải thích một số phép toán liên quan đến nó,
+00:00:25,786 --> 00:00:28,834
+quy trình của tôi trong đó và giải thích một số phép toán liên quan đến nó, 
 
 11
-00:00:29,555 --> 00:00:32,080
-vì toàn bộ thuật toán tập trung vào ý tưởng về entropy.
+00:00:28,834 --> 00:00:31,080
+vì toàn bộ thuật toán tập trung vào ý tưởng về entropy. 
 
 12
-00:00:32,080 --> 00:00:42,180
-Trước hết, trong trường hợp bạn chưa từng nghe đến nó, Wurdle là gì?
+00:00:38,700 --> 00:00:41,640
+Trước hết, trong trường hợp bạn chưa từng nghe đến nó, Wurdle là gì? 
 
 13
-00:00:42,180 --> 00:00:45,151
-Và để một mũi tên trúng hai con chim ở đây trong khi chúng ta đi qua các
+00:00:42,040 --> 00:00:44,947
+Và để một mũi tên trúng hai con chim ở đây trong khi chúng ta đi qua các 
 
 14
-00:00:45,151 --> 00:00:48,245
-quy tắc của trò chơi, hãy để tôi xem trước chúng ta sẽ đi đâu với điều này,
+00:00:44,947 --> 00:00:47,973
+quy tắc của trò chơi, hãy để tôi xem trước chúng ta sẽ đi đâu với điều này, 
 
 15
-00:00:48,245 --> 00:00:51,380
-đó là phát triển một thuật toán nhỏ về cơ bản sẽ chơi trò chơi cho chúng ta.
+00:00:47,973 --> 00:00:51,040
+đó là phát triển một thuật toán nhỏ về cơ bản sẽ chơi trò chơi cho chúng ta. 
 
 16
-00:00:51,380 --> 00:00:53,585
-Mặc dù tôi chưa thực hiện Wurdle của ngày hôm nay nhưng đây là
+00:00:51,360 --> 00:00:53,200
+Mặc dù tôi chưa thực hiện Wurdle của ngày hôm nay nhưng đây là 
 
 17
-00:00:53,585 --> 00:00:55,860
-ngày 4 tháng 2 và chúng ta sẽ xem con bot hoạt động như thế nào.
+00:00:53,200 --> 00:00:55,100
+ngày 4 tháng 2 và chúng ta sẽ xem con bot hoạt động như thế nào. 
 
 18
-00:00:55,860 --> 00:00:58,333
-Mục tiêu của Wurdle là đoán một từ có năm chữ
+00:00:55,480 --> 00:00:57,883
+Mục tiêu của Wurdle là đoán một từ có năm chữ 
 
 19
-00:00:58,333 --> 00:01:00,860
-cái bí ẩn và bạn có sáu cơ hội đoán khác nhau.
+00:00:57,883 --> 00:01:00,340
+cái bí ẩn và bạn có sáu cơ hội đoán khác nhau. 
 
 20
-00:01:00,860 --> 00:01:05,240
-Ví dụ: bot Wurdle của tôi gợi ý rằng tôi nên bắt đầu với cần cẩu đoán.
+00:01:00,840 --> 00:01:04,379
+Ví dụ: bot Wurdle của tôi gợi ý rằng tôi nên bắt đầu với cần cẩu đoán. 
 
 21
-00:01:05,240 --> 00:01:07,990
-Mỗi lần bạn đoán, bạn sẽ nhận được một số thông tin về
+00:01:05,180 --> 00:01:07,611
+Mỗi lần bạn đoán, bạn sẽ nhận được một số thông tin về 
 
 22
-00:01:07,990 --> 00:01:10,940
-mức độ gần đúng của suy đoán của bạn với câu trả lời đúng.
+00:01:07,611 --> 00:01:10,220
+mức độ gần đúng của suy đoán của bạn với câu trả lời đúng. 
 
 23
-00:01:10,940 --> 00:01:14,540
-Ở đây, hộp màu xám cho tôi biết rằng không có chữ C trong câu trả lời thực tế.
+00:01:10,920 --> 00:01:14,100
+Ở đây, hộp màu xám cho tôi biết rằng không có chữ C trong câu trả lời thực tế. 
 
 24
-00:01:14,540 --> 00:01:18,340
-Ô màu vàng cho tôi biết có chữ R, nhưng nó không ở vị trí đó.
+00:01:14,520 --> 00:01:17,840
+Ô màu vàng cho tôi biết có chữ R, nhưng nó không ở vị trí đó. 
 
 25
-00:01:18,340 --> 00:01:22,820
-Ô màu xanh lá cây cho tôi biết từ bí mật có chữ A và nó ở vị trí thứ ba.
+00:01:18,240 --> 00:01:22,240
+Ô màu xanh lá cây cho tôi biết từ bí mật có chữ A và nó ở vị trí thứ ba. 
 
 26
-00:01:22,820 --> 00:01:24,300
-Và rồi không có N và không có E.
+00:01:22,720 --> 00:01:24,580
+Và rồi không có N và không có E. 
 
 27
-00:01:24,300 --> 00:01:27,420
-Vì vậy, hãy để tôi vào và nói với bot Wurdle thông tin đó.
+00:01:25,200 --> 00:01:27,340
+Vì vậy, hãy để tôi vào và nói với bot Wurdle thông tin đó. 
 
 28
-00:01:27,420 --> 00:01:31,500
-Chúng tôi bắt đầu với cần cẩu, chúng tôi có màu xám, vàng, xanh lá cây, xám, xám.
+00:01:27,340 --> 00:01:30,320
+Chúng tôi bắt đầu với cần cẩu, chúng tôi có màu xám, vàng, xanh lá cây, xám, xám. 
 
 29
-00:01:31,500 --> 00:01:33,718
-Đừng lo lắng về tất cả dữ liệu mà nó đang hiển thị ngay bây giờ,
+00:01:31,420 --> 00:01:33,392
+Đừng lo lắng về tất cả dữ liệu mà nó đang hiển thị ngay bây giờ, 
 
 30
-00:01:33,718 --> 00:01:35,460
-tôi sẽ giải thích điều đó vào thời điểm thích hợp.
+00:01:33,392 --> 00:01:34,940
+tôi sẽ giải thích điều đó vào thời điểm thích hợp. 
 
 31
-00:01:35,460 --> 00:01:39,700
-Nhưng gợi ý hàng đầu cho lựa chọn thứ hai của chúng tôi thật tồi tệ.
+00:01:35,460 --> 00:01:38,820
+Nhưng gợi ý hàng đầu cho lựa chọn thứ hai của chúng tôi thật tồi tệ. 
 
 32
-00:01:39,700 --> 00:01:42,240
-Và dự đoán của bạn thực sự phải là một từ có năm chữ cái,
+00:01:39,560 --> 00:01:42,032
+Và dự đoán của bạn thực sự phải là một từ có năm chữ cái, 
 
 33
-00:01:42,240 --> 00:01:45,700
-nhưng như bạn sẽ thấy, nó khá tự do với những gì nó thực sự cho phép bạn đoán.
+00:01:42,032 --> 00:01:45,400
+nhưng như bạn sẽ thấy, nó khá tự do với những gì nó thực sự cho phép bạn đoán. 
 
 34
-00:01:45,700 --> 00:01:48,860
-Trong trường hợp này, chúng tôi thử shtick.
+00:01:46,200 --> 00:01:47,440
+Trong trường hợp này, chúng tôi thử shtick. 
 
 35
-00:01:48,860 --> 00:01:50,260
-Và được rồi, mọi thứ có vẻ khá tốt.
+00:01:48,780 --> 00:01:50,180
+Và được rồi, mọi thứ có vẻ khá tốt. 
 
 36
-00:01:50,260 --> 00:01:53,301
-Chúng ta nhấn chữ S và chữ H, nên chúng ta biết ba chữ cái đầu tiên,
+00:01:50,260 --> 00:01:52,879
+Chúng ta nhấn chữ S và chữ H, nên chúng ta biết ba chữ cái đầu tiên, 
 
 37
-00:01:53,301 --> 00:01:54,580
-chúng ta biết rằng có chữ R.
+00:01:52,879 --> 00:01:53,980
+chúng ta biết rằng có chữ R. 
 
 38
-00:01:54,580 --> 00:01:59,740
-Và vì vậy nó sẽ giống như SHA gì đó R, hoặc SHA R gì đó.
+00:01:53,980 --> 00:01:58,700
+Và vì vậy nó sẽ giống như SHA gì đó R, hoặc SHA R gì đó. 
 
 39
-00:01:59,740 --> 00:02:05,220
-Và có vẻ như bot Wurdle biết rằng chỉ có hai khả năng, mảnh vỡ hoặc sắc nét.
+00:01:59,620 --> 00:02:04,240
+Và có vẻ như bot Wurdle biết rằng chỉ có hai khả năng, mảnh vỡ hoặc sắc nét. 
 
 40
-00:02:05,220 --> 00:02:07,246
-Vào thời điểm này, có một sự xung đột giữa chúng,
+00:02:05,100 --> 00:02:06,771
+Vào thời điểm này, có một sự xung đột giữa chúng, 
 
 41
-00:02:07,246 --> 00:02:10,246
-vì vậy tôi đoán có lẽ chỉ vì nó được sắp xếp theo thứ tự bảng chữ cái nên
+00:02:06,771 --> 00:02:09,244
+vì vậy tôi đoán có lẽ chỉ vì nó được sắp xếp theo thứ tự bảng chữ cái nên 
 
 42
-00:02:10,246 --> 00:02:11,260
-nó đi kèm với phân đoạn.
+00:02:09,244 --> 00:02:10,080
+nó đi kèm với phân đoạn. 
 
 43
-00:02:11,260 --> 00:02:13,000
-Hoan hô, là câu trả lời thực tế.
+00:02:11,220 --> 00:02:12,860
+Hoan hô, là câu trả lời thực tế. 
 
 44
-00:02:13,000 --> 00:02:14,660
-Vì vậy, chúng tôi đã nhận được nó trong ba.
+00:02:12,960 --> 00:02:13,780
+Vì vậy, chúng tôi đã nhận được nó trong ba. 
 
 45
-00:02:14,660 --> 00:02:17,074
-Nếu bạn đang thắc mắc liệu điều đó có tốt không,
+00:02:14,600 --> 00:02:16,857
+Nếu bạn đang thắc mắc liệu điều đó có tốt không, 
 
 46
-00:02:17,074 --> 00:02:20,820
-thì theo cách tôi nghe một người nói thì Wurdle bốn là par và ba là birdie.
+00:02:16,857 --> 00:02:20,360
+thì theo cách tôi nghe một người nói thì Wurdle bốn là par và ba là birdie. 
 
 47
-00:02:20,820 --> 00:02:22,960
-Mà tôi nghĩ là một sự tương tự khá thích hợp.
+00:02:20,680 --> 00:02:22,480
+Mà tôi nghĩ là một sự tương tự khá thích hợp. 
 
 48
-00:02:22,960 --> 00:02:25,588
-Bạn phải kiên trì trong trò chơi của mình để đạt được bốn điểm,
+00:02:22,480 --> 00:02:25,074
+Bạn phải kiên trì trong trò chơi của mình để đạt được bốn điểm, 
 
 49
-00:02:25,588 --> 00:02:27,560
-nhưng điều đó chắc chắn không điên rồ chút nào.
+00:02:25,074 --> 00:02:27,020
+nhưng điều đó chắc chắn không điên rồ chút nào. 
 
 50
-00:02:27,560 --> 00:02:30,000
-Nhưng khi bạn nhận được nó trong ba, nó sẽ cảm thấy tuyệt vời.
+00:02:27,180 --> 00:02:29,920
+Nhưng khi bạn nhận được nó trong ba, nó sẽ cảm thấy tuyệt vời. 
 
 51
-00:02:30,000 --> 00:02:33,253
-Vì vậy, nếu bạn không hài lòng, điều tôi muốn làm ở đây chỉ là nói về
+00:02:30,880 --> 00:02:33,384
+Vì vậy, nếu bạn không hài lòng, điều tôi muốn làm ở đây chỉ là nói về 
 
 52
-00:02:33,253 --> 00:02:36,600
-quá trình suy nghĩ của tôi ngay từ đầu về cách tôi tiếp cận bot Wurdle.
+00:02:33,384 --> 00:02:35,960
+quá trình suy nghĩ của tôi ngay từ đầu về cách tôi tiếp cận bot Wurdle. 
 
 53
-00:02:36,600 --> 00:02:39,800
-Và như tôi đã nói, thực ra đó chỉ là cái cớ để học lý thuyết thông tin.
+00:02:36,480 --> 00:02:39,440
+Và như tôi đã nói, thực ra đó chỉ là cái cớ để học lý thuyết thông tin. 
 
 54
-00:02:39,800 --> 00:02:43,160
-Mục tiêu chính là giải thích thông tin là gì và entropy là gì.
+00:02:39,740 --> 00:02:42,820
+Mục tiêu chính là giải thích thông tin là gì và entropy là gì. 
 
 55
-00:02:43,160 --> 00:02:48,402
-Suy nghĩ đầu tiên của tôi khi tiếp cận vấn đề này là xem xét
+00:02:48,220 --> 00:02:50,992
+Suy nghĩ đầu tiên của tôi khi tiếp cận vấn đề này là xem xét 
 
 56
-00:02:48,402 --> 00:02:53,560
-tần số tương đối của các chữ cái khác nhau trong tiếng Anh.
+00:02:50,992 --> 00:02:53,720
+tần số tương đối của các chữ cái khác nhau trong tiếng Anh. 
 
 57
-00:02:53,560 --> 00:02:56,711
-Vì vậy, tôi nghĩ, được thôi, có một lần đoán mở đầu hoặc một cặp
+00:02:54,380 --> 00:02:56,783
+Vì vậy, tôi nghĩ, được thôi, có một lần đoán mở đầu hoặc một cặp 
 
 58
-00:02:56,711 --> 00:02:59,960
-đoán mở đầu nào chạm được nhiều chữ cái thường gặp nhất này không?
+00:02:56,783 --> 00:02:59,260
+đoán mở đầu nào chạm được nhiều chữ cái thường gặp nhất này không? 
 
 59
-00:02:59,960 --> 00:03:03,780
-Và một việc mà tôi khá thích là làm những việc khác sau đó là làm móng.
+00:02:59,960 --> 00:03:03,000
+Và một việc mà tôi khá thích là làm những việc khác sau đó là làm móng. 
 
 60
-00:03:03,780 --> 00:03:05,435
-Ý nghĩ là nếu bạn nhấn vào một chữ cái, bạn biết đấy,
+00:03:03,760 --> 00:03:05,242
+Ý nghĩ là nếu bạn nhấn vào một chữ cái, bạn biết đấy, 
 
 61
-00:03:05,435 --> 00:03:07,980
-bạn sẽ nhận được màu xanh lá cây hoặc màu vàng, điều đó luôn tạo cảm giác dễ chịu.
+00:03:05,242 --> 00:03:07,520
+bạn sẽ nhận được màu xanh lá cây hoặc màu vàng, điều đó luôn tạo cảm giác dễ chịu. 
 
 62
-00:03:07,980 --> 00:03:09,460
-Có cảm giác như bạn đang nhận được thông tin.
+00:03:07,520 --> 00:03:08,840
+Có cảm giác như bạn đang nhận được thông tin. 
 
 63
-00:03:09,460 --> 00:03:12,772
-Nhưng trong những trường hợp này, ngay cả khi bạn không đánh và luôn có màu xám,
+00:03:09,340 --> 00:03:12,604
+Nhưng trong những trường hợp này, ngay cả khi bạn không đánh và luôn có màu xám, 
 
 64
-00:03:12,772 --> 00:03:15,431
-điều đó vẫn cung cấp cho bạn nhiều thông tin vì rất hiếm khi tìm
+00:03:12,604 --> 00:03:15,223
+điều đó vẫn cung cấp cho bạn nhiều thông tin vì rất hiếm khi tìm 
 
 65
-00:03:15,431 --> 00:03:17,640
-thấy một từ không có bất kỳ chữ cái nào trong số này.
+00:03:15,223 --> 00:03:17,400
+thấy một từ không có bất kỳ chữ cái nào trong số này. 
 
 66
-00:03:17,640 --> 00:03:20,602
-Nhưng dù vậy, điều đó vẫn không mang lại cảm giác siêu hệ thống,
+00:03:18,140 --> 00:03:20,689
+Nhưng dù vậy, điều đó vẫn không mang lại cảm giác siêu hệ thống, 
 
 67
-00:03:20,602 --> 00:03:23,520
-vì chẳng hạn, nó không liên quan gì đến thứ tự của các chữ cái.
+00:03:20,689 --> 00:03:23,200
+vì chẳng hạn, nó không liên quan gì đến thứ tự của các chữ cái. 
 
 68
-00:03:23,520 --> 00:03:26,080
-Tại sao phải gõ móng tay khi tôi có thể gõ ốc?
+00:03:23,560 --> 00:03:25,300
+Tại sao phải gõ móng tay khi tôi có thể gõ ốc? 
 
 69
-00:03:26,080 --> 00:03:27,720
-Có chữ S ở cuối thì tốt hơn phải không?
+00:03:26,080 --> 00:03:27,500
+Có chữ S ở cuối thì tốt hơn phải không? 
 
 70
-00:03:27,720 --> 00:03:28,720
-Tôi không thực sự chắc chắn.
+00:03:27,820 --> 00:03:28,680
+Tôi không thực sự chắc chắn. 
 
 71
-00:03:28,720 --> 00:03:32,375
-Một người bạn của tôi nói rằng anh ấy thích mở đầu bằng từ mệt mỏi,
+00:03:29,240 --> 00:03:32,401
+Một người bạn của tôi nói rằng anh ấy thích mở đầu bằng từ mệt mỏi, 
 
 72
-00:03:32,375 --> 00:03:37,160
-điều này làm tôi khá ngạc nhiên vì trong đó có một số chữ cái không phổ biến như W và Y.
+00:03:32,401 --> 00:03:36,540
+điều này làm tôi khá ngạc nhiên vì trong đó có một số chữ cái không phổ biến như W và Y. 
 
 73
-00:03:37,160 --> 00:03:39,400
-Nhưng ai biết được, có lẽ đó là cách mở đầu tốt hơn.
+00:03:37,120 --> 00:03:39,000
+Nhưng ai biết được, có lẽ đó là cách mở đầu tốt hơn. 
 
 74
-00:03:39,400 --> 00:03:42,184
-Có loại điểm định lượng nào đó mà chúng ta có thể đưa ra
+00:03:39,320 --> 00:03:41,842
+Có loại điểm định lượng nào đó mà chúng ta có thể đưa ra 
 
 75
-00:03:42,184 --> 00:03:44,920
-để đánh giá chất lượng của một dự đoán tiềm năng không?
+00:03:41,842 --> 00:03:44,320
+để đánh giá chất lượng của một dự đoán tiềm năng không? 
 
 76
-00:03:44,920 --> 00:03:48,218
-Bây giờ để thiết lập cách chúng ta sắp xếp các dự đoán có thể xảy ra,
+00:03:45,340 --> 00:03:48,255
+Bây giờ để thiết lập cách chúng ta sắp xếp các dự đoán có thể xảy ra, 
 
 77
-00:03:48,218 --> 00:03:51,800
-hãy quay lại và thêm một chút rõ ràng về cách thiết lập chính xác trò chơi.
+00:03:48,255 --> 00:03:51,420
+hãy quay lại và thêm một chút rõ ràng về cách thiết lập chính xác trò chơi. 
 
 78
-00:03:51,800 --> 00:03:54,860
-Vì vậy, có một danh sách các từ mà nó sẽ cho phép bạn nhập
+00:03:51,420 --> 00:03:54,649
+Vì vậy, có một danh sách các từ mà nó sẽ cho phép bạn nhập 
 
 79
-00:03:54,860 --> 00:03:57,920
-được coi là những từ đoán hợp lệ chỉ dài khoảng 13.000 từ.
+00:03:54,649 --> 00:03:57,880
+được coi là những từ đoán hợp lệ chỉ dài khoảng 13.000 từ. 
 
 80
-00:03:57,920 --> 00:04:01,423
-Nhưng khi bạn nhìn vào nó, có rất nhiều thứ thực sự không phổ biến,
+00:03:58,320 --> 00:04:01,439
+Nhưng khi bạn nhìn vào nó, có rất nhiều thứ thực sự không phổ biến, 
 
 81
-00:04:01,423 --> 00:04:06,061
-những thứ như cái đầu hay Ali và ARG, những loại từ gây ra tranh cãi trong gia đình trong
+00:04:01,439 --> 00:04:05,568
+những thứ như cái đầu hay Ali và ARG, những loại từ gây ra tranh cãi trong gia đình trong 
 
 82
-00:04:06,061 --> 00:04:07,040
-trò chơi Scrabble.
+00:04:05,568 --> 00:04:06,440
+trò chơi Scrabble. 
 
 83
-00:04:07,040 --> 00:04:10,600
-Nhưng điều thú vị của trò chơi là câu trả lời luôn là một từ khá phổ biến.
+00:04:06,960 --> 00:04:10,540
+Nhưng điều thú vị của trò chơi là câu trả lời luôn là một từ khá phổ biến. 
 
 84
-00:04:10,600 --> 00:04:16,080
-Và trên thực tế, có một danh sách khác khoảng 2300 từ có thể là câu trả lời.
+00:04:10,960 --> 00:04:15,360
+Và trên thực tế, có một danh sách khác khoảng 2300 từ có thể là câu trả lời. 
 
 85
-00:04:16,080 --> 00:04:18,918
-Và đây là danh sách do con người tuyển chọn, tôi nghĩ cụ thể là do
+00:04:15,940 --> 00:04:18,530
+Và đây là danh sách do con người tuyển chọn, tôi nghĩ cụ thể là do 
 
 86
-00:04:18,918 --> 00:04:21,800
-bạn gái của người sáng tạo trò chơi thực hiện, điều này khá thú vị.
+00:04:18,530 --> 00:04:21,160
+bạn gái của người sáng tạo trò chơi thực hiện, điều này khá thú vị. 
 
 87
-00:04:21,800 --> 00:04:24,712
-Nhưng điều tôi muốn làm, thách thức của chúng tôi đối với dự án
+00:04:21,820 --> 00:04:24,549
+Nhưng điều tôi muốn làm, thách thức của chúng tôi đối với dự án 
 
 88
-00:04:24,712 --> 00:04:27,761
-này là xem liệu chúng tôi có thể viết một chương trình giải Wordle
+00:04:24,549 --> 00:04:27,407
+này là xem liệu chúng tôi có thể viết một chương trình giải Wordle 
 
 89
-00:04:27,761 --> 00:04:30,720
-mà không kết hợp kiến thức trước đây về danh sách này hay không.
+00:04:27,407 --> 00:04:30,180
+mà không kết hợp kiến thức trước đây về danh sách này hay không. 
 
 90
-00:04:30,720 --> 00:04:33,187
-Có một điều, có rất nhiều từ có năm chữ cái khá phổ
+00:04:30,720 --> 00:04:32,718
+Có một điều, có rất nhiều từ có năm chữ cái khá phổ 
 
 91
-00:04:33,187 --> 00:04:35,560
-biến mà bạn sẽ không tìm thấy trong danh sách đó.
+00:04:32,718 --> 00:04:34,640
+biến mà bạn sẽ không tìm thấy trong danh sách đó. 
 
 92
-00:04:35,560 --> 00:04:38,839
-Vì vậy, sẽ tốt hơn nếu viết một chương trình linh hoạt hơn một chút và có thể chơi
+00:04:34,940 --> 00:04:38,280
+Vì vậy, sẽ tốt hơn nếu viết một chương trình linh hoạt hơn một chút và có thể chơi 
 
 93
-00:04:38,839 --> 00:04:41,960
-Wordle với bất kỳ ai, chứ không chỉ những gì xảy ra trên trang web chính thức.
+00:04:38,280 --> 00:04:41,460
+Wordle với bất kỳ ai, chứ không chỉ những gì xảy ra trên trang web chính thức. 
 
 94
-00:04:41,960 --> 00:04:44,618
-Và lý do mà chúng tôi biết danh sách các câu trả
+00:04:41,920 --> 00:04:44,384
+Và lý do mà chúng tôi biết danh sách các câu trả 
 
 95
-00:04:44,618 --> 00:04:47,440
-lời có thể có này là vì nó hiển thị trong mã nguồn.
+00:04:44,384 --> 00:04:47,000
+lời có thể có này là vì nó hiển thị trong mã nguồn. 
 
 96
-00:04:47,440 --> 00:04:50,166
-Nhưng cách nó hiển thị trong mã nguồn lại theo thứ
+00:04:47,000 --> 00:04:50,160
+Nhưng cách nó hiển thị trong mã nguồn lại theo thứ 
 
 97
-00:04:50,166 --> 00:04:52,840
-tự cụ thể mà các câu trả lời xuất hiện hàng ngày.
+00:04:50,160 --> 00:04:53,260
+tự cụ thể mà các câu trả lời xuất hiện hàng ngày. 
 
 98
-00:04:52,840 --> 00:04:56,400
-Vì vậy, bạn luôn có thể tra cứu xem câu trả lời của ngày mai sẽ là gì.
+00:04:53,260 --> 00:04:55,840
+Vì vậy, bạn luôn có thể tra cứu xem câu trả lời của ngày mai sẽ là gì. 
 
 99
-00:04:56,400 --> 00:04:59,140
-Vì vậy, rõ ràng là việc sử dụng danh sách là gian lận.
+00:04:56,420 --> 00:04:58,880
+Vì vậy, rõ ràng là việc sử dụng danh sách là gian lận. 
 
 100
-00:04:59,140 --> 00:05:03,306
-Và điều tạo nên một câu đố thú vị hơn và một bài học lý thuyết thông tin phong
+00:04:59,100 --> 00:05:02,880
+Và điều tạo nên một câu đố thú vị hơn và một bài học lý thuyết thông tin phong 
 
 101
-00:05:03,306 --> 00:05:07,367
-phú hơn là thay vào đó hãy sử dụng một số dữ liệu phổ quát hơn như tần số từ
+00:05:02,880 --> 00:05:06,564
+phú hơn là thay vào đó hãy sử dụng một số dữ liệu phổ quát hơn như tần số từ 
 
 102
-00:05:07,367 --> 00:05:11,640
-tương đối nói chung để nắm bắt trực giác về việc ưa thích những từ phổ biến hơn.
+00:05:06,564 --> 00:05:10,440
+tương đối nói chung để nắm bắt trực giác về việc ưa thích những từ phổ biến hơn. 
 
 103
-00:05:11,640 --> 00:05:16,560
-Vậy trong 13.000 khả năng này, chúng ta nên chọn dự đoán mở đầu như thế nào?
+00:05:11,600 --> 00:05:15,900
+Vậy trong 13.000 khả năng này, chúng ta nên chọn dự đoán mở đầu như thế nào? 
 
 104
-00:05:16,560 --> 00:05:18,311
-Ví dụ, nếu bạn tôi đề xuất một cách mệt mỏi, chúng
+00:05:16,400 --> 00:05:18,141
+Ví dụ, nếu bạn tôi đề xuất một cách mệt mỏi, chúng 
 
 105
-00:05:18,311 --> 00:05:19,960
-ta nên phân tích chất lượng của nó như thế nào?
+00:05:18,141 --> 00:05:19,780
+ta nên phân tích chất lượng của nó như thế nào? 
 
 106
-00:05:19,960 --> 00:05:23,749
-Chà, lý do anh ấy nói rằng anh ấy thích chữ W không chắc chắn đó là vì anh ấy
+00:05:20,520 --> 00:05:23,783
+Chà, lý do anh ấy nói rằng anh ấy thích chữ W không chắc chắn đó là vì anh ấy 
 
 107
-00:05:23,749 --> 00:05:27,880
-thích bản chất bắn xa của cảm giác tuyệt vời như thế nào nếu bạn đánh được chữ W đó.
+00:05:23,783 --> 00:05:27,340
+thích bản chất bắn xa của cảm giác tuyệt vời như thế nào nếu bạn đánh được chữ W đó. 
 
 108
-00:05:27,880 --> 00:05:31,583
-Ví dụ: nếu mẫu đầu tiên được tiết lộ giống như thế này,
+00:05:27,920 --> 00:05:31,388
+Ví dụ: nếu mẫu đầu tiên được tiết lộ giống như thế này, 
 
 109
-00:05:31,583 --> 00:05:36,080
-thì hóa ra chỉ có 58 từ trong từ điển khổng lồ này khớp với mẫu đó.
+00:05:31,388 --> 00:05:35,600
+thì hóa ra chỉ có 58 từ trong từ điển khổng lồ này khớp với mẫu đó. 
 
 110
-00:05:36,080 --> 00:05:38,900
-Vì vậy, đó là một mức giảm rất lớn từ 13.000.
+00:05:36,060 --> 00:05:38,400
+Vì vậy, đó là một mức giảm rất lớn từ 13.000. 
 
 111
-00:05:38,900 --> 00:05:43,320
-Nhưng mặt trái của điều đó, tất nhiên, là rất hiếm khi có được một mẫu như thế này.
+00:05:38,780 --> 00:05:43,020
+Nhưng mặt trái của điều đó, tất nhiên, là rất hiếm khi có được một mẫu như thế này. 
 
 112
-00:05:43,320 --> 00:05:47,500
-Cụ thể, nếu mỗi từ có khả năng là câu trả lời như nhau thì
+00:05:43,020 --> 00:05:47,030
+Cụ thể, nếu mỗi từ có khả năng là câu trả lời như nhau thì 
 
 113
-00:05:47,500 --> 00:05:51,680
-xác suất đạt được mẫu này sẽ là 58 chia cho khoảng 13.000.
+00:05:47,030 --> 00:05:51,040
+xác suất đạt được mẫu này sẽ là 58 chia cho khoảng 13.000. 
 
 114
-00:05:51,680 --> 00:05:53,880
-Tất nhiên, chúng không có khả năng là câu trả lời như nhau.
+00:05:51,580 --> 00:05:53,600
+Tất nhiên, chúng không có khả năng là câu trả lời như nhau. 
 
 115
-00:05:53,880 --> 00:05:56,680
-Hầu hết trong số này là những từ rất mơ hồ và thậm chí có vấn đề.
+00:05:53,720 --> 00:05:56,220
+Hầu hết trong số này là những từ rất mơ hồ và thậm chí có vấn đề. 
 
 116
-00:05:56,680 --> 00:05:59,013
-Nhưng ít nhất trong lần đầu tiên chúng ta vượt qua tất cả những điều này,
+00:05:56,600 --> 00:05:58,776
+Nhưng ít nhất trong lần đầu tiên chúng ta vượt qua tất cả những điều này, 
 
 117
-00:05:59,013 --> 00:06:01,630
-hãy giả sử rằng chúng đều có khả năng xảy ra như nhau và sau đó tinh chỉnh điều đó
+00:05:58,776 --> 00:06:01,217
+hãy giả sử rằng chúng đều có khả năng xảy ra như nhau và sau đó tinh chỉnh điều đó 
 
 118
-00:06:01,630 --> 00:06:02,040
-một lát sau.
+00:06:01,217 --> 00:06:01,600
+một lát sau. 
 
 119
-00:06:02,040 --> 00:06:07,360
-Vấn đề là mô hình có nhiều thông tin về bản chất khó có thể xảy ra.
+00:06:02,020 --> 00:06:06,720
+Vấn đề là mô hình có nhiều thông tin về bản chất khó có thể xảy ra. 
 
 120
-00:06:07,360 --> 00:06:11,320
-Trên thực tế, ý nghĩa của việc cung cấp nhiều thông tin là điều đó khó có thể xảy ra.
+00:06:07,280 --> 00:06:10,800
+Trên thực tế, ý nghĩa của việc cung cấp nhiều thông tin là điều đó khó có thể xảy ra. 
 
 121
-00:06:11,320 --> 00:06:16,149
-Một mô hình có nhiều khả năng xảy ra hơn với phần mở đầu này sẽ giống như thế này,
+00:06:11,719 --> 00:06:16,110
+Một mô hình có nhiều khả năng xảy ra hơn với phần mở đầu này sẽ giống như thế này, 
 
 122
-00:06:16,149 --> 00:06:18,360
-tất nhiên là không có chữ W trong đó.
+00:06:16,110 --> 00:06:18,120
+tất nhiên là không có chữ W trong đó. 
 
 123
-00:06:18,360 --> 00:06:22,080
-Có thể có chữ E, và có thể không có chữ A, không có chữ R, không có chữ Y.
+00:06:18,240 --> 00:06:21,400
+Có thể có chữ E, và có thể không có chữ A, không có chữ R, không có chữ Y. 
 
 124
-00:06:22,080 --> 00:06:24,640
-Trong trường hợp này, có 1400 kết quả phù hợp.
+00:06:22,080 --> 00:06:24,560
+Trong trường hợp này, có 1400 kết quả phù hợp. 
 
 125
-00:06:24,640 --> 00:06:27,597
-Nếu tất cả đều có khả năng như nhau thì có xác
+00:06:25,080 --> 00:06:27,782
+Nếu tất cả đều có khả năng như nhau thì có xác 
 
 126
-00:06:27,597 --> 00:06:30,680
-suất khoảng 11% rằng đây là mô hình bạn sẽ thấy.
+00:06:27,782 --> 00:06:30,600
+suất khoảng 11% rằng đây là mô hình bạn sẽ thấy. 
 
 127
-00:06:30,680 --> 00:06:34,320
-Vì vậy, những kết quả có thể xảy ra nhất cũng có ít thông tin nhất.
+00:06:30,900 --> 00:06:33,340
+Vì vậy, những kết quả có thể xảy ra nhất cũng có ít thông tin nhất. 
 
 128
-00:06:34,320 --> 00:06:38,160
-Để có cái nhìn toàn diện hơn ở đây, hãy để tôi chỉ cho bạn sự phân bổ
+00:06:34,240 --> 00:06:37,690
+Để có cái nhìn toàn diện hơn ở đây, hãy để tôi chỉ cho bạn sự phân bổ 
 
 129
-00:06:38,160 --> 00:06:42,000
-đầy đủ các xác suất trên tất cả các mẫu khác nhau mà bạn có thể thấy.
+00:06:37,690 --> 00:06:41,140
+đầy đủ các xác suất trên tất cả các mẫu khác nhau mà bạn có thể thấy. 
 
 130
-00:06:42,000 --> 00:06:46,475
-Vì vậy, mỗi thanh bạn đang xem tương ứng với một mẫu màu có thể được tiết lộ,
+00:06:41,740 --> 00:06:46,068
+Vì vậy, mỗi thanh bạn đang xem tương ứng với một mẫu màu có thể được tiết lộ, 
 
 131
-00:06:46,475 --> 00:06:50,894
-trong đó có từ 3 đến khả năng thứ 5 và chúng được sắp xếp từ trái sang phải,
+00:06:46,068 --> 00:06:50,342
+trong đó có từ 3 đến khả năng thứ 5 và chúng được sắp xếp từ trái sang phải, 
 
 132
-00:06:50,894 --> 00:06:52,960
-phổ biến nhất đến ít phổ biến nhất.
+00:06:50,342 --> 00:06:52,340
+phổ biến nhất đến ít phổ biến nhất. 
 
 133
-00:06:52,960 --> 00:06:56,200
-Vì vậy, khả năng phổ biến nhất ở đây là bạn có toàn màu xám.
+00:06:52,920 --> 00:06:56,000
+Vì vậy, khả năng phổ biến nhất ở đây là bạn có toàn màu xám. 
 
 134
-00:06:56,200 --> 00:06:58,800
-Điều đó xảy ra khoảng 14% thời gian.
+00:06:56,100 --> 00:06:58,120
+Điều đó xảy ra khoảng 14% thời gian. 
 
 135
-00:06:58,800 --> 00:07:02,469
-Và điều bạn hy vọng khi bạn đoán là bạn sẽ kết thúc ở một nơi nào
+00:06:58,580 --> 00:07:02,064
+Và điều bạn hy vọng khi bạn đoán là bạn sẽ kết thúc ở một nơi nào 
 
 136
-00:07:02,469 --> 00:07:06,194
-đó trong cái đuôi dài này, giống như ở đây, nơi chỉ có 18 khả năng
+00:07:02,064 --> 00:07:05,602
+đó trong cái đuôi dài này, giống như ở đây, nơi chỉ có 18 khả năng 
 
 137
-00:07:06,194 --> 00:07:09,920
-cho những gì phù hợp với mô hình này mà rõ ràng trông như thế này.
+00:07:05,602 --> 00:07:09,140
+cho những gì phù hợp với mô hình này mà rõ ràng trông như thế này. 
 
 138
-00:07:09,920 --> 00:07:12,000
-Hoặc nếu chúng ta mạo hiểm xa hơn một chút về phía bên trái,
+00:07:09,920 --> 00:07:11,860
+Hoặc nếu chúng ta mạo hiểm xa hơn một chút về phía bên trái, 
 
 139
-00:07:12,000 --> 00:07:14,080
-bạn biết đấy, có thể chúng ta sẽ đi hết quãng đường tới đây.
+00:07:11,860 --> 00:07:13,800
+bạn biết đấy, có thể chúng ta sẽ đi hết quãng đường tới đây. 
 
 140
-00:07:14,080 --> 00:07:16,560
-Được rồi, đây là một câu đố hay dành cho bạn.
+00:07:14,940 --> 00:07:16,180
+Được rồi, đây là một câu đố hay dành cho bạn. 
 
 141
-00:07:16,560 --> 00:07:19,383
-Ba từ trong tiếng Anh bắt đầu bằng chữ W, kết thúc
+00:07:16,540 --> 00:07:19,352
+Ba từ trong tiếng Anh bắt đầu bằng chữ W, kết thúc 
 
 142
-00:07:19,383 --> 00:07:22,040
-bằng chữ Y và có chữ R ở đâu đó trong đó là gì?
+00:07:19,352 --> 00:07:22,000
+bằng chữ Y và có chữ R ở đâu đó trong đó là gì? 
 
 143
-00:07:22,040 --> 00:07:27,560
-Hóa ra, câu trả lời là, hãy xem, dài dòng, sâu sắc và gượng gạo.
+00:07:22,480 --> 00:07:26,800
+Hóa ra, câu trả lời là, hãy xem, dài dòng, sâu sắc và gượng gạo. 
 
 144
-00:07:27,560 --> 00:07:30,332
-Vì vậy, để đánh giá mức độ tốt của từ này nói chung,
+00:07:27,500 --> 00:07:30,299
+Vì vậy, để đánh giá mức độ tốt của từ này nói chung, 
 
 145
-00:07:30,332 --> 00:07:34,360
-chúng tôi muốn có một số thước đo về lượng thông tin mong đợi mà bạn sẽ nhận
+00:07:30,299 --> 00:07:34,366
+chúng tôi muốn có một số thước đo về lượng thông tin mong đợi mà bạn sẽ nhận 
 
 146
-00:07:34,360 --> 00:07:35,720
-được từ sự phân phối này.
+00:07:34,366 --> 00:07:35,740
+được từ sự phân phối này. 
 
 147
-00:07:35,720 --> 00:07:40,676
-Nếu chúng ta xem xét từng mẫu và nhân xác suất xảy ra của nó với thứ gì đó để đo
+00:07:35,740 --> 00:07:40,069
+Nếu chúng ta xem xét từng mẫu và nhân xác suất xảy ra của nó với thứ gì đó để đo 
 
 148
-00:07:40,676 --> 00:07:46,000
-lường mức độ thông tin của nó, thì điều đó có thể cho chúng ta một điểm số khách quan.
+00:07:40,069 --> 00:07:44,720
+lường mức độ thông tin của nó, thì điều đó có thể cho chúng ta một điểm số khách quan. 
 
 149
-00:07:46,000 --> 00:07:50,280
-Bây giờ, bản năng đầu tiên của bạn về điều gì đó có thể là số lượng trận đấu.
+00:07:45,960 --> 00:07:49,840
+Bây giờ, bản năng đầu tiên của bạn về điều gì đó có thể là số lượng trận đấu. 
 
 150
-00:07:50,280 --> 00:07:52,960
-Bạn muốn số lượng trận đấu trung bình thấp hơn.
+00:07:50,160 --> 00:07:52,400
+Bạn muốn số lượng trận đấu trung bình thấp hơn. 
 
 151
-00:07:52,960 --> 00:07:56,630
-Nhưng thay vào đó, tôi muốn sử dụng một phép đo phổ quát hơn mà chúng ta thường gán
+00:07:52,800 --> 00:07:56,502
+Nhưng thay vào đó, tôi muốn sử dụng một phép đo phổ quát hơn mà chúng ta thường gán 
 
 152
-00:07:56,630 --> 00:08:00,431
-cho thông tin, và một phép đo sẽ linh hoạt hơn khi chúng ta gán một xác suất khác nhau
+00:07:56,502 --> 00:08:00,337
+cho thông tin, và một phép đo sẽ linh hoạt hơn khi chúng ta gán một xác suất khác nhau 
 
 153
-00:08:00,431 --> 00:08:04,320
-cho mỗi từ trong số 13.000 từ này để xem liệu chúng có thực sự là câu trả lời hay không.
+00:08:00,337 --> 00:08:04,260
+cho mỗi từ trong số 13.000 từ này để xem liệu chúng có thực sự là câu trả lời hay không. 
 
 154
-00:08:04,320 --> 00:08:11,060
-Đơn vị thông tin tiêu chuẩn là bit, có công thức hơi buồn cười,
+00:08:10,320 --> 00:08:13,650
+Đơn vị thông tin tiêu chuẩn là bit, có công thức hơi buồn cười, 
 
 155
-00:08:11,060 --> 00:08:17,800
-nhưng nó thực sự trực quan nếu chúng ta chỉ nhìn vào các ví dụ.
+00:08:13,650 --> 00:08:16,980
+nhưng nó thực sự trực quan nếu chúng ta chỉ nhìn vào các ví dụ. 
 
 156
-00:08:17,800 --> 00:08:21,564
-Nếu bạn có một quan sát làm giảm một nửa không gian khả năng của bạn,
+00:08:17,780 --> 00:08:21,144
+Nếu bạn có một quan sát làm giảm một nửa không gian khả năng của bạn, 
 
 157
-00:08:21,564 --> 00:08:24,200
-thì chúng tôi nói rằng nó có một chút thông tin.
+00:08:21,144 --> 00:08:23,500
+thì chúng tôi nói rằng nó có một chút thông tin. 
 
 158
-00:08:24,200 --> 00:08:27,315
-Trong ví dụ của chúng tôi, không gian của các khả năng là tất cả các từ có thể,
+00:08:24,180 --> 00:08:27,176
+Trong ví dụ của chúng tôi, không gian của các khả năng là tất cả các từ có thể, 
 
 159
-00:08:27,315 --> 00:08:29,885
-và hóa ra khoảng Một nửa trong số các từ có năm chữ cái có chữ S,
+00:08:27,176 --> 00:08:29,649
+và hóa ra khoảng Một nửa trong số các từ có năm chữ cái có chữ S, 
 
 160
-00:08:29,885 --> 00:08:31,560
-ít hơn thế một chút, nhưng khoảng một nửa.
+00:08:29,649 --> 00:08:31,260
+ít hơn thế một chút, nhưng khoảng một nửa. 
 
 161
-00:08:31,560 --> 00:08:35,200
-Vì vậy, quan sát đó sẽ cung cấp cho bạn một chút thông tin.
+00:08:31,780 --> 00:08:34,320
+Vì vậy, quan sát đó sẽ cung cấp cho bạn một chút thông tin. 
 
 162
-00:08:35,200 --> 00:08:39,422
-Thay vào đó, nếu một sự kiện mới cắt giảm không gian khả năng đó đi bốn lần,
+00:08:34,880 --> 00:08:38,990
+Thay vào đó, nếu một sự kiện mới cắt giảm không gian khả năng đó đi bốn lần, 
 
 163
-00:08:39,422 --> 00:08:42,000
-thì chúng ta nói rằng nó có hai bit thông tin.
+00:08:38,990 --> 00:08:41,500
+thì chúng ta nói rằng nó có hai bit thông tin. 
 
 164
-00:08:42,000 --> 00:08:45,120
-Ví dụ, hóa ra khoảng một phần tư những từ này có chữ T.
+00:08:41,980 --> 00:08:44,460
+Ví dụ, hóa ra khoảng một phần tư những từ này có chữ T. 
 
 165
-00:08:45,120 --> 00:08:50,920
-Nếu sự quan sát cắt không gian đó đi tám lần, chúng ta nói đó là ba bit thông tin, v.v.
+00:08:45,020 --> 00:08:50,720
+Nếu sự quan sát cắt không gian đó đi tám lần, chúng ta nói đó là ba bit thông tin, v.v. 
 
 166
-00:08:50,920 --> 00:08:55,000
-Bốn bit cắt nó thành phần 16, năm bit cắt nó thành phần 32.
+00:08:50,900 --> 00:08:55,060
+Bốn bit cắt nó thành phần 16, năm bit cắt nó thành phần 32. 
 
 167
-00:08:55,000 --> 00:08:59,500
-Vì vậy, bây giờ bạn có thể muốn tạm dừng và tự hỏi,
+00:08:55,060 --> 00:08:58,804
+Vì vậy, bây giờ bạn có thể muốn tạm dừng và tự hỏi, 
 
 168
-00:08:59,500 --> 00:09:04,520
-công thức thông tin về số bit theo xác suất xảy ra là gì?
+00:08:58,804 --> 00:09:02,980
+công thức thông tin về số bit theo xác suất xảy ra là gì? 
 
 169
-00:09:04,520 --> 00:09:10,038
-Điều chúng tôi đang nói ở đây là khi bạn lấy một nửa số bit, thì nó bằng với xác suất,
+00:09:03,920 --> 00:09:09,380
+Điều chúng tôi đang nói ở đây là khi bạn lấy một nửa số bit, thì nó bằng với xác suất, 
 
 170
-00:09:10,038 --> 00:09:14,288
-cũng giống như nói hai lũy thừa của số bit bằng một trên xác suất,
+00:09:09,380 --> 00:09:13,585
+cũng giống như nói hai lũy thừa của số bit bằng một trên xác suất, 
 
 171
-00:09:14,288 --> 00:09:19,680
-tức là sắp xếp lại để nói rằng thông tin là log cơ số hai của một chia cho xác suất.
+00:09:13,585 --> 00:09:18,920
+tức là sắp xếp lại để nói rằng thông tin là log cơ số hai của một chia cho xác suất. 
 
 172
-00:09:19,680 --> 00:09:22,789
-Và đôi khi bạn thấy điều này với một sự sắp xếp lại nữa,
+00:09:19,620 --> 00:09:22,356
+Và đôi khi bạn thấy điều này với một sự sắp xếp lại nữa, 
 
 173
-00:09:22,789 --> 00:09:25,680
-trong đó thông tin là log âm cơ số hai của xác suất.
+00:09:22,356 --> 00:09:24,900
+trong đó thông tin là log âm cơ số hai của xác suất. 
 
 174
-00:09:25,680 --> 00:09:29,524
-Diễn đạt như thế này, nó có thể trông hơi kỳ lạ đối với những người chưa quen,
+00:09:25,660 --> 00:09:29,088
+Diễn đạt như thế này, nó có thể trông hơi kỳ lạ đối với những người chưa quen, 
 
 175
-00:09:29,524 --> 00:09:32,687
-nhưng thực sự đó chỉ là một ý tưởng rất trực quan khi hỏi bạn đã
+00:09:29,088 --> 00:09:31,909
+nhưng thực sự đó chỉ là một ý tưởng rất trực quan khi hỏi bạn đã 
 
 176
-00:09:32,687 --> 00:09:35,120
-cắt giảm một nửa khả năng của mình bao nhiêu lần.
+00:09:31,909 --> 00:09:34,080
+cắt giảm một nửa khả năng của mình bao nhiêu lần. 
 
 177
-00:09:35,120 --> 00:09:37,567
-Bây giờ nếu bạn đang thắc mắc, bạn biết đấy, tôi nghĩ chúng ta chỉ đang chơi
+00:09:35,180 --> 00:09:37,280
+Bây giờ nếu bạn đang thắc mắc, bạn biết đấy, tôi nghĩ chúng ta chỉ đang chơi 
 
 178
-00:09:37,567 --> 00:09:39,920
-một trò chơi chữ vui nhộn, tại sao logarit lại xuất hiện trong bức tranh?
+00:09:37,280 --> 00:09:39,300
+một trò chơi chữ vui nhộn, tại sao logarit lại xuất hiện trong bức tranh? 
 
 179
-00:09:39,920 --> 00:09:44,386
-Một lý do khiến đây là một đơn vị đẹp hơn là vì nó dễ dàng hơn rất nhiều khi nói về
+00:09:39,780 --> 00:09:44,115
+Một lý do khiến đây là một đơn vị đẹp hơn là vì nó dễ dàng hơn rất nhiều khi nói về 
 
 180
-00:09:44,386 --> 00:09:48,853
-những sự kiện rất khó xảy ra, dễ dàng hơn nhiều khi nói rằng một quan sát có 20 bit
+00:09:44,115 --> 00:09:48,450
+những sự kiện rất khó xảy ra, dễ dàng hơn nhiều khi nói rằng một quan sát có 20 bit 
 
 181
-00:09:48,853 --> 00:09:53,480
-thông tin so với việc nói rằng xác suất xảy ra điều đó và điều đó xảy ra là 0.0000095.
+00:09:48,450 --> 00:09:52,940
+thông tin so với việc nói rằng xác suất xảy ra điều đó và điều đó xảy ra là 0.0000095. 
 
 182
-00:09:53,480 --> 00:09:57,766
-Nhưng một lý do thực chất hơn khiến biểu thức logarit này hóa ra lại là một sự bổ
+00:09:53,300 --> 00:09:57,405
+Nhưng một lý do thực chất hơn khiến biểu thức logarit này hóa ra lại là một sự bổ 
 
 183
-00:09:57,766 --> 00:10:02,000
-sung rất hữu ích cho lý thuyết xác suất là cách các thông tin cộng lại với nhau.
+00:09:57,405 --> 00:10:01,460
+sung rất hữu ích cho lý thuyết xác suất là cách các thông tin cộng lại với nhau. 
 
 184
-00:10:02,000 --> 00:10:05,031
-Ví dụ: nếu một quan sát cung cấp cho bạn hai bit thông tin,
+00:10:02,060 --> 00:10:04,957
+Ví dụ: nếu một quan sát cung cấp cho bạn hai bit thông tin, 
 
 185
-00:10:05,031 --> 00:10:08,922
-cắt giảm không gian của bạn xuống còn bốn, và sau đó quan sát thứ hai như dự
+00:10:04,957 --> 00:10:08,675
+cắt giảm không gian của bạn xuống còn bốn, và sau đó quan sát thứ hai như dự 
 
 186
-00:10:08,922 --> 00:10:12,812
-đoán thứ hai của bạn trong Wordle sẽ cung cấp cho bạn ba bit thông tin khác,
+00:10:08,675 --> 00:10:12,393
+đoán thứ hai của bạn trong Wordle sẽ cung cấp cho bạn ba bit thông tin khác, 
 
 187
-00:10:12,812 --> 00:10:17,360
-cắt nhỏ hơn nữa theo hệ số tám khác, thì cả hai cùng nhau cung cấp cho bạn năm thông tin.
+00:10:12,393 --> 00:10:16,740
+cắt nhỏ hơn nữa theo hệ số tám khác, thì cả hai cùng nhau cung cấp cho bạn năm thông tin. 
 
 188
-00:10:17,360 --> 00:10:21,200
-Cũng giống như cách xác suất muốn nhân lên, thông tin cũng thích cộng thêm.
+00:10:17,160 --> 00:10:21,020
+Cũng giống như cách xác suất muốn nhân lên, thông tin cũng thích cộng thêm. 
 
 189
-00:10:21,200 --> 00:10:24,973
-Vì vậy, ngay khi chúng ta ở trong phạm vi của một thứ gì đó giống như giá trị kỳ vọng,
+00:10:21,960 --> 00:10:25,005
+Vì vậy, ngay khi chúng ta ở trong phạm vi của một thứ gì đó giống như giá trị kỳ vọng, 
 
 190
-00:10:24,973 --> 00:10:28,660
-nơi chúng ta cộng một loạt các số, nhật ký sẽ giúp việc xử lý dễ dàng hơn rất nhiều.
+00:10:25,005 --> 00:10:27,980
+nơi chúng ta cộng một loạt các số, nhật ký sẽ giúp việc xử lý dễ dàng hơn rất nhiều. 
 
 191
-00:10:28,660 --> 00:10:32,179
-Hãy quay lại bản phân phối của chúng tôi cho Weary và thêm một công cụ theo
+00:10:28,480 --> 00:10:31,775
+Hãy quay lại bản phân phối của chúng tôi cho Weary và thêm một công cụ theo 
 
 192
-00:10:32,179 --> 00:10:35,560
-dõi nhỏ khác vào đây, cho chúng tôi biết lượng thông tin có cho mỗi mẫu.
+00:10:31,775 --> 00:10:34,940
+dõi nhỏ khác vào đây, cho chúng tôi biết lượng thông tin có cho mỗi mẫu. 
 
 193
-00:10:35,560 --> 00:10:39,403
-Điều chính mà tôi muốn bạn chú ý là xác suất chúng ta đạt được những mẫu có
+00:10:35,580 --> 00:10:39,065
+Điều chính mà tôi muốn bạn chú ý là xác suất chúng ta đạt được những mẫu có 
 
 194
-00:10:39,403 --> 00:10:43,500
-nhiều khả năng đó càng cao thì thông tin càng thấp thì bạn thu được càng ít bit.
+00:10:39,065 --> 00:10:42,780
+nhiều khả năng đó càng cao thì thông tin càng thấp thì bạn thu được càng ít bit. 
 
 195
-00:10:43,500 --> 00:10:47,298
-Cách chúng tôi đo lường chất lượng của dự đoán này là lấy giá trị kỳ vọng của thông tin
+00:10:43,500 --> 00:10:47,006
+Cách chúng tôi đo lường chất lượng của dự đoán này là lấy giá trị kỳ vọng của thông tin 
 
 196
-00:10:47,298 --> 00:10:51,054
-này, trong đó chúng tôi xem xét từng mẫu, chúng tôi cho biết khả năng xảy ra của nó là
+00:10:47,006 --> 00:10:50,473
+này, trong đó chúng tôi xem xét từng mẫu, chúng tôi cho biết khả năng xảy ra của nó là 
 
 197
-00:10:51,054 --> 00:10:54,940
-bao nhiêu và sau đó chúng tôi nhân giá trị đó với số lượng thông tin chúng tôi nhận được.
+00:10:50,473 --> 00:10:54,060
+bao nhiêu và sau đó chúng tôi nhân giá trị đó với số lượng thông tin chúng tôi nhận được. 
 
 198
-00:10:54,940 --> 00:10:58,480
-Và trong ví dụ của Weary, kết quả là 4.9 bit.
+00:10:54,710 --> 00:10:58,120
+Và trong ví dụ của Weary, kết quả là 4.9 bit. 
 
 199
-00:10:58,480 --> 00:11:02,095
-Vì vậy, trung bình, thông tin bạn nhận được từ lần đoán mở đầu này cũng
+00:10:58,560 --> 00:11:02,044
+Vì vậy, trung bình, thông tin bạn nhận được từ lần đoán mở đầu này cũng 
 
 200
-00:11:02,095 --> 00:11:05,660
-tốt như việc cắt đôi không gian khả năng của bạn trong khoảng năm lần.
+00:11:02,044 --> 00:11:05,480
+tốt như việc cắt đôi không gian khả năng của bạn trong khoảng năm lần. 
 
 201
-00:11:05,660 --> 00:11:09,208
-Ngược lại, một ví dụ về phỏng đoán có giá trị
+00:11:05,960 --> 00:11:08,626
+Ngược lại, một ví dụ về phỏng đoán có giá trị 
 
 202
-00:11:09,208 --> 00:11:13,220
-thông tin được mong đợi cao hơn sẽ giống như Slate.
+00:11:08,626 --> 00:11:11,640
+thông tin được mong đợi cao hơn sẽ giống như Slate. 
 
 203
-00:11:13,220 --> 00:11:16,180
-Trong trường hợp này bạn sẽ nhận thấy sự phân bố trông phẳng hơn rất nhiều.
+00:11:13,120 --> 00:11:15,620
+Trong trường hợp này bạn sẽ nhận thấy sự phân bố trông phẳng hơn rất nhiều. 
 
 204
-00:11:16,180 --> 00:11:21,091
-Đặc biệt, khả năng xuất hiện nhiều nhất của tất cả các màu xám chỉ có khoảng
+00:11:15,940 --> 00:11:20,630
+Đặc biệt, khả năng xuất hiện nhiều nhất của tất cả các màu xám chỉ có khoảng 
 
 205
-00:11:21,091 --> 00:11:25,940
-6% khả năng xảy ra, vì vậy rõ ràng bạn nhận được ít nhất 3.9 bit thông tin.
+00:11:20,630 --> 00:11:25,260
+6% khả năng xảy ra, vì vậy rõ ràng bạn nhận được ít nhất 3.9 bit thông tin. 
 
 206
-00:11:25,940 --> 00:11:29,140
-Nhưng đó chỉ là mức tối thiểu, thông thường bạn sẽ nhận được thứ gì đó tốt hơn thế.
+00:11:25,920 --> 00:11:28,560
+Nhưng đó chỉ là mức tối thiểu, thông thường bạn sẽ nhận được thứ gì đó tốt hơn thế. 
 
 207
-00:11:29,140 --> 00:11:32,780
-Và hóa ra là khi bạn tính toán các con số trên đây và cộng tất cả
+00:11:29,100 --> 00:11:32,500
+Và hóa ra là khi bạn tính toán các con số trên đây và cộng tất cả 
 
 208
-00:11:32,780 --> 00:11:36,420
-các số hạng có liên quan, thông tin trung bình là khoảng 5. số 8.
+00:11:32,500 --> 00:11:35,900
+các số hạng có liên quan, thông tin trung bình là khoảng 5. số 8. 
 
 209
-00:11:36,420 --> 00:11:40,307
-Vì vậy, trái ngược với Weary, trung bình không gian khả năng
+00:11:37,360 --> 00:11:40,554
+Vì vậy, trái ngược với Weary, trung bình không gian khả năng 
 
 210
-00:11:40,307 --> 00:11:43,940
-của bạn sẽ lớn khoảng một nửa sau lần đoán đầu tiên này.
+00:11:40,554 --> 00:11:43,540
+của bạn sẽ lớn khoảng một nửa sau lần đoán đầu tiên này. 
 
 211
-00:11:43,940 --> 00:11:49,540
-Thực sự có một câu chuyện thú vị về tên của giá trị kỳ vọng của lượng thông tin này.
+00:11:44,420 --> 00:11:49,120
+Thực sự có một câu chuyện thú vị về tên của giá trị kỳ vọng của lượng thông tin này. 
 
 212
-00:11:49,540 --> 00:11:52,150
-Lý thuyết thông tin được phát triển bởi Claude Shannon,
+00:11:49,200 --> 00:11:51,761
+Lý thuyết thông tin được phát triển bởi Claude Shannon, 
 
 213
-00:11:52,150 --> 00:11:54,668
-người đang làm việc tại Bell Labs vào những năm 1940,
+00:11:51,761 --> 00:11:54,230
+người đang làm việc tại Bell Labs vào những năm 1940, 
 
 214
-00:11:54,668 --> 00:11:58,818
-nhưng ông ấy đang nói về một số ý tưởng chưa được công bố của mình với John von Neumann,
+00:11:54,230 --> 00:11:58,300
+nhưng ông ấy đang nói về một số ý tưởng chưa được công bố của mình với John von Neumann, 
 
 215
-00:11:58,818 --> 00:12:01,242
-một trí tuệ khổng lồ vào thời điểm đó, rất nổi bật.
+00:11:58,300 --> 00:12:00,678
+một trí tuệ khổng lồ vào thời điểm đó, rất nổi bật. 
 
 216
-00:12:01,242 --> 00:12:04,180
-trong toán học và vật lý và sự khởi đầu của khoa học máy tính.
+00:12:00,678 --> 00:12:03,560
+trong toán học và vật lý và sự khởi đầu của khoa học máy tính. 
 
 217
-00:12:04,180 --> 00:12:07,627
-Và khi anh ấy đề cập rằng anh ấy thực sự không có một cái tên hay cho
+00:12:04,100 --> 00:12:07,403
+Và khi anh ấy đề cập rằng anh ấy thực sự không có một cái tên hay cho 
 
 218
-00:12:07,627 --> 00:12:11,223
-giá trị kỳ vọng của lượng thông tin này, von Neumann được cho là đã nói,
+00:12:07,403 --> 00:12:10,849
+giá trị kỳ vọng của lượng thông tin này, von Neumann được cho là đã nói, 
 
 219
-00:12:11,223 --> 00:12:14,720
-vì vậy câu chuyện diễn ra, bạn nên gọi nó là entropy, và vì hai lý do.
+00:12:10,849 --> 00:12:14,200
+vì vậy câu chuyện diễn ra, bạn nên gọi nó là entropy, và vì hai lý do. 
 
 220
-00:12:14,720 --> 00:12:19,117
-Đầu tiên, hàm bất định của bạn đã được sử dụng trong cơ học thống kê dưới cái tên đó,
+00:12:14,540 --> 00:12:18,937
+Đầu tiên, hàm bất định của bạn đã được sử dụng trong cơ học thống kê dưới cái tên đó, 
 
 221
-00:12:19,117 --> 00:12:23,718
-nên nó đã có tên rồi, và thứ hai, và quan trọng hơn, không ai biết entropy thực sự là gì,
+00:12:18,937 --> 00:12:23,538
+nên nó đã có tên rồi, và thứ hai, và quan trọng hơn, không ai biết entropy thực sự là gì, 
 
 222
-00:12:23,718 --> 00:12:26,940
-vì vậy trong một cuộc tranh luận, bạn sẽ luôn luôn có lợi thế.
+00:12:23,538 --> 00:12:26,760
+vì vậy trong một cuộc tranh luận, bạn sẽ luôn luôn có lợi thế. 
 
 223
-00:12:26,940 --> 00:12:30,112
-Vì vậy, nếu cái tên có vẻ hơi bí ẩn và nếu câu
+00:12:27,700 --> 00:12:30,030
+Vì vậy, nếu cái tên có vẻ hơi bí ẩn và nếu câu 
 
 224
-00:12:30,112 --> 00:12:33,420
-chuyện này được tin tưởng thì đó là do thiết kế.
+00:12:30,030 --> 00:12:32,460
+chuyện này được tin tưởng thì đó là do thiết kế. 
 
 225
-00:12:33,420 --> 00:12:36,808
-Ngoài ra, nếu bạn đang thắc mắc về mối quan hệ của nó với tất cả các định
+00:12:33,280 --> 00:12:36,454
+Ngoài ra, nếu bạn đang thắc mắc về mối quan hệ của nó với tất cả các định 
 
 226
-00:12:36,808 --> 00:12:40,654
-luật thứ hai của nhiệt động lực học trong vật lý, thì chắc chắn có một mối liên hệ,
+00:12:36,454 --> 00:12:40,057
+luật thứ hai của nhiệt động lực học trong vật lý, thì chắc chắn có một mối liên hệ, 
 
 227
-00:12:40,654 --> 00:12:44,088
-nhưng về nguồn gốc của nó, Shannon chỉ xử lý lý thuyết xác suất thuần túy,
+00:12:40,057 --> 00:12:43,274
+nhưng về nguồn gốc của nó, Shannon chỉ xử lý lý thuyết xác suất thuần túy, 
 
 228
-00:12:44,088 --> 00:12:46,973
-và vì mục đích của chúng ta ở đây, khi tôi sử dụng từ entropy,
+00:12:43,274 --> 00:12:45,976
+và vì mục đích của chúng ta ở đây, khi tôi sử dụng từ entropy, 
 
 229
-00:12:46,973 --> 00:12:50,820
-tôi chỉ muốn bạn nghĩ đến giá trị thông tin mong đợi của một lần phỏng đoán cụ thể.
+00:12:45,976 --> 00:12:49,580
+tôi chỉ muốn bạn nghĩ đến giá trị thông tin mong đợi của một lần phỏng đoán cụ thể. 
 
 230
-00:12:50,820 --> 00:12:54,380
-Bạn có thể coi entropy như việc đo hai thứ cùng một lúc.
+00:12:50,700 --> 00:12:53,780
+Bạn có thể coi entropy như việc đo hai thứ cùng một lúc. 
 
 231
-00:12:54,380 --> 00:12:57,420
-Đầu tiên là mức độ phân phối bằng phẳng như thế nào.
+00:12:54,240 --> 00:12:56,780
+Đầu tiên là mức độ phân phối bằng phẳng như thế nào. 
 
 232
-00:12:57,420 --> 00:13:01,700
-Sự phân bố càng gần đều thì entropy càng cao.
+00:12:57,320 --> 00:13:01,120
+Sự phân bố càng gần đều thì entropy càng cao. 
 
 233
-00:13:01,700 --> 00:13:06,861
-Trong trường hợp của chúng tôi, khi có tổng số từ 3 đến 5 mẫu, để phân bố đồng đều,
+00:13:01,580 --> 00:13:06,600
+Trong trường hợp của chúng tôi, khi có tổng số từ 3 đến 5 mẫu, để phân bố đồng đều, 
 
 234
-00:13:06,861 --> 00:13:12,145
-việc quan sát bất kỳ mẫu nào trong số chúng sẽ có nhật ký thông tin cơ sở 2 của 3 đến
+00:13:06,600 --> 00:13:11,741
+việc quan sát bất kỳ mẫu nào trong số chúng sẽ có nhật ký thông tin cơ sở 2 của 3 đến 
 
 235
-00:13:12,145 --> 00:13:17,552
-mẫu thứ 5, tức là 7.92, vậy đó là mức tối đa tuyệt đối mà bạn có thể có đối với entropy
+00:13:11,741 --> 00:13:17,001
+mẫu thứ 5, tức là 7.92, vậy đó là mức tối đa tuyệt đối mà bạn có thể có đối với entropy 
 
 236
-00:13:17,552 --> 00:13:17,860
-này.
+00:13:17,001 --> 00:13:17,300
+này. 
 
 237
-00:13:17,860 --> 00:13:22,900
-Nhưng entropy cũng là thước đo xem có bao nhiêu khả năng xảy ra ngay từ đầu.
+00:13:17,840 --> 00:13:22,080
+Nhưng entropy cũng là thước đo xem có bao nhiêu khả năng xảy ra ngay từ đầu. 
 
 238
-00:13:22,900 --> 00:13:27,860
-Ví dụ: nếu bạn tình cờ có một từ nào đó trong đó chỉ có 16 mẫu có thể và mỗi mẫu
+00:13:22,320 --> 00:13:27,280
+Ví dụ: nếu bạn tình cờ có một từ nào đó trong đó chỉ có 16 mẫu có thể và mỗi mẫu 
 
 239
-00:13:27,860 --> 00:13:32,760
-đều có khả năng như nhau, thì entropy này, thông tin mong đợi này, sẽ là 4 bit.
+00:13:27,280 --> 00:13:32,180
+đều có khả năng như nhau, thì entropy này, thông tin mong đợi này, sẽ là 4 bit. 
 
 240
-00:13:32,760 --> 00:13:36,880
-Nhưng nếu bạn có một từ khác trong đó có 64 mẫu có thể xuất hiện và
+00:13:32,579 --> 00:13:36,530
+Nhưng nếu bạn có một từ khác trong đó có 64 mẫu có thể xuất hiện và 
 
 241
-00:13:36,880 --> 00:13:41,000
-chúng đều có khả năng như nhau, thì entropy sẽ có kết quả là 6 bit.
+00:13:36,530 --> 00:13:40,480
+chúng đều có khả năng như nhau, thì entropy sẽ có kết quả là 6 bit. 
 
 242
-00:13:41,000 --> 00:13:45,285
-Vì vậy, nếu bạn thấy một số phân phối ngoài tự nhiên có entropy 6 bit,
+00:13:41,500 --> 00:13:45,337
+Vì vậy, nếu bạn thấy một số phân phối ngoài tự nhiên có entropy 6 bit, 
 
 243
-00:13:45,285 --> 00:13:49,752
-thì điều đó giống như nói rằng có nhiều biến thể và sự không chắc chắn về
+00:13:45,337 --> 00:13:49,337
+thì điều đó giống như nói rằng có nhiều biến thể và sự không chắc chắn về 
 
 244
-00:13:49,752 --> 00:13:54,400
-những gì sắp xảy ra giống như thể có 64 kết quả có khả năng xảy ra như nhau.
+00:13:49,337 --> 00:13:53,500
+những gì sắp xảy ra giống như thể có 64 kết quả có khả năng xảy ra như nhau. 
 
 245
-00:13:54,400 --> 00:13:58,360
-Trong lần đầu tiên tôi vượt qua Wurtelebot, về cơ bản tôi chỉ cần làm điều này.
+00:13:54,360 --> 00:13:59,320
+Trong lần đầu tiên tôi vượt qua Wurtelebot, về cơ bản tôi chỉ cần làm điều này. 
 
 246
-00:13:58,360 --> 00:14:03,314
-Nó xem xét tất cả những phỏng đoán có thể có mà bạn có thể có, tất cả 13.000 từ,
+00:13:59,320 --> 00:14:03,743
+Nó xem xét tất cả những phỏng đoán có thể có mà bạn có thể có, tất cả 13.000 từ, 
 
 247
-00:14:03,314 --> 00:14:07,902
-tính toán entropy cho mỗi từ, hay cụ thể hơn là entropy của phân phối trên
+00:14:03,743 --> 00:14:07,839
+tính toán entropy cho mỗi từ, hay cụ thể hơn là entropy của phân phối trên 
 
 248
-00:14:07,902 --> 00:14:12,122
-tất cả các mẫu mà bạn có thể thấy, cho mỗi mẫu và chọn mức cao nhất,
+00:14:07,839 --> 00:14:11,607
+tất cả các mẫu mà bạn có thể thấy, cho mỗi mẫu và chọn mức cao nhất, 
 
 249
-00:14:12,122 --> 00:14:17,200
-vì đó là thứ có khả năng cắt giảm không gian khả năng của bạn càng nhiều càng tốt.
+00:14:11,607 --> 00:14:16,140
+vì đó là thứ có khả năng cắt giảm không gian khả năng của bạn càng nhiều càng tốt. 
 
 250
-00:14:17,200 --> 00:14:19,353
-Và mặc dù tôi chỉ nói về lần đoán đầu tiên ở đây,
+00:14:17,140 --> 00:14:19,043
+Và mặc dù tôi chỉ nói về lần đoán đầu tiên ở đây, 
 
 251
-00:14:19,353 --> 00:14:21,680
-nhưng những lần đoán tiếp theo cũng diễn ra tương tự.
+00:14:19,043 --> 00:14:21,100
+nhưng những lần đoán tiếp theo cũng diễn ra tương tự. 
 
 252
-00:14:21,680 --> 00:14:24,749
-Ví dụ: sau khi bạn thấy một số mẫu trong lần đoán đầu tiên đó,
+00:14:21,560 --> 00:14:24,519
+Ví dụ: sau khi bạn thấy một số mẫu trong lần đoán đầu tiên đó, 
 
 253
-00:14:24,749 --> 00:14:28,305
-điều này sẽ hạn chế bạn ở số lượng từ có thể có ít hơn dựa trên những gì
+00:14:24,519 --> 00:14:27,948
+điều này sẽ hạn chế bạn ở số lượng từ có thể có ít hơn dựa trên những gì 
 
 254
-00:14:28,305 --> 00:14:32,300
-phù hợp với từ đó, bạn chỉ cần chơi cùng một trò chơi đối với nhóm từ nhỏ hơn đó.
+00:14:27,948 --> 00:14:31,800
+phù hợp với từ đó, bạn chỉ cần chơi cùng một trò chơi đối với nhóm từ nhỏ hơn đó. 
 
 255
-00:14:32,300 --> 00:14:36,693
-Đối với lần đoán thứ hai được đề xuất, bạn xem xét sự phân bố của tất
+00:14:32,260 --> 00:14:36,120
+Đối với lần đoán thứ hai được đề xuất, bạn xem xét sự phân bố của tất 
 
 256
-00:14:36,693 --> 00:14:40,145
-cả các mẫu có thể xảy ra từ tập hợp từ hạn chế hơn đó,
+00:14:36,120 --> 00:14:39,152
+cả các mẫu có thể xảy ra từ tập hợp từ hạn chế hơn đó, 
 
 257
-00:14:40,145 --> 00:14:45,480
-bạn tìm kiếm trong tất cả 13.000 khả năng và bạn tìm thấy mẫu tối đa hóa entropy đó.
+00:14:39,152 --> 00:14:43,840
+bạn tìm kiếm trong tất cả 13.000 khả năng và bạn tìm thấy mẫu tối đa hóa entropy đó. 
 
 258
-00:14:45,480 --> 00:14:48,435
-Để cho bạn thấy điều này hoạt động như thế nào trong thực tế,
+00:14:45,420 --> 00:14:48,402
+Để cho bạn thấy điều này hoạt động như thế nào trong thực tế, 
 
 259
-00:14:48,435 --> 00:14:52,725
-hãy để tôi đưa ra một biến thể nhỏ của Wurtele mà tôi đã viết cho thấy những điểm nổi bật
+00:14:48,402 --> 00:14:52,732
+hãy để tôi đưa ra một biến thể nhỏ của Wurtele mà tôi đã viết cho thấy những điểm nổi bật 
 
 260
-00:14:52,725 --> 00:14:54,060
-của phân tích này ở bên lề.
+00:14:52,732 --> 00:14:54,080
+của phân tích này ở bên lề. 
 
 261
-00:14:54,060 --> 00:14:56,153
-Sau khi thực hiện tất cả các phép tính entropy,
+00:14:54,080 --> 00:14:55,940
+Sau khi thực hiện tất cả các phép tính entropy, 
 
 262
-00:14:56,153 --> 00:14:59,293
-ở bên phải nó sẽ hiển thị cho chúng ta những thông tin nào có thông tin
+00:14:55,940 --> 00:14:58,730
+ở bên phải nó sẽ hiển thị cho chúng ta những thông tin nào có thông tin 
 
 263
-00:14:59,293 --> 00:15:00,340
-được mong đợi cao nhất.
+00:14:58,730 --> 00:14:59,660
+được mong đợi cao nhất. 
 
 264
-00:15:00,340 --> 00:15:04,178
-Hóa ra câu trả lời hàng đầu, ít nhất là tại thời điểm này,
+00:15:00,280 --> 00:15:03,940
+Hóa ra câu trả lời hàng đầu, ít nhất là tại thời điểm này, 
 
 265
-00:15:04,178 --> 00:15:09,318
-chúng ta sẽ tinh chỉnh lại sau, là Tares, có nghĩa là, ừm, tất nhiên, đậu tằm,
+00:15:03,940 --> 00:15:08,842
+chúng ta sẽ tinh chỉnh lại sau, là Tares, có nghĩa là, ừm, tất nhiên, đậu tằm, 
 
 266
-00:15:09,318 --> 00:15:11,140
-loại đậu tằm phổ biến nhất.
+00:15:08,842 --> 00:15:10,580
+loại đậu tằm phổ biến nhất. 
 
 267
-00:15:11,140 --> 00:15:14,620
-Mỗi lần chúng ta đoán ở đây, có lẽ tôi sẽ bỏ qua các đề xuất của nó và chọn phương
+00:15:11,040 --> 00:15:14,405
+Mỗi lần chúng ta đoán ở đây, có lẽ tôi sẽ bỏ qua các đề xuất của nó và chọn phương 
 
 268
-00:15:14,620 --> 00:15:18,101
-tiện chặn, bởi vì tôi thích phương tiện chặn, chúng ta có thể thấy nó có bao nhiêu
+00:15:14,405 --> 00:15:17,770
+tiện chặn, bởi vì tôi thích phương tiện chặn, chúng ta có thể thấy nó có bao nhiêu 
 
 269
-00:15:18,101 --> 00:15:20,450
-thông tin được mong đợi, nhưng ở bên phải của từ ở đây,
+00:15:17,770 --> 00:15:20,041
+thông tin được mong đợi, nhưng ở bên phải của từ ở đây, 
 
 270
-00:15:20,450 --> 00:15:23,931
-nó cho chúng ta thấy có bao nhiêu thông tin thông tin thực tế chúng tôi nhận được,
+00:15:20,041 --> 00:15:23,406
+nó cho chúng ta thấy có bao nhiêu thông tin thông tin thực tế chúng tôi nhận được, 
 
 271
-00:15:23,931 --> 00:15:24,980
-dựa trên mẫu cụ thể này.
+00:15:23,406 --> 00:15:24,420
+dựa trên mẫu cụ thể này. 
 
 272
-00:15:24,980 --> 00:15:27,244
-Vì vậy ở đây có vẻ như chúng ta đã hơi xui xẻo một chút,
+00:15:25,000 --> 00:15:27,040
+Vì vậy ở đây có vẻ như chúng ta đã hơi xui xẻo một chút, 
 
 273
-00:15:27,244 --> 00:15:30,660
-chúng ta đã mong đợi nhận được 5.8, nhưng chúng tôi tình cờ nhận được thứ ít hơn thế.
+00:15:27,040 --> 00:15:30,120
+chúng ta đã mong đợi nhận được 5.8, nhưng chúng tôi tình cờ nhận được thứ ít hơn thế. 
 
 274
-00:15:30,660 --> 00:15:33,283
-Và ở phía bên trái, nó hiển thị cho chúng ta tất cả các
+00:15:30,600 --> 00:15:32,829
+Và ở phía bên trái, nó hiển thị cho chúng ta tất cả các 
 
 275
-00:15:33,283 --> 00:15:35,860
-từ khác nhau có thể có ở vị trí hiện tại của chúng ta.
+00:15:32,829 --> 00:15:35,020
+từ khác nhau có thể có ở vị trí hiện tại của chúng ta. 
 
 276
-00:15:35,860 --> 00:15:39,231
-Các thanh màu xanh lam cho chúng ta biết khả năng nó nghĩ mỗi từ là bao nhiêu,
+00:15:35,800 --> 00:15:38,878
+Các thanh màu xanh lam cho chúng ta biết khả năng nó nghĩ mỗi từ là bao nhiêu, 
 
 277
-00:15:39,231 --> 00:15:42,347
-vì vậy hiện tại nó đang giả định mỗi từ đều có khả năng xảy ra như nhau,
+00:15:38,878 --> 00:15:41,723
+vì vậy hiện tại nó đang giả định mỗi từ đều có khả năng xảy ra như nhau, 
 
 278
-00:15:42,347 --> 00:15:44,140
-nhưng chúng ta sẽ tinh chỉnh điều đó sau.
+00:15:41,723 --> 00:15:43,360
+nhưng chúng ta sẽ tinh chỉnh điều đó sau. 
 
 279
-00:15:44,140 --> 00:15:48,073
-Và sau đó, phép đo độ không đảm bảo này cho chúng ta biết entropy
+00:15:44,060 --> 00:15:48,026
+Và sau đó, phép đo độ không đảm bảo này cho chúng ta biết entropy 
 
 280
-00:15:48,073 --> 00:15:52,304
-của phân bố này trên các từ có thể, mà hiện tại, vì nó là phân bố đều,
+00:15:48,026 --> 00:15:52,293
+của phân bố này trên các từ có thể, mà hiện tại, vì nó là phân bố đều, 
 
 281
-00:15:52,304 --> 00:15:55,940
-chỉ là một cách phức tạp không cần thiết để đếm số khả năng.
+00:15:52,293 --> 00:15:55,960
+chỉ là một cách phức tạp không cần thiết để đếm số khả năng. 
 
 282
-00:15:55,940 --> 00:16:02,700
-Ví dụ: nếu chúng ta lấy 2 lũy thừa của 13.66, tức là có khoảng 13.000 khả năng.
+00:15:56,560 --> 00:16:02,180
+Ví dụ: nếu chúng ta lấy 2 lũy thừa của 13.66, tức là có khoảng 13.000 khả năng. 
 
 283
-00:16:02,700 --> 00:16:06,780
-Ở đây tôi hơi sai một chút, nhưng chỉ vì tôi không hiển thị tất cả các chữ số thập phân.
+00:16:02,900 --> 00:16:06,140
+Ở đây tôi hơi sai một chút, nhưng chỉ vì tôi không hiển thị tất cả các chữ số thập phân. 
 
 284
-00:16:06,780 --> 00:16:09,999
-Hiện tại, điều này có thể khiến bạn cảm thấy dư thừa và có vẻ như mọi thứ quá phức tạp,
+00:16:06,720 --> 00:16:09,735
+Hiện tại, điều này có thể khiến bạn cảm thấy dư thừa và có vẻ như mọi thứ quá phức tạp, 
 
 285
-00:16:09,999 --> 00:16:12,780
-nhưng bạn sẽ thấy tại sao việc có cả hai con số trong một phút lại hữu ích.
+00:16:09,735 --> 00:16:12,340
+nhưng bạn sẽ thấy tại sao việc có cả hai con số trong một phút lại hữu ích. 
 
 286
-00:16:12,780 --> 00:16:16,191
-Vì vậy, ở đây có vẻ như nó gợi ý entropy cao nhất cho lần đoán thứ hai
+00:16:12,760 --> 00:16:16,033
+Vì vậy, ở đây có vẻ như nó gợi ý entropy cao nhất cho lần đoán thứ hai 
 
 287
-00:16:16,191 --> 00:16:19,700
-của chúng ta là Ramen, một lần nữa nó thực sự không giống một từ nào cả.
+00:16:16,033 --> 00:16:19,400
+của chúng ta là Ramen, một lần nữa nó thực sự không giống một từ nào cả. 
 
 288
-00:16:19,700 --> 00:16:25,660
-Vì vậy, để nâng cao nền tảng đạo đức ở đây, tôi sẽ tiếp tục và gõ Rains.
+00:16:19,980 --> 00:16:24,060
+Vì vậy, để nâng cao nền tảng đạo đức ở đây, tôi sẽ tiếp tục và gõ Rains. 
 
 289
-00:16:25,660 --> 00:16:27,540
-Và một lần nữa có vẻ như chúng tôi hơi kém may mắn.
+00:16:25,440 --> 00:16:27,340
+Và một lần nữa có vẻ như chúng tôi hơi kém may mắn. 
 
 290
-00:16:27,540 --> 00:16:32,100
-Chúng tôi đã mong đợi 4.3 bit và chúng tôi chỉ có 3.39 bit thông tin.
+00:16:27,520 --> 00:16:31,360
+Chúng tôi đã mong đợi 4.3 bit và chúng tôi chỉ có 3.39 bit thông tin. 
 
 291
-00:16:32,100 --> 00:16:35,060
-Vì vậy, điều đó đưa chúng ta xuống còn 55 khả năng.
+00:16:31,940 --> 00:16:33,940
+Vì vậy, điều đó đưa chúng ta xuống còn 55 khả năng. 
 
 292
-00:16:35,060 --> 00:16:37,846
-Và ở đây có lẽ tôi sẽ thực sự làm theo những gì nó gợi ý,
+00:16:34,900 --> 00:16:37,360
+Và ở đây có lẽ tôi sẽ thực sự làm theo những gì nó gợi ý, 
 
 293
-00:16:37,846 --> 00:16:40,200
-đó là sự kết hợp, bất kể điều đó có nghĩa là gì.
+00:16:37,360 --> 00:16:39,440
+đó là sự kết hợp, bất kể điều đó có nghĩa là gì. 
 
 294
-00:16:40,200 --> 00:16:43,300
-Và được rồi, đây thực sự là một cơ hội tốt để giải câu đố.
+00:16:40,040 --> 00:16:42,920
+Và được rồi, đây thực sự là một cơ hội tốt để giải câu đố. 
 
 295
-00:16:43,300 --> 00:16:47,020
-Nó cho chúng ta biết mẫu này cho chúng ta 4.7 bit thông tin.
+00:16:42,920 --> 00:16:46,380
+Nó cho chúng ta biết mẫu này cho chúng ta 4.7 bit thông tin. 
 
 296
-00:16:47,020 --> 00:16:52,400
-Nhưng ở bên trái, trước khi chúng ta nhìn thấy mẫu đó, có 5.78 bit không chắc chắn.
+00:16:47,060 --> 00:16:51,720
+Nhưng ở bên trái, trước khi chúng ta nhìn thấy mẫu đó, có 5.78 bit không chắc chắn. 
 
 297
-00:16:52,400 --> 00:16:56,860
-Vì vậy, như một câu đố dành cho bạn, điều đó có ý nghĩa gì về số khả năng còn lại?
+00:16:52,420 --> 00:16:56,340
+Vì vậy, như một câu đố dành cho bạn, điều đó có ý nghĩa gì về số khả năng còn lại? 
 
 298
-00:16:56,860 --> 00:17:00,860
-Chà, điều đó có nghĩa là chúng ta giảm xuống còn một chút không chắc chắn,
+00:16:58,040 --> 00:17:01,356
+Chà, điều đó có nghĩa là chúng ta giảm xuống còn một chút không chắc chắn, 
 
 299
-00:17:00,860 --> 00:17:04,700
-điều này cũng giống như việc nói rằng có hai câu trả lời có thể xảy ra.
+00:17:01,356 --> 00:17:04,540
+điều này cũng giống như việc nói rằng có hai câu trả lời có thể xảy ra. 
 
 300
-00:17:04,700 --> 00:17:06,520
-Đó là sự lựa chọn 50-50.
+00:17:04,700 --> 00:17:05,700
+Đó là sự lựa chọn 50-50. 
 
 301
-00:17:06,520 --> 00:17:09,174
-Và từ đây, bởi vì bạn và tôi biết những từ nào phổ biến hơn,
+00:17:06,500 --> 00:17:08,838
+Và từ đây, bởi vì bạn và tôi biết những từ nào phổ biến hơn, 
 
 302
-00:17:09,174 --> 00:17:11,220
-chúng ta biết rằng câu trả lời sẽ là vực thẳm.
+00:17:08,838 --> 00:17:10,640
+chúng ta biết rằng câu trả lời sẽ là vực thẳm. 
 
 303
-00:17:11,220 --> 00:17:13,540
-Nhưng như nó được viết bây giờ, chương trình không biết điều đó.
+00:17:11,180 --> 00:17:13,280
+Nhưng như nó được viết bây giờ, chương trình không biết điều đó. 
 
 304
-00:17:13,540 --> 00:17:17,072
-Vì vậy, nó cứ tiếp tục, cố gắng thu thập càng nhiều thông tin càng tốt,
+00:17:13,540 --> 00:17:16,813
+Vì vậy, nó cứ tiếp tục, cố gắng thu thập càng nhiều thông tin càng tốt, 
 
 305
-00:17:17,072 --> 00:17:20,360
-cho đến khi chỉ còn một khả năng duy nhất, và rồi nó đoán điều đó.
+00:17:16,813 --> 00:17:19,859
+cho đến khi chỉ còn một khả năng duy nhất, và rồi nó đoán điều đó. 
 
 306
-00:17:20,360 --> 00:17:22,700
-Vì vậy, rõ ràng là chúng ta cần một chiến lược tàn cuộc tốt hơn.
+00:17:20,380 --> 00:17:22,339
+Vì vậy, rõ ràng là chúng ta cần một chiến lược tàn cuộc tốt hơn. 
 
 307
-00:17:22,700 --> 00:17:26,720
-Nhưng giả sử chúng tôi gọi phiên bản này là một trong những trình giải wordle của
+00:17:22,599 --> 00:17:25,429
+Nhưng giả sử chúng tôi gọi phiên bản này là một trong những trình giải wordle của 
 
 308
-00:17:26,720 --> 00:17:30,740
-chúng tôi, sau đó chúng tôi chạy một số mô phỏng để xem nó hoạt động như thế nào.
+00:17:25,429 --> 00:17:28,260
+chúng tôi, sau đó chúng tôi chạy một số mô phỏng để xem nó hoạt động như thế nào. 
 
 309
-00:17:30,740 --> 00:17:34,240
-Vì vậy, cách thức hoạt động của nó là chơi mọi trò chơi chữ có thể.
+00:17:30,360 --> 00:17:34,120
+Vì vậy, cách thức hoạt động của nó là chơi mọi trò chơi chữ có thể. 
 
 310
-00:17:34,240 --> 00:17:38,780
-Nó sẽ trải qua tất cả 2315 từ đó là câu trả lời từng từ thực tế.
+00:17:34,240 --> 00:17:38,540
+Nó sẽ trải qua tất cả 2315 từ đó là câu trả lời từng từ thực tế. 
 
 311
-00:17:38,780 --> 00:17:41,340
-Về cơ bản nó sử dụng nó như một bộ thử nghiệm.
+00:17:38,540 --> 00:17:40,580
+Về cơ bản nó sử dụng nó như một bộ thử nghiệm. 
 
 312
-00:17:41,340 --> 00:17:44,386
-Và với phương pháp ngây thơ này là không xem xét mức độ phổ biến
+00:17:41,360 --> 00:17:44,180
+Và với phương pháp ngây thơ này là không xem xét mức độ phổ biến 
 
 313
-00:17:44,386 --> 00:17:48,370
-của một từ mà chỉ cố gắng tối đa hóa thông tin ở mỗi bước trong quá trình thực hiện,
+00:17:44,180 --> 00:17:47,867
+của một từ mà chỉ cố gắng tối đa hóa thông tin ở mỗi bước trong quá trình thực hiện, 
 
 314
-00:17:48,370 --> 00:17:50,480
-cho đến khi chỉ còn một và chỉ một lựa chọn.
+00:17:47,867 --> 00:17:49,820
+cho đến khi chỉ còn một và chỉ một lựa chọn. 
 
 315
-00:17:50,480 --> 00:17:55,100
-Khi kết thúc mô phỏng, điểm trung bình là khoảng 4.124.
+00:17:50,360 --> 00:17:54,300
+Khi kết thúc mô phỏng, điểm trung bình là khoảng 4.124. 
 
 316
-00:17:55,100 --> 00:17:59,780
-Điều đó không tệ, thành thật mà nói, tôi đã dự kiến sẽ làm tệ hơn.
+00:17:55,319 --> 00:17:59,240
+Điều đó không tệ, thành thật mà nói, tôi đã dự kiến sẽ làm tệ hơn. 
 
 317
-00:17:59,780 --> 00:18:03,040
-Nhưng những người chơi wordle sẽ nói với bạn rằng họ thường có thể chơi được trong 4.
+00:17:59,660 --> 00:18:02,600
+Nhưng những người chơi wordle sẽ nói với bạn rằng họ thường có thể chơi được trong 4. 
 
 318
-00:18:03,040 --> 00:18:05,260
-Thử thách thực sự là lấy được càng nhiều phần 3 càng tốt.
+00:18:02,860 --> 00:18:05,380
+Thử thách thực sự là lấy được càng nhiều phần 3 càng tốt. 
 
 319
-00:18:05,260 --> 00:18:08,920
-Đó là một bước nhảy khá lớn giữa điểm 4 và điểm 3.
+00:18:05,380 --> 00:18:08,080
+Đó là một bước nhảy khá lớn giữa điểm 4 và điểm 3. 
 
 320
-00:18:08,920 --> 00:18:16,040
-Điểm mấu chốt rõ ràng ở đây là bằng cách nào đó kết hợp xem một từ có
+00:18:08,860 --> 00:18:11,920
+Điểm mấu chốt rõ ràng ở đây là bằng cách nào đó kết hợp xem một từ có 
 
 321
-00:18:16,040 --> 00:18:23,160
-phổ biến hay không và chính xác thì chúng ta làm điều đó như thế nào.
+00:18:11,920 --> 00:18:14,980
+phổ biến hay không và chính xác thì chúng ta làm điều đó như thế nào. 
 
 322
-00:18:23,160 --> 00:18:28,560
-Cách tôi tiếp cận là lấy danh sách tần số tương đối của tất cả các từ trong tiếng Anh.
+00:18:22,800 --> 00:18:27,880
+Cách tôi tiếp cận là lấy danh sách tần số tương đối của tất cả các từ trong tiếng Anh. 
 
 323
-00:18:28,560 --> 00:18:31,632
-Và tôi vừa sử dụng chức năng dữ liệu tần số từ của Mathematica,
+00:18:28,220 --> 00:18:31,150
+Và tôi vừa sử dụng chức năng dữ liệu tần số từ của Mathematica, 
 
 324
-00:18:31,632 --> 00:18:35,520
-chức năng này được lấy từ tập dữ liệu công khai Ngram tiếng Anh của Google Sách.
+00:18:31,150 --> 00:18:34,860
+chức năng này được lấy từ tập dữ liệu công khai Ngram tiếng Anh của Google Sách. 
 
 325
-00:18:35,520 --> 00:18:37,800
-Và thật thú vị khi xem xét, ví dụ như nếu chúng ta sắp xếp
+00:18:35,460 --> 00:18:37,691
+Và thật thú vị khi xem xét, ví dụ như nếu chúng ta sắp xếp 
 
 326
-00:18:37,800 --> 00:18:40,120
-nó từ những từ phổ biến nhất đến những từ ít phổ biến nhất.
+00:18:37,691 --> 00:18:39,960
+nó từ những từ phổ biến nhất đến những từ ít phổ biến nhất. 
 
 327
-00:18:40,120 --> 00:18:43,740
-Rõ ràng đây là những từ có 5 chữ cái phổ biến nhất trong tiếng Anh.
+00:18:40,120 --> 00:18:43,080
+Rõ ràng đây là những từ có 5 chữ cái phổ biến nhất trong tiếng Anh. 
 
 328
-00:18:43,740 --> 00:18:46,480
-Hay đúng hơn, đây là điều phổ biến thứ 8.
+00:18:43,700 --> 00:18:45,840
+Hay đúng hơn, đây là điều phổ biến thứ 8. 
 
 329
-00:18:46,480 --> 00:18:49,440
-Đầu tiên là cái nào, sau đó có đó và có đó.
+00:18:46,280 --> 00:18:48,880
+Đầu tiên là cái nào, sau đó có đó và có đó. 
 
 330
-00:18:49,440 --> 00:18:51,830
-Bản thân thứ nhất không phải là thứ nhất mà là thứ 9,
+00:18:49,260 --> 00:18:51,590
+Bản thân thứ nhất không phải là thứ nhất mà là thứ 9, 
 
 331
-00:18:51,830 --> 00:18:54,972
-và điều hợp lý là những từ khác này có thể xuất hiện thường xuyên hơn,
+00:18:51,590 --> 00:18:54,653
+và điều hợp lý là những từ khác này có thể xuất hiện thường xuyên hơn, 
 
 332
-00:18:54,972 --> 00:18:58,955
+00:18:54,653 --> 00:18:58,536
 trong đó những từ đứng sau đầu tiên là sau, ở đâu và những từ đó ít phổ biến hơn một chút.
 
 333
-00:18:58,955 --> 00:18:59,000
-
+00:18:58,536 --> 00:18:58,580
+ 
 
 334
-00:18:59,000 --> 00:19:02,851
-Bây giờ, khi sử dụng dữ liệu này để mô hình hóa khả năng mỗi từ này
+00:18:59,160 --> 00:19:02,981
+Bây giờ, khi sử dụng dữ liệu này để mô hình hóa khả năng mỗi từ này 
 
 335
-00:19:02,851 --> 00:19:06,760
-là câu trả lời cuối cùng, nó không nên chỉ tỷ lệ thuận với tần suất.
+00:19:02,981 --> 00:19:06,860
+là câu trả lời cuối cùng, nó không nên chỉ tỷ lệ thuận với tần suất. 
 
 336
-00:19:06,760 --> 00:19:09,956
-Ví dụ: được cho điểm 0.002 trong tập dữ liệu này,
+00:19:06,860 --> 00:19:09,966
+Ví dụ: được cho điểm 0.002 trong tập dữ liệu này, 
 
 337
-00:19:09,956 --> 00:19:15,200
-trong khi từ bện theo một nghĩa nào đó ít có khả năng xảy ra hơn khoảng 1000 lần.
+00:19:09,966 --> 00:19:15,060
+trong khi từ bện theo một nghĩa nào đó ít có khả năng xảy ra hơn khoảng 1000 lần. 
 
 338
-00:19:15,200 --> 00:19:19,400
-Nhưng cả hai đều là những từ phổ biến đến mức chúng gần như chắc chắn đáng được xem xét.
+00:19:15,560 --> 00:19:18,840
+Nhưng cả hai đều là những từ phổ biến đến mức chúng gần như chắc chắn đáng được xem xét. 
 
 339
-00:19:19,400 --> 00:19:21,900
-Vì vậy, chúng tôi muốn có nhiều điểm cắt nhị phân hơn.
+00:19:19,340 --> 00:19:21,000
+Vì vậy, chúng tôi muốn có nhiều điểm cắt nhị phân hơn. 
 
 340
-00:19:21,900 --> 00:19:26,668
-Cách tôi thực hiện là tưởng tượng lấy toàn bộ danh sách các từ được sắp xếp này,
+00:19:21,860 --> 00:19:26,570
+Cách tôi thực hiện là tưởng tượng lấy toàn bộ danh sách các từ được sắp xếp này, 
 
 341
-00:19:26,668 --> 00:19:30,141
-sau đó sắp xếp nó theo trục x, sau đó áp dụng hàm sigmoid,
+00:19:26,570 --> 00:19:30,001
+sau đó sắp xếp nó theo trục x, sau đó áp dụng hàm sigmoid, 
 
 342
-00:19:30,141 --> 00:19:34,261
-đây là cách tiêu chuẩn để có một hàm có đầu ra về cơ bản là nhị phân,
+00:19:30,001 --> 00:19:34,072
+đây là cách tiêu chuẩn để có một hàm có đầu ra về cơ bản là nhị phân, 
 
 343
-00:19:34,261 --> 00:19:38,500
-đó là 0 hoặc 1, nhưng có sự làm mịn ở giữa cho vùng không chắc chắn đó.
+00:19:34,072 --> 00:19:38,260
+đó là 0 hoặc 1, nhưng có sự làm mịn ở giữa cho vùng không chắc chắn đó. 
 
 344
-00:19:38,500 --> 00:19:43,950
-Vì vậy, về cơ bản, xác suất mà tôi gán cho mỗi từ để nằm trong danh sách cuối
+00:19:39,160 --> 00:19:43,741
+Vì vậy, về cơ bản, xác suất mà tôi gán cho mỗi từ để nằm trong danh sách cuối 
 
 345
-00:19:43,950 --> 00:19:49,540
-cùng sẽ là giá trị của hàm sigmoid ở trên bất kỳ vị trí nào nó nằm trên trục x.
+00:19:43,741 --> 00:19:48,440
+cùng sẽ là giá trị của hàm sigmoid ở trên bất kỳ vị trí nào nó nằm trên trục x. 
 
 346
-00:19:49,540 --> 00:19:52,450
-Bây giờ, rõ ràng điều này phụ thuộc vào một số tham số,
+00:19:49,520 --> 00:19:52,486
+Bây giờ, rõ ràng điều này phụ thuộc vào một số tham số, 
 
 347
-00:19:52,450 --> 00:19:56,971
-chẳng hạn như độ rộng của khoảng trắng trên trục x mà những từ đó điền vào sẽ xác định
+00:19:52,486 --> 00:19:57,095
+chẳng hạn như độ rộng của khoảng trắng trên trục x mà những từ đó điền vào sẽ xác định 
 
 348
-00:19:56,971 --> 00:20:01,336
-mức độ chúng ta giảm dần hoặc dốc từ 1 xuống 0 và vị trí chúng ta đặt chúng từ trái
+00:19:57,095 --> 00:20:01,544
+mức độ chúng ta giảm dần hoặc dốc từ 1 xuống 0 và vị trí chúng ta đặt chúng từ trái 
 
 349
-00:20:01,336 --> 00:20:03,000
-sang phải sẽ xác định điểm cắt.
+00:20:01,544 --> 00:20:03,240
+sang phải sẽ xác định điểm cắt. 
 
 350
-00:20:03,000 --> 00:20:07,340
-Thành thật mà nói, cách tôi làm điều này chỉ là liếm ngón tay và đưa nó theo chiều gió.
+00:20:03,240 --> 00:20:06,920
+Thành thật mà nói, cách tôi làm điều này chỉ là liếm ngón tay và đưa nó theo chiều gió. 
 
 351
-00:20:07,340 --> 00:20:11,594
-Tôi xem qua danh sách đã sắp xếp và cố gắng tìm một cửa sổ mà khi nhìn vào nó,
+00:20:07,140 --> 00:20:11,303
+Tôi xem qua danh sách đã sắp xếp và cố gắng tìm một cửa sổ mà khi nhìn vào nó, 
 
 352
-00:20:11,594 --> 00:20:14,933
-tôi nhận ra khoảng một nửa số từ này có nhiều khả năng là câu
+00:20:11,303 --> 00:20:14,571
+tôi nhận ra khoảng một nửa số từ này có nhiều khả năng là câu 
 
 353
-00:20:14,933 --> 00:20:17,680
-trả lời cuối cùng và sử dụng nó làm điểm giới hạn.
+00:20:14,571 --> 00:20:17,260
+trả lời cuối cùng và sử dụng nó làm điểm giới hạn. 
 
 354
-00:20:17,680 --> 00:20:20,078
-Khi chúng ta có sự phân bố như thế này trên các từ,
+00:20:17,260 --> 00:20:19,594
+Khi chúng ta có sự phân bố như thế này trên các từ, 
 
 355
-00:20:20,078 --> 00:20:23,491
-nó sẽ cho chúng ta một tình huống khác trong đó entropy trở thành phép đo
+00:20:19,594 --> 00:20:22,917
+nó sẽ cho chúng ta một tình huống khác trong đó entropy trở thành phép đo 
 
 356
-00:20:23,491 --> 00:20:24,460
-thực sự hữu ích này.
+00:20:22,917 --> 00:20:23,860
+thực sự hữu ích này. 
 
 357
-00:20:24,460 --> 00:20:27,473
-Ví dụ: giả sử chúng ta đang chơi một trò chơi và chúng ta bắt đầu với
+00:20:24,500 --> 00:20:27,332
+Ví dụ: giả sử chúng ta đang chơi một trò chơi và chúng ta bắt đầu với 
 
 358
-00:20:27,473 --> 00:20:30,616
-những từ mở đầu cũ của tôi, đó là một chiếc lông vũ và những chiếc đinh,
+00:20:27,332 --> 00:20:30,286
+những từ mở đầu cũ của tôi, đó là một chiếc lông vũ và những chiếc đinh, 
 
 359
-00:20:30,616 --> 00:20:33,760
-và chúng ta kết thúc với một tình huống có thể có bốn từ phù hợp với nó.
+00:20:30,286 --> 00:20:33,240
+và chúng ta kết thúc với một tình huống có thể có bốn từ phù hợp với nó. 
 
 360
-00:20:33,760 --> 00:20:36,440
-Và giả sử chúng ta coi chúng đều có khả năng xảy ra như nhau.
+00:20:33,560 --> 00:20:35,620
+Và giả sử chúng ta coi chúng đều có khả năng xảy ra như nhau. 
 
 361
-00:20:36,440 --> 00:20:40,000
-Hãy để tôi hỏi bạn, entropy của phân phối này là gì?
+00:20:36,220 --> 00:20:38,880
+Hãy để tôi hỏi bạn, entropy của phân phối này là gì? 
 
 362
-00:20:40,000 --> 00:20:47,005
-Chà, thông tin liên quan đến từng khả năng này sẽ là log cơ số 2 của 4,
+00:20:41,080 --> 00:20:46,891
+Chà, thông tin liên quan đến từng khả năng này sẽ là log cơ số 2 của 4, 
 
 363
-00:20:47,005 --> 00:20:50,800
-vì mỗi khả năng là 1 và 4, và đó là 2.
+00:20:46,891 --> 00:20:50,040
+vì mỗi khả năng là 1 và 4, và đó là 2. 
 
 364
-00:20:50,800 --> 00:20:52,780
-Hai thông tin, bốn khả năng.
+00:20:50,040 --> 00:20:52,460
+Hai thông tin, bốn khả năng. 
 
 365
-00:20:52,780 --> 00:20:54,360
-Tất cả đều rất tốt và tốt.
+00:20:52,760 --> 00:20:53,580
+Tất cả đều rất tốt và tốt. 
 
 366
-00:20:54,360 --> 00:20:58,320
-Nhưng điều gì sẽ xảy ra nếu tôi nói với bạn rằng thực sự có nhiều hơn bốn trận đấu?
+00:20:54,300 --> 00:20:57,800
+Nhưng điều gì sẽ xảy ra nếu tôi nói với bạn rằng thực sự có nhiều hơn bốn trận đấu? 
 
 367
-00:20:58,320 --> 00:21:02,600
-Trên thực tế, khi chúng ta xem qua danh sách từ đầy đủ, có 16 từ phù hợp với nó.
+00:20:58,260 --> 00:21:02,460
+Trên thực tế, khi chúng ta xem qua danh sách từ đầy đủ, có 16 từ phù hợp với nó. 
 
 368
-00:21:02,600 --> 00:21:06,964
-Nhưng giả sử mô hình của chúng tôi đặt ra xác suất rất thấp cho 12 từ còn lại
+00:21:02,580 --> 00:21:06,618
+Nhưng giả sử mô hình của chúng tôi đặt ra xác suất rất thấp cho 12 từ còn lại 
 
 369
-00:21:06,964 --> 00:21:11,440
-thực sự là câu trả lời cuối cùng, khoảng 1 trên 1000 vì chúng thực sự khó hiểu.
+00:21:06,618 --> 00:21:10,760
+thực sự là câu trả lời cuối cùng, khoảng 1 trên 1000 vì chúng thực sự khó hiểu. 
 
 370
-00:21:11,440 --> 00:21:15,480
-Bây giờ hãy để tôi hỏi bạn, entropy của phân phối này là gì?
+00:21:11,500 --> 00:21:14,260
+Bây giờ hãy để tôi hỏi bạn, entropy của phân phối này là gì? 
 
 371
-00:21:15,480 --> 00:21:19,341
-Nếu entropy chỉ đơn thuần là đo số lượng kết quả trùng khớp ở đây,
+00:21:15,420 --> 00:21:19,123
+Nếu entropy chỉ đơn thuần là đo số lượng kết quả trùng khớp ở đây, 
 
 372
-00:21:19,341 --> 00:21:22,626
-thì bạn có thể mong đợi nó giống như log cơ số 2 của 16,
+00:21:19,123 --> 00:21:22,273
+thì bạn có thể mong đợi nó giống như log cơ số 2 của 16, 
 
 373
-00:21:22,626 --> 00:21:26,200
-tức là 4, nhiều hơn hai bit không chắc chắn so với trước đây.
+00:21:22,273 --> 00:21:25,700
+tức là 4, nhiều hơn hai bit không chắc chắn so với trước đây. 
 
 374
-00:21:26,200 --> 00:21:28,260
-Nhưng tất nhiên, sự không chắc chắn thực tế không thực
+00:21:26,180 --> 00:21:28,020
+Nhưng tất nhiên, sự không chắc chắn thực tế không thực 
 
 375
-00:21:28,260 --> 00:21:30,320
-sự khác biệt so với những gì chúng ta đã có trước đây.
+00:21:28,020 --> 00:21:29,860
+sự khác biệt so với những gì chúng ta đã có trước đây. 
 
 376
-00:21:30,320 --> 00:21:34,347
-Chỉ vì có 12 từ thực sự khó hiểu này không có nghĩa là sẽ ngạc nhiên
+00:21:30,160 --> 00:21:33,840
+Chỉ vì có 12 từ thực sự khó hiểu này không có nghĩa là sẽ ngạc nhiên 
 
 377
-00:21:34,347 --> 00:21:38,200
-hơn khi biết rằng câu trả lời cuối cùng là sự quyến rũ chẳng hạn.
+00:21:33,840 --> 00:21:37,360
+hơn khi biết rằng câu trả lời cuối cùng là sự quyến rũ chẳng hạn. 
 
 378
-00:21:38,200 --> 00:21:42,106
-Vì vậy, khi bạn thực sự thực hiện phép tính ở đây và cộng xác suất của mỗi
+00:21:38,180 --> 00:21:41,894
+Vì vậy, khi bạn thực sự thực hiện phép tính ở đây và cộng xác suất của mỗi 
 
 379
-00:21:42,106 --> 00:21:45,960
-lần xuất hiện với thông tin tương ứng, kết quả bạn nhận được là 2.11 bit.
+00:21:41,894 --> 00:21:45,560
+lần xuất hiện với thông tin tương ứng, kết quả bạn nhận được là 2.11 bit. 
 
 380
-00:21:45,960 --> 00:21:49,471
-Tôi chỉ đang nói, về cơ bản nó là hai bit, về cơ bản là bốn khả năng đó,
+00:21:45,560 --> 00:21:49,002
+Tôi chỉ đang nói, về cơ bản nó là hai bit, về cơ bản là bốn khả năng đó, 
 
 381
-00:21:49,471 --> 00:21:53,367
-nhưng có một chút không chắc chắn hơn vì tất cả những sự kiện rất khó xảy ra đó,
+00:21:49,002 --> 00:21:52,821
+nhưng có một chút không chắc chắn hơn vì tất cả những sự kiện rất khó xảy ra đó, 
 
 382
-00:21:53,367 --> 00:21:57,120
-mặc dù nếu bạn đã tìm hiểu chúng, bạn sẽ nhận được rất nhiều thông tin từ nó.
+00:21:52,821 --> 00:21:56,500
+mặc dù nếu bạn đã tìm hiểu chúng, bạn sẽ nhận được rất nhiều thông tin từ nó. 
 
 383
-00:21:57,120 --> 00:21:59,352
-Vì vậy, thu nhỏ, đây là một phần lý do khiến Wordle
+00:21:57,160 --> 00:21:59,182
+Vì vậy, thu nhỏ, đây là một phần lý do khiến Wordle 
 
 384
-00:21:59,352 --> 00:22:01,800
-trở thành một ví dụ hay cho bài học lý thuyết thông tin.
+00:21:59,182 --> 00:22:01,400
+trở thành một ví dụ hay cho bài học lý thuyết thông tin. 
 
 385
-00:22:01,800 --> 00:22:05,280
-Chúng ta có hai ứng dụng cảm nhận riêng biệt về entropy.
+00:22:01,600 --> 00:22:04,640
+Chúng ta có hai ứng dụng cảm nhận riêng biệt về entropy. 
 
 386
-00:22:05,280 --> 00:22:08,910
-Câu đầu tiên cho chúng ta biết thông tin mong đợi mà chúng ta sẽ nhận được từ một
+00:22:05,160 --> 00:22:08,498
+Câu đầu tiên cho chúng ta biết thông tin mong đợi mà chúng ta sẽ nhận được từ một 
 
 387
-00:22:08,910 --> 00:22:12,540
-lần phỏng đoán nhất định và câu thứ hai cho chúng ta biết liệu chúng ta có thể đo
+00:22:08,498 --> 00:22:11,836
+lần phỏng đoán nhất định và câu thứ hai cho chúng ta biết liệu chúng ta có thể đo 
 
 388
-00:22:12,540 --> 00:22:16,480
-lường độ không chắc chắn còn lại trong số tất cả các từ mà chúng ta có thể có hay không.
+00:22:11,836 --> 00:22:15,460
+lường độ không chắc chắn còn lại trong số tất cả các từ mà chúng ta có thể có hay không. 
 
 389
-00:22:16,480 --> 00:22:19,214
-Và tôi nên nhấn mạnh, trong trường hợp đầu tiên khi chúng ta xem xét
+00:22:16,460 --> 00:22:19,053
+Và tôi nên nhấn mạnh, trong trường hợp đầu tiên khi chúng ta xem xét 
 
 390
-00:22:19,214 --> 00:22:22,027
-thông tin dự kiến của một lần đoán, một khi chúng ta có trọng số không
+00:22:19,053 --> 00:22:21,721
+thông tin dự kiến của một lần đoán, một khi chúng ta có trọng số không 
 
 391
-00:22:22,027 --> 00:22:25,000
-bằng nhau đối với các từ, điều đó sẽ ảnh hưởng đến việc tính toán entropy.
+00:22:21,721 --> 00:22:24,540
+bằng nhau đối với các từ, điều đó sẽ ảnh hưởng đến việc tính toán entropy. 
 
 392
-00:22:25,000 --> 00:22:28,083
-Ví dụ: hãy để tôi đưa ra trường hợp tương tự mà chúng ta đã
+00:22:24,980 --> 00:22:27,799
+Ví dụ: hãy để tôi đưa ra trường hợp tương tự mà chúng ta đã 
 
 393
-00:22:28,083 --> 00:22:30,705
-xem xét trước đó về phân phối liên quan đến Weary,
+00:22:27,799 --> 00:22:30,195
+xem xét trước đó về phân phối liên quan đến Weary, 
 
 394
-00:22:30,705 --> 00:22:34,560
-nhưng lần này sử dụng phân phối không đồng nhất trên tất cả các từ có thể.
+00:22:30,195 --> 00:22:33,720
+nhưng lần này sử dụng phân phối không đồng nhất trên tất cả các từ có thể. 
 
 395
-00:22:34,560 --> 00:22:39,360
-Vì vậy, hãy để tôi xem liệu tôi có thể tìm thấy một phần ở đây minh họa nó khá tốt không.
+00:22:34,500 --> 00:22:38,280
+Vì vậy, hãy để tôi xem liệu tôi có thể tìm thấy một phần ở đây minh họa nó khá tốt không. 
 
 396
-00:22:39,360 --> 00:22:42,480
-Được rồi, ở đây khá tốt.
+00:22:40,940 --> 00:22:42,360
+Được rồi, ở đây khá tốt. 
 
 397
-00:22:42,480 --> 00:22:45,771
-Ở đây chúng ta có hai mẫu liền kề có khả năng xảy ra như nhau,
+00:22:42,360 --> 00:22:45,528
+Ở đây chúng ta có hai mẫu liền kề có khả năng xảy ra như nhau, 
 
 398
-00:22:45,771 --> 00:22:49,480
-nhưng một trong số chúng được cho biết có 32 từ có thể phù hợp với nó.
+00:22:45,528 --> 00:22:49,100
+nhưng một trong số chúng được cho biết có 32 từ có thể phù hợp với nó. 
 
 399
-00:22:49,480 --> 00:22:52,468
-Và nếu chúng ta kiểm tra xem chúng là gì, thì đây là 32 từ đó,
+00:22:49,280 --> 00:22:52,366
+Và nếu chúng ta kiểm tra xem chúng là gì, thì đây là 32 từ đó, 
 
 400
-00:22:52,468 --> 00:22:55,600
-tất cả chỉ là những từ rất khó xảy ra khi bạn quét mắt qua chúng.
+00:22:52,366 --> 00:22:55,600
+tất cả chỉ là những từ rất khó xảy ra khi bạn quét mắt qua chúng. 
 
 401
-00:22:55,600 --> 00:22:59,272
-Thật khó để tìm thấy bất kỳ câu trả lời hợp lý nào, có thể là đáng ngạc nhiên,
+00:22:55,840 --> 00:22:59,348
+Thật khó để tìm thấy bất kỳ câu trả lời hợp lý nào, có thể là đáng ngạc nhiên, 
 
 402
-00:22:59,272 --> 00:23:02,109
-nhưng nếu chúng ta nhìn vào mô hình lân cận trong phân phối,
+00:22:59,348 --> 00:23:02,058
+nhưng nếu chúng ta nhìn vào mô hình lân cận trong phân phối, 
 
 403
-00:23:02,109 --> 00:23:05,642
-được coi là có khả năng xảy ra, chúng ta được biết rằng nó chỉ có 8 kết quả
+00:23:02,058 --> 00:23:05,433
+được coi là có khả năng xảy ra, chúng ta được biết rằng nó chỉ có 8 kết quả 
 
 404
-00:23:05,642 --> 00:23:08,339
-phù hợp có thể xảy ra, tức là một phần tư nhiều trận đấu,
+00:23:05,433 --> 00:23:08,009
+phù hợp có thể xảy ra, tức là một phần tư nhiều trận đấu, 
 
 405
-00:23:08,339 --> 00:23:09,920
-nhưng gần như có khả năng xảy ra.
+00:23:08,009 --> 00:23:09,520
+nhưng gần như có khả năng xảy ra. 
 
 406
-00:23:09,920 --> 00:23:12,520
-Và khi chúng tôi xem những trận đấu đó, chúng tôi có thể hiểu tại sao.
+00:23:09,860 --> 00:23:12,140
+Và khi chúng tôi xem những trận đấu đó, chúng tôi có thể hiểu tại sao. 
 
 407
-00:23:12,520 --> 00:23:15,435
-Một số trong số này là những câu trả lời thực sự hợp lý,
+00:23:12,500 --> 00:23:14,582
+Một số trong số này là những câu trả lời thực sự hợp lý, 
 
 408
-00:23:15,435 --> 00:23:17,840
-như tiếng chuông, cơn thịnh nộ hoặc tiếng rap.
+00:23:14,582 --> 00:23:16,300
+như tiếng chuông, cơn thịnh nộ hoặc tiếng rap. 
 
 409
-00:23:17,840 --> 00:23:20,263
-Để minh họa cách chúng tôi kết hợp tất cả những điều đó,
+00:23:17,900 --> 00:23:20,102
+Để minh họa cách chúng tôi kết hợp tất cả những điều đó, 
 
 410
-00:23:20,263 --> 00:23:23,026
-hãy để tôi đưa ra phiên bản 2 của Wordlebot ở đây và có hai hoặc
+00:23:20,102 --> 00:23:22,613
+hãy để tôi đưa ra phiên bản 2 của Wordlebot ở đây và có hai hoặc 
 
 411
-00:23:23,026 --> 00:23:25,960
-ba điểm khác biệt chính so với phiên bản đầu tiên mà chúng tôi thấy.
+00:23:22,613 --> 00:23:25,280
+ba điểm khác biệt chính so với phiên bản đầu tiên mà chúng tôi thấy. 
 
 412
-00:23:25,960 --> 00:23:30,095
-Trước hết, như tôi vừa nói, cách chúng ta tính toán những entropy này,
+00:23:25,860 --> 00:23:29,698
+Trước hết, như tôi vừa nói, cách chúng ta tính toán những entropy này, 
 
 413
-00:23:30,095 --> 00:23:34,581
-những giá trị thông tin kỳ vọng này, hiện đang sử dụng những phân bố tinh tế
+00:23:29,698 --> 00:23:33,861
+những giá trị thông tin kỳ vọng này, hiện đang sử dụng những phân bố tinh tế 
 
 414
-00:23:34,581 --> 00:23:39,300
-hơn trên các mẫu kết hợp xác suất mà một từ nhất định thực sự sẽ là câu trả lời.
+00:23:33,861 --> 00:23:38,240
+hơn trên các mẫu kết hợp xác suất mà một từ nhất định thực sự sẽ là câu trả lời. 
 
 415
-00:23:39,300 --> 00:23:44,160
-Thực tế thì nước mắt vẫn là số 1, dù những nước mắt sau có hơi khác một chút.
+00:23:38,879 --> 00:23:43,820
+Thực tế thì nước mắt vẫn là số 1, dù những nước mắt sau có hơi khác một chút. 
 
 416
-00:23:44,160 --> 00:23:47,879
-Thứ hai, khi xếp hạng các lựa chọn hàng đầu, nó sẽ giữ một mô hình về xác
+00:23:44,360 --> 00:23:47,870
+Thứ hai, khi xếp hạng các lựa chọn hàng đầu, nó sẽ giữ một mô hình về xác 
 
 417
-00:23:47,879 --> 00:23:52,303
-suất mà mỗi từ là câu trả lời thực sự và nó sẽ kết hợp điều đó vào quyết định của mình,
+00:23:47,870 --> 00:23:52,044
+suất mà mỗi từ là câu trả lời thực sự và nó sẽ kết hợp điều đó vào quyết định của mình, 
 
 418
-00:23:52,303 --> 00:23:55,520
-điều này sẽ dễ thấy hơn khi chúng ta có một vài dự đoán về bàn.
+00:23:52,044 --> 00:23:55,080
+điều này sẽ dễ thấy hơn khi chúng ta có một vài dự đoán về bàn. 
 
 419
-00:23:55,520 --> 00:23:58,292
-Một lần nữa, bỏ qua khuyến nghị của nó vì chúng ta
+00:23:55,860 --> 00:23:57,800
+Một lần nữa, bỏ qua khuyến nghị của nó vì chúng ta 
 
 420
-00:23:58,292 --> 00:24:01,120
-không thể để máy móc điều khiển cuộc sống của mình.
+00:23:57,800 --> 00:23:59,780
+không thể để máy móc điều khiển cuộc sống của mình. 
 
 421
-00:24:01,120 --> 00:24:04,875
-Và tôi cho rằng tôi nên đề cập đến một điều khác ở đây là ở bên trái,
+00:24:01,140 --> 00:24:04,702
+Và tôi cho rằng tôi nên đề cập đến một điều khác ở đây là ở bên trái, 
 
 422
-00:24:04,875 --> 00:24:09,275
-giá trị không chắc chắn đó, số bit đó, không còn dư thừa với số lượng kết quả phù
+00:24:04,702 --> 00:24:08,876
+giá trị không chắc chắn đó, số bit đó, không còn dư thừa với số lượng kết quả phù 
 
 423
-00:24:09,275 --> 00:24:10,080
-hợp có thể có.
+00:24:08,876 --> 00:24:09,640
+hợp có thể có. 
 
 424
-00:24:10,080 --> 00:24:15,755
-Bây giờ nếu chúng ta kéo nó lên và tính từ 2 đến 8.02, cao hơn 256 một chút,
+00:24:10,080 --> 00:24:15,530
+Bây giờ nếu chúng ta kéo nó lên và tính từ 2 đến 8.02, cao hơn 256 một chút, 
 
 425
-00:24:15,755 --> 00:24:22,020
-tôi đoán là 259, điều nó nói là mặc dù có tổng cộng 526 từ thực sự khớp với mẫu này,
+00:24:15,530 --> 00:24:21,547
+tôi đoán là 259, điều nó nói là mặc dù có tổng cộng 526 từ thực sự khớp với mẫu này, 
 
 426
-00:24:22,020 --> 00:24:28,433
-mức độ không chắc chắn của nó gần giống với mức độ sẽ xảy ra nếu có 259 từ có khả năng
+00:24:21,547 --> 00:24:27,705
+mức độ không chắc chắn của nó gần giống với mức độ sẽ xảy ra nếu có 259 từ có khả năng 
 
 427
-00:24:28,433 --> 00:24:29,760
-như nhau kết quả.
+00:24:27,705 --> 00:24:28,980
+như nhau kết quả. 
 
 428
-00:24:29,760 --> 00:24:31,100
-Bạn có thể nghĩ về nó như thế này.
+00:24:29,720 --> 00:24:30,740
+Bạn có thể nghĩ về nó như thế này. 
 
 429
-00:24:31,100 --> 00:24:34,816
-Nó biết borx không phải là câu trả lời, tương tự với yorts, zorl và zorus,
+00:24:31,020 --> 00:24:34,692
+Nó biết borx không phải là câu trả lời, tương tự với yorts, zorl và zorus, 
 
 430
-00:24:34,816 --> 00:24:37,840
-vì vậy nó ít chắc chắn hơn một chút so với trường hợp trước.
+00:24:34,692 --> 00:24:37,680
+vì vậy nó ít chắc chắn hơn một chút so với trường hợp trước. 
 
 431
-00:24:37,840 --> 00:24:40,220
-Số bit này sẽ nhỏ hơn.
+00:24:37,820 --> 00:24:39,280
+Số bit này sẽ nhỏ hơn. 
 
 432
-00:24:40,220 --> 00:24:44,450
-Và nếu tôi tiếp tục chơi trò chơi, tôi sẽ tinh chỉnh điều này bằng
+00:24:40,220 --> 00:24:43,380
+Và nếu tôi tiếp tục chơi trò chơi, tôi sẽ tinh chỉnh điều này bằng 
 
 433
-00:24:44,450 --> 00:24:48,680
-một vài phỏng đoán phù hợp với những gì tôi muốn giải thích ở đây.
+00:24:43,380 --> 00:24:46,540
+một vài phỏng đoán phù hợp với những gì tôi muốn giải thích ở đây. 
 
 434
-00:24:48,680 --> 00:24:51,502
-Đến lần đoán thứ tư, nếu bạn nhìn qua những lựa chọn hàng đầu của nó,
+00:24:48,360 --> 00:24:51,336
+Đến lần đoán thứ tư, nếu bạn nhìn qua những lựa chọn hàng đầu của nó, 
 
 435
-00:24:51,502 --> 00:24:53,800
-bạn có thể thấy nó không còn chỉ tối đa hóa entropy nữa.
+00:24:51,336 --> 00:24:53,760
+bạn có thể thấy nó không còn chỉ tối đa hóa entropy nữa. 
 
 436
-00:24:53,800 --> 00:24:56,902
-Vì vậy, tại thời điểm này, về mặt kỹ thuật có bảy khả năng,
+00:24:54,460 --> 00:24:57,055
+Vì vậy, tại thời điểm này, về mặt kỹ thuật có bảy khả năng, 
 
 437
-00:24:56,902 --> 00:25:00,780
-nhưng những khả năng duy nhất có cơ hội có ý nghĩa là ký túc xá và từ ngữ.
+00:24:57,055 --> 00:25:00,300
+nhưng những khả năng duy nhất có cơ hội có ý nghĩa là ký túc xá và từ ngữ. 
 
 438
-00:25:00,780 --> 00:25:04,145
-Và bạn có thể thấy nó xếp hạng việc chọn cả hai giá trị đó lên trên
+00:25:00,300 --> 00:25:03,486
+Và bạn có thể thấy nó xếp hạng việc chọn cả hai giá trị đó lên trên 
 
 439
-00:25:04,145 --> 00:25:07,560
-tất cả các giá trị khác, nói đúng ra thì sẽ cung cấp thêm thông tin.
+00:25:03,486 --> 00:25:06,720
+tất cả các giá trị khác, nói đúng ra thì sẽ cung cấp thêm thông tin. 
 
 440
-00:25:07,560 --> 00:25:11,048
-Lần đầu tiên tôi làm điều này, tôi chỉ cộng hai con số này để đo lường chất lượng
+00:25:07,240 --> 00:25:10,549
+Lần đầu tiên tôi làm điều này, tôi chỉ cộng hai con số này để đo lường chất lượng 
 
 441
-00:25:11,048 --> 00:25:14,580
-của mỗi lần đoán, và chúng thực sự hoạt động tốt hơn những gì bạn có thể nghi ngờ.
+00:25:10,549 --> 00:25:13,900
+của mỗi lần đoán, và chúng thực sự hoạt động tốt hơn những gì bạn có thể nghi ngờ. 
 
 442
-00:25:14,580 --> 00:25:17,164
-Nhưng nó thực sự có vẻ không mang tính hệ thống và tôi chắc chắn rằng có những
+00:25:14,300 --> 00:25:16,757
+Nhưng nó thực sự có vẻ không mang tính hệ thống và tôi chắc chắn rằng có những 
 
 443
-00:25:17,164 --> 00:25:19,880
-cách tiếp cận khác mà mọi người có thể thực hiện nhưng đây là cách tôi đã áp dụng.
+00:25:16,757 --> 00:25:19,340
+cách tiếp cận khác mà mọi người có thể thực hiện nhưng đây là cách tôi đã áp dụng. 
 
 444
-00:25:19,880 --> 00:25:22,520
-Nếu chúng ta đang xem xét khả năng xảy ra lần đoán tiếp theo,
+00:25:19,760 --> 00:25:22,270
+Nếu chúng ta đang xem xét khả năng xảy ra lần đoán tiếp theo, 
 
 445
-00:25:22,520 --> 00:25:25,458
-chẳng hạn như trong trường hợp này là từ ngữ, thì điều chúng ta thực
+00:25:22,270 --> 00:25:25,065
+chẳng hạn như trong trường hợp này là từ ngữ, thì điều chúng ta thực 
 
 446
-00:25:25,458 --> 00:25:28,440
-sự quan tâm là điểm số kỳ vọng của trò chơi nếu chúng ta làm điều đó.
+00:25:25,065 --> 00:25:27,900
+sự quan tâm là điểm số kỳ vọng của trò chơi nếu chúng ta làm điều đó. 
 
 447
-00:25:28,440 --> 00:25:32,096
-Và để tính số điểm mong đợi đó, chúng tôi nói xác suất mà các từ
+00:25:28,230 --> 00:25:32,124
+Và để tính số điểm mong đợi đó, chúng tôi nói xác suất mà các từ 
 
 448
-00:25:32,096 --> 00:25:35,640
-đó là câu trả lời thực sự là bao nhiêu, hiện tại nó mô tả 58%.
+00:25:32,124 --> 00:25:35,900
+đó là câu trả lời thực sự là bao nhiêu, hiện tại nó mô tả 58%. 
 
 449
-00:25:35,640 --> 00:25:40,400
-Chúng tôi nói với 58% cơ hội, điểm của chúng tôi trong trò chơi này sẽ là 4.
+00:25:36,040 --> 00:25:39,540
+Chúng tôi nói với 58% cơ hội, điểm của chúng tôi trong trò chơi này sẽ là 4. 
 
 450
-00:25:40,400 --> 00:25:46,240
-Và khi đó với xác suất 1 trừ 58% đó thì điểm của chúng ta sẽ lớn hơn 4 đó.
+00:25:40,320 --> 00:25:45,640
+Và khi đó với xác suất 1 trừ 58% đó thì điểm của chúng ta sẽ lớn hơn 4 đó. 
 
 451
-00:25:46,240 --> 00:25:49,536
-Chúng tôi không biết còn bao nhiêu nữa, nhưng chúng tôi có thể ước tính nó
+00:25:46,220 --> 00:25:49,298
+Chúng tôi không biết còn bao nhiêu nữa, nhưng chúng tôi có thể ước tính nó 
 
 452
-00:25:49,536 --> 00:25:52,920
-dựa trên mức độ không chắc chắn có thể xảy ra khi chúng tôi đạt đến điểm đó.
+00:25:49,298 --> 00:25:52,460
+dựa trên mức độ không chắc chắn có thể xảy ra khi chúng tôi đạt đến điểm đó. 
 
 453
-00:25:52,920 --> 00:25:56,600
-Cụ thể hiện tại có 1.44 bit không chắc chắn.
+00:25:52,960 --> 00:25:55,940
+Cụ thể hiện tại có 1.44 bit không chắc chắn. 
 
 454
-00:25:56,600 --> 00:25:58,917
-Nếu chúng ta đoán các từ, nó sẽ cho chúng ta biết
+00:25:56,440 --> 00:25:58,626
+Nếu chúng ta đoán các từ, nó sẽ cho chúng ta biết 
 
 455
-00:25:58,917 --> 00:26:01,560
-thông tin mong đợi mà chúng ta sẽ nhận được là 1.27 bit.
+00:25:58,626 --> 00:26:01,120
+thông tin mong đợi mà chúng ta sẽ nhận được là 1.27 bit. 
 
 456
-00:26:01,560 --> 00:26:04,791
-Vì vậy, nếu chúng ta đoán từ, sự khác biệt này thể hiện mức độ
+00:26:01,620 --> 00:26:04,524
+Vì vậy, nếu chúng ta đoán từ, sự khác biệt này thể hiện mức độ 
 
 457
-00:26:04,791 --> 00:26:08,280
-không chắc chắn mà chúng ta có thể gặp phải sau khi điều đó xảy ra.
+00:26:04,524 --> 00:26:07,660
+không chắc chắn mà chúng ta có thể gặp phải sau khi điều đó xảy ra. 
 
 458
-00:26:08,280 --> 00:26:11,343
-Cái chúng ta cần là một loại hàm nào đó, mà tôi gọi là f ở đây,
+00:26:08,260 --> 00:26:11,257
+Cái chúng ta cần là một loại hàm nào đó, mà tôi gọi là f ở đây, 
 
 459
-00:26:11,343 --> 00:26:13,880
-liên kết sự không chắc chắn này với điểm số kỳ vọng.
+00:26:11,257 --> 00:26:13,740
+liên kết sự không chắc chắn này với điểm số kỳ vọng. 
 
 460
-00:26:13,880 --> 00:26:18,246
-Và cách nó diễn ra là chỉ vẽ một loạt dữ liệu từ các trò chơi trước dựa
+00:26:14,240 --> 00:26:18,248
+Và cách nó diễn ra là chỉ vẽ một loạt dữ liệu từ các trò chơi trước dựa 
 
 461
-00:26:18,246 --> 00:26:22,673
-trên phiên bản 1 của bot để cho biết điểm thực tế sau các điểm khác nhau
+00:26:18,248 --> 00:26:22,311
+trên phiên bản 1 của bot để cho biết điểm thực tế sau các điểm khác nhau 
 
 462
-00:26:22,673 --> 00:26:27,040
-với mức độ không chắc chắn nhất định có thể đo lường được là bao nhiêu.
+00:26:22,311 --> 00:26:26,320
+với mức độ không chắc chắn nhất định có thể đo lường được là bao nhiêu. 
 
 463
-00:26:27,040 --> 00:26:30,783
-Ví dụ: những điểm dữ liệu ở đây nằm trên một giá trị khoảng 8.
+00:26:27,020 --> 00:26:30,653
+Ví dụ: những điểm dữ liệu ở đây nằm trên một giá trị khoảng 8. 
 
 464
-00:26:30,783 --> 00:26:34,348
-Khoảng 7 là nói cho một số trò chơi sau một thời điểm có 8.
+00:26:30,653 --> 00:26:34,114
+Khoảng 7 là nói cho một số trò chơi sau một thời điểm có 8. 
 
 465
-00:26:34,348 --> 00:26:39,340
-Có 7 điểm không chắc chắn, phải mất hai lần đoán mới có được câu trả lời cuối cùng.
+00:26:34,114 --> 00:26:38,960
+Có 7 điểm không chắc chắn, phải mất hai lần đoán mới có được câu trả lời cuối cùng. 
 
 466
-00:26:39,340 --> 00:26:41,240
-Đối với các trò chơi khác, phải mất ba lần đoán,
+00:26:39,320 --> 00:26:40,765
+Đối với các trò chơi khác, phải mất ba lần đoán, 
 
 467
-00:26:41,240 --> 00:26:43,180
-đối với các trò chơi khác, phải mất bốn lần đoán.
+00:26:40,765 --> 00:26:42,240
+đối với các trò chơi khác, phải mất bốn lần đoán. 
 
 468
-00:26:43,180 --> 00:26:46,996
-Nếu chúng ta chuyển sang bên trái ở đây, tất cả các điểm trên 0 đều cho
+00:26:43,140 --> 00:26:46,730
+Nếu chúng ta chuyển sang bên trái ở đây, tất cả các điểm trên 0 đều cho 
 
 469
-00:26:46,996 --> 00:26:51,342
-biết bất cứ khi nào không có chút gì không chắc chắn, tức là chỉ có một khả năng,
+00:26:46,730 --> 00:26:50,819
+biết bất cứ khi nào không có chút gì không chắc chắn, tức là chỉ có một khả năng, 
 
 470
-00:26:51,342 --> 00:26:55,000
-thì số lần dự đoán cần thiết luôn chỉ là một, điều này thật yên tâm.
+00:26:50,819 --> 00:26:54,260
+thì số lần dự đoán cần thiết luôn chỉ là một, điều này thật yên tâm. 
 
 471
-00:26:55,000 --> 00:26:59,444
-Bất cứ khi nào có một chút không chắc chắn, nghĩa là về cơ bản chỉ có hai khả năng xảy
+00:26:54,780 --> 00:26:58,876
+Bất cứ khi nào có một chút không chắc chắn, nghĩa là về cơ bản chỉ có hai khả năng xảy 
 
 472
-00:26:59,444 --> 00:27:03,940
-ra, thì đôi khi cần phải đoán thêm một lần nữa, đôi khi cần phải đoán thêm hai lần nữa.
+00:26:58,876 --> 00:27:03,020
+ra, thì đôi khi cần phải đoán thêm một lần nữa, đôi khi cần phải đoán thêm hai lần nữa. 
 
 473
-00:27:03,940 --> 00:27:05,980
-Và vân vân và vân vân ở đây.
+00:27:03,080 --> 00:27:05,240
+Và vân vân và vân vân ở đây. 
 
 474
-00:27:05,980 --> 00:27:08,408
-Có lẽ cách dễ dàng hơn một chút để hình dung dữ liệu
+00:27:05,740 --> 00:27:07,898
+Có lẽ cách dễ dàng hơn một chút để hình dung dữ liệu 
 
 475
-00:27:08,408 --> 00:27:11,020
-này là gộp chúng lại với nhau và lấy giá trị trung bình.
+00:27:07,898 --> 00:27:10,220
+này là gộp chúng lại với nhau và lấy giá trị trung bình. 
 
 476
-00:27:11,020 --> 00:27:16,531
-Ví dụ: thanh này ở đây cho biết trong số tất cả các điểm mà chúng tôi có
+00:27:11,000 --> 00:27:15,331
+Ví dụ: thanh này ở đây cho biết trong số tất cả các điểm mà chúng tôi có 
 
 477
-00:27:16,531 --> 00:27:22,420
-một chút không chắc chắn, trung bình số lần đoán mới cần thiết là khoảng 1.5.
+00:27:15,331 --> 00:27:19,960
+một chút không chắc chắn, trung bình số lần đoán mới cần thiết là khoảng 1.5. 
 
 478
-00:27:22,420 --> 00:27:26,831
-Và thanh ở đây nói về tất cả các trò chơi khác nhau mà tại một thời điểm nào đó độ
+00:27:22,140 --> 00:27:26,366
+Và thanh ở đây nói về tất cả các trò chơi khác nhau mà tại một thời điểm nào đó độ 
 
 479
-00:27:26,831 --> 00:27:31,509
-không chắc chắn cao hơn 4 bit một chút, giống như thu hẹp nó xuống còn 16 khả năng khác
+00:27:26,366 --> 00:27:30,847
+không chắc chắn cao hơn 4 bit một chút, giống như thu hẹp nó xuống còn 16 khả năng khác 
 
 480
-00:27:31,509 --> 00:27:36,240
-nhau, sau đó trung bình nó yêu cầu nhiều hơn hai lần đoán kể từ thời điểm đó phía trước.
+00:27:30,847 --> 00:27:35,380
+nhau, sau đó trung bình nó yêu cầu nhiều hơn hai lần đoán kể từ thời điểm đó phía trước. 
 
 481
-00:27:36,240 --> 00:27:38,243
-Và từ đây tôi mới thực hiện một phép hồi quy để
+00:27:36,060 --> 00:27:37,833
+Và từ đây tôi mới thực hiện một phép hồi quy để 
 
 482
-00:27:38,243 --> 00:27:40,080
-khớp với một hàm có vẻ hợp lý với điều này.
+00:27:37,833 --> 00:27:39,460
+khớp với một hàm có vẻ hợp lý với điều này. 
 
 483
-00:27:40,080 --> 00:27:43,385
-Và hãy nhớ rằng mục đích chung của việc thực hiện bất kỳ điều nào trong
+00:27:39,980 --> 00:27:43,058
+Và hãy nhớ rằng mục đích chung của việc thực hiện bất kỳ điều nào trong 
 
 484
-00:27:43,385 --> 00:27:46,690
-số đó là để chúng ta có thể định lượng trực giác này rằng chúng ta càng
+00:27:43,058 --> 00:27:46,137
+số đó là để chúng ta có thể định lượng trực giác này rằng chúng ta càng 
 
 485
-00:27:46,690 --> 00:27:49,720
-thu được nhiều thông tin từ một từ thì điểm kỳ vọng sẽ càng thấp.
+00:27:46,137 --> 00:27:48,960
+thu được nhiều thông tin từ một từ thì điểm kỳ vọng sẽ càng thấp. 
 
 486
-00:27:49,720 --> 00:27:54,890
-Vì vậy, với phiên bản này là 2.0, nếu chúng ta quay lại và chạy cùng một bộ mô phỏng,
+00:27:49,680 --> 00:27:54,573
+Vì vậy, với phiên bản này là 2.0, nếu chúng ta quay lại và chạy cùng một bộ mô phỏng, 
 
 487
-00:27:54,890 --> 00:27:59,820
-để nó đấu với tất cả 2315 câu trả lời từ có thể có, thì nó hoạt động như thế nào?
+00:27:54,573 --> 00:27:59,240
+để nó đấu với tất cả 2315 câu trả lời từ có thể có, thì nó hoạt động như thế nào? 
 
 488
-00:27:59,820 --> 00:28:02,008
-Ngược lại với phiên bản đầu tiên của chúng tôi,
+00:28:00,280 --> 00:28:01,900
+Ngược lại với phiên bản đầu tiên của chúng tôi, 
 
 489
-00:28:02,008 --> 00:28:04,060
-nó chắc chắn tốt hơn, điều này thật yên tâm.
+00:28:01,900 --> 00:28:03,420
+nó chắc chắn tốt hơn, điều này thật yên tâm. 
 
 490
-00:28:04,060 --> 00:28:08,926
-Tất cả đã nói và làm trung bình là khoảng 3.6, mặc dù không giống như phiên bản đầu tiên,
+00:28:04,020 --> 00:28:08,520
+Tất cả đã nói và làm trung bình là khoảng 3.6, mặc dù không giống như phiên bản đầu tiên, 
 
 491
-00:28:08,926 --> 00:28:12,820
-có một vài lần nó bị mất và yêu cầu nhiều hơn sáu trong trường hợp này.
+00:28:08,520 --> 00:28:12,120
+có một vài lần nó bị mất và yêu cầu nhiều hơn sáu trong trường hợp này. 
 
 492
-00:28:12,820 --> 00:28:15,813
-Có lẽ bởi vì đôi khi nó thực hiện sự đánh đổi đó để
+00:28:12,639 --> 00:28:15,215
+Có lẽ bởi vì đôi khi nó thực hiện sự đánh đổi đó để 
 
 493
-00:28:15,813 --> 00:28:18,980
-thực sự đạt được mục tiêu hơn là tối đa hóa thông tin.
+00:28:15,215 --> 00:28:17,940
+thực sự đạt được mục tiêu hơn là tối đa hóa thông tin. 
 
 494
-00:28:18,980 --> 00:28:22,140
-Vậy chúng ta có thể làm tốt hơn 3.6?
+00:28:19,040 --> 00:28:21,000
+Vậy chúng ta có thể làm tốt hơn 3.6? 
 
 495
-00:28:22,140 --> 00:28:23,260
-Chúng tôi chắc chắn có thể.
+00:28:22,080 --> 00:28:22,920
+Chúng tôi chắc chắn có thể. 
 
 496
-00:28:23,260 --> 00:28:26,663
-Bây giờ tôi đã nói ngay từ đầu rằng sẽ thú vị nhất khi thử không kết hợp danh
+00:28:23,280 --> 00:28:26,359
+Bây giờ tôi đã nói ngay từ đầu rằng sẽ thú vị nhất khi thử không kết hợp danh 
 
 497
-00:28:26,663 --> 00:28:29,980
-sách các câu trả lời từng từ thực sự vào cách nó xây dựng mô hình của mình.
+00:28:26,359 --> 00:28:29,360
+sách các câu trả lời từng từ thực sự vào cách nó xây dựng mô hình của mình. 
 
 498
-00:28:29,980 --> 00:28:35,180
-Nhưng nếu chúng tôi kết hợp nó, hiệu suất tốt nhất tôi có thể đạt được là khoảng 3.43.
+00:28:29,880 --> 00:28:34,180
+Nhưng nếu chúng tôi kết hợp nó, hiệu suất tốt nhất tôi có thể đạt được là khoảng 3.43. 
 
 499
-00:28:35,180 --> 00:28:38,807
-Vì vậy, nếu chúng ta cố gắng phức tạp hơn việc chỉ sử dụng dữ liệu tần số từ để chọn
+00:28:35,160 --> 00:28:38,592
+Vì vậy, nếu chúng ta cố gắng phức tạp hơn việc chỉ sử dụng dữ liệu tần số từ để chọn 
 
 500
-00:28:38,807 --> 00:28:42,519
-phân phối trước này, thì phân phối 3 này. 43 có lẽ cho biết mức độ tối đa mà chúng tôi
+00:28:38,592 --> 00:28:42,105
+phân phối trước này, thì phân phối 3 này. 43 có lẽ cho biết mức độ tối đa mà chúng tôi 
 
 501
-00:28:42,519 --> 00:28:46,360
-có thể đạt được với điều đó, hoặc ít nhất là tôi có thể đạt được điều đó tốt đến mức nào.
+00:28:42,105 --> 00:28:45,740
+có thể đạt được với điều đó, hoặc ít nhất là tôi có thể đạt được điều đó tốt đến mức nào. 
 
 502
-00:28:46,360 --> 00:28:49,943
-Hiệu suất tốt nhất đó về cơ bản chỉ sử dụng những ý tưởng mà tôi đã nói ở đây,
+00:28:46,240 --> 00:28:49,662
+Hiệu suất tốt nhất đó về cơ bản chỉ sử dụng những ý tưởng mà tôi đã nói ở đây, 
 
 503
-00:28:49,943 --> 00:28:52,983
-nhưng nó còn đi xa hơn một chút, giống như việc tìm kiếm thông tin
+00:28:49,662 --> 00:28:52,564
+nhưng nó còn đi xa hơn một chút, giống như việc tìm kiếm thông tin 
 
 504
-00:28:52,983 --> 00:28:55,660
-được mong đợi về phía trước hai bước thay vì chỉ một bước.
+00:28:52,564 --> 00:28:55,120
+được mong đợi về phía trước hai bước thay vì chỉ một bước. 
 
 505
-00:28:55,660 --> 00:28:58,072
-Ban đầu tôi định nói nhiều hơn về vấn đề đó, nhưng
+00:28:55,620 --> 00:28:57,875
+Ban đầu tôi định nói nhiều hơn về vấn đề đó, nhưng 
 
 506
-00:28:58,072 --> 00:29:00,580
-tôi nhận ra rằng chúng ta thực sự đã đi khá lâu rồi.
+00:28:57,875 --> 00:29:00,220
+tôi nhận ra rằng chúng ta thực sự đã đi khá lâu rồi. 
 
 507
-00:29:00,580 --> 00:29:03,596
-Một điều tôi sẽ nói là sau khi thực hiện tìm kiếm hai bước này và sau
+00:29:00,580 --> 00:29:03,461
+Một điều tôi sẽ nói là sau khi thực hiện tìm kiếm hai bước này và sau 
 
 508
-00:29:03,596 --> 00:29:06,785
-đó chạy một vài mô phỏng mẫu trong các ứng cử viên hàng đầu, đối với tôi,
+00:29:03,461 --> 00:29:06,506
+đó chạy một vài mô phỏng mẫu trong các ứng cử viên hàng đầu, đối với tôi, 
 
 509
-00:29:06,785 --> 00:29:09,500
-ít nhất cho đến nay, có vẻ như Crane là người mở màn tốt nhất.
+00:29:06,506 --> 00:29:09,100
+ít nhất cho đến nay, có vẻ như Crane là người mở màn tốt nhất. 
 
 510
-00:29:09,500 --> 00:29:11,080
-Ai có thể đoán được?
+00:29:09,100 --> 00:29:10,060
+Ai có thể đoán được? 
 
 511
-00:29:11,080 --> 00:29:15,007
-Ngoài ra, nếu bạn sử dụng danh sách từ thực sự để xác định không gian khả năng của mình,
+00:29:10,920 --> 00:29:14,881
+Ngoài ra, nếu bạn sử dụng danh sách từ thực sự để xác định không gian khả năng của mình, 
 
 512
-00:29:15,007 --> 00:29:17,920
-thì độ không chắc chắn mà bạn bắt đầu sẽ lớn hơn 11 bit một chút.
+00:29:14,881 --> 00:29:17,820
+thì độ không chắc chắn mà bạn bắt đầu sẽ lớn hơn 11 bit một chút. 
 
 513
-00:29:17,920 --> 00:29:22,076
-Và hóa ra, chỉ từ một cuộc tìm kiếm thô bạo, thông tin mong
+00:29:18,300 --> 00:29:21,938
+Và hóa ra, chỉ từ một cuộc tìm kiếm thô bạo, thông tin mong 
 
 514
-00:29:22,076 --> 00:29:26,580
-đợi tối đa có thể có sau hai lần đoán đầu tiên là khoảng 10 bit.
+00:29:21,938 --> 00:29:25,880
+đợi tối đa có thể có sau hai lần đoán đầu tiên là khoảng 10 bit. 
 
 515
-00:29:26,580 --> 00:29:31,180
-Điều này gợi ý rằng trong trường hợp tốt nhất, sau hai lần đoán đầu tiên của bạn,
+00:29:26,500 --> 00:29:30,791
+Điều này gợi ý rằng trong trường hợp tốt nhất, sau hai lần đoán đầu tiên của bạn, 
 
 516
-00:29:31,180 --> 00:29:35,220
-với lối chơi hoàn toàn tối ưu, bạn sẽ còn lại một chút không chắc chắn.
+00:29:30,791 --> 00:29:34,560
+với lối chơi hoàn toàn tối ưu, bạn sẽ còn lại một chút không chắc chắn. 
 
 517
-00:29:35,220 --> 00:29:37,400
-Điều này cũng giống như việc có hai khả năng phỏng đoán.
+00:29:34,800 --> 00:29:37,960
+Điều này cũng giống như việc có hai khả năng phỏng đoán. 
 
 518
-00:29:37,400 --> 00:29:41,557
-Vì vậy, tôi nghĩ thật công bằng và có lẽ khá thận trọng khi nói rằng bạn không
+00:29:37,960 --> 00:29:41,859
+Vì vậy, tôi nghĩ thật công bằng và có lẽ khá thận trọng khi nói rằng bạn không 
 
 519
-00:29:41,557 --> 00:29:45,241
-bao giờ có thể viết một thuật toán đạt mức trung bình thấp nhất là 3,
+00:29:41,859 --> 00:29:45,314
+bao giờ có thể viết một thuật toán đạt mức trung bình thấp nhất là 3, 
 
 520
-00:29:45,241 --> 00:29:49,241
-bởi vì với số từ có sẵn cho bạn, đơn giản là không có đủ chỗ để có đủ thông
+00:29:45,314 --> 00:29:49,065
+bởi vì với số từ có sẵn cho bạn, đơn giản là không có đủ chỗ để có đủ thông 
 
 521
-00:29:49,241 --> 00:29:53,820
-tin chỉ sau hai bước. có thể đảm bảo câu trả lời ở ô thứ ba mọi lúc mà không thất bại.
+00:29:49,065 --> 00:29:53,360
+tin chỉ sau hai bước. có thể đảm bảo câu trả lời ở ô thứ ba mọi lúc mà không thất bại. 
 

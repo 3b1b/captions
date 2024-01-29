@@ -1,1056 +1,1556 @@
 1
-00:00:00,000 --> 00:00:04,480
-Suppose I give you two different lists of numbers, or maybe two different functions,
+00:00:00,000 --> 00:00:04,025
+Suppose I give you two different lists of numbers, or maybe two different functions, 
 
 2
-00:00:04,480 --> 00:00:08,400
-and I ask you to think of all the ways you might combine those two lists to get a new list of
+00:00:04,025 --> 00:00:07,815
+and I ask you to think of all the ways you might combine those two lists to get 
 
 3
-00:00:08,400 --> 00:00:14,000
-numbers, or combine the two functions to get a new function. Maybe one simple way that comes to mind
+00:00:07,815 --> 00:00:11,320
+a new list of numbers, or combine the two functions to get a new function.
 
 4
-00:00:14,000 --> 00:00:18,640
-is to simply add them together term by term. Likewise with the functions, you can add all
+00:00:12,120 --> 00:00:16,760
+Maybe one simple way that comes to mind is to simply add them together term by term.
 
 5
-00:00:18,640 --> 00:00:24,000
-the corresponding outputs. In a similar vein, you could also multiply the two lists term by term
+00:00:17,160 --> 00:00:19,920
+Likewise with the functions, you can add all the corresponding outputs.
 
 6
-00:00:24,000 --> 00:00:28,720
-and do the same thing with the functions. But there's another kind of combination just as
+00:00:20,540 --> 00:00:23,179
+In a similar vein, you could also multiply the two lists 
 
 7
-00:00:28,720 --> 00:00:33,840
-fundamental as both of those, but a lot less commonly discussed, known as a convolution.
+00:00:23,179 --> 00:00:25,680
+term by term and do the same thing with the functions.
 
 8
-00:00:33,840 --> 00:00:38,240
-But unlike the previous two cases, it's not something that's merely inherited from an
+00:00:26,360 --> 00:00:30,455
+But there's another kind of combination just as fundamental as both of those, 
 
 9
-00:00:38,240 --> 00:00:43,360
-operation you can do to numbers. It's something genuinely new for the context of lists of numbers
+00:00:30,455 --> 00:00:33,500
+but a lot less commonly discussed, known as a convolution.
 
 10
-00:00:43,360 --> 00:00:49,280
-or combining functions. They show up all over the place, they are ubiquitous in image processing,
+00:00:34,080 --> 00:00:37,047
+But unlike the previous two cases, it's not something that's 
 
 11
-00:00:49,280 --> 00:00:53,760
-it's a core construct in the theory of probability, they're used a lot in solving differential
+00:00:37,047 --> 00:00:39,820
+merely inherited from an operation you can do to numbers.
 
 12
-00:00:53,760 --> 00:00:58,240
-equations, and one context where you've almost certainly seen it, if not by this name, is
+00:00:39,980 --> 00:00:44,700
+It's something genuinely new for the context of lists of numbers or combining functions.
 
 13
-00:00:58,240 --> 00:01:03,440
-multiplying two polynomials together. As someone in the business of visual explanations, this is
+00:00:45,320 --> 00:00:49,050
+They show up all over the place, they are ubiquitous in image processing, 
 
 14
-00:01:03,440 --> 00:01:08,800
-an especially great topic, because the formulaic definition in isolation and without context can
+00:00:49,050 --> 00:00:51,671
+it's a core construct in the theory of probability, 
 
 15
-00:01:08,800 --> 00:01:14,080
-look kind of intimidating, but if we take the time to really unpack what it's saying, and before that
+00:00:51,671 --> 00:00:54,392
+they're used a lot in solving differential equations, 
 
 16
-00:01:14,080 --> 00:01:18,800
-actually motivate why you would want something like this, it's an incredibly beautiful operation.
+00:00:54,392 --> 00:00:58,223
+and one context where you've almost certainly seen it, if not by this name, 
 
 17
-00:01:18,800 --> 00:01:22,880
-And I have to admit, I actually learned a little something while putting together the visuals for
+00:00:58,223 --> 00:01:00,240
+is multiplying two polynomials together.
 
 18
-00:01:22,880 --> 00:01:26,960
-this project. In the case of convolving two different functions, I was trying to think of
+00:01:00,740 --> 00:01:04,998
+As someone in the business of visual explanations, this is an especially great topic, 
 
 19
-00:01:26,960 --> 00:01:30,720
-different ways you might picture what that could mean, and with one of them I had a little bit of
+00:01:04,998 --> 00:01:09,109
+because the formulaic definition in isolation and without context can look kind of 
 
 20
-00:01:30,720 --> 00:01:35,840
-an aha moment for why it is that normal distributions play the role that they do in
+00:01:09,109 --> 00:01:12,724
+intimidating, but if we take the time to really unpack what it's saying, 
 
 21
-00:01:35,840 --> 00:01:40,320
-probability, why it's such a natural shape for a function. But I'm getting ahead of myself, there's
+00:01:12,724 --> 00:01:16,388
+and before that actually motivate why you would want something like this, 
 
 22
-00:01:40,320 --> 00:01:44,800
-a lot of setup for that one. In this video, our primary focus is just going to be on the discrete
+00:01:16,388 --> 00:01:18,320
+it's an incredibly beautiful operation.
 
 23
-00:01:44,800 --> 00:01:49,920
-case, and in particular building up to a very unexpected but very clever algorithm for computing
+00:01:18,960 --> 00:01:21,394
+And I have to admit, I actually learned a little something 
 
 24
-00:01:49,920 --> 00:01:54,400
-these. And I'll pull out the discussion for the continuous case into a second part.
+00:01:21,394 --> 00:01:23,540
+while putting together the visuals for this project.
 
 25
-00:01:57,840 --> 00:02:03,120
-It's very tempting to open up with the image processing examples, since they're visually the most
+00:01:23,540 --> 00:01:25,957
+In the case of convolving two different functions, 
 
 26
-00:02:03,120 --> 00:02:06,880
-intriguing, but there are a couple bits of finickiness that make the image processing case
+00:01:25,957 --> 00:01:29,750
+I was trying to think of different ways you might picture what that could mean, 
 
 27
-00:02:06,880 --> 00:02:11,760
-less representative of convolutions overall, so instead let's kick things off with probability,
+00:01:29,750 --> 00:01:33,352
+and with one of them I had a little bit of an aha moment for why it is that 
 
 28
-00:02:11,760 --> 00:02:15,520
-and in particular one of the simplest examples that I'm sure everyone here has thought about at
+00:01:33,352 --> 00:01:36,386
+normal distributions play the role that they do in probability, 
 
 29
-00:02:15,520 --> 00:02:20,320
-some point in their life, which is rolling a pair of dice and figuring out the chances of seeing
+00:01:36,386 --> 00:01:38,520
+why it's such a natural shape for a function.
 
 30
-00:02:20,320 --> 00:02:25,600
-various different sums. And you might say, not a problem, not a problem. Each of your two dice has
+00:01:39,020 --> 00:01:41,520
+But I'm getting ahead of myself, there's a lot of setup for that one.
 
 31
-00:02:25,600 --> 00:02:31,600
-six different possible outcomes, which gives us a total of 36 distinct possible pairs of outcomes,
+00:01:41,840 --> 00:01:45,511
+In this video, our primary focus is just going to be on the discrete case, 
 
 32
-00:02:31,600 --> 00:02:35,600
-and if we just look through them all we can count up how many pairs have a given sum.
+00:01:45,511 --> 00:01:49,476
+and in particular building up to a very unexpected but very clever algorithm for 
 
 33
-00:02:36,240 --> 00:02:41,120
-And arranging all the pairs in a grid like this, one pretty nice thing is that all of the pairs
+00:01:49,476 --> 00:01:50,260
+computing these.
 
 34
-00:02:41,120 --> 00:02:47,040
-that have a constant sum are visible along one of these different diagonals. So simply counting how
+00:01:50,260 --> 00:01:54,480
+And I'll pull out the discussion for the continuous case into a second part.
 
 35
-00:02:47,040 --> 00:02:51,920
-many exist on each of those diagonals will tell you how likely you are to see a particular sum.
+00:01:58,580 --> 00:02:01,599
+It's very tempting to open up with the image processing examples, 
 
 36
-00:02:52,880 --> 00:02:57,760
-And I'd say, very good, very good, but can you think of any other ways that you might visualize
+00:02:01,599 --> 00:02:05,579
+since they're visually the most intriguing, but there are a couple bits of finickiness 
 
 37
-00:02:57,760 --> 00:03:03,120
-the same question? Other images that can come to mind to think of all the distinct pairs that have
+00:02:05,579 --> 00:02:09,285
+that make the image processing case less representative of convolutions overall, 
 
 38
-00:03:03,120 --> 00:03:08,800
-a given sum? And maybe one of you raises your hand and says, yeah, I've got one. Let's say you picture
+00:02:09,285 --> 00:02:11,618
+so instead let's kick things off with probability, 
 
 39
-00:03:08,800 --> 00:03:14,560
-these two different sets of possibilities each in a row, but you flip around that second row. That way
+00:02:11,618 --> 00:02:15,232
+and in particular one of the simplest examples that I'm sure everyone here has 
 
 40
-00:03:14,560 --> 00:03:20,160
-all of the different pairs which add up to seven line up vertically like this. And if we slide that
+00:02:15,232 --> 00:02:18,846
+thought about at some point in their life, which is rolling a pair of dice and 
 
 41
-00:03:20,160 --> 00:03:24,880
-bottom row all the way to the right, then the unique pair that adds up to two, the snake eyes,
+00:02:18,846 --> 00:02:21,500
+figuring out the chances of seeing various different sums.
 
 42
-00:03:24,880 --> 00:03:29,680
-are the only ones that align. And if I schlunk that over one unit to the right, the pairs which
+00:02:22,460 --> 00:02:24,460
+And you might say, not a problem, not a problem.
 
 43
-00:03:29,680 --> 00:03:35,440
-align are the two different pairs that add up to three. And in general, different offset values of
+00:02:24,680 --> 00:02:27,821
+Each of your two dice has six different possible outcomes, 
 
 44
-00:03:35,440 --> 00:03:40,320
-this lower array, which remember I had to flip around first, reveal all the distinct pairs that
+00:02:27,821 --> 00:02:31,334
+which gives us a total of 36 distinct possible pairs of outcomes, 
 
 45
-00:03:40,320 --> 00:03:48,800
-have a given sum. As far as probability questions go, this still isn't especially interesting,
+00:02:31,334 --> 00:02:35,860
+and if we just look through them all we can count up how many pairs have a given sum.
 
 46
-00:03:48,800 --> 00:03:53,120
-because all we're doing is counting how many outcomes there are in each of these categories.
+00:02:36,600 --> 00:02:39,118
+And arranging all the pairs in a grid like this, 
 
 47
-00:03:53,120 --> 00:03:57,280
-But that is with the implicit assumption that there's an equal chance for each of these faces
+00:02:39,118 --> 00:02:43,435
+one pretty nice thing is that all of the pairs that have a constant sum are visible 
 
 48
-00:03:57,280 --> 00:04:02,240
-to come up. But what if I told you I have a special set of dice that's not uniform? Maybe
+00:02:43,435 --> 00:02:45,440
+along one of these different diagonals.
 
 49
-00:04:02,240 --> 00:04:06,800
-the blue die has its own set of numbers describing the probabilities for each face coming up,
+00:02:45,440 --> 00:02:48,893
+So simply counting how many exist on each of those diagonals 
 
 50
-00:04:06,800 --> 00:04:11,920
-and the red die has its own unique distinct set of numbers. In that case, if you wanted to figure out,
+00:02:48,893 --> 00:02:52,120
+will tell you how likely you are to see a particular sum.
 
 51
-00:04:11,920 --> 00:04:17,360
-say, the probability of seeing a two, you would multiply the probability that the blue die is a one
+00:02:53,220 --> 00:02:55,892
+And I'd say, very good, very good, but can you think of 
 
 52
-00:04:17,360 --> 00:04:22,000
-times the probability that the red die is a one. And for the chances of seeing a three,
+00:02:55,892 --> 00:02:58,660
+any other ways that you might visualize the same question?
 
 53
-00:04:22,000 --> 00:04:26,880
-you look at the two distinct pairs where that's possible, and again, multiply the corresponding
+00:02:59,300 --> 00:03:01,731
+Other images that can come to mind to think of 
 
 54
-00:04:26,880 --> 00:04:32,240
-probabilities, and then add those two products together. Similarly, the chances of seeing a four
+00:03:01,731 --> 00:03:04,060
+all the distinct pairs that have a given sum?
 
 55
-00:04:32,240 --> 00:04:36,320
-involves multiplying together three different pairs of possibilities and adding them all
+00:03:04,860 --> 00:03:07,980
+And maybe one of you raises your hand and says, yeah, I've got one.
 
 56
-00:04:36,320 --> 00:04:41,360
-together. And in the spirit of setting up some formulas, let's name these top probabilities a1,
+00:03:08,280 --> 00:03:12,044
+Let's say you picture these two different sets of possibilities each in a row, 
 
 57
-00:04:41,360 --> 00:04:48,000
-a2, a3, and so on, and name the bottom ones b1, b2, b3, and so on. And in general, this process,
+00:03:12,044 --> 00:03:13,760
+but you flip around that second row.
 
 58
-00:04:48,000 --> 00:04:52,080
-where we're taking two different arrays of numbers, flipping the second one around,
+00:03:13,760 --> 00:03:18,760
+That way all of the different pairs which add up to seven line up vertically like this.
 
 59
-00:04:52,080 --> 00:04:56,160
-and then lining them up at various different offset values, taking a bunch of pairwise
+00:03:19,360 --> 00:03:22,123
+And if we slide that bottom row all the way to the right, 
 
 60
-00:04:56,160 --> 00:05:00,960
-products and adding them up, that's one of the fundamental ways to think about what a convolution
+00:03:22,123 --> 00:03:26,315
+then the unique pair that adds up to two, the snake eyes, are the only ones that align, 
 
 61
-00:05:00,960 --> 00:05:08,960
-is. So just to spell it out a little more exactly, through this process, we just generated
+00:03:26,315 --> 00:03:28,697
+and if I schlunk that over one unit to the right, 
 
 62
-00:05:08,960 --> 00:05:13,840
-probabilities for seeing two, three, four, on and on up to 12, and we got them by mixing together
+00:03:28,697 --> 00:03:32,080
+the pairs which align are the two different pairs that add up to three.
 
 63
-00:05:13,840 --> 00:05:20,080
-one list of values, a, and another list of values, b. In the lingo, we'd say the convolution of those
+00:03:32,880 --> 00:03:36,235
+And in general, different offset values of this lower array, 
 
 64
-00:05:20,080 --> 00:05:25,600
-two sequences gives us this new sequence, the new sequence of 11 values, each of which looks like
+00:03:36,235 --> 00:03:40,525
+which remember I had to flip around first, reveal all the distinct pairs that 
 
 65
-00:05:25,600 --> 00:05:30,160
-some sum of pairwise products. If you prefer, another way you could think about the same
+00:03:40,525 --> 00:03:41,460
+have a given sum.
 
 66
-00:05:30,160 --> 00:05:36,240
-operation is to first create a table of all the pairwise products, and then add up along all these
+00:03:44,820 --> 00:03:48,730
+As far as probability questions go, this still isn't especially interesting because 
 
 67
-00:05:36,240 --> 00:05:41,120
-diagonals. Again, that's a way of mixing together these two sequences of numbers to get us a new
+00:03:48,730 --> 00:03:52,640
+all we're doing is counting how many outcomes there are in each of these categories.
 
 68
-00:05:41,120 --> 00:05:46,400
-sequence of 11 numbers. It's the same operation as the sliding windows thought, just another perspective.
+00:03:52,980 --> 00:03:55,623
+But that is with the implicit assumption that there's 
 
 69
-00:05:46,960 --> 00:05:51,280
-Putting a little notation to it, here's how you might see it written down. The convolution of a
+00:03:55,623 --> 00:03:58,120
+an equal chance for each of these faces to come up.
 
 70
-00:05:51,280 --> 00:05:57,200
-and b, denoted with this little asterisk, is a new list, and the nth element of that list looks like
+00:03:58,360 --> 00:04:01,620
+But what if I told you I have a special set of dice that's not uniform?
 
 71
-00:05:57,200 --> 00:06:03,440
-a sum, and that sum goes over all different pairs of indices, i and j, so that the sum of those
+00:04:02,060 --> 00:04:05,885
+Maybe the blue die has its own set of numbers describing the probabilities for 
 
 72
-00:06:03,440 --> 00:06:09,440
-indices is equal to n. It's kind of a mouthful, but for example, if n was 6, the pairs we're going
+00:04:05,885 --> 00:04:09,760
+each face coming up, and the red die has its own unique distinct set of numbers.
 
 73
-00:06:09,440 --> 00:06:15,680
-over are 1 and 5, 2 and 4, 3 and 3, 4 and 2, 5 and 1, all the different pairs that add up to 6.
+00:04:10,299 --> 00:04:12,780
+In that case, if you wanted to figure out, say, 
 
 74
-00:06:16,400 --> 00:06:20,640
-But honestly, however you write it down, the notation is secondary in importance to the visual
+00:04:12,780 --> 00:04:16,191
+the probability of seeing a 2, you would multiply the probability 
 
 75
-00:06:20,640 --> 00:06:26,320
-you might hold in your head for the process. Here, maybe it helps to do a super simple example, where
+00:04:16,191 --> 00:04:19,860
+that the blue die is a 1 times the probability that the red die is a 1.
 
 76
-00:06:26,320 --> 00:06:32,000
-I might ask you what's the convolution of the list 1, 2, 3, with the list 4, 5, 6. You might picture
+00:04:20,279 --> 00:04:23,531
+And for the chances of seeing a 3, you look at the two distinct 
 
 77
-00:06:32,000 --> 00:06:36,160
-taking both of these lists, flipping around that second one, and then starting with its
+00:04:23,531 --> 00:04:26,885
+pairs where that's possible, and again multiply the corresponding 
 
 78
-00:06:36,160 --> 00:06:41,200
-lid all the way over to the left. Then the pair of values which align are 1 and 4, multiply them
+00:04:26,885 --> 00:04:29,680
+probabilities and then add those two products together.
 
 79
-00:06:41,200 --> 00:06:45,680
-together, and that gives us our first term of our output. Slide that bottom array one unit to the
+00:04:30,100 --> 00:04:33,435
+Similarly, the chances of seeing a 4 involves multiplying together 
 
 80
-00:06:45,680 --> 00:06:51,840
-right, the pairs which align are 1 and 5, and 2 and 4, multiply those pairs, add them together, and that
+00:04:33,435 --> 00:04:36,820
+three different pairs of possibilities and adding them all together.
 
 81
-00:06:51,840 --> 00:06:57,600
-gives us 13, the next entry in our output. Slide things over once more, and we'll take 1 times 6,
+00:04:36,820 --> 00:04:41,852
+And in the spirit of setting up some formulas, let's name these top probabilities a 1, 
 
 82
-00:06:57,600 --> 00:07:04,400
-plus 2 times 5, plus 3 times 4, which happens to be 28. One more slide, and we get 2 times 6,
+00:04:41,852 --> 00:04:45,960
+a 2, a 3, and so on, and name the bottom ones b 1, b 2, b 3, and so on.
 
 83
-00:07:04,400 --> 00:07:10,000
-plus 3 times 5, and that gives us 27, and finally the last term will look like 3 times 6.
+00:04:46,400 --> 00:04:50,495
+And in general, this process where we're taking two different arrays of numbers, 
 
 84
-00:07:10,560 --> 00:07:14,080
-If you'd like, you can pull up whatever your favorite programming language is, and your
+00:04:50,495 --> 00:04:54,389
+flipping the second one around, and then lining them up at various different 
 
 85
-00:07:14,080 --> 00:07:18,640
-favorite library that includes various numerical operations, and you can confirm I'm not lying to
+00:04:54,389 --> 00:04:57,979
+offset values, taking a bunch of pairwise products and adding them up, 
 
 86
-00:07:18,640 --> 00:07:24,320
-you. If you take the convolution of 1, 2, 3, against 4, 5, 6, this is indeed the result that you'll get.
+00:04:57,979 --> 00:05:01,620
+that's one of the fundamental ways to think about what a convolution is.
 
 87
-00:07:24,880 --> 00:07:29,200
-We've seen one case where this is a natural and desirable operation, adding up to probability
+00:05:04,860 --> 00:05:08,511
+So just to spell it out a little more exactly, through this process, 
 
 88
-00:07:29,200 --> 00:07:34,640
-distributions, and another common example would be a moving average. Imagine you have some long list
+00:05:08,511 --> 00:05:12,322
+we just generated probabilities for seeing 2, 3, 4, on and on up to 12, 
 
 89
-00:07:34,640 --> 00:07:39,920
-of numbers, and you take another smaller list of numbers that all add up to 1. In this case, I just
+00:05:12,322 --> 00:05:16,980
+and we got them by mixing together one list of values, a, and another list of values, b.
 
 90
-00:07:39,920 --> 00:07:45,280
-have a little list of 5 values, and they're all equal to 1 5th. Then if we do this sliding window
+00:05:17,440 --> 00:05:22,502
+In the lingo, we'd say the convolution of those two sequences gives us this new sequence, 
 
 91
-00:07:45,280 --> 00:07:49,760
-convolution process, and kind of close our eyes and sweep under the rug what happens at the very
+00:05:22,502 --> 00:05:27,340
+the new sequence of 11 values, each of which looks like some sum of pairwise products.
 
 92
-00:07:50,560 --> 00:07:55,120
-beginning of it, once our smaller list of values entirely overlaps with the bigger one,
+00:05:27,340 --> 00:05:31,957
+If you prefer, another way you could think about the same operation is to first 
 
 93
-00:07:55,680 --> 00:08:01,120
-think about what each term in this convolution really means. At each iteration, what you're doing
+00:05:31,957 --> 00:05:36,980
+create a table of all the pairwise products, and then add up along all these diagonals.
 
 94
-00:08:01,120 --> 00:08:06,400
-is multiplying each of the values from your data by 1 5th, and adding them all together, which is
+00:05:37,460 --> 00:05:39,842
+Again, that's a way of mixing together these two 
 
 95
-00:08:06,400 --> 00:08:12,080
-to say you're taking an average of your data inside this little window. Overall, the process
+00:05:39,842 --> 00:05:42,760
+sequences of numbers to get us a new sequence of 11 numbers.
 
 96
-00:08:12,080 --> 00:08:16,800
-gives you a smoothed out version of the original data, and you could modify this starting with a
+00:05:43,240 --> 00:05:46,460
+It's the same operation as the sliding windows thought, just another perspective.
 
 97
-00:08:16,800 --> 00:08:21,280
-different little list of numbers, and as long as that little list all adds up to 1, you can still
+00:05:47,140 --> 00:05:49,800
+Putting a little notation to it, here's how you might see it written down.
 
 98
-00:08:21,280 --> 00:08:25,840
-interpret it as a moving average. In the example shown here, that moving average would be giving
+00:05:50,220 --> 00:05:54,978
+The convolution of a and b, denoted with this little asterisk, is a new list, 
 
 99
-00:08:25,840 --> 00:08:30,720
-more weight towards the central value. This also results in a smoothed out version of the data.
+00:05:54,978 --> 00:05:58,089
+and the nth element of that list looks like a sum, 
 
 100
-00:08:33,200 --> 00:08:37,840
-If you do kind of a two-dimensional analog of this, it gives you a fun algorithm for blurring
+00:05:58,089 --> 00:06:01,993
+and that sum goes over all different pairs of indices, i and j, 
 
 101
-00:08:37,840 --> 00:08:43,120
-a given image. And I should say the animations I'm about to show are modified from something
+00:06:01,993 --> 00:06:04,860
+so that the sum of those indices is equal to n.
 
 102
-00:08:43,120 --> 00:08:48,160
-I originally made for part of a set of lectures I did with the Julia Lab at MIT for a certain
+00:06:05,280 --> 00:06:08,602
+It's kind of a mouthful, but for example, if n was 6, 
 
 103
-00:08:48,160 --> 00:08:52,320
-OpenCourseWare class that included an image processing unit. There we did a little bit more
+00:06:08,602 --> 00:06:13,277
+the pairs we're going over are 1 and 5, 2 and 4, 3 and 3, 4 and 2, 5 and 1, 
 
 104
-00:08:52,320 --> 00:08:56,640
-to dive into the code behind all of this, so if you're curious I'll leave you some links. But
+00:06:13,277 --> 00:06:15,800
+all the different pairs that add up to 6.
 
 105
-00:08:56,640 --> 00:09:01,440
-focusing back on this blurring example, what's going on is I've got this little 3x3 grid of
+00:06:16,620 --> 00:06:19,500
+But honestly, however you write it down, the notation is secondary in 
 
 106
-00:09:01,440 --> 00:09:06,480
-values that's marching along our original image, and if we zoom in, each one of those values is 1
+00:06:19,500 --> 00:06:22,340
+importance to the visual you might hold in your head for the process.
 
 107
-00:09:06,480 --> 00:09:11,120
-9th, and what I'm doing at each iteration is multiplying each of those values by the
+00:06:23,280 --> 00:06:26,051
+Here, maybe it helps to do a super simple example, 
 
 108
-00:09:11,120 --> 00:09:16,080
-corresponding pixel that it sits on top of. And of course in computer science we think of colors
+00:06:26,051 --> 00:06:30,780
+where I might ask you what's the convolution of the list 1, 2, 3 with the list 4, 5, 6.
 
 109
-00:09:16,080 --> 00:09:20,400
-as little vectors of three values, representing the red, green, and blue components.
+00:06:31,480 --> 00:06:35,003
+You might picture taking both of these lists, flipping around that second one, 
 
 110
-00:09:20,400 --> 00:09:25,440
-When I multiply all these little values by 1 9th and I add them together, it gives us an average
+00:06:35,003 --> 00:06:37,680
+and then starting with its lid all the way over to the left.
 
 111
-00:09:25,440 --> 00:09:30,480
-along each color channel, and the corresponding pixel for the image on the right is defined to be
+00:06:38,180 --> 00:06:40,368
+Then the pair of values which align are 1 and 4, 
 
 112
-00:09:30,480 --> 00:09:36,320
-that sum. The overall effect, as we do this for every single pixel on the image, is that each one
+00:06:40,368 --> 00:06:43,540
+multiply them together, and that gives us our first term of our output.
 
 113
-00:09:36,320 --> 00:09:40,880
-kind of bleeds into all of its neighbors, which gives us a blurrier version than the original.
+00:06:43,960 --> 00:06:46,656
+Slide that bottom array one unit to the right, 
 
 114
-00:09:41,680 --> 00:09:46,640
-In the lingo we'd say that the image on the right is a convolution of our original image with a
+00:06:46,656 --> 00:06:50,443
+the pairs which align are 1, 5 and 2 and 4, multiply those pairs, 
 
 115
-00:09:46,640 --> 00:09:52,000
-little grid of values. Or more technically maybe I should say that it's the convolution with a 180
+00:06:50,443 --> 00:06:54,460
+add them together, and that gives us 13, the next entry in our output.
 
 116
-00:09:52,000 --> 00:09:56,160
-degree rotated version of that little grid of values. Not that it matters when the grid is
+00:06:54,960 --> 00:07:00,154
+Slide things over once more, and we'll take 1 times 6 plus 2 times 5 plus 3 times 4, 
 
 117
-00:09:56,160 --> 00:10:00,720
-symmetric, but it's just worth keeping in mind that the definition of a convolution, as inherited from
+00:07:00,154 --> 00:07:01,560
+which happens to be 28.
 
 118
-00:10:00,720 --> 00:10:05,760
-the pure math context, should always invite you to think about flipping around that second array.
+00:07:02,020 --> 00:07:07,020
+One more slide and we get 2 times 6 plus 3 times 5, and that gives us 27.
 
 119
-00:10:05,760 --> 00:10:10,240
-If we modify this slightly we can get a much more elegant blurring effect by choosing a different
+00:07:07,500 --> 00:07:10,120
+And finally the last term will look like 3 times 6.
 
 120
-00:10:10,240 --> 00:10:15,920
-grid of values. In this case I have a little 5x5 grid, but the distinction is not so much its size.
+00:07:10,660 --> 00:07:13,565
+If you'd like, you can pull up whatever your favorite programming 
 
 121
-00:10:15,920 --> 00:10:19,920
-If we zoom in we notice that the value in the middle is a lot bigger than the value towards
+00:07:13,565 --> 00:07:17,175
+language is and your favorite library that includes various numerical operations, 
 
 122
-00:10:19,920 --> 00:10:25,360
-the edges, and where this is coming from is they're all sampled from a bell curve, known as a Gaussian
+00:07:17,175 --> 00:07:18,980
+and you can confirm I'm not lying to you.
 
 123
-00:10:25,360 --> 00:10:30,240
-distribution. That way when we multiply all of these values by the corresponding pixel that
+00:07:18,980 --> 00:07:21,786
+If you take the convolution of 1, 2, 3 against 4, 
 
 124
-00:10:30,240 --> 00:10:35,200
-they're sitting on top of, we're giving a lot more weight to that central pixel and much less towards
+00:07:21,786 --> 00:07:24,480
+5, 6, this is indeed the result that you'll get.
 
 125
-00:10:35,200 --> 00:10:39,920
-the ones out at the edge. And just as before the corresponding pixel on the right is defined to be
+00:07:25,920 --> 00:07:29,216
+We've seen one case where this is a natural and desirable operation, 
 
 126
-00:10:39,920 --> 00:10:45,360
-this sum. As we do this process for every single pixel it gives a blurring effect which much more
+00:07:29,216 --> 00:07:32,943
+adding up to probability distributions, and another common example would be a 
 
 127
-00:10:45,360 --> 00:10:49,760
-authentically simulates the notion of putting your lens out of focus or something like that.
+00:07:32,943 --> 00:07:33,660
+moving average.
 
 128
-00:10:49,760 --> 00:10:54,960
-But blurring is far from the only thing that you can do with this idea. For instance take a look at
+00:07:34,080 --> 00:07:37,023
+Imagine you have some long list of numbers, and you take 
 
 129
-00:10:54,960 --> 00:10:59,600
-this little grid of values, which involves some positive numbers on the left and some negative
+00:07:37,023 --> 00:07:39,760
+another smaller list of numbers that all add up to 1.
 
 130
-00:10:59,600 --> 00:11:04,480
-numbers on the right, which I'll color with blue and red respectively. Take a moment to see if you
+00:07:40,100 --> 00:07:44,060
+In this case, I just have a little list of 5 values and they're all equal to 1 5th.
 
 131
-00:11:04,480 --> 00:11:11,680
-can predict and understand what effect this will have on the final image. So in this case I'll just
+00:07:44,060 --> 00:07:46,946
+Then if we do this sliding window convolution process, 
 
 132
-00:11:11,680 --> 00:11:16,560
-be thinking of the image as grayscale instead of colored, so each of the pixels is just represented
+00:07:46,946 --> 00:07:50,461
+and kind of close our eyes and sweep under the rug what happens at 
 
 133
-00:11:16,560 --> 00:11:21,280
-by one number instead of three. And one thing worth noticing is that as we do this convolution
+00:07:50,461 --> 00:07:53,977
+the very beginning of it, once our smaller list of values entirely 
 
 134
-00:11:21,280 --> 00:11:26,240
-it's possible to get negative values. For example at this point here if we zoom in the left half of
+00:07:53,977 --> 00:07:58,700
+overlaps with the bigger one, think about what each term in this convolution really means.
 
 135
-00:11:26,240 --> 00:11:30,960
-our little grid sits entirely on top of black pixels, which would have a value of zero, but the
+00:07:59,400 --> 00:08:03,251
+At each iteration, what you're doing is multiplying each of the values 
 
 136
-00:11:30,960 --> 00:11:35,360
-right half of negative values all sit on top of white pixels, which would have a value of one.
+00:08:03,251 --> 00:08:06,180
+from your data by 1 5th and adding them all together, 
 
 137
-00:11:36,000 --> 00:11:40,960
-So when we multiply corresponding terms and add them together the results will be very negative,
+00:08:06,180 --> 00:08:10,520
+which is to say you're taking an average of your data inside this little window.
 
 138
-00:11:40,960 --> 00:11:45,120
-and the way I'm displaying this with the image on the right is to color negative values red and
+00:08:11,100 --> 00:08:14,646
+Overall, the process gives you a smoothed out version of the original data, 
 
 139
-00:11:45,120 --> 00:11:49,520
-positive values blue. Another thing to notice is that when you're on a patch that's all the same
+00:08:14,646 --> 00:08:18,193
+and you could modify this starting with a different little list of numbers, 
 
 140
-00:11:49,520 --> 00:11:55,680
-color everything goes to zero since the sum of the values in our little grid is zero. This is very
+00:08:18,193 --> 00:08:20,526
+and as long as that little list all adds up to 1, 
 
 141
-00:11:55,680 --> 00:11:59,680
-different from the previous two examples where the sum of our little grid was one, which let us
+00:08:20,526 --> 00:08:22,720
+you can still interpret it as a moving average.
 
 142
-00:11:59,680 --> 00:12:05,760
-interpret it as a moving average and hence a blur. All in all this little process basically
+00:08:23,400 --> 00:08:25,428
+In the example shown here, that moving average 
 
 143
-00:12:05,760 --> 00:12:10,240
-detects wherever there's variation in the pixel value as you move from left to right,
+00:08:25,428 --> 00:08:27,760
+would be giving more weight towards the central value.
 
 144
-00:12:10,240 --> 00:12:13,760
-and so it gives you a kind of way to pick up on all the vertical edges from your image.
+00:08:28,420 --> 00:08:30,800
+This also results in a smoothed out version of the data.
 
 145
-00:12:16,560 --> 00:12:20,960
-And similarly if we rotated that grid around so that it varies as you move from the top to the
+00:08:33,140 --> 00:08:35,826
+If you do kind of a two-dimensional analog of this, 
 
 146
-00:12:20,960 --> 00:12:26,000
-bottom this will be picking up on all the horizontal edges, which in the case of our
+00:08:35,826 --> 00:08:38,720
+it gives you a fun algorithm for blurring a given image.
 
 147
-00:12:26,000 --> 00:12:31,520
-little pie creature image does result in some pretty demonic eyes. This smaller grid by the
+00:08:38,720 --> 00:08:42,857
+And I should say the animations I'm about to show are modified from something 
 
 148
-00:12:31,520 --> 00:12:36,160
-way is often called a kernel, and the beauty here is how just by choosing a different kernel you can
+00:08:42,857 --> 00:08:46,889
+I originally made for part of a set of lectures I did with the Julia lab at 
 
 149
-00:12:36,160 --> 00:12:40,240
-get different image processing effects, not just blurring your edge detection but also things like
+00:08:46,889 --> 00:08:51,080
+MIT for a certain open courseware class that included an image processing unit.
 
 150
-00:12:40,240 --> 00:12:44,800
-sharpening. For those of you who have heard of a convolutional neural network the idea there is to
+00:08:51,560 --> 00:08:54,407
+There we did a little bit more to dive into the code behind all of this, 
 
 151
-00:12:44,800 --> 00:12:49,600
-use data to figure out what the kernels should be in the first place as determined by whatever
+00:08:54,407 --> 00:08:56,280
+so if you're curious, I'll leave you some links.
 
 152
-00:12:49,600 --> 00:12:55,120
-the neural network wants to detect. Another thing I should maybe bring up is the length of the
+00:08:56,620 --> 00:09:00,685
+But focusing back on this blurring example, what's going on is I've got this 
 
 153
-00:12:55,120 --> 00:12:59,040
-output. For something like the moving average example you might only want to think about the
+00:09:00,685 --> 00:09:05,278
+little 3x3 grid of values that's marching along our original image, and if we zoom in, 
 
 154
-00:12:59,040 --> 00:13:04,080
-terms when both of the windows fully align with each other, or in the image processing example
+00:09:05,278 --> 00:09:09,238
+each one of those values is 1 9th, and what I'm doing at each iteration is 
 
 155
-00:13:04,080 --> 00:13:09,200
-maybe you want the final output to have the same size as the original. Now convolutions as a pure
+00:09:09,238 --> 00:09:13,620
+multiplying each of those values by the corresponding pixel that it sits on top of.
 
 156
-00:13:09,200 --> 00:13:13,920
-math operation always produce an array that's bigger than the two arrays that you started with,
+00:09:13,900 --> 00:09:17,963
+And of course in computer science, we think of colors as little vectors of three values, 
 
 157
-00:13:13,920 --> 00:13:17,520
-at least assuming one of them doesn't have a length of one. Just know that in certain
+00:09:17,963 --> 00:09:20,200
+representing the red, green, and blue components.
 
 158
-00:13:17,520 --> 00:13:21,440
-computer science contexts you often want to deliberately truncate that output.
+00:09:20,560 --> 00:09:24,419
+When I multiply all these little values by 1 9th and I add them together, 
 
 159
-00:13:21,520 --> 00:13:29,200
-Another thing worth highlighting is that in the computer science context this notion of flipping
+00:09:24,419 --> 00:09:26,975
+it gives us an average along each color channel, 
 
 160
-00:13:29,200 --> 00:13:34,080
-around that kernel before you let it march across the original often feels really weird and just
+00:09:26,975 --> 00:09:31,200
+and the corresponding pixel for the image on the right is defined to be that sum.
 
 161
-00:13:34,080 --> 00:13:38,960
-uncalled for, but again note that that's what's inherited from the pure math context where like
+00:09:31,940 --> 00:09:35,419
+The overall effect, as we do this for every single pixel on the image, 
 
 162
-00:13:38,960 --> 00:13:44,000
-we saw with the probabilities it's an incredibly natural thing to do. And actually I can show you
+00:09:35,419 --> 00:09:38,311
+is that each one kind of bleeds into all of its neighbors, 
 
 163
-00:13:44,000 --> 00:13:48,480
-one more pure math example where even the programmers should care about this one because
+00:09:38,311 --> 00:09:40,860
+which gives us a blurrier version than the original.
 
 164
-00:13:48,480 --> 00:13:53,760
-it opens the doors for a much faster algorithm to compute all of these. To set up what I mean by
+00:09:41,720 --> 00:09:44,552
+In the lingo, we'd say that the image on the right is a 
 
 165
-00:13:53,760 --> 00:13:58,560
-faster here let me go back and pull up some python again and I'm going to create two different
+00:09:44,552 --> 00:09:47,740
+convolution of our original image with a little grid of values.
 
 166
-00:13:58,560 --> 00:14:02,880
-relatively big arrays. Each one will have a hundred thousand random elements in it and I'm
+00:09:48,140 --> 00:09:51,318
+Or more technically, maybe I should say that it's the convolution 
 
 167
-00:14:02,880 --> 00:14:08,640
-going to assess the runtime of the convolve function from the numpy library. And in this case
+00:09:51,318 --> 00:09:54,400
+with a 180 degree rotated version of that little grid of values.
 
 168
-00:14:08,640 --> 00:14:12,800
-it runs it for multiple different iterations, tries to find an average, and it looks like on
+00:09:54,620 --> 00:09:56,770
+Not that it matters when the grid is symmetric, 
 
 169
-00:14:12,880 --> 00:14:18,640
-this computer at least it averages at 4.87 seconds. By contrast if I use a different
+00:09:56,770 --> 00:10:00,086
+but it's just worth keeping in mind that the definition of a convolution, 
 
 170
-00:14:18,640 --> 00:14:24,080
-function from the scipy library called fftconvolve which is the same thing just implemented
+00:10:00,086 --> 00:10:03,716
+as inherited from the pure math context, should always invite you to think about 
 
 171
-00:14:24,080 --> 00:14:30,640
-differently that only takes 4.3 milliseconds on average, so three orders of magnitude improvement.
+00:10:03,716 --> 00:10:05,240
+flipping around that second array.
 
 172
-00:14:30,640 --> 00:14:34,800
-And again even though it flies under a different name it's giving the same output that the other
+00:10:05,960 --> 00:10:08,620
+If we modify this slightly, we can get a much more elegant 
 
 173
-00:14:34,800 --> 00:14:38,880
-convolve function does, it's just doing something to go about it in a cleverer way.
+00:10:08,620 --> 00:10:11,100
+blurring effect by choosing a different grid of values.
 
 174
-00:14:38,880 --> 00:14:46,800
-Remember how with the probability example I said another way you could think about the convolution
+00:10:11,440 --> 00:10:15,780
+In this case, I have a little 5x5 grid, but the distinction is not so much its size.
 
 175
-00:14:46,800 --> 00:14:51,520
-was to create this table of all the pairwise products and then add up those pairwise products
+00:10:15,980 --> 00:10:18,370
+If we zoom in, we notice that the value in the middle 
 
 176
-00:14:51,520 --> 00:14:56,560
-along the diagonals. There's of course nothing specific to probability anytime you're convolving
+00:10:18,370 --> 00:10:20,540
+is a lot bigger than the value towards the edges.
 
 177
-00:14:56,560 --> 00:15:00,880
-two different lists of numbers you can think about it this way. Create this kind of multiplication
+00:10:21,180 --> 00:10:24,444
+And where this is coming from is they're all sampled from a bell curve, 
 
 178
-00:15:00,880 --> 00:15:05,520
-table with all pairwise products and then each sum along the diagonal corresponds to one of your
+00:10:24,444 --> 00:10:25,940
+known as a Gaussian distribution.
 
 179
-00:15:05,520 --> 00:15:11,680
-final outputs. One context where this view is especially natural is when you multiply together
+00:10:26,800 --> 00:10:29,947
+That way, when we multiply all of these values by the corresponding 
 
 180
-00:15:11,680 --> 00:15:16,240
-two polynomials. For example let me take the little grid we already have and replace the top
+00:10:29,947 --> 00:10:33,140
+pixel that they're sitting on top of, we're giving a lot more weight 
 
 181
-00:15:16,240 --> 00:15:23,920
-terms with 1, 2x, and 3x squared and replace the other terms with 4, 5x, and 6x squared.
+00:10:33,140 --> 00:10:36,380
+to that central pixel, and much less towards the ones out at the edge.
 
 182
-00:15:23,920 --> 00:15:27,920
-Now think about what it means when we're creating all of these different pairwise products between
+00:10:36,800 --> 00:10:40,560
+And just as before, the corresponding pixel on the right is defined to be this sum.
 
 183
-00:15:27,920 --> 00:15:32,960
-the two lists. What you're doing is essentially expanding out the full product of the two
+00:10:41,320 --> 00:10:44,716
+As we do this process for every single pixel, it gives a blurring effect, 
 
 184
-00:15:32,960 --> 00:15:38,240
-polynomials I have written down and then when you add up along the diagonal that corresponds
+00:10:44,716 --> 00:10:48,664
+which much more authentically simulates the notion of putting your lens out of focus, 
 
 185
-00:15:38,240 --> 00:15:43,920
-to collecting all like terms which is pretty neat expanding a polynomial and collecting like terms
+00:10:48,664 --> 00:10:49,720
+or something like that.
 
 186
-00:15:43,920 --> 00:15:50,640
-is exactly the same process as a convolution. But this allows us to do something that's pretty cool
+00:10:49,900 --> 00:10:53,360
+But blurring is far from the only thing that you can do with this idea.
 
 187
-00:15:50,640 --> 00:15:55,360
-because think about what we're saying here. We're saying if you take two different functions and you
+00:10:53,800 --> 00:10:56,459
+For instance, take a look at this little grid of values, 
 
 188
-00:15:55,360 --> 00:16:00,560
-multiply them together which is a simple pointwise operation that's the same thing as if you had
+00:10:56,459 --> 00:10:58,793
+which involves some positive numbers on the left, 
 
 189
-00:16:00,560 --> 00:16:05,920
-first extracted the coefficients from each one of those assuming they're polynomials and then taken
+00:10:58,793 --> 00:11:02,900
+and some negative numbers on the right, which I'll color with blue and red respectively.
 
 190
-00:16:05,920 --> 00:16:11,840
-a convolution of those two lists of coefficients. What makes that so interesting is that convolutions
+00:11:03,640 --> 00:11:06,275
+Take a moment to see if you can predict and understand 
 
 191
-00:16:11,840 --> 00:16:16,560
-feel in principle a lot more complicated than simple multiplication and I don't just mean
+00:11:06,275 --> 00:11:08,480
+what effect this will have on the final image.
 
 192
-00:16:16,560 --> 00:16:21,760
-conceptually they're harder to think about I mean computationally it requires more steps to perform
+00:11:10,720 --> 00:11:14,701
+So in this case, I'll just be thinking of the image as grayscale instead of colored, 
 
 193
-00:16:21,760 --> 00:16:27,040
-a convolution than it does to perform a pointwise product of two different lists. For example let's
+00:11:14,701 --> 00:11:18,120
+so each of the pixels is just represented by one number instead of three.
 
 194
-00:16:27,040 --> 00:16:31,920
-say I gave you two really big polynomials say each one with a hundred different coefficients
+00:11:18,440 --> 00:11:21,367
+And one thing worth noticing is that as we do this convolution, 
 
 195
-00:16:32,480 --> 00:16:37,520
-then if the way you multiply them was to expand out this product you know filling in this entire
+00:11:21,367 --> 00:11:23,060
+it's possible to get negative values.
 
 196
-00:16:37,520 --> 00:16:43,600
-100 by 100 grid of pairwise products that would require you to perform 10,000 different products
+00:11:23,060 --> 00:11:25,394
+For example, at this point here, if we zoom in, 
 
 197
-00:16:43,600 --> 00:16:48,560
-and then when you're collecting all the like terms along the diagonals that's another set of around
+00:11:25,394 --> 00:11:28,846
+the left half of our little grid sits entirely on top of black pixels, 
 
 198
-00:16:48,560 --> 00:16:55,200
-10,000 operations. More generally in the lingo we'd say the algorithm is O of n squared meaning for two
+00:11:28,846 --> 00:11:32,882
+which would have a value of zero, but the right half of negative values all sit on 
 
 199
-00:16:55,200 --> 00:17:00,560
-lists of size n the way that the number of operations scales is in proportion to the square
+00:11:32,882 --> 00:11:35,460
+top of white pixels, which would have a value of one.
 
 200
-00:17:00,560 --> 00:17:06,320
-of n. On the other hand if I think of two polynomials in terms of their outputs for example
+00:11:36,180 --> 00:11:39,193
+So when we multiply corresponding terms and add them together, 
 
 201
-00:17:06,320 --> 00:17:11,680
-sampling their values at some handful of inputs then multiplying them only requires as many
+00:11:39,193 --> 00:11:40,820
+the results will be very negative.
 
 202
-00:17:11,680 --> 00:17:17,200
-operations as the number of samples since again it's a pointwise operation and with polynomials
+00:11:41,160 --> 00:11:43,826
+And the way I'm displaying this with the image on the right 
 
 203
-00:17:17,200 --> 00:17:22,400
-you only need finitely many samples to be able to recover the coefficients. For example two outputs
+00:11:43,826 --> 00:11:46,360
+is to color negative values red and positive values blue.
 
 204
-00:17:22,400 --> 00:17:27,920
-are enough to uniquely specify a linear polynomial. Three outputs would be enough to uniquely specify
+00:11:46,880 --> 00:11:50,524
+Another thing to notice is that when you're on a patch that's all the same color, 
 
 205
-00:17:27,920 --> 00:17:33,680
-a quadratic polynomial. And in general if you know n distinct outputs that's enough to uniquely
+00:11:50,524 --> 00:11:54,080
+everything goes to zero, since the sum of the values in our little grid is zero.
 
 206
-00:17:33,680 --> 00:17:38,800
-specify a polynomial that has n different coefficients. Or if you prefer we could phrase
+00:11:55,180 --> 00:11:58,790
+This is very different from the previous two examples where the sum of our little 
 
 207
-00:17:38,800 --> 00:17:43,680
-this in the language of systems of equations. Imagine I tell you I have some polynomial but I
+00:11:58,790 --> 00:12:02,180
+grid was one, which let us interpret it as a moving average and hence a blur.
 
 208
-00:17:43,680 --> 00:17:47,840
-don't tell you what the coefficients are, those are a mystery to you. In our example you might think of
+00:12:03,640 --> 00:12:06,843
+All in all, this little process basically detects wherever there's 
 
 209
-00:17:47,840 --> 00:17:52,960
-this as the product that we're trying to figure out. Then suppose I say I'll just tell you what
+00:12:06,843 --> 00:12:09,760
+variation in the pixel value as you move from left to right, 
 
 210
-00:17:52,960 --> 00:17:59,600
-the outputs of this polynomial would be if you inputted various different inputs like 0, 1, 2, 3, on and on,
+00:12:09,760 --> 00:12:13,920
+and so it gives you a kind of way to pick up on all the vertical edges from your image.
 
 211
-00:17:59,600 --> 00:18:04,800
-and I give you enough so that you have as many equations as you have unknowns. It even happens to
+00:12:16,500 --> 00:12:20,693
+And similarly, if we rotated that grid around so that it varies as you move from 
 
 212
-00:18:04,800 --> 00:18:09,840
-be a linear system of equations, so that's nice. And in principle at least, this should be enough to
+00:12:20,693 --> 00:12:24,628
+the top to the bottom, this will be picking up on all the horizontal edges, 
 
 213
-00:18:09,840 --> 00:18:14,880
-recover the coefficients. So the rough algorithm outline then would be whenever you want to convolve
+00:12:24,628 --> 00:12:28,666
+which in the case of our little pie creature image does result in some pretty 
 
 214
-00:18:14,880 --> 00:18:20,160
-two lists of numbers you treat them like they're coefficients of two polynomials. You sample those
+00:12:28,666 --> 00:12:29,340
+demonic eyes.
 
 215
-00:18:20,160 --> 00:18:26,560
-polynomials at enough outputs, multiply those samples point-wise, and then solve the system
+00:12:30,400 --> 00:12:32,879
+This smaller grid, by the way, is often called a kernel, 
 
 216
-00:18:26,560 --> 00:18:32,720
-to recover the coefficients as a sneaky backdoor way to find the convolution. And as I've stated it
+00:12:32,879 --> 00:12:35,663
+and the beauty here is how just by choosing a different kernel, 
 
 217
-00:18:32,720 --> 00:18:38,000
-so far at least, some of you could rightfully complain "Grant, that is an idiotic plan". Because
+00:12:35,663 --> 00:12:39,448
+you can get different image processing effects, not just blurring your edge detection, 
 
 218
-00:18:38,000 --> 00:18:43,120
-for one thing just calculating all these samples for one of the polynomials we know already takes
+00:12:39,448 --> 00:12:40,840
+but also things like sharpening.
 
 219
-00:18:43,120 --> 00:18:47,760
-on the order of n squared operations, not to mention solving that system is certainly going
+00:12:40,840 --> 00:12:44,095
+For those of you who have heard of a convolutional neural network, 
 
 220
-00:18:47,760 --> 00:18:53,520
-to be computationally as difficult as just doing the convolution in the first place. So, like, sure
+00:12:44,095 --> 00:12:47,690
+the idea there is to use data to figure out what the kernels should be in 
 
 221
-00:18:53,520 --> 00:18:58,400
-we have this connection between multiplication and convolutions, but all of the complexity happens in
+00:12:47,690 --> 00:12:51,480
+the first place, as determined by whatever the neural network wants to detect.
 
 222
-00:18:58,400 --> 00:19:04,240
-translating from one viewpoint to the other. But there is a trick, and those of you who know about
+00:12:52,760 --> 00:12:55,520
+Another thing I should maybe bring up is the length of the output.
 
 223
-00:19:04,240 --> 00:19:09,200
-Fourier transforms and the FFT algorithm might see where this is going. If you're unfamiliar with these
+00:12:55,820 --> 00:12:57,790
+For something like the moving average example, 
 
 224
-00:19:09,200 --> 00:19:13,600
-topics, what I'm about to say might seem completely out of the blue. Just know that there are certain
+00:12:57,790 --> 00:13:00,725
+you might only want to think about the terms when both of the windows 
 
 225
-00:19:13,600 --> 00:19:18,720
-paths you could have walked in math that make this more of an expected step. Basically the idea is
+00:13:00,725 --> 00:13:01,900
+fully align with each other.
 
 226
-00:19:18,720 --> 00:19:23,840
-that we have a freedom of choice here. If instead of evaluating at some arbitrary set of inputs like
+00:13:02,120 --> 00:13:04,602
+Or in the image processing example, maybe you want 
 
 227
-00:19:23,840 --> 00:19:30,080
-0, 1, 2, 3, on and on, you choose to evaluate on a very specially selected set of complex numbers.
+00:13:04,602 --> 00:13:07,280
+the final output to have the same size as the original.
 
 228
-00:19:30,080 --> 00:19:34,400
-Specifically the ones that sit evenly spaced on the unit circle, what are known as the roots of
+00:13:07,280 --> 00:13:10,246
+Now, convolutions as a pure math operation always produce an 
 
 229
-00:19:34,400 --> 00:19:41,600
-unity. This gives us a friendlier system. The basic idea is that by finding a number where taking its
+00:13:10,246 --> 00:13:13,310
+array that's bigger than the two arrays that you started with, 
 
 230
-00:19:41,600 --> 00:19:46,480
-powers falls into this cycling pattern, it means that the system we generate is going to have a lot
+00:13:13,310 --> 00:13:16,180
+at least assuming one of them doesn't have a length of one.
 
 231
-00:19:46,480 --> 00:19:51,360
-of redundancy in the different terms that you're calculating, and by being clever about how you
+00:13:16,720 --> 00:13:19,142
+Just know that in certain computer science contexts, 
 
 232
-00:19:51,360 --> 00:19:57,600
-leverage that redundancy, you can save yourself a lot of work. This set of outputs that I've written
+00:13:19,142 --> 00:13:21,520
+you often want to deliberately truncate that output.
 
 233
-00:19:57,600 --> 00:20:03,200
-has a special name, it's called the discrete Fourier transform of the coefficients. And if you want to
+00:13:24,720 --> 00:13:28,332
+Another thing worth highlighting is that in the computer science context, 
 
 234
-00:20:03,200 --> 00:20:08,160
-learn more I actually did another lecture for that same Julia MIT class all about discrete
+00:13:28,332 --> 00:13:31,944
+this notion of flipping around that kernel before you let it march across 
 
 235
-00:20:08,160 --> 00:20:12,640
-Fourier transforms. And there's also a really excellent video on the channel reducible talking
+00:13:31,944 --> 00:13:35,459
+the original often feels really weird and just uncalled for, but again, 
 
 236
-00:20:12,640 --> 00:20:17,520
-about the fast Fourier transform, which is an algorithm for computing these more quickly. Also
+00:13:35,459 --> 00:13:38,485
+note that that's what's inherited from the pure math context, 
 
 237
-00:20:17,520 --> 00:20:22,720
-Veritasium recently did a really good video on FFT's, so you've got lots of options. And that fast
+00:13:38,485 --> 00:13:42,440
+where like we saw with the probabilities, it's an incredibly natural thing to do.
 
 238
-00:20:22,720 --> 00:20:28,320
-algorithm really is the point for us. Again because of all this redundancy there exists a method to go
+00:13:43,020 --> 00:13:45,956
+And actually, I can show you one more pure math example where 
 
 239
-00:20:28,320 --> 00:20:33,040
-from the coefficients to all of these outputs, where instead of doing on the order of n squared
+00:13:45,956 --> 00:13:48,277
+even the programmers should care about this one, 
 
 240
-00:20:33,040 --> 00:20:38,080
-operations, you do on the order of n times the log of n operations, which is much much better as you
+00:13:48,277 --> 00:13:52,020
+because it opens the doors for a much faster algorithm to compute all of these.
 
 241
-00:20:38,080 --> 00:20:43,600
-scale to big lists. And importantly this fft algorithm goes both ways. It also lets you go
+00:13:52,620 --> 00:13:56,796
+To set up what I mean by faster here, let me go back and pull up some Python again, 
 
 242
-00:20:43,600 --> 00:20:48,640
-from the outputs to the coefficients. So bringing it all together, let's look back at our algorithm
+00:13:56,796 --> 00:13:59,780
+and I'm going to create two different relatively big arrays.
 
 243
-00:20:48,640 --> 00:20:53,200
-outline. Now we can say whenever you're given two long lists of numbers and you want to take their
+00:13:59,940 --> 00:14:03,115
+Each one will have a hundred thousand random elements in it, 
 
 244
-00:20:53,200 --> 00:20:58,960
-convolution, first compute the fast Fourier transform of each one of them, which in the back
+00:14:03,115 --> 00:14:07,540
+and I'm going to assess the runtime, of the convolve function from the NumPy library.
 
 245
-00:20:58,960 --> 00:21:03,280
-of your mind you can just think of as treating them like they're the coefficients of a polynomial
+00:14:08,180 --> 00:14:12,756
+And in this case, it runs it for multiple different iterations, tries to find an average, 
 
 246
-00:21:03,280 --> 00:21:08,960
-and evaluating it at a very specially selected set of points. Then multiply together the two results
+00:14:12,756 --> 00:14:16,520
+and it looks like, on this computer at least, it averages at 4.87 seconds.
 
 247
-00:21:08,960 --> 00:21:14,480
-that you just got point-wise, which is nice and fast, and then do an inverse fast Fourier transform,
+00:14:16,960 --> 00:14:21,983
+By contrast, if I use a different function from the SciPy library called fftConvolve, 
 
 248
-00:21:14,480 --> 00:21:18,480
-and what that gives you is the sneaky backdoor way to compute the convolution that we were looking
+00:14:21,983 --> 00:14:25,136
+which is the same thing just implemented differently, 
 
 249
-00:21:18,480 --> 00:21:25,600
-for. But this time it only involves O of n log n operations. That's really cool to me! This very
+00:14:25,136 --> 00:14:30,160
+that only takes 4.3 milliseconds on average, so three orders of magnitude improvement.
 
 250
-00:21:25,600 --> 00:21:30,560
-specific context where convolutions show up, multiplying two polynomials, opens the doors for
+00:14:30,160 --> 00:14:32,916
+And again, even though it flies under a different name, 
 
 251
-00:21:30,560 --> 00:21:35,120
-an algorithm that's relevant everywhere else where convolutions might come up. If you want to add
+00:14:32,916 --> 00:14:36,215
+it's giving the same output that the other convolve function does, 
 
 252
-00:21:35,120 --> 00:21:39,600
-probability distributions, do some large image processing, whatever it might be. And I just think
+00:14:36,215 --> 00:14:39,120
+it's just doing something to go about it in a cleverer way.
 
 253
-00:21:39,600 --> 00:21:44,480
-that's such a good example of why you should be excited when you see some operation or concept in
+00:14:42,200 --> 00:14:45,709
+Remember how with the probability example, I said another way you could 
 
 254
-00:21:44,480 --> 00:21:50,160
-math show up in a lot of seemingly unrelated areas. If you want a little homework here's
+00:14:45,709 --> 00:14:49,755
+think about the convolution was to create this table of all the pairwise products, 
 
 255
-00:21:50,160 --> 00:21:54,800
-something that's fun to think about. Explain why when you multiply two different numbers, just
+00:14:49,755 --> 00:14:52,680
+and then add up those pairwise products along the diagonals.
 
 256
-00:21:54,800 --> 00:21:59,360
-ordinary multiplication the way we all learn in elementary school, what you're doing is basically
+00:14:53,660 --> 00:14:55,500
+There's of course nothing specific to probability.
 
 257
-00:21:59,360 --> 00:22:04,640
-a convolution between the digits of those numbers. There are some added steps with carries and the like,
+00:14:55,660 --> 00:14:57,851
+Any time you're convolving two different lists of numbers, 
 
 258
-00:22:04,640 --> 00:22:10,720
-but the core step is a convolution. In light of the existence of a fast algorithm, what that means is
+00:14:57,851 --> 00:14:59,040
+you can think about it this way.
 
 259
-00:22:10,720 --> 00:22:16,000
-if you have two very large integers, then there exists a way to find their product that's faster
+00:14:59,040 --> 00:15:02,522
+Create this kind of multiplication table with all pairwise products, 
 
 260
-00:22:16,000 --> 00:22:20,720
-than the method we learn in elementary school. That instead of requiring O of n squared operations
+00:15:02,522 --> 00:15:06,460
+and then each sum along the diagonal corresponds to one of your final outputs.
 
 261
-00:22:20,720 --> 00:22:26,320
-only requires O of n log n, which doesn't even feel like it should be possible. The catch is that
+00:15:07,600 --> 00:15:10,308
+One context where this view is especially natural 
 
 262
-00:22:26,320 --> 00:22:31,280
-before this is actually useful in practice, your numbers would have to be absolutely monstrous.
+00:15:10,308 --> 00:15:12,800
+is when you multiply together two polynomials.
 
 263
-00:22:31,280 --> 00:22:36,880
-But still, it's cool that such an algorithm exists. Next up we'll turn our attention to the
+00:15:13,300 --> 00:15:18,450
+For example, let me take the little grid we already have and replace the top terms 
 
 264
-00:22:36,880 --> 00:22:40,400
-continuous case with a special focus on probability distributions.
+00:15:18,450 --> 00:15:23,600
+with 1, 2x, and 3x squared, and replace the other terms with 4, 5x, and 6x squared.
+
+265
+00:15:24,000 --> 00:15:26,462
+Now, think about what it means when we're creating all of 
+
+266
+00:15:26,462 --> 00:15:28,840
+these different pairwise products between the two lists.
+
+267
+00:15:29,040 --> 00:15:32,696
+What you're doing is essentially expanding out the full product of 
+
+268
+00:15:32,696 --> 00:15:37,389
+the two polynomials I have written down, and then when you add up along the diagonal, 
+
+269
+00:15:37,389 --> 00:15:39,900
+that corresponds to collecting all like terms.
+
+270
+00:15:40,600 --> 00:15:41,500
+Which is pretty neat.
+
+271
+00:15:41,740 --> 00:15:44,190
+Expanding a polynomial and collecting like terms 
+
+272
+00:15:44,190 --> 00:15:46,440
+is exactly the same process as a convolution.
+
+273
+00:15:47,740 --> 00:15:50,321
+But this allows us to do something that's pretty cool, 
+
+274
+00:15:50,321 --> 00:15:52,340
+because think about what we're saying here.
+
+275
+00:15:52,340 --> 00:15:56,693
+We're saying if you take two different functions and you multiply them together, 
+
+276
+00:15:56,693 --> 00:16:00,724
+which is a simple pointwise operation, that's the same thing as if you had 
+
+277
+00:16:00,724 --> 00:16:05,400
+first extracted the coefficients from each one of those, assuming they're polynomials, 
+
+278
+00:16:05,400 --> 00:16:08,840
+and then taken a convolution of those two lists of coefficients.
+
+279
+00:16:09,620 --> 00:16:12,348
+What makes that so interesting is that convolutions feel, 
+
+280
+00:16:12,348 --> 00:16:15,360
+in principle, a lot more complicated than simple multiplication.
+
+281
+00:16:15,820 --> 00:16:18,460
+And I don't just mean conceptually they're harder to think about.
+
+282
+00:16:18,840 --> 00:16:22,448
+I mean, computationally, it requires more steps to perform a convolution 
+
+283
+00:16:22,448 --> 00:16:25,760
+than it does to perform a pointwise product of two different lists.
+
+284
+00:16:26,319 --> 00:16:29,381
+For example, let's say I gave you two really big polynomials, 
+
+285
+00:16:29,381 --> 00:16:31,900
+say each one with a hundred different coefficients.
+
+286
+00:16:32,740 --> 00:16:36,257
+Then if the way you multiply them was to expand out this product, 
+
+287
+00:16:36,257 --> 00:16:40,042
+you know, filling in this entire 100 by 100 grid of pairwise products, 
+
+288
+00:16:40,042 --> 00:16:43,240
+that would require you to perform 10,000 different products.
+
+289
+00:16:43,740 --> 00:16:47,463
+And then, when you're collecting all the like terms along the diagonals, 
+
+290
+00:16:47,463 --> 00:16:49,860
+that's another set of around 10,000 operations.
+
+291
+00:16:50,700 --> 00:16:54,741
+More generally, in the lingo, we'd say the algorithm is O of n squared, 
+
+292
+00:16:54,741 --> 00:16:58,109
+meaning for two lists of size n, the way that the number of 
+
+293
+00:16:58,109 --> 00:17:01,140
+operations scales is in proportion to the square of n.
+
+294
+00:17:01,820 --> 00:17:06,562
+On the other hand, if I think of two polynomials in terms of their outputs, for example, 
+
+295
+00:17:06,562 --> 00:17:09,172
+sampling their values at some handful of inputs, 
+
+296
+00:17:09,172 --> 00:17:13,488
+then multiplying them only requires as many operations as the number of samples, 
+
+297
+00:17:13,488 --> 00:17:15,619
+since again, it's a pointwise operation.
+
+298
+00:17:16,180 --> 00:17:18,427
+And with polynomials, you only need finitely many 
+
+299
+00:17:18,427 --> 00:17:20,540
+samples to be able to recover the coefficients.
+
+300
+00:17:20,540 --> 00:17:24,994
+For example, two outputs are enough to uniquely specify a linear polynomial, 
+
+301
+00:17:24,994 --> 00:17:29,276
+three outputs would be enough to uniquely specify a quadratic polynomial, 
+
+302
+00:17:29,276 --> 00:17:32,053
+and in general, if you know n distinct outputs, 
+
+303
+00:17:32,053 --> 00:17:36,740
+that's enough to uniquely specify a polynomial that has n different coefficients.
+
+304
+00:17:37,440 --> 00:17:40,720
+Or, if you prefer, we could phrase this in the language of systems of equations.
+
+305
+00:17:41,200 --> 00:17:45,200
+Imagine I tell you I have some polynomial, but I don't tell you what the coefficients are.
+
+306
+00:17:45,260 --> 00:17:46,520
+Those are a mystery to you.
+
+307
+00:17:46,700 --> 00:17:50,180
+In our example, you might think of this as the product that we're trying to figure out.
+
+308
+00:17:50,180 --> 00:17:54,662
+And then, suppose I say, I'll just tell you what the outputs of this polynomial 
+
+309
+00:17:54,662 --> 00:17:59,089
+would be if you inputted various different inputs, like 0, 1, 2, 3, on and on, 
+
+310
+00:17:59,089 --> 00:18:03,460
+and I give you enough so that you have as many equations as you have unknowns.
+
+311
+00:18:04,140 --> 00:18:07,288
+It even happens to be a linear system of equations, so that's nice, 
+
+312
+00:18:07,288 --> 00:18:10,900
+and in principle, at least, this should be enough to recover the coefficients.
+
+313
+00:18:11,740 --> 00:18:16,417
+So the rough algorithm outline then would be, whenever you want to convolve two lists 
+
+314
+00:18:16,417 --> 00:18:20,388
+of numbers, you treat them like they're coefficients of two polynomials, 
+
+315
+00:18:20,388 --> 00:18:24,903
+you sample those polynomials at enough outputs, multiply those samples point-wise, 
+
+316
+00:18:24,903 --> 00:18:29,689
+and then solve this system to recover the coefficients as a sneaky backdoor way to find 
+
+317
+00:18:29,689 --> 00:18:30,560
+the convolution.
+
+318
+00:18:31,420 --> 00:18:36,057
+And, as I've stated it so far, at least, some of you could rightfully complain, grant, 
+
+319
+00:18:36,057 --> 00:18:38,669
+that is an idiotic plan, because, for one thing, 
+
+320
+00:18:38,669 --> 00:18:43,147
+just calculating all these samples for one of the polynomials we know already takes 
+
+321
+00:18:43,147 --> 00:18:45,120
+on the order of n-squared operations.
+
+322
+00:18:45,600 --> 00:18:48,452
+Not to mention, solving that system is certainly going to be 
+
+323
+00:18:48,452 --> 00:18:52,100
+computationally as difficult as just doing the convolution in the first place.
+
+324
+00:18:52,600 --> 00:18:56,540
+So, like, sure, we have this connection between multiplication and convolutions, 
+
+325
+00:18:56,540 --> 00:19:00,480
+but all of the complexity happens in translating from one viewpoint to the other.
+
+326
+00:19:01,600 --> 00:19:04,645
+But there is a trick, and those of you who know about Fourier 
+
+327
+00:19:04,645 --> 00:19:07,740
+transforms and the FFT algorithm might see where this is going.
+
+328
+00:19:07,740 --> 00:19:09,915
+If you're unfamiliar with those topics, what I'm 
+
+329
+00:19:09,915 --> 00:19:12,180
+about to say might seem completely out of the blue.
+
+330
+00:19:12,260 --> 00:19:14,538
+Just know that there are certain paths you could have 
+
+331
+00:19:14,538 --> 00:19:16,860
+walked in math that make this more of an expected step.
+
+332
+00:19:17,720 --> 00:19:20,360
+Basically, the idea is that we have a freedom of choice here.
+
+333
+00:19:20,540 --> 00:19:24,638
+If instead of evaluating at some arbitrary set of inputs, like 0, 1, 2, 3, 
+
+334
+00:19:24,638 --> 00:19:29,393
+on and on, you choose to evaluate on a very specially selected set of complex numbers, 
+
+335
+00:19:29,393 --> 00:19:32,945
+specifically the ones that sit evenly spaced on the unit circle, 
+
+336
+00:19:32,945 --> 00:19:36,880
+what are known as the roots of unity, this gives us a friendlier system.
+
+337
+00:19:38,360 --> 00:19:42,309
+The basic idea is that by finding a number where taking its powers falls into 
+
+338
+00:19:42,309 --> 00:19:46,258
+this cycling pattern, it means that the system we generate is going to have a 
+
+339
+00:19:46,258 --> 00:19:49,599
+lot of redundancy in the different terms that you're calculating, 
+
+340
+00:19:49,599 --> 00:19:52,637
+and by being clever about how you leverage that redundancy, 
+
+341
+00:19:52,637 --> 00:19:54,460
+you can save yourself a lot of work.
+
+342
+00:19:56,020 --> 00:19:58,560
+This set of outputs that I've written has a special name.
+
+343
+00:19:58,900 --> 00:20:02,148
+It's called the discrete Fourier transform of the coefficients, 
+
+344
+00:20:02,148 --> 00:20:06,512
+and if you want to learn more, I actually did another lecture for that same Julia MIT 
+
+345
+00:20:06,512 --> 00:20:11,080
+class all about discrete Fourier transforms, and there's also a really excellent video on 
+
+346
+00:20:11,080 --> 00:20:14,328
+the channel Reducible talking about the fast Fourier transform, 
+
+347
+00:20:14,328 --> 00:20:17,120
+which is an algorithm for computing these more quickly.
+
+348
+00:20:17,480 --> 00:20:21,760
+Also Veritasium recently did a really good video on FFTs, so you've got lots of options.
+
+349
+00:20:22,260 --> 00:20:24,660
+And that fast algorithm really is the point for us.
+
+350
+00:20:25,120 --> 00:20:28,702
+Again, because of all this redundancy, there exists a method to go from 
+
+351
+00:20:28,702 --> 00:20:32,085
+the coefficients to all of these outputs, where instead of doing on 
+
+352
+00:20:32,085 --> 00:20:35,568
+the order of n squared operations, you do on the order of n times the 
+
+353
+00:20:35,568 --> 00:20:39,200
+log of n operations, which is much much better as you scale to big lists.
+
+354
+00:20:39,660 --> 00:20:42,540
+And, importantly, this FFT algorithm goes both ways.
+
+355
+00:20:42,700 --> 00:20:45,480
+It also lets you go from the outputs to the coefficients.
+
+356
+00:20:46,220 --> 00:20:49,060
+So, bringing it all together, let's look back at our algorithm outline.
+
+357
+00:20:49,420 --> 00:20:52,596
+Now we can say, whenever you're given two long lists of numbers, 
+
+358
+00:20:52,596 --> 00:20:56,702
+and you want to take their convolution, first compute the fast Fourier transform of 
+
+359
+00:20:56,702 --> 00:20:59,195
+each one of them, which, in the back of your mind, 
+
+360
+00:20:59,195 --> 00:21:03,398
+you can just think of as treating them like they're the coefficients of a polynomial, 
+
+361
+00:21:03,398 --> 00:21:06,380
+and evaluating it at a very specially selected set of points.
+
+362
+00:21:06,899 --> 00:21:10,377
+Then, multiply together the two results that you just got, point-wise, 
+
+363
+00:21:10,377 --> 00:21:13,855
+which is nice and fast, and then do an inverse fast Fourier transform, 
+
+364
+00:21:13,855 --> 00:21:17,920
+and what that gives you is the sneaky backdoor way to compute the convolution that 
+
+365
+00:21:17,920 --> 00:21:18,900
+we were looking for.
+
+366
+00:21:19,040 --> 00:21:22,240
+But this time, it only involves O of n log n operations.
+
+367
+00:21:23,139 --> 00:21:24,740
+That's really cool to me.
+
+368
+00:21:25,120 --> 00:21:27,833
+This very specific context where convolutions show up, 
+
+369
+00:21:27,833 --> 00:21:30,892
+multiplying two polynomials, opens the doors for an algorithm 
+
+370
+00:21:30,892 --> 00:21:34,100
+that's relevant everywhere else where convolutions might come up.
+
+371
+00:21:34,180 --> 00:21:38,080
+If you want to add probability distributions, do some large image processing, 
+
+372
+00:21:38,080 --> 00:21:42,430
+whatever it might be, and I just think that's such a good example of why you should be 
+
+373
+00:21:42,430 --> 00:21:46,680
+excited when you see some operation or concept in math show up in a lot of seemingly 
+
+374
+00:21:46,680 --> 00:21:47,480
+unrelated areas.
+
+375
+00:21:48,480 --> 00:21:51,500
+If you want a little homework, here's something that's fun to think about.
+
+376
+00:21:51,720 --> 00:21:54,359
+Explain why when you multiply two different numbers, 
+
+377
+00:21:54,359 --> 00:21:57,945
+just ordinary multiplication the way we all learn in elementary school, 
+
+378
+00:21:57,945 --> 00:22:01,980
+what you're doing is basically a convolution between the digits of those numbers.
+
+379
+00:22:02,500 --> 00:22:06,460
+There's some added steps with carries and the like, but the core step is a convolution.
+
+380
+00:22:07,280 --> 00:22:09,704
+In light of the existence of a fast algorithm, 
+
+381
+00:22:09,704 --> 00:22:12,592
+what that means is if you have two very large integers, 
+
+382
+00:22:12,592 --> 00:22:16,976
+then there exists a way to find their product that's faster than the method we learn 
+
+383
+00:22:16,976 --> 00:22:20,845
+in elementary school, that instead of requiring O of n squared operations, 
+
+384
+00:22:20,845 --> 00:22:24,920
+only requires O of n log n, which doesn't even feel like it should be possible.
+
+385
+00:22:25,380 --> 00:22:28,375
+The catch is that before this is actually useful in practice, 
+
+386
+00:22:28,375 --> 00:22:30,840
+your numbers would have to be absolutely monstrous.
+
+387
+00:22:31,220 --> 00:22:33,860
+But still, it's cool that such an algorithm exists.
+
+388
+00:22:35,160 --> 00:22:37,420
+And next up, we'll turn our attention to the continuous 
+
+389
+00:22:37,420 --> 00:22:39,640
+case with a special focus on probability distributions.
 

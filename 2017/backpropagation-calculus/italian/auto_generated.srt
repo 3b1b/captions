@@ -1,572 +1,572 @@
 1
-00:00:00,000 --> 00:00:05,333
-Il difficile presupposto qui è che tu abbia guardato la parte 3,
+00:00:04,020 --> 00:00:06,839
+Il difficile presupposto qui è che tu abbia guardato la parte 3, 
 
 2
-00:00:05,333 --> 00:00:11,160
+00:00:06,839 --> 00:00:09,920
 che fornisce una guida intuitiva dell&#39;algoritmo di backpropagation.
 
 3
-00:00:11,160 --> 00:00:14,920
+00:00:11,040 --> 00:00:14,220
 Qui diventiamo un po’ più formali e ci tuffiamo nel calcolo rilevante.
 
 4
-00:00:14,920 --> 00:00:17,498
-È normale che questo crei almeno un po&#39; di confusione,
+00:00:14,820 --> 00:00:17,216
+È normale che questo crei almeno un po&#39; di confusione, 
 
 5
-00:00:17,498 --> 00:00:20,907
-quindi il mantra di fermarsi e riflettere regolarmente si applica sicuramente
+00:00:17,216 --> 00:00:20,384
+quindi il mantra di fermarsi e riflettere regolarmente si applica sicuramente 
 
 6
-00:00:20,907 --> 00:00:22,000
+00:00:20,384 --> 00:00:21,400
 tanto qui quanto altrove.
 
 7
-00:00:22,000 --> 00:00:25,112
-Il nostro obiettivo principale è mostrare come le persone che lavorano
+00:00:21,940 --> 00:00:24,834
+Il nostro obiettivo principale è mostrare come le persone che lavorano 
 
 8
-00:00:25,112 --> 00:00:28,180
-nel machine learning comunemente pensano alla regola della catena del
+00:00:24,834 --> 00:00:27,688
+nel machine learning comunemente pensano alla regola della catena del 
 
 9
-00:00:28,180 --> 00:00:31,248
-calcolo nel contesto delle reti, che ha un aspetto diverso da come la
+00:00:27,688 --> 00:00:30,541
+calcolo nel contesto delle reti, che ha un aspetto diverso da come la 
 
 10
-00:00:31,248 --> 00:00:34,580
+00:00:30,541 --> 00:00:33,640
 maggior parte dei corsi introduttivi sul calcolo affrontano l&#39;argomento.
 
 11
-00:00:34,580 --> 00:00:37,634
-Per quelli di voi che non si sentono a proprio agio con i calcoli rilevanti,
+00:00:34,340 --> 00:00:37,187
+Per quelli di voi che non si sentono a proprio agio con i calcoli rilevanti, 
 
 12
-00:00:37,634 --> 00:00:39,300
+00:00:37,187 --> 00:00:38,740
 ho un&#39;intera serie sull&#39;argomento.
 
 13
-00:00:39,300 --> 00:00:43,040
-Cominciamo con una rete estremamente semplice,
+00:00:39,960 --> 00:00:42,990
+Cominciamo con una rete estremamente semplice, 
 
 14
-00:00:43,040 --> 00:00:46,780
+00:00:42,990 --> 00:00:46,020
 in cui ogni strato contiene un singolo neurone.
 
 15
-00:00:46,780 --> 00:00:51,449
-Questa rete è determinata da tre pesi e tre distorsioni e il nostro obiettivo
+00:00:46,320 --> 00:00:50,831
+Questa rete è determinata da tre pesi e tre distorsioni e il nostro obiettivo 
 
 16
-00:00:51,449 --> 00:00:55,640
+00:00:50,831 --> 00:00:54,880
 è capire quanto sia sensibile la funzione di costo a queste variabili.
 
 17
-00:00:55,640 --> 00:00:58,280
-In questo modo sappiamo quali aggiustamenti a tali termini
+00:00:55,419 --> 00:00:58,756
+In questo modo sappiamo quali aggiustamenti a tali termini 
 
 18
-00:00:58,280 --> 00:01:01,100
+00:00:58,756 --> 00:01:02,320
 causeranno la riduzione più efficiente della funzione di costo.
 
 19
-00:01:01,100 --> 00:01:05,360
+00:01:02,320 --> 00:01:04,840
 Ci concentreremo solo sulla connessione tra gli ultimi due neuroni.
 
 20
-00:01:05,360 --> 00:01:09,711
-Etichettiamo l&#39;attivazione dell&#39;ultimo neurone con una L in apice,
+00:01:05,980 --> 00:01:09,615
+Etichettiamo l&#39;attivazione dell&#39;ultimo neurone con una L in apice, 
 
 21
-00:01:09,711 --> 00:01:11,800
+00:01:09,615 --> 00:01:11,360
 che indica in quale strato si trova.
 
 22
-00:01:11,800 --> 00:01:16,560
+00:01:11,680 --> 00:01:15,560
 Quindi l&#39;attivazione del neurone precedente è AL-1.
 
 23
-00:01:16,560 --> 00:01:20,682
-Questi non sono esponenti, sono solo un modo per indicizzare ciò di cui stiamo parlando,
+00:01:16,360 --> 00:01:20,271
+Questi non sono esponenti, sono solo un modo per indicizzare ciò di cui stiamo parlando, 
 
 24
-00:01:20,682 --> 00:01:23,600
+00:01:20,271 --> 00:01:23,040
 poiché in seguito voglio salvare gli indici per diversi indici.
 
 25
-00:01:23,600 --> 00:01:28,374
-Diciamo che il valore che vogliamo che quest&#39;ultima attivazione abbia
+00:01:23,720 --> 00:01:28,007
+Diciamo che il valore che vogliamo che quest&#39;ultima attivazione abbia 
 
 26
-00:01:28,374 --> 00:01:33,020
+00:01:28,007 --> 00:01:32,180
 per un dato esempio di training è y, ad esempio y potrebbe essere 0 o 1.
 
 27
-00:01:33,020 --> 00:01:39,040
+00:01:32,840 --> 00:01:39,240
 Quindi il costo di questa rete per un singolo esempio di formazione è AL-y2.
 
 28
-00:01:39,040 --> 00:01:46,120
+00:01:40,260 --> 00:01:44,380
 Indicheremo il costo di quell&#39;esempio di formazione come c0.
 
 29
-00:01:46,120 --> 00:01:50,686
-Come promemoria, quest&#39;ultima attivazione è determinata da un peso,
+00:01:45,900 --> 00:01:50,554
+Come promemoria, quest&#39;ultima attivazione è determinata da un peso, 
 
 30
-00:01:50,686 --> 00:01:54,238
-che chiamerò wL, moltiplicato per l&#39;attivazione del
+00:01:50,554 --> 00:01:54,174
+che chiamerò wL, moltiplicato per l&#39;attivazione del 
 
 31
-00:01:54,238 --> 00:01:57,600
+00:01:54,174 --> 00:01:57,600
 neurone precedente più qualche bias, che chiamerò bL.
 
 32
-00:01:57,600 --> 00:02:01,560
+00:01:57,600 --> 00:02:01,320
 Quindi lo pompi attraverso una speciale funzione non lineare come il sigmoide o ReLU.
 
 33
-00:02:01,560 --> 00:02:06,172
-In realtà ci renderà le cose più facili se diamo un nome speciale a questa
+00:02:01,800 --> 00:02:05,636
+In realtà ci renderà le cose più facili se diamo un nome speciale a questa 
 
 34
-00:02:06,172 --> 00:02:10,600
+00:02:05,636 --> 00:02:09,320
 somma ponderata, come z, con lo stesso apice delle relative attivazioni.
 
 35
-00:02:10,600 --> 00:02:15,729
-Si tratta di molti termini e un modo in cui potresti concettualizzarlo è che il peso,
+00:02:10,380 --> 00:02:15,001
+Si tratta di molti termini e un modo in cui potresti concettualizzarlo è che il peso, 
 
 36
-00:02:15,729 --> 00:02:20,739
-l&#39;azione precedente e il bias tutti insieme vengono utilizzati per calcolare z,
+00:02:15,001 --> 00:02:19,515
+l&#39;azione precedente e il bias tutti insieme vengono utilizzati per calcolare z, 
 
 37
-00:02:20,739 --> 00:02:25,630
-che a sua volta ci consente di calcolare a, che infine, insieme a una costante y,
+00:02:19,515 --> 00:02:23,921
+che a sua volta ci consente di calcolare a, che infine, insieme a una costante y, 
 
 38
-00:02:25,630 --> 00:02:27,360
+00:02:23,921 --> 00:02:25,480
 consente calcoliamo il costo.
 
 39
-00:02:27,360 --> 00:02:32,547
-E, naturalmente, AL-1 è influenzato dal suo peso, dai suoi pregiudizi e simili,
+00:02:27,340 --> 00:02:32,018
+E, naturalmente, AL-1 è influenzato dal suo peso, dai suoi pregiudizi e simili, 
 
 40
-00:02:32,547 --> 00:02:35,920
+00:02:32,018 --> 00:02:35,060
 ma non ci concentreremo su questo in questo momento.
 
 41
-00:02:35,920 --> 00:02:38,120
+00:02:35,700 --> 00:02:37,620
 Tutti questi sono solo numeri, giusto?
 
 42
-00:02:38,120 --> 00:02:41,960
+00:02:38,060 --> 00:02:41,040
 E può essere bello pensare che ognuno di essi abbia la propria piccola linea numerica.
 
 43
-00:02:41,960 --> 00:02:45,890
-Il nostro primo obiettivo è capire quanto sia sensibile la
+00:02:41,720 --> 00:02:45,360
+Il nostro primo obiettivo è capire quanto sia sensibile la 
 
 44
-00:02:45,890 --> 00:02:49,820
+00:02:45,360 --> 00:02:49,000
 funzione di costo a piccoli cambiamenti nel nostro peso wL.
 
 45
-00:02:49,820 --> 00:02:55,740
+00:02:49,540 --> 00:02:54,860
 Oppure, in altre parole, qual è la derivata di c rispetto a wL?
 
 46
-00:02:55,740 --> 00:03:00,219
-Quando vedi questo termine del w, pensalo come se significasse una piccola
+00:02:55,600 --> 00:02:59,867
+Quando vedi questo termine del w, pensalo come se significasse una piccola 
 
 47
-00:03:00,219 --> 00:03:04,519
-spinta verso w, come un cambiamento di 0.01, e pensare a questo termine
+00:02:59,867 --> 00:03:03,963
+spinta verso w, come un cambiamento di 0.01, e pensare a questo termine 
 
 48
-00:03:04,519 --> 00:03:08,820
+00:03:03,963 --> 00:03:08,060
 del c con il significato di qualunque sia la spinta risultante al costo.
 
 49
-00:03:08,820 --> 00:03:10,900
+00:03:08,060 --> 00:03:10,220
 Ciò che vogliamo è il loro rapporto.
 
 50
-00:03:10,900 --> 00:03:17,168
-Concettualmente, questo piccolo spostamento verso wL provoca uno spostamento verso zL,
+00:03:11,260 --> 00:03:16,337
+Concettualmente, questo piccolo spostamento verso wL provoca uno spostamento verso zL, 
 
 51
-00:03:17,168 --> 00:03:23,220
+00:03:16,337 --> 00:03:21,240
 che a sua volta causa uno spostamento verso AL, che influenza direttamente il costo.
 
 52
-00:03:23,220 --> 00:03:27,929
-Quindi suddividiamo il tutto esaminando prima il rapporto tra una piccola
+00:03:23,120 --> 00:03:27,811
+Quindi suddividiamo il tutto esaminando prima il rapporto tra una piccola 
 
 53
-00:03:27,929 --> 00:03:33,340
+00:03:27,811 --> 00:03:33,200
 variazione di zL e questa piccola variazione w, cioè la derivata di zL rispetto a wL.
 
 54
-00:03:33,340 --> 00:03:37,586
-Allo stesso modo, si considera quindi il rapporto tra la variazione in
+00:03:33,200 --> 00:03:37,074
+Allo stesso modo, si considera quindi il rapporto tra la variazione in 
 
 55
-00:03:37,586 --> 00:03:40,876
-AL e la piccola variazione in zL che l&#39;ha causata,
+00:03:37,074 --> 00:03:40,076
+AL e la piccola variazione in zL che l&#39;ha causata, 
 
 56
-00:03:40,876 --> 00:03:45,900
+00:03:40,076 --> 00:03:44,660
 nonché il rapporto tra la spinta finale verso c e questa spinta intermedia verso AL.
 
 57
-00:03:45,900 --> 00:03:51,444
-Questa qui è la regola della catena, dove moltiplicando questi
+00:03:45,740 --> 00:03:50,295
+Questa qui è la regola della catena, dove moltiplicando questi 
 
 58
-00:03:51,444 --> 00:03:57,340
+00:03:50,295 --> 00:03:55,140
 tre rapporti ci dà la sensibilità di c a piccoli cambiamenti in wL.
 
 59
-00:03:57,340 --> 00:04:00,884
-Quindi sullo schermo in questo momento ci sono molti simboli,
+00:03:56,880 --> 00:04:00,158
+Quindi sullo schermo in questo momento ci sono molti simboli, 
 
 60
-00:04:00,884 --> 00:04:04,887
-e prenditi un momento per assicurarti che sia chiaro cosa sono tutti,
+00:04:00,158 --> 00:04:03,860
+e prenditi un momento per assicurarti che sia chiaro cosa sono tutti, 
 
 61
-00:04:04,887 --> 00:04:07,460
+00:04:03,860 --> 00:04:06,240
 perché ora calcoleremo le derivate rilevanti.
 
 62
-00:04:07,460 --> 00:04:14,220
+00:04:07,440 --> 00:04:14,180
 La derivata di c rispetto ad AL risulta essere 2AL-y.
 
 63
-00:04:14,220 --> 00:04:18,796
-Ciò significa che la sua dimensione è proporzionale alla differenza tra l&#39;output
+00:04:14,180 --> 00:04:18,368
+Ciò significa che la sua dimensione è proporzionale alla differenza tra l&#39;output 
 
 64
-00:04:18,796 --> 00:04:23,480
-della rete e ciò che vogliamo che sia, quindi se quell&#39;output fosse molto diverso,
+00:04:18,368 --> 00:04:22,655
+della rete e ciò che vogliamo che sia, quindi se quell&#39;output fosse molto diverso, 
 
 65
-00:04:23,480 --> 00:04:28,003
-anche cambiamenti minimi potrebbero avere un grande impatto sulla funzione di costo
+00:04:22,655 --> 00:04:26,795
+anche cambiamenti minimi potrebbero avere un grande impatto sulla funzione di costo 
 
 66
-00:04:28,003 --> 00:04:28,380
+00:04:26,795 --> 00:04:27,140
 finale.
 
 67
-00:04:28,380 --> 00:04:33,060
-La derivata di AL rispetto a zL è semplicemente la derivata della nostra
+00:04:27,840 --> 00:04:32,799
+La derivata di AL rispetto a zL è semplicemente la derivata della nostra 
 
 68
-00:04:33,060 --> 00:04:37,420
+00:04:32,799 --> 00:04:37,420
 funzione sigmoide, o qualunque nonlinearità tu scelga di utilizzare.
 
 69
-00:04:37,420 --> 00:04:46,180
+00:04:37,420 --> 00:04:46,160
 La derivata di zL rispetto a wL risulta essere AL-1.
 
 70
-00:04:46,180 --> 00:04:50,024
-Non so voi, ma penso che sia facile rimanere bloccati nelle formule senza
+00:04:46,160 --> 00:04:49,648
+Non so voi, ma penso che sia facile rimanere bloccati nelle formule senza 
 
 71
-00:04:50,024 --> 00:04:54,180
+00:04:49,648 --> 00:04:53,420
 prendersi un momento per sedersi e ricordare a se stessi cosa significano tutte.
 
 72
-00:04:54,180 --> 00:04:58,672
-Nel caso di quest&#39;ultima derivata, la misura in cui la piccola spinta al peso
+00:04:53,920 --> 00:04:58,343
+Nel caso di quest&#39;ultima derivata, la misura in cui la piccola spinta al peso 
 
 73
-00:04:58,672 --> 00:05:03,220
+00:04:58,343 --> 00:05:02,820
 ha influenzato l&#39;ultimo strato dipende da quanto è forte il neurone precedente.
 
 74
-00:05:03,220 --> 00:05:09,320
+00:05:03,380 --> 00:05:08,280
 Ricorda, è qui che entra in gioco l&#39;idea dei neuroni che si attivano insieme.
 
 75
-00:05:09,320 --> 00:05:12,950
-E tutto ciò è la derivata rispetto a wL solo del
+00:05:09,200 --> 00:05:12,460
+E tutto ciò è la derivata rispetto a wL solo del 
 
 76
-00:05:12,950 --> 00:05:16,580
+00:05:12,460 --> 00:05:15,720
 costo per un singolo esempio formativo specifico.
 
 77
-00:05:16,580 --> 00:05:20,487
-Poiché la funzione di costo completo comporta la media di tutti i
+00:05:16,440 --> 00:05:20,432
+Poiché la funzione di costo completo comporta la media di tutti i 
 
 78
-00:05:20,487 --> 00:05:24,691
-costi tra molti esempi di formazione diversi, la sua derivata richiede
+00:05:20,432 --> 00:05:24,727
+costi tra molti esempi di formazione diversi, la sua derivata richiede 
 
 79
-00:05:24,691 --> 00:05:28,540
+00:05:24,727 --> 00:05:28,660
 la media di questa espressione su tutti gli esempi di formazione.
 
 80
-00:05:28,540 --> 00:05:33,380
-Naturalmente, questa è solo una componente del vettore del gradiente,
+00:05:28,660 --> 00:05:32,456
+Naturalmente, questa è solo una componente del vettore del gradiente, 
 
 81
-00:05:33,380 --> 00:05:39,466
-che è costruito dalle derivate parziali della funzione di costo rispetto a tutti questi
+00:05:32,456 --> 00:05:37,229
+che è costruito dalle derivate parziali della funzione di costo rispetto a tutti questi 
 
 82
-00:05:39,466 --> 00:05:40,780
+00:05:37,229 --> 00:05:38,260
 pesi e distorsioni.
 
 83
-00:05:40,780 --> 00:05:44,685
-Ma anche se è solo una delle tante derivate parziali di cui abbiamo bisogno,
+00:05:40,640 --> 00:05:43,816
+Ma anche se è solo una delle tante derivate parziali di cui abbiamo bisogno, 
 
 84
-00:05:44,685 --> 00:05:46,460
+00:05:43,816 --> 00:05:45,260
 rappresenta più del 50% del lavoro.
 
 85
-00:05:46,460 --> 00:05:50,300
+00:05:46,340 --> 00:05:49,720
 La sensibilità al bias, ad esempio, è quasi identica.
 
 86
-00:05:50,300 --> 00:05:58,980
+00:05:50,040 --> 00:05:55,020
 Dobbiamo solo cambiare questo termine del z del w con a del z del b.
 
 87
-00:05:58,980 --> 00:06:04,700
+00:05:58,420 --> 00:06:02,400
 E se guardi la formula rilevante, la derivata risulta essere 1.
 
 88
-00:06:04,700 --> 00:06:09,751
-Inoltre, ed è qui che entra in gioco l’idea della propagazione all’indietro,
+00:06:06,140 --> 00:06:10,364
+Inoltre, ed è qui che entra in gioco l’idea della propagazione all’indietro, 
 
 89
-00:06:09,751 --> 00:06:15,458
-puoi vedere quanto questa funzione di costo sia sensibile all’attivazione dello strato
+00:06:10,364 --> 00:06:15,136
+puoi vedere quanto questa funzione di costo sia sensibile all’attivazione dello strato 
 
 90
-00:06:15,458 --> 00:06:16,180
+00:06:15,136 --> 00:06:15,740
 precedente.
 
 91
-00:06:16,180 --> 00:06:21,025
-Vale a dire, questa derivata iniziale nell&#39;espressione della regola della catena,
+00:06:15,740 --> 00:06:20,941
+Vale a dire, questa derivata iniziale nell&#39;espressione della regola della catena, 
 
 92
-00:06:21,025 --> 00:06:25,420
+00:06:20,941 --> 00:06:25,660
 la sensibilità di z all&#39;attivazione precedente, risulta essere il peso wL.
 
 93
-00:06:25,420 --> 00:06:29,958
-E ancora, anche se non saremo in grado di influenzare direttamente l&#39;attivazione
+00:06:26,640 --> 00:06:30,566
+E ancora, anche se non saremo in grado di influenzare direttamente l&#39;attivazione 
 
 94
-00:06:29,958 --> 00:06:32,574
-del livello precedente, è utile tenerne traccia,
+00:06:30,566 --> 00:06:32,830
+del livello precedente, è utile tenerne traccia, 
 
 95
-00:06:32,574 --> 00:06:37,112
-perché ora possiamo semplicemente continuare a ripetere questa stessa idea di regola
+00:06:32,830 --> 00:06:36,757
+perché ora possiamo semplicemente continuare a ripetere questa stessa idea di regola 
 
 96
-00:06:37,112 --> 00:06:41,544
-della catena all&#39;indietro per vedere quanto è sensibile la funzione di costo a
+00:06:36,757 --> 00:06:40,592
+della catena all&#39;indietro per vedere quanto è sensibile la funzione di costo a 
 
 97
-00:06:41,544 --> 00:06:43,680
+00:06:40,592 --> 00:06:42,440
 pesi precedenti e pregiudizi precedenti.
 
 98
-00:06:43,680 --> 00:06:46,524
-E potresti pensare che questo sia un esempio eccessivamente semplice,
+00:06:43,180 --> 00:06:46,099
+E potresti pensare che questo sia un esempio eccessivamente semplice, 
 
 99
-00:06:46,524 --> 00:06:49,247
-dato che tutti gli strati hanno un neurone, e le cose diventeranno
+00:06:46,099 --> 00:06:48,893
+dato che tutti gli strati hanno un neurone, e le cose diventeranno 
 
 100
-00:06:49,247 --> 00:06:51,320
+00:06:48,893 --> 00:06:51,020
 esponenzialmente più complicate per una rete reale.
 
 101
-00:06:51,320 --> 00:06:55,558
-Ma onestamente, non cambia molto quando diamo agli strati più neuroni,
+00:06:51,700 --> 00:06:55,493
+Ma onestamente, non cambia molto quando diamo agli strati più neuroni, 
 
 102
-00:06:55,558 --> 00:06:59,320
+00:06:55,493 --> 00:06:58,860
 in realtà sono solo alcuni indici in più di cui tenere traccia.
 
 103
-00:06:59,320 --> 00:07:03,927
-Piuttosto che l&#39;attivazione di un dato strato essere semplicemente AL,
+00:06:59,380 --> 00:07:03,547
+Piuttosto che l&#39;attivazione di un dato strato essere semplicemente AL, 
 
 104
-00:07:03,927 --> 00:07:07,920
+00:07:03,547 --> 00:07:07,160
 avrà anche un pedice che indica quale neurone di quello strato è.
 
 105
-00:07:07,920 --> 00:07:15,280
+00:07:07,160 --> 00:07:14,420
 Usiamo la lettera k per indicizzare il livello L-1 e j per indicizzare il livello L.
 
 106
-00:07:15,280 --> 00:07:19,358
-Per il costo, ancora una volta guardiamo quale sia l&#39;output desiderato,
+00:07:15,260 --> 00:07:18,992
+Per il costo, ancora una volta guardiamo quale sia l&#39;output desiderato, 
 
 107
-00:07:19,358 --> 00:07:22,792
-ma questa volta sommiamo i quadrati delle differenze tra queste
+00:07:18,992 --> 00:07:22,135
+ma questa volta sommiamo i quadrati delle differenze tra queste 
 
 108
-00:07:22,792 --> 00:07:26,120
+00:07:22,135 --> 00:07:25,180
 attivazioni dell&#39;ultimo livello e l&#39;output desiderato.
 
 109
-00:07:26,120 --> 00:07:33,280
+00:07:26,080 --> 00:07:30,840
 Cioè, prendi una somma su ALj meno yj al quadrato.
 
 110
-00:07:33,280 --> 00:07:37,473
-Dato che ci sono molti più pesi, ognuno deve avere un paio di indici
+00:07:33,040 --> 00:07:37,038
+Dato che ci sono molti più pesi, ognuno deve avere un paio di indici 
 
 111
-00:07:37,473 --> 00:07:41,667
-in più per tenere traccia di dove si trova, quindi chiamiamo WLjk il
+00:07:37,038 --> 00:07:41,037
+in più per tenere traccia di dove si trova, quindi chiamiamo WLjk il 
 
 112
-00:07:41,667 --> 00:07:45,740
+00:07:41,037 --> 00:07:44,920
 peso del bordo che collega questo neurone kesimo al neurone jesimo.
 
 113
-00:07:45,740 --> 00:07:48,368
-All&#39;inizio questi indici potrebbero sembrare un po&#39;
+00:07:45,620 --> 00:07:48,065
+All&#39;inizio questi indici potrebbero sembrare un po&#39; 
 
 114
-00:07:48,368 --> 00:07:51,084
-arretrati, ma sono in linea con il modo in cui indicizzeresti
+00:07:48,065 --> 00:07:50,592
+arretrati, ma sono in linea con il modo in cui indicizzeresti 
 
 115
-00:07:51,084 --> 00:07:53,800
+00:07:50,592 --> 00:07:53,120
 la matrice dei pesi di cui ho parlato nel video della parte 1.
 
 116
-00:07:53,800 --> 00:07:58,197
-Proprio come prima, è comunque carino dare un nome alla somma ponderata rilevante,
+00:07:53,620 --> 00:07:57,766
+Proprio come prima, è comunque carino dare un nome alla somma ponderata rilevante, 
 
 117
-00:07:58,197 --> 00:08:01,906
-come z, in modo che l&#39;attivazione dell&#39;ultimo strato sia solo
+00:07:57,766 --> 00:08:01,262
+come z, in modo che l&#39;attivazione dell&#39;ultimo strato sia solo 
 
 118
-00:08:01,906 --> 00:08:04,980
+00:08:01,262 --> 00:08:04,160
 la tua funzione speciale, come il sigmoide, applicata a z.
 
 119
-00:08:04,980 --> 00:08:08,745
-Potete capire cosa intendo, dove tutte queste sono essenzialmente
+00:08:04,660 --> 00:08:07,913
+Potete capire cosa intendo, dove tutte queste sono essenzialmente 
 
 120
-00:08:08,745 --> 00:08:12,909
-le stesse equazioni che avevamo prima nel caso di un neurone per strato,
+00:08:07,913 --> 00:08:11,511
+le stesse equazioni che avevamo prima nel caso di un neurone per strato, 
 
 121
-00:08:12,909 --> 00:08:15,420
+00:08:11,511 --> 00:08:13,680
 è solo che sembra un po&#39; più complicato.
 
 122
-00:08:15,420 --> 00:08:19,325
-E in effetti, l’espressione derivata della regola della catena che descrive
+00:08:15,440 --> 00:08:19,278
+E in effetti, l’espressione derivata della regola della catena che descrive 
 
 123
-00:08:19,325 --> 00:08:23,540
+00:08:19,278 --> 00:08:23,420
 quanto il costo sia sensibile a un peso specifico sembra essenzialmente la stessa.
 
 124
-00:08:23,540 --> 00:08:29,420
+00:08:23,920 --> 00:08:26,840
 Lascerò a te la possibilità di fermarti e pensare a ciascuno di questi termini, se vuoi.
 
 125
-00:08:29,420 --> 00:08:33,578
-Ciò che cambia qui, però, è la derivata del costo
+00:08:28,979 --> 00:08:32,781
+Ciò che cambia qui, però, è la derivata del costo 
 
 126
-00:08:33,578 --> 00:08:37,820
+00:08:32,781 --> 00:08:36,659
 rispetto ad una delle attivazioni nello strato L-1.
 
 127
-00:08:37,820 --> 00:08:40,606
-In questo caso, la differenza è che il neurone influenza
+00:08:37,780 --> 00:08:40,264
+In questo caso, la differenza è che il neurone influenza 
 
 128
-00:08:40,606 --> 00:08:43,540
+00:08:40,264 --> 00:08:42,880
 la funzione di costo attraverso molteplici percorsi diversi.
 
 129
-00:08:43,540 --> 00:08:50,672
-Cioè, da un lato influenza AL0, che gioca un ruolo nella funzione di costo,
+00:08:44,680 --> 00:08:50,140
+Cioè, da un lato influenza AL0, che gioca un ruolo nella funzione di costo, 
 
 130
-00:08:50,672 --> 00:08:58,838
-ma ha anche un&#39;influenza su AL1, che gioca anche un ruolo nella funzione di costo,
+00:08:50,140 --> 00:08:56,390
+ma ha anche un&#39;influenza su AL1, che gioca anche un ruolo nella funzione di costo, 
 
 131
-00:08:58,838 --> 00:09:00,340
+00:08:56,390 --> 00:08:57,540
 e devi sommarli.
 
 132
-00:09:00,340 --> 00:09:03,680
+00:08:59,820 --> 00:09:03,040
 E questo, beh, è più o meno tutto.
 
 133
-00:09:03,680 --> 00:09:06,842
-Una volta che sai quanto è sensibile la funzione di costo alle
+00:09:03,500 --> 00:09:06,390
+Una volta che sai quanto è sensibile la funzione di costo alle 
 
 134
-00:09:06,842 --> 00:09:10,255
-attivazioni in questo penultimo strato, puoi semplicemente ripetere
+00:09:06,390 --> 00:09:09,510
+attivazioni in questo penultimo strato, puoi semplicemente ripetere 
 
 135
-00:09:10,255 --> 00:09:13,920
+00:09:09,510 --> 00:09:12,860
 il processo per tutti i pesi e i pregiudizi che alimentano quello strato.
 
 136
-00:09:13,920 --> 00:09:15,420
+00:09:13,900 --> 00:09:14,960
 Quindi datti una pacca sulle spalle!
 
 137
-00:09:15,420 --> 00:09:19,922
-Se tutto ciò ha senso, ora hai esaminato in profondità il cuore della backpropagation,
+00:09:15,300 --> 00:09:19,312
+Se tutto ciò ha senso, ora hai esaminato in profondità il cuore della backpropagation, 
 
 138
-00:09:19,922 --> 00:09:23,700
+00:09:19,312 --> 00:09:22,680
 il cavallo di battaglia dietro il modo in cui le reti neurali apprendono.
 
 139
-00:09:23,700 --> 00:09:27,589
-Queste espressioni delle regole della catena forniscono i derivati
+00:09:23,300 --> 00:09:26,735
+Queste espressioni delle regole della catena forniscono i derivati 
 
 140
-00:09:27,589 --> 00:09:31,130
-che determinano ciascun componente nel gradiente che aiuta a
+00:09:26,735 --> 00:09:29,864
+che determinano ciascun componente nel gradiente che aiuta a 
 
 141
-00:09:31,130 --> 00:09:35,020
+00:09:29,864 --> 00:09:33,300
 minimizzare il costo della rete scendendo ripetutamente in discesa.
 
 142
-00:09:35,020 --> 00:09:36,990
-Se ti siedi e pensi a tutto ciò, ci sono molti strati di complessità su cui avvolgere la
+00:09:34,300 --> 00:09:38,520
+Se ti siedi e pensi a tutto ciò, ci sono molti strati di complessità su cui avvolgere la 
 
 143
-00:09:36,990 --> 00:09:38,960
+00:09:38,520 --> 00:09:42,740
 tua mente, quindi non preoccuparti se ci vuole tempo perché la tua mente digerisca tutto.
 
