@@ -2,13 +2,16 @@
 
 This repository contains captions for videos on [3blue1brown](https://www.youtube.com/3blue1brown).
 If you'd like to contribute to any translations or offer a correction to any existing subtitles, pull requests are welcome.
+You can use [this discord](https://discord.gg/MSKzxDgTGE) for coordination and discussion.
 
 The best way to help is by making edits to the files titled "sentence_translations.json".
 You can do this directly in the browser by navigating to the relevant file, for example [here is one](https://github.com/3b1b/captions/blob/main/2023/clt/hindi/sentence_translations.json) for translations of the Central Limit Theorem video into Hindi.
 From there, click the pencil icon in the upper right corner to make changes, and those changes can be submitted as a pull request when you're done.
+It's most helpful if the title of the pull request includes the language and video name.
+You can see what others have reviewed and are reviewing on the [PR tab](https://github.com/3b1b/captions/pulls), and there's also the discord linked above available to help further coordinate.
 
 Most of this repo was formed using a script that first used Whisper to transcribe video narration into English with punctuation and then used Google's translation API to translate that script sentence-by-sentence, recording the timings.
-These automatic translations could potentially benefit from a native speaker to look it over and ensure it's natural.
+These automatic translations can certainly benefit from a native speaker to look it over and ensure it's natural.
 
 Subtitles can be generated automatically from those sentence_translations.json files, and the plan is also to use this data to create automatic dubbings, which is why corrections to those files are most helpful.
 As a proof of concept for the aim here, on [this video](https://youtu.be/cy8r7WSuT1I), click the gear icon, and change the audio track to "Korean".
