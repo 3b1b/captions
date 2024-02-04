@@ -1,5 +1,6 @@
 #!/bin/bash
-#This script generates the automatic labeler for the 3b1b/captions repository
+# This script generates the automatic labeler for the 3b1b/captions repository.
+# In order to add a language to the label pool you need to add it to the languages array and then run the script from the root of the repository.
 
 languages=("german" "hebrew" "french" "spanish" "turkish" "hindi" "hungarian" "arabic" "bengali" "chinese" "croation" "indonesian" "italian" "japanese" "korean" "lithuanian" "marathi" "persian" "polish" "portuguese" "romanian" "russian" "serbian" "slovak" "thai" "ukranian" "vietnamese")
 labeler_file=".github/labeler.yml"
@@ -19,7 +20,3 @@ do
         echo ""
     } >> $labeler_file
 done
-
-
-
-
