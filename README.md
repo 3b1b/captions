@@ -12,7 +12,7 @@ Machine translation is often far from perfect, so I'll only feel comfortable wit
 I'm still figuring out the best way to incorporate community contributions.
 If you'd like to help out, it might be best to hold off until a proper system is in place, and note your interest in this [Google form](https://forms.gle/AR8YQPL1USxhM5989).
 
-In the meantime, there is room to get started by making Pull requests on GitHub.
+If you're eager to start and don't mind an imperfect system, there is room to get started by making Pull requests on GitHub.
 
 - Check the existing pull requests to see if anyone has already submitted edits to the translation you're interested in reviewing.
 - You also can use [this discord](https://discord.gg/MSKzxDgTGE) for coordination and discussion.
