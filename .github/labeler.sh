@@ -1,9 +1,13 @@
 #!/bin/bash
 # This script generates the automatic labeler for the 3b1b/captions repository.
 
-normal_videos="[0-9]{4}/[^/]+/[^/]+"
-shorts="[0-9]{4}/shorts/[^/]+/[^/]+"
-blog="[0-9]{4}/blog/[^/]+/[^/]+"
+year="20[0-9]{2}"
+video_id="[^/]+"
+language="[^/]+"
+
+normal_videos="$year/$video_id/$language"
+shorts="$year/shorts/$video_id/$language"
+blog="$year/blog/$video_id/$language"
 
 # Use find and grep to search for matching folders
 # and keep only the las part of the path
