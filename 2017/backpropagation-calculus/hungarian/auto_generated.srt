@@ -1,556 +1,544 @@
 1
-00:00:04,020 --> 00:00:06,692
-A kemény feltételezés az, hogy megnézted a 3. részt, 
+00:00:04,019 --> 00:00:06,684
+A nehéz feltételezés itt az, hogy megnézted a 3. részt, 
 
 2
-00:00:06,692 --> 00:00:09,920
-amely intuitív áttekintést ad a visszaterjesztési algoritmusról.
+00:00:06,684 --> 00:00:09,920
+amely a backpropagation algoritmus intuitív bemutatását tartalmazza.
 
 3
 00:00:11,040 --> 00:00:14,220
-Itt egy kicsit formálisabbak vagyunk, és belemerülünk a vonatkozó számításba.
+Itt egy kicsit formálisabbá válunk, és belemerülünk a vonatkozó számításba.
 
 4
-00:00:14,820 --> 00:00:18,231
-Normális, hogy ez legalább egy kicsit zavaró, így a rendszeres szünet 
+00:00:14,820 --> 00:00:17,378
+Normális, hogy ez legalább egy kicsit zavaros, ezért a mantra, 
 
 5
-00:00:18,231 --> 00:00:21,400
-és töprengés mantra itt is ugyanúgy érvényes, mint bárhol máshol.
+00:00:17,378 --> 00:00:20,628
+hogy rendszeresen tartsunk szünetet és gondolkodjunk, itt is ugyanúgy érvényes, 
 
 6
-00:00:21,940 --> 00:00:25,664
-Fő célunk, hogy bemutassuk, hogyan gondolkodnak a gépi tanulásban részt vevők 
+00:00:20,628 --> 00:00:21,400
+mint bárhol máshol.
 
 7
-00:00:25,664 --> 00:00:29,246
-általában a hálózatok kontextusában a számításból származó láncszabályról, 
+00:00:21,940 --> 00:00:25,634
+A fő célunk az, hogy megmutassuk, hogyan gondolkodnak a gépi tanulásban 
 
 8
-00:00:29,246 --> 00:00:33,162
-amely másképp hat, mint a legtöbb bevezető számítástechnikai kurzus megközelítése 
+00:00:25,634 --> 00:00:29,534
+dolgozók általában a láncszabályról a számtanból a hálózatok kontextusában, 
 
 9
-00:00:33,162 --> 00:00:33,640
-a témához.
+00:00:29,534 --> 00:00:33,640
+ami eltér attól, ahogyan a legtöbb bevezető számtani kurzus megközelíti a témát.
 
 10
-00:00:34,340 --> 00:00:37,244
-Azok számára, akik nem érzik jól magukat a vonatkozó kalkulusban, 
+00:00:34,340 --> 00:00:37,380
+Azoknak, akiknek kényelmetlenül érzik magukat a vonatkozó számítások miatt, 
 
 11
-00:00:37,244 --> 00:00:38,740
-egy egész sorozatom van a témában.
+00:00:37,380 --> 00:00:38,740
+van egy egész sorozatom a témában.
 
 12
 00:00:39,960 --> 00:00:46,020
-Kezdjük egy rendkívül egyszerű hálózattal, ahol minden rétegben egyetlen neuron található.
+Kezdjük egy rendkívül egyszerű hálózattal, ahol minden rétegben egyetlen neuron van.
 
 13
-00:00:46,320 --> 00:00:49,924
-Ezt a hálózatot három súlyozás és három torzítás határozza meg, 
+00:00:46,320 --> 00:00:50,715
+Ezt a hálózatot három súly és három torzítás határozza meg, és a célunk az, 
 
 14
-00:00:49,924 --> 00:00:54,880
-és célunk annak megértése, hogy a költségfüggvény mennyire érzékeny ezekre a változókra.
+00:00:50,715 --> 00:00:54,880
+hogy megértsük, mennyire érzékeny a költségfüggvény ezekre a változókra.
 
 15
-00:00:55,419 --> 00:00:58,993
-Így tudjuk, hogy ezeknek a feltételeknek mely módosításai 
+00:00:55,420 --> 00:00:58,218
+Így tudjuk, hogy az említett feltételek mely módosításai 
 
 16
-00:00:58,993 --> 00:01:02,320
-okozzák a költségfüggvény leghatékonyabb csökkentését.
+00:00:58,218 --> 00:01:00,820
+okozzák a költségfüggvény leghatékonyabb csökkenését.
 
 17
-00:01:02,320 --> 00:01:04,840
-Csak az utolsó két neuron közötti kapcsolatra koncentrálunk.
+00:01:01,960 --> 00:01:04,840
+És mi most csak az utolsó két neuron közötti kapcsolatra fogunk koncentrálni.
 
 18
-00:01:05,980 --> 00:01:09,349
-Jelöljük az utolsó neuron aktiválását L felső indexszel, 
+00:01:05,980 --> 00:01:10,567
+Az utolsó neuron aktivációját jelöljük meg egy L feliratú jelzővel, 
 
 19
-00:01:09,349 --> 00:01:11,360
-jelezve, hogy melyik rétegben van.
+00:01:10,567 --> 00:01:15,560
+ami jelzi, hogy melyik rétegben van, így az előző neuron aktivációja Al-1.
 
 20
-00:01:11,680 --> 00:01:15,560
-Tehát az előző neuron aktiválása AL-1.
+00:01:16,360 --> 00:01:19,657
+Ezek nem exponensek, csak egy módja annak, hogy indexeljük, amiről beszélünk, 
 
 21
-00:01:16,360 --> 00:01:19,700
-Ezek nem exponensek, csak egy módja annak, hogy indexeljük azt, amiről beszélünk, 
+00:01:19,657 --> 00:01:23,040
+mivel a későbbiekben a különböző indexekhez tartozó indexeket el akarom menteni.
 
 22
-00:01:19,700 --> 00:01:23,040
-mivel a későbbiekben szeretném elmenteni az alsó indexeket a különböző indexekhez.
+00:01:23,720 --> 00:01:28,070
+Tegyük fel, hogy az érték, amit szeretnénk, hogy ez az utolsó aktiváció 
 
 23
-00:01:23,720 --> 00:01:30,043
-Tegyük fel, hogy egy adott képzési példánál az utolsó aktiválás értéke y, 
+00:01:28,070 --> 00:01:32,180
+egy adott képzési példa esetében y legyen, például y lehet 0 vagy 1.
 
 24
-00:01:30,043 --> 00:01:32,180
-például y lehet 0 vagy 1.
+00:01:32,840 --> 00:01:39,240
+Tehát ennek a hálózatnak a költsége egyetlen képzési példa esetén Al-y2.
 
 25
-00:01:32,840 --> 00:01:39,240
-Tehát ennek a hálózatnak a költsége egyetlen képzési példa esetében AL-y2.
+00:01:40,260 --> 00:01:44,380
+Ennek az egy képzési példának a költségét c0-nak nevezzük.
 
 26
-00:01:40,260 --> 00:01:44,380
-Ennek az egy képzési példának a költségét c0-val jelöljük.
+00:01:45,900 --> 00:01:49,517
+Emlékeztetőül, ezt az utolsó aktivációt egy súly határozza meg, 
 
 27
-00:01:45,900 --> 00:01:50,060
-Emlékeztetőül, ezt az utolsó aktiválást egy súly határozza meg, 
+00:01:49,517 --> 00:01:53,474
+amelyet WL-nek fogok nevezni, szorozva az előző neuron aktivációjával 
 
 28
-00:01:50,060 --> 00:01:54,740
-amelyet wL-nek fogok nevezni, szorozva az előző neuron aktiválódásával, 
+00:01:53,474 --> 00:01:56,640
+plusz egy kis torzítással, amelyet BL-nek fogok nevezni.
 
 29
-00:01:54,740 --> 00:01:57,600
-plusz némi torzítással, amit bL-nek nevezek.
+00:01:57,420 --> 00:02:00,044
+Aztán ezt át kell pumpálni valamilyen speciális nemlineáris függvényen, 
 
 30
-00:01:57,600 --> 00:02:00,113
-Ezután ezt valamilyen speciális nemlineáris függvényen keresztül pumpálja, 
+00:02:00,044 --> 00:02:01,320
+például a szigmoidon vagy a ReLU-n.
 
 31
-00:02:00,113 --> 00:02:01,320
-mint például a szigmoid vagy a ReLU.
+00:02:01,800 --> 00:02:05,536
+Valójában megkönnyíti a dolgunkat, ha ennek a súlyozott összegnek egy speciális 
 
 32
-00:02:01,800 --> 00:02:05,871
-Valójában megkönnyíti a dolgunkat, ha ennek a súlyozott összegnek külön nevet adunk, 
+00:02:05,536 --> 00:02:09,320
+nevet adunk, például z-t, ugyanazzal a feliratúval, mint a vonatkozó aktiválások.
 
 33
-00:02:05,871 --> 00:02:09,320
-például z-t, ugyanazzal a felső indexszel, mint a vonatkozó aktiválások.
+00:02:10,380 --> 00:02:14,387
+Ez nagyon sok kifejezés, és ezt úgy fogalmazhatjuk meg, hogy a súly, 
 
 34
-00:02:10,380 --> 00:02:13,983
-Ez egy csomó kifejezés, és úgy lehet elképzelni, hogy a súlyt, 
+00:02:14,387 --> 00:02:18,568
+az előző akció és a torzítás együttesen a z kiszámításához használatos, 
 
 35
-00:02:13,983 --> 00:02:18,044
-az előző műveletet és a torzítást együtt használják a z kiszámítására, 
+00:02:18,568 --> 00:02:23,795
+ami viszont lehetővé teszi az a kiszámítását, ami végül egy y konstanssal együtt lehetővé 
 
 36
-00:02:18,044 --> 00:02:21,075
-ami viszont lehetővé teszi számunkra a kiszámítását, 
+00:02:23,795 --> 00:02:25,480
+teszi a költség kiszámítását.
 
 37
-00:02:21,075 --> 00:02:25,480
-ami végül egy konstans y-val együtt lehetővé teszi kiszámoljuk a költségeket.
+00:02:27,340 --> 00:02:30,778
+És persze az Al-1-et befolyásolja a saját súlya, 
 
 38
-00:02:27,340 --> 00:02:30,972
-És természetesen az AL-1-et befolyásolja a saját súlya, 
+00:02:30,778 --> 00:02:35,060
+a torzítás és hasonlók, de most nem erre fogunk koncentrálni.
 
 39
-00:02:30,972 --> 00:02:35,060
-elfogultsága és hasonlók, de most nem erre fogunk koncentrálni.
-
-40
 00:02:35,700 --> 00:02:37,620
 Ezek mind csak számok, igaz?
 
-41
+40
 00:02:38,060 --> 00:02:41,040
-És jó lehet úgy gondolni, hogy mindegyiknek megvan a maga kis számsora.
+És jó lehet úgy gondolni mindegyikre, mintha saját kis számsorral rendelkezne.
+
+41
+00:02:41,720 --> 00:02:45,540
+Az első célunk az, hogy megértsük, mennyire érzékeny 
 
 42
-00:02:41,720 --> 00:02:45,505
-Első célunk annak megértése, hogy a költségfüggvény 
+00:02:45,540 --> 00:02:49,000
+a költségfüggvény a WL súlyunk kis változásaira.
 
 43
-00:02:45,505 --> 00:02:49,000
-mennyire érzékeny a súlyunk kis változásaira wL.
+00:02:49,540 --> 00:02:54,860
+Vagy másképp fogalmazva: mi a c deriváltja WL függvényében?
 
 44
-00:02:49,540 --> 00:02:54,860
-Vagy fogalmazz másképp, mi a c deriváltja wL-hez képest?
+00:02:55,600 --> 00:03:00,049
+Amikor ezt a del W kifejezést látja, gondoljon arra, hogy ez a W egy apró, 
 
 45
-00:02:55,600 --> 00:03:00,817
-Ha látja ezt a del w kifejezést, gondolja úgy, hogy ez egy apró lökést jelent w-hez, 
+00:03:00,049 --> 00:03:03,194
+például 0,01-es változást jelent, és gondoljon arra, 
 
 46
-00:03:00,817 --> 00:03:04,070
-például 0-val való változtatást.01, és gondolja úgy, 
+00:03:03,194 --> 00:03:08,060
+hogy ez a del c kifejezés azt jelenti, hogy a költségnek az ebből eredő változása.
 
 47
-00:03:04,070 --> 00:03:08,060
-hogy ez a del c kifejezés bármit is jelent a költségekhez képest.
+00:03:08,060 --> 00:03:10,220
+Amit mi akarunk, az az arányuk.
 
 48
-00:03:08,060 --> 00:03:10,220
-Amit szeretnénk, az az arányuk.
+00:03:11,260 --> 00:03:15,773
+Koncepcionálisan ez a kis lökés a WL-nek egy kis lökést okoz a ZL-nek, 
 
 49
-00:03:11,260 --> 00:03:15,680
-Elméletileg ez az apró lökés a wL felé némi lökést okoz a zL-nek, 
+00:03:15,773 --> 00:03:21,240
+ami viszont egy kis lökést okoz az AL-nek, ami közvetlenül befolyásolja a költségeket.
 
 50
-00:03:15,680 --> 00:03:21,240
-ami viszont némi lökést okoz az AL-nak, ami közvetlenül befolyásolja a költségeket.
+00:03:23,120 --> 00:03:26,209
+Tehát a dolgokat úgy bontjuk fel, hogy először a ZL apró 
 
 51
-00:03:23,120 --> 00:03:26,461
-Tehát a dolgokat úgy bontjuk szét, hogy először megnézzük a 
+00:03:26,209 --> 00:03:30,490
+változásának és ennek az apró változásnak a W-hez viszonyított arányát nézzük, 
 
 52
-00:03:26,461 --> 00:03:31,195
-zL-hez viszonyított apró változás és ehhez a kis w változáshoz viszonyított arányát, 
+00:03:30,490 --> 00:03:33,200
+vagyis a ZL-nek a WL-hez viszonyított deriváltját.
 
 53
-00:03:31,195 --> 00:03:33,200
-vagyis zL deriváltját wL-hez képest.
+00:03:33,200 --> 00:03:38,864
+Hasonlóképpen, ezután figyelembe kell venni az AL változásának és az azt okozó ZL apró 
 
 54
-00:03:33,200 --> 00:03:37,181
-Hasonlóképpen, akkor vegye figyelembe az AL-hoz való változás és a zL-ben 
+00:03:38,864 --> 00:03:44,660
+változásának arányát, valamint a c végső lökés és az AL e közbenső lökése közötti arányt.
 
 55
-00:03:37,181 --> 00:03:40,140
-bekövetkezett apró változás arányát, amely ezt okozta, 
+00:03:45,740 --> 00:03:50,576
+Ez itt a láncszabály, ahol e három arány szorzatával 
 
 56
-00:03:40,140 --> 00:03:44,660
-valamint a c-hez való végső lökést és az AL-hez való közbenső lökést közötti arányt.
+00:03:50,576 --> 00:03:55,140
+megkapjuk a c érzékenységét a WL kis változásaira.
 
 57
-00:03:45,740 --> 00:03:50,883
-Ez itt a láncszabály, ahol ezt a három arányt megszorozva 
+00:03:56,880 --> 00:04:01,828
+Tehát a képernyőn most egy csomó szimbólum látható, és szánjunk rá egy pillanatot, 
 
 58
-00:03:50,883 --> 00:03:55,140
-megkapjuk c érzékenységét a wL kis változásaira.
+00:04:01,828 --> 00:04:06,240
+hogy tisztázzuk, mi is ez, mert most kiszámítjuk a vonatkozó deriváltakat.
 
 59
-00:03:56,880 --> 00:03:59,620
-Tehát a képernyőn jelenleg nagyon sok szimbólum van, 
+00:04:07,440 --> 00:04:13,160
+A c deriváltja az AL függvényében 2AL-y.
 
 60
-00:03:59,620 --> 00:04:03,033
-és szánjon egy percet, hogy megbizonyosodjon arról, hogy világos, 
+00:04:13,980 --> 00:04:18,178
+Vegyük észre, hogy ez azt jelenti, hogy a mérete arányos a hálózat kimenete és az 
 
 61
-00:04:03,033 --> 00:04:06,240
-mi ez, mert most a vonatkozó származékokat fogjuk kiszámítani.
+00:04:18,178 --> 00:04:22,633
+általunk kívánt kimenet közötti különbséggel, így ha ez a kimenet nagyon eltérő lenne, 
 
 62
-00:04:07,440 --> 00:04:14,180
-A c deriváltja az AL-hez viszonyítva 2AL-y.
+00:04:22,633 --> 00:04:27,140
+akkor még a legkisebb változtatások is nagy hatással lennének a végső költségfüggvényre.
 
 63
-00:04:14,180 --> 00:04:18,480
-Ez azt jelenti, hogy mérete arányos a hálózat kimenete és a kívánt dolog 
+00:04:27,840 --> 00:04:33,270
+Az AL deriváltja a ZL tekintetében nem más, mint a szigmoid függvényünk deriváltja, 
 
 64
-00:04:18,480 --> 00:04:22,250
-közötti különbséggel, tehát ha ez a kimenet nagyon eltérő volt, 
+00:04:33,270 --> 00:04:36,180
+vagy bármilyen más nemlinearitást használunk.
 
 65
-00:04:22,250 --> 00:04:27,140
-akkor még az enyhe változtatások is nagy hatással vannak a végső költségfüggvényre.
+00:04:37,220 --> 00:04:44,660
+És a ZL deriváltja a WL-hez képest AL-1.
 
 66
-00:04:27,840 --> 00:04:33,344
-Az AL zL-hez viszonyított deriváltja csak a szigmoid függvényünk deriváltja, 
+00:04:45,760 --> 00:04:49,457
+Nem tudom, te hogy vagy vele, de szerintem könnyű beleragadni a képletekbe anélkül, 
 
 67
-00:04:33,344 --> 00:04:37,420
-vagy bármilyen nemlinearitás, amelyet használni szeretne.
+00:04:49,457 --> 00:04:53,420
+hogy egy pillanatra hátradőlnénk, és emlékeztetnénk magunkat arra, hogy mit is jelentenek.
 
 68
-00:04:37,420 --> 00:04:46,160
-A zL deriváltja wL-hez viszonyítva AL-1 lesz.
+00:04:53,920 --> 00:04:58,189
+Az utolsó derivált esetében az, hogy a súlyra adott kis lökés mennyire 
 
 69
-00:04:46,160 --> 00:04:50,249
-Nem tudom, ti hogy vagytok vele, de azt hiszem, könnyű beleragadni a képletekbe anélkül, 
+00:04:58,189 --> 00:05:02,820
+befolyásolja az utolsó réteget, attól függ, hogy az előző neuron milyen erős.
 
 70
-00:04:50,249 --> 00:04:53,420
-hogy egy pillanatra is hátradőlne, és emlékezne, mit jelentenek ezek.
+00:05:03,380 --> 00:05:08,280
+Ne feledjük, hogy itt jön be a neuronok, amelyek együtt tüzelnek, együtt vezetnek.
 
 71
-00:04:53,920 --> 00:04:58,315
-Ennek az utolsó származéknak az esetében, hogy a súlyhoz való kis lökések milyen 
+00:05:09,200 --> 00:05:12,925
+És mindez a WL tekintetében csak egy adott egyetlen 
 
 72
-00:04:58,315 --> 00:05:02,820
-mértékben befolyásolták az utolsó réteget, attól függ, milyen erős az előző neuron.
+00:05:12,925 --> 00:05:15,720
+képzési példa költségének a származéka.
 
 73
-00:05:03,380 --> 00:05:08,280
-Ne feledje, itt jön a képbe a neuronok-az-együtt tüzel-huzal-összeköttetés ötlet.
+00:05:16,440 --> 00:05:20,133
+Mivel a teljes költségfüggvény az összes ilyen költséget sok 
 
 74
-00:05:09,200 --> 00:05:15,720
-És mindez a wL vonatkozásában csak egy konkrét képzési példa költségének deriváltja.
+00:05:20,133 --> 00:05:23,705
+különböző képzési példán keresztül átlagolja, a deriváltja 
 
 75
-00:05:16,440 --> 00:05:20,383
-Mivel a teljes költségfüggvény magában foglalja az összes költségnek a 
+00:05:23,705 --> 00:05:27,460
+az összes képzési példán keresztül átlagolja ezt a kifejezést.
 
 76
-00:05:20,383 --> 00:05:23,772
-sok különböző betanítási példában való együttes átlagolását, 
+00:05:28,380 --> 00:05:32,063
+És természetesen ez csak egy összetevője a gradiens vektornak, 
 
 77
-00:05:23,772 --> 00:05:28,660
-a származéka megköveteli ennek a kifejezésnek az átlagolását az összes képzési példában.
+00:05:32,063 --> 00:05:36,973
+amely maga is a költségfüggvény részleges deriváltjaiból épül fel az összes súly és 
 
 78
-00:05:28,660 --> 00:05:32,055
-Természetesen ez csak egy komponense a gradiensvektornak, 
+00:05:36,973 --> 00:05:38,260
+torzítás tekintetében.
 
 79
-00:05:32,055 --> 00:05:35,508
-amely a költségfüggvény parciális deriváltjaiból épül fel, 
-
-80
-00:05:35,508 --> 00:05:38,260
-tekintettel az összes súlyozásra és torzításra.
-
-81
-00:05:40,640 --> 00:05:42,928
+00:05:40,640 --> 00:05:42,747
 De bár ez csak egy a sok részleges származék közül, 
 
+80
+00:05:42,747 --> 00:05:45,260
+amire szükségünk van, mégis a munka több mint 50%-át teszi ki.
+
+81
+00:05:46,340 --> 00:05:49,720
+A torzításra való érzékenység például szinte azonos.
+
 82
-00:05:42,928 --> 00:05:45,260
-amelyekre szükségünk van, ez a munka több mint 50%-a.
+00:05:50,040 --> 00:05:55,020
+Csak ki kell cserélnünk ezt a del z del w kifejezést egy del z del b kifejezésre.
 
 83
-00:05:46,340 --> 00:05:49,720
-A torzításra való érzékenység például majdnem azonos.
+00:05:58,420 --> 00:06:02,400
+És ha megnézzük a vonatkozó képletet, a derivált értéke 1 lesz.
 
 84
-00:05:50,040 --> 00:05:55,020
-Csak ki kell cserélnünk ezt a del z del w kifejezést egy del z del b-re.
+00:06:06,140 --> 00:06:11,162
+Továbbá, és itt jön a képbe a visszafelé történő szaporítás ötlete, láthatjuk, 
 
 85
-00:05:58,420 --> 00:06:02,400
-És ha megnézzük a vonatkozó képletet, a származéka 1 lesz.
-
-86
-00:06:06,140 --> 00:06:10,657
-Illetve, és itt jön be a visszafelé terjedés ötlete, láthatjuk, 
-
-87
-00:06:10,657 --> 00:06:15,740
+00:06:11,162 --> 00:06:15,740
 hogy ez a költségfüggvény mennyire érzékeny az előző réteg aktiválására.
 
+86
+00:06:15,740 --> 00:06:20,168
+Ez a kezdeti derivált a láncszabály kifejezésben, 
+
+87
+00:06:20,168 --> 00:06:25,660
+a z érzékenysége az előző aktiválásra, a WL súlynak felel meg.
+
 88
-00:06:15,740 --> 00:06:20,657
-Ugyanis ez a kezdeti derivált a láncszabály kifejezésben, 
+00:06:26,640 --> 00:06:31,483
+És még egyszer, bár nem tudjuk közvetlenül befolyásolni az előző réteg aktiválását, 
 
 89
-00:06:20,657 --> 00:06:25,660
-a z érzékenysége az előző aktiválásra, a wL súlynak jön ki.
+00:06:31,483 --> 00:06:35,174
+hasznos nyomon követni, mert most már csak folytatni kell ezt a 
 
 90
-00:06:26,640 --> 00:06:30,449
-És még egyszer, bár nem leszünk képesek közvetlenül befolyásolni az 
+00:06:35,174 --> 00:06:38,922
+láncszabály-ötletet visszafelé, hogy lássuk, mennyire érzékeny a 
 
 91
-00:06:30,449 --> 00:06:33,195
-előző réteg aktiválását, hasznos nyomon követni, 
+00:06:38,922 --> 00:06:42,440
+költségfüggvény a korábbi súlyokra és a korábbi torzításokra.
 
 92
-00:06:33,195 --> 00:06:37,453
-mert most már csak ismételhetjük ugyanezt a láncszabály-ötletet visszafelé, 
+00:06:43,180 --> 00:06:45,778
+És azt gondolhatod, hogy ez egy túlságosan egyszerű példa, 
 
 93
-00:06:37,453 --> 00:06:42,440
-hogy meglássuk, mennyire érzékeny a költségfüggvény korábbi súlyok és korábbi torzítások.
+00:06:45,778 --> 00:06:49,434
+mivel minden rétegnek egy neuronja van, és a dolgok exponenciálisan bonyolultabbak 
 
 94
-00:06:43,180 --> 00:06:45,778
-És azt gondolhatja, hogy ez egy túlságosan egyszerű példa, 
-
-95
-00:06:45,778 --> 00:06:49,434
-mivel minden rétegnek van egy neuronja, és a dolgok exponenciálisan bonyolultabbak 
-
-96
 00:06:49,434 --> 00:06:51,020
 lesznek egy valódi hálózat esetében.
 
+95
+00:06:51,700 --> 00:06:55,842
+De őszintén szólva, nem sok minden változik, ha a rétegeknek több neuront adunk, 
+
+96
+00:06:55,842 --> 00:06:58,860
+valójában csak néhány indexszel többet kell számon tartani.
+
 97
-00:06:51,700 --> 00:06:54,370
-De őszintén szólva, nem sok változás történik, 
+00:06:59,380 --> 00:07:03,180
+Ahelyett, hogy egy adott réteg aktivációja egyszerűen AL lenne, 
 
 98
-00:06:54,370 --> 00:06:58,860
-ha több neuront adunk a rétegeknek, valójában csak néhány indexet kell követni.
+00:07:03,180 --> 00:07:07,160
+egy index is jelzi, hogy az adott réteg melyik neuronjáról van szó.
 
 99
-00:06:59,380 --> 00:07:02,562
-Ahelyett, hogy egy adott réteg aktiválása egyszerűen AL lenne, 
+00:07:07,160 --> 00:07:14,420
+Használjuk a k betűt az L-1 réteg indexelésére, és a j betűt az L réteg indexelésére.
 
 100
-00:07:02,562 --> 00:07:06,149
-annak egy alsó indexe is lesz, amely jelzi, hogy az adott réteg melyik 
+00:07:15,260 --> 00:07:19,144
+A költségek esetében ismét azt nézzük, hogy mi a kívánt kimenet, 
 
 101
-00:07:06,149 --> 00:07:07,160
-neuronjáról van szó.
+00:07:19,144 --> 00:07:23,865
+de ezúttal az utolsó réteg aktiválásai és a kívánt kimenet közötti különbségek 
 
 102
-00:07:07,160 --> 00:07:14,420
-Használjuk a k betűt az L-1 réteg, a j betűt pedig az L réteg indexeléséhez.
+00:07:23,865 --> 00:07:25,180
+négyzetét adjuk össze.
 
 103
-00:07:15,260 --> 00:07:18,924
-A költségekhez ismét megnézzük, hogy mi a kívánt kimenet, 
+00:07:26,080 --> 00:07:30,840
+Azaz, az ALj mínusz Yj négyzetének összege.
 
 104
-00:07:18,924 --> 00:07:23,789
-de ezúttal összeadjuk az utolsó rétegaktiválások és a kívánt kimenet közötti 
+00:07:33,040 --> 00:07:37,562
+Mivel sokkal több súly van, mindegyiknek több indexet kell kapnia, 
 
 105
-00:07:23,789 --> 00:07:25,180
-különbségek négyzetét.
+00:07:37,562 --> 00:07:43,030
+hogy nyomon követhessük, hol van, ezért nevezzük a k-ik neuront a j-ik neuronnal 
 
 106
-00:07:26,080 --> 00:07:30,840
-Vagyis veszel egy összeget ALj mínusz yj négyzetével.
+00:07:43,030 --> 00:07:44,920
+összekötő él súlyát WLjknak.
 
 107
-00:07:33,040 --> 00:07:37,510
-Mivel sokkal több a súlyozás, mindegyiknek több indexnek kell lennie, 
+00:07:45,620 --> 00:07:49,798
+Ezek az indexek elsőre kissé fordítva tűnhetnek, de összhangban vannak azzal, 
 
 108
-00:07:37,510 --> 00:07:41,343
-hogy nyomon tudja követni, hol van, ezért nevezzük a k-adik 
+00:07:49,798 --> 00:07:53,120
+ahogyan az 1. rész videójában említett súlymátrixot indexeled.
 
 109
-00:07:41,343 --> 00:07:44,920
-neuront a j-edik neuronnal összekötő él súlyát WLjk-nek.
+00:07:53,620 --> 00:07:57,857
+Ahogy korábban, most is jó, ha adunk egy nevet a vonatkozó súlyozott összegnek, 
 
 110
-00:07:45,620 --> 00:07:49,651
-Ezek az indexek eleinte kissé elmaradottaknak tűnhetnek, de ez összhangban van azzal, 
+00:07:57,857 --> 00:08:01,670
+például z, így az utolsó réteg aktiválása csak a speciális függvényünk, 
 
 111
-00:07:49,651 --> 00:07:53,120
-hogyan indexelné a súlymátrixot, amelyről az 1. rész videójában beszéltem.
+00:08:01,670 --> 00:08:04,160
+például a szigmoid, amelyet a z-re alkalmazunk.
 
 112
-00:07:53,620 --> 00:07:58,248
-Csakúgy, mint korábban, továbbra is jó nevet adni a megfelelő súlyozott összegnek, 
+00:08:04,660 --> 00:08:08,796
+Láthatják, mire gondolok, ahol ezek lényegében ugyanazok az egyenletek, 
 
 113
-00:07:58,248 --> 00:08:02,319
-például z-nek, így az utolsó réteg aktiválása csak a speciális függvény, 
+00:08:08,796 --> 00:08:13,680
+mint korábban az egy neuron per réteg esetére, csak egy kicsit bonyolultabbnak tűnik.
 
 114
-00:08:02,319 --> 00:08:04,160
-mint a z-re alkalmazott szigmoid.
+00:08:15,440 --> 00:08:19,005
+És valóban, a lánchoz kötött derivált kifejezés, amely leírja, 
 
 115
-00:08:04,660 --> 00:08:08,613
-Láthatja, mire gondolok, ahol ezek lényegében ugyanazok az egyenletek, 
+00:08:19,005 --> 00:08:23,420
+hogy a költség mennyire érzékeny egy adott súlyra, lényegében ugyanígy néz ki.
 
 116
-00:08:08,613 --> 00:08:11,397
-mint korábban a rétegenkénti egy neuron esetében, 
+00:08:23,920 --> 00:08:26,840
+Rád bízom, hogy állj meg és gondolkodj el ezeken a kifejezéseken, ha akarsz.
 
 117
-00:08:11,397 --> 00:08:13,680
-csak ez egy kicsit bonyolultabbnak tűnik.
+00:08:28,980 --> 00:08:32,938
+Ami itt azonban változik, az a költség deriváltja 
 
 118
-00:08:15,440 --> 00:08:18,909
-És valóban, a láncszabály derivált kifejezés, amely leírja, 
+00:08:32,938 --> 00:08:36,659
+az L-1 réteg egyik aktivációjának függvényében.
 
 119
-00:08:18,909 --> 00:08:23,420
-hogy a költség mennyire érzékeny egy adott súlyra, lényegében ugyanúgy néz ki.
+00:08:37,780 --> 00:08:40,213
+Ebben az esetben a különbség az, hogy a neuron több 
 
 120
-00:08:23,920 --> 00:08:26,840
-Meghagyom neked, hogy állj meg, és gondold át mindegyik kifejezést, ha akarod.
+00:08:40,213 --> 00:08:42,880
+különböző úton keresztül befolyásolja a költségfüggvényt.
 
 121
-00:08:28,979 --> 00:08:36,659
-Ami azonban itt változik, az az L-1 réteg egyik aktiválásának költségének deriváltja.
+00:08:44,680 --> 00:08:50,277
+Vagyis egyrészt befolyásolja az AL0-t, amely szerepet játszik a költségfüggvényben, 
 
 122
-00:08:37,780 --> 00:08:40,201
-Ebben az esetben a különbség az, hogy a neuron 
+00:08:50,277 --> 00:08:55,807
+de hatással van az AL1-re is, amely szintén szerepet játszik a költségfüggvényben, 
 
 123
-00:08:40,201 --> 00:08:42,880
-több különböző úton befolyásolja a költségfüggvényt.
-
-124
-00:08:44,680 --> 00:08:50,259
-Vagyis egyrészt befolyásolja az AL0-t, ami a költségfüggvényben játszik szerepet, 
-
-125
-00:08:50,259 --> 00:08:55,770
-de hatással van az AL1-re is, ami szintén szerepet játszik a költségfüggvényben, 
-
-126
-00:08:55,770 --> 00:08:57,540
+00:08:55,807 --> 00:08:57,540
 és ezeket össze kell adni.
 
-127
+124
 00:08:59,820 --> 00:09:03,040
-És nagyjából ennyi.
+És ez, nos, nagyjából ennyi.
+
+125
+00:09:03,500 --> 00:09:06,434
+Ha már tudja, hogy a költségfüggvény mennyire érzékeny az 
+
+126
+00:09:06,434 --> 00:09:09,318
+utolsó előtti réteg aktivációira, akkor megismételheti a 
+
+127
+00:09:09,318 --> 00:09:12,860
+folyamatot az összes súlyra és torzításra, amely ebbe a rétegbe kerül.
 
 128
-00:09:03,500 --> 00:09:08,233
-Ha tudja, hogy a költségfüggvény mennyire érzékeny az utolsó előtti réteg aktiválásaira, 
+00:09:13,900 --> 00:09:14,960
+Szóval veregesd meg a válladat!
 
 129
-00:09:08,233 --> 00:09:12,860
-megismételheti a folyamatot az adott rétegbe betáplált összes súlyozásra és torzításra.
+00:09:15,300 --> 00:09:20,144
+Ha mindennek van értelme, akkor most már mélyen belelátott a backpropagation szívébe, 
 
 130
-00:09:13,900 --> 00:09:14,960
-Szóval veregesd meg magad!
+00:09:20,144 --> 00:09:22,680
+a neurális hálózatok tanulásának munkagépébe.
 
 131
-00:09:15,300 --> 00:09:19,749
-Ha mindennek van értelme, akkor most mélyen belenézett a backpropagation szívébe, 
+00:09:23,300 --> 00:09:26,099
+Ezek a láncszabály-kifejezések megadják a deriváltakat, 
 
 132
-00:09:19,749 --> 00:09:22,680
-a neurális hálózatok tanulási folyamatának igáslójába.
+00:09:26,099 --> 00:09:29,050
+amelyek meghatározzák a gradiens minden egyes komponensét, 
 
 133
-00:09:23,300 --> 00:09:26,318
-Ezek a láncszabály-kifejezések megadják azokat a származékokat, 
+00:09:29,050 --> 00:09:33,300
+amely segít minimalizálni a hálózat költségét azáltal, hogy ismételten lefelé lépked.
 
 134
-00:09:26,318 --> 00:09:28,818
-amelyek meghatározzák a gradiens egyes komponenseit, 
+00:09:34,300 --> 00:09:37,656
+Ha hátradőlsz, és elgondolkodsz mindezen, ez a sok összetett réteg, 
 
 135
-00:09:28,818 --> 00:09:31,743
-amelyek segítenek minimalizálni a hálózat költségeit azáltal, 
+00:09:37,656 --> 00:09:41,111
+amit az elmédnek át kell tekernie, úgyhogy ne aggódj, ha időbe telik, 
 
 136
-00:09:31,743 --> 00:09:33,300
-hogy ismételten lefelé lépkednek.
-
-137
-00:09:34,300 --> 00:09:37,128
-Ha hátradől, és végiggondolja az egészet, akkor ez egy csomó 
-
-138
-00:09:37,128 --> 00:09:40,282
-összetett réteg körül kell járnia az elméjének, szóval ne aggódjon, 
-
-139
-00:09:40,282 --> 00:09:42,740
-ha időbe telik, amíg az elméje megemészti az egészet.
+00:09:41,111 --> 00:09:42,740
+amíg az elméd megemészti mindezt.
 
