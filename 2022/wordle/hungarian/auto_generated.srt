@@ -1,2112 +1,2108 @@
 1
-00:00:00,000 --> 00:00:02,782
-A Wurdle játék az elmúlt egy-két hónapban eléggé elterjedt, 
+00:00:00,000 --> 00:00:03,117
+A Wurdle című játék az elmúlt egy-két hónapban eléggé elterjedt, 
 
 2
-00:00:02,782 --> 00:00:06,260
-és soha nem szabad figyelmen kívül hagyni a matematika leckék lehetőségét, 
+00:00:03,117 --> 00:00:06,569
+és mivel sosem hagyok ki egy matematikaórai lehetőséget, úgy gondoltam, 
 
 3
-00:00:06,260 --> 00:00:09,042
-eszembe jutott, hogy ez a játék nagyon jó központi példa az 
+00:00:06,569 --> 00:00:10,310
+hogy ez a játék nagyon jó központi példát szolgáltat az információelméletről, 
 
 4
-00:00:09,042 --> 00:00:12,660
-információelméletről szóló leckében, és különösen entrópia néven ismert téma. 
+00:00:10,310 --> 00:00:12,660
+és különösen az entrópia nevű témáról szóló órán.
 
 5
-00:00:13,920 --> 00:00:16,831
-Tudja, sok emberhez hasonlóan engem is magával ragadott a rejtvény, 
+00:00:13,920 --> 00:00:16,673
+Tudod, mint sok embert, engem is beszippantott a rejtvény, 
 
 6
-00:00:16,831 --> 00:00:20,470
-és mint sok programozót, engem is beleélt, hogy megpróbáljak olyan algoritmust írni, 
+00:00:16,673 --> 00:00:18,960
+és mint sok programozót, engem is beszippantott, 
 
 7
-00:00:20,470 --> 00:00:22,740
-amely a lehető legoptimálisabban játszaná a játékot. 
+00:00:18,960 --> 00:00:22,740
+hogy olyan algoritmust írjak, amely a lehető legoptimálisabban játssza a játékot.
 
 8
-00:00:23,180 --> 00:00:25,929
-Arra gondoltam, hogy itt csak átbeszélem veled a folyamatomat, 
+00:00:23,180 --> 00:00:25,300
+Arra gondoltam, hogy itt most átbeszélném veletek, 
 
 9
-00:00:25,929 --> 00:00:28,504
-és elmagyarázok néhány matematikai elemet, ami belekerült, 
+00:00:25,300 --> 00:00:27,920
+hogy hogyan dolgoztam ezen, és elmagyaráznám a matematikát is, 
 
 10
-00:00:28,504 --> 00:00:31,080
-mivel az egész algoritmus az entrópia ezen gondolatán áll. 
+00:00:27,920 --> 00:00:31,080
+ami ebbe belekerült, mivel az egész algoritmus az entrópia gondolatára épül.
 
 11
 00:00:38,700 --> 00:00:41,640
-Először is, ha még nem hallottál róla, mi az a Wurdle? 
+Először is, ha még nem hallottál róla, mi az a Wurdle?
 
 12
-00:00:42,040 --> 00:00:45,337
-És hogy itt két legyet öljek egy csapásra, miközben végigmegyünk a játékszabályokon, 
+00:00:42,040 --> 00:00:45,537
+És hogy két legyet üssünk egy csapásra, miközben a játékszabályokon végigmegyünk, 
 
 13
-00:00:45,337 --> 00:00:47,393
-hadd nézzem meg azt is, hogy merre is tartunk ezzel, 
+00:00:45,537 --> 00:00:49,077
+hadd nézzem meg, hogy hova is megyünk ezzel, ami egy kis algoritmus kifejlesztése, 
 
 14
-00:00:47,393 --> 00:00:49,216
-vagyis hogy dolgozzunk ki egy kis algoritmust, 
+00:00:49,077 --> 00:00:51,040
+amely alapvetően a játékot játssza helyettünk.
 
 15
-00:00:49,216 --> 00:00:51,040
-ami alapvetően lejátssza a játékot helyettünk. 
+00:00:51,360 --> 00:00:53,551
+Bár a mai Wurdle-t még nem csináltam meg, ez február 4-e, 
 
 16
-00:00:51,360 --> 00:00:53,799
-Bár a mai Wurdle-t még nem csináltam, most február 4-e van, 
+00:00:53,551 --> 00:00:55,100
+és majd meglátjuk, hogyan teljesít a bot.
 
 17
-00:00:53,799 --> 00:00:55,100
-és meglátjuk, hogyan fog a bot. 
+00:00:55,480 --> 00:00:58,243
+A Wurdle célja, hogy kitalálj egy rejtélyes ötbetűs szót, 
 
 18
-00:00:55,480 --> 00:00:58,030
-A Wurdle célja egy rejtélyes ötbetűs szó kitalálása, 
+00:00:58,243 --> 00:01:00,340
+és hat különböző esélyt kapsz a kitalálásra.
 
 19
-00:00:58,030 --> 00:01:00,340
-és hat különböző lehetőséget kap a kitalálásra. 
+00:01:00,840 --> 00:01:04,379
+A Wurdle botom például azt javasolja, hogy a kitaláló daruval kezdjem.
 
 20
-00:01:00,840 --> 00:01:04,379
-Például a Wurdle botom azt javasolja, hogy kezdjem a tippdaruval. 
+00:01:05,180 --> 00:01:08,172
+Minden egyes alkalommal, amikor kitalálsz valamit, információt kapsz arról, 
 
 21
-00:01:05,180 --> 00:01:07,807
-Valahányszor tippel, információt kap arról, hogy 
+00:01:08,172 --> 00:01:10,220
+hogy a tipped mennyire van közel a valódi válaszhoz.
 
 22
-00:01:07,807 --> 00:01:10,220
-milyen közel áll a tippje az igaz válaszhoz. 
+00:01:10,920 --> 00:01:14,100
+Itt a szürke doboz azt mondja, hogy nincs C a tényleges válaszban.
 
 23
-00:01:10,920 --> 00:01:14,100
-Itt a szürke doboz azt jelzi, hogy nincs C a tényleges válaszban. 
+00:01:14,520 --> 00:01:17,840
+A sárga doboz azt mondja, hogy van egy R, de nincs abban a pozícióban.
 
 24
-00:01:14,520 --> 00:01:17,840
-A sárga doboz azt jelzi, hogy van egy R, de nincs abban a helyzetben. 
+00:01:18,240 --> 00:01:22,240
+A zöld doboz azt mondja, hogy a titkos szónak van egy A betűje, és a harmadik helyen áll.
 
 25
-00:01:18,240 --> 00:01:20,979
-A zöld doboz azt mondja nekem, hogy a titkos szóban van egy A, 
+00:01:22,720 --> 00:01:24,580
+És akkor nincs N és nincs E.
 
 26
-00:01:20,979 --> 00:01:22,240
-és ez a harmadik helyen van. 
+00:01:25,200 --> 00:01:27,340
+Szóval hadd menjek be és mondjam el ezt az információt a Wurdle botnak.
 
 27
-00:01:22,720 --> 00:01:24,580
-És akkor nincs N és nincs E. 
+00:01:27,340 --> 00:01:30,320
+Daruval kezdtük, szürke, sárga, zöld, szürke, szürke, szürke.
 
 28
-00:01:25,200 --> 00:01:27,340
-Szóval hadd menjek be, és mondjam el a Wurdle botnak ezt az információt. 
+00:01:31,420 --> 00:01:34,940
+Ne aggódj az összes adat miatt, amit most mutat, majd időben elmagyarázom.
 
 29
-00:01:27,340 --> 00:01:30,320
-Daruval kezdtük, szürke, sárga, zöld, szürke, szürke lett. 
+00:01:35,460 --> 00:01:38,820
+De a második választásunk első számú javaslata a shtick.
 
 30
-00:01:31,420 --> 00:01:34,940
-Ne aggódjon a most megjelenő összes adat miatt, ezt majd elmagyarázom a megfelelő időben. 
+00:01:39,560 --> 00:01:42,503
+És a találgatásodnak egy tényleges ötbetűs szónak kell lennie, 
 
 31
-00:01:35,460 --> 00:01:38,820
-A második választásunkra vonatkozó legfontosabb javaslat azonban nem jó. 
+00:01:42,503 --> 00:01:45,400
+de mint látni fogod, elég liberális, hogy mit enged kitalálni.
 
 32
-00:01:39,560 --> 00:01:42,601
-És a tippednek tényleges ötbetűs szónak kell lennie, de amint látni fogod, 
+00:01:46,200 --> 00:01:47,440
+Ebben az esetben megpróbáljuk a shtick-et.
 
 33
-00:01:42,601 --> 00:01:45,400
-meglehetősen liberális azzal kapcsolatban, hogy mit enged kitalálni. 
+00:01:48,780 --> 00:01:50,180
+És rendben, a dolgok elég jól néznek ki.
 
 34
-00:01:46,200 --> 00:01:47,440
-Ebben az esetben megpróbáljuk a shticket. 
+00:01:50,260 --> 00:01:53,980
+Eltaláltuk az S-t és a H-t, tehát ismerjük az első három betűt, tudjuk, hogy van egy R.
 
 35
-00:01:48,780 --> 00:01:50,180
-És rendben, a dolgok nagyon jól néznek ki. 
+00:01:53,980 --> 00:01:58,700
+És így ez olyan lesz, mint S-H-A valami R, vagy S-H-A R valami.
 
 36
-00:01:50,260 --> 00:01:53,980
-Megütjük az S-t és a H-t, tehát ismerjük az első három betűt, tudjuk, hogy van egy R. 
+00:01:59,620 --> 00:02:03,072
+És úgy tűnik, hogy a Wurdle bot tudja, hogy csak két lehetőség van, 
 
 37
-00:01:53,980 --> 00:01:58,700
-És így olyan lesz, mint SHA valami R, vagy SHA R valami. 
+00:02:03,072 --> 00:02:04,240
+vagy szilánk vagy éles.
 
 38
-00:01:59,620 --> 00:02:02,956
-És úgy tűnik, hogy a Wurdle bot tudja, hogy csak két lehetőségre van szükség, 
+00:02:05,100 --> 00:02:07,610
+Ez egyfajta feldobás közöttük ezen a ponton, így azt hiszem, 
 
 39
-00:02:02,956 --> 00:02:04,240
-vagy szilánkosra vagy élesre. 
+00:02:07,610 --> 00:02:10,080
+valószínűleg csak azért, mert ábécé sorrendben megy a shard.
 
 40
-00:02:05,100 --> 00:02:08,079
-Ez most egyfajta feldobás köztük, úgyhogy valószínűleg csak azért, 
+00:02:11,220 --> 00:02:13,780
+Ami hurrá, ez a tényleges válasz, tehát háromban kaptuk meg.
 
 41
-00:02:08,079 --> 00:02:10,080
-mert ábécé sorrendben van, szilánkokkal jár. 
+00:02:14,600 --> 00:02:16,948
+Ha kíváncsi vagy, hogy ez jó-e, akkor úgy hallottam, 
 
 42
-00:02:11,220 --> 00:02:12,860
-Hurrá, ez a valódi válasz. 
+00:02:16,948 --> 00:02:20,360
+hogy egy ember úgy fogalmazott, hogy Wurdle-nál négy a par és három a birdie.
 
 43
-00:02:12,960 --> 00:02:13,780
-Szóval hárman megkaptuk. 
+00:02:20,680 --> 00:02:22,480
+Ami szerintem elég találó hasonlat.
 
 44
-00:02:14,600 --> 00:02:17,503
-Ha azon tűnődsz, hogy ez jó-e, ahogy egy embertől hallottam, 
+00:02:22,480 --> 00:02:27,020
+Ahhoz, hogy négyet kapj, következetesen kell játszanod, de ez egyáltalán nem őrültség.
 
 45
-00:02:17,503 --> 00:02:20,360
-az az, hogy Wurdle-nél négy egyenlő, a három pedig madárka. 
+00:02:27,180 --> 00:02:29,920
+De amikor háromban kapod meg, az egyszerűen nagyszerű érzés.
 
 46
-00:02:20,680 --> 00:02:22,480
-Ami szerintem elég találó hasonlat. 
+00:02:30,880 --> 00:02:33,082
+Szóval, ha benne vagy, akkor azt szeretném, hogy beszéljünk a 
 
 47
-00:02:22,480 --> 00:02:27,020
-Folyamatosan kell játszania a játékban, hogy négyet kapjon, de ez biztosan nem őrültség. 
+00:02:33,082 --> 00:02:35,960
+gondolatmenetemről a kezdetektől fogva, hogy hogyan közelítem meg a Wurdle botot.
 
 48
-00:02:27,180 --> 00:02:29,920
-De ha háromba kapod, nagyszerű érzés. 
+00:02:36,480 --> 00:02:39,440
+És mint mondtam, ez valójában csak egy ürügy egy információelméleti leckére.
 
 49
-00:02:30,880 --> 00:02:32,540
-Tehát ha nem szereti, azt szeretném itt csinálni, 
+00:02:39,740 --> 00:02:42,820
+A fő cél az, hogy elmagyarázzuk, mi az információ és mi az entrópia.
 
 50
-00:02:32,540 --> 00:02:34,532
-hogy végigbeszéljem a gondolatmenetemet az elejétől kezdve, 
+00:02:48,220 --> 00:02:51,245
+Az első gondolatom az volt, hogy megnézzem a különböző 
 
 51
-00:02:34,532 --> 00:02:35,960
-hogy hogyan közelítsem meg a Wurdle botot. 
+00:02:51,245 --> 00:02:53,720
+betűk relatív gyakoriságát az angol nyelvben.
 
 52
-00:02:36,480 --> 00:02:39,440
-És ahogy mondtam, ez egy ürügy egy információelméleti leckére. 
+00:02:54,380 --> 00:02:57,503
+Ezért arra gondoltam, hogy van-e olyan nyitó tipp vagy tipppár, 
 
 53
-00:02:39,740 --> 00:02:42,820
-A fő cél az, hogy elmagyarázzuk, mi az információ és mi az entrópia. 
+00:02:57,503 --> 00:02:59,260
+ami sok ilyen gyakori betűt eltalál?
 
 54
-00:02:48,220 --> 00:02:50,558
-Az első gondolatom ennek megközelítése során az volt, 
+00:02:59,960 --> 00:03:03,000
+És az egyik, amit nagyon szerettem, az volt, hogy mást csináltam, amit a körmök követtek.
 
 55
-00:02:50,558 --> 00:02:53,720
-hogy megnézzem a különböző betűk relatív gyakoriságát az angol nyelvben. 
+00:03:03,760 --> 00:03:06,866
+Az a gondolat, hogy ha eltalálsz egy betűt, tudod, kapsz egy zöldet vagy egy sárgát, 
 
 56
-00:02:54,380 --> 00:02:57,192
-Szóval arra gondoltam, oké, van egy nyitó tipp vagy egy nyitó tipp, 
+00:03:06,866 --> 00:03:08,840
+az mindig jó érzés, úgy érzed, hogy információt kapsz.
 
 57
-00:02:57,192 --> 00:02:59,260
-ami eltalálja a legtöbb ilyen leggyakoribb betűt? 
-
-58
-00:02:59,960 --> 00:03:02,168
-És az egyik, amit nagyon szerettem, az volt, hogy másokat csináltam, 
-
-59
-00:03:02,168 --> 00:03:03,000
-amiket a körmök követtek. 
-
-60
-00:03:03,760 --> 00:03:05,621
-A gondolat az, hogy ha megütsz egy betűt, tudod, 
-
-61
-00:03:05,621 --> 00:03:07,520
-kapsz egy zöldet vagy sárgát, az mindig jó érzés. 
-
-62
-00:03:07,520 --> 00:03:08,840
-Olyan érzés, mintha információkat kapsz. 
-
-63
-00:03:09,340 --> 00:03:11,454
+00:03:09,340 --> 00:03:11,465
 De ezekben az esetekben, még ha nem is találsz, 
 
+58
+00:03:11,465 --> 00:03:14,300
+és mindig szürke betűket kapsz, ez akkor is sok információt ad, 
+
+59
+00:03:14,300 --> 00:03:17,400
+hiszen elég ritka az olyan szó, amelyben nem szerepelnek ezek a betűk.
+
+60
+00:03:18,140 --> 00:03:20,746
+De még ez sem tűnik szuper szisztematikusnak, mert 
+
+61
+00:03:20,746 --> 00:03:23,200
+például nem veszi figyelembe a betűk sorrendjét.
+
+62
+00:03:23,560 --> 00:03:25,300
+Miért írnék körmöket, ha írhatnék csigát is?
+
+63
+00:03:26,080 --> 00:03:27,500
+Jobb, ha az S betű a végén van?
+
 64
-00:03:11,454 --> 00:03:14,140
-és mindig szürkéket kapsz, ez még mindig sok információt ad, 
+00:03:27,820 --> 00:03:28,680
+Nem vagyok benne biztos.
 
 65
-00:03:14,140 --> 00:03:17,400
-mivel elég ritkán találni olyan szót, amelyben nem szerepel ezek a betűk. 
+00:03:29,240 --> 00:03:32,726
+Egy barátom azt mondta, hogy a fáradtság szóval szereti nyitni, 
 
 66
-00:03:18,140 --> 00:03:20,670
-De még így sem tűnik túl szisztematikusnak, mert 
+00:03:32,726 --> 00:03:36,540
+ami meglepett, mert van benne néhány szokatlan betű, mint a W és az Y.
 
 67
-00:03:20,670 --> 00:03:23,200
-például nem veszi figyelembe a betűk sorrendjét. 
+00:03:37,120 --> 00:03:39,000
+De ki tudja, lehet, hogy ez egy jobb nyitány.
 
 68
-00:03:23,560 --> 00:03:25,300
-Miért írjak körmöket, ha írhatnám a csigát? 
+00:03:39,320 --> 00:03:42,092
+Van valamilyen mennyiségi pontszám, amelyet megadhatunk 
 
 69
-00:03:26,080 --> 00:03:27,500
-Jobb, ha az S van a végén? 
+00:03:42,092 --> 00:03:44,320
+a lehetséges tippek minőségének megítélésére?
 
 70
-00:03:27,820 --> 00:03:28,680
-Nem igazán vagyok benne biztos. 
+00:03:45,340 --> 00:03:48,416
+Most, hogy felkészüljünk arra, hogy hogyan fogjuk rangsorolni a lehetséges tippeket, 
 
 71
-00:03:29,240 --> 00:03:32,640
-Nos, egy barátom azt mondta, hogy szeretett a fáradt szóval nyitni, 
+00:03:48,416 --> 00:03:51,420
+menjünk vissza, és tisztázzuk egy kicsit, hogy pontosan hogyan is épül fel a játék.
 
 72
-00:03:32,640 --> 00:03:36,540
-ami kicsit meglepett, mert vannak benne szokatlan betűk, például a W és az Y. 
+00:03:51,420 --> 00:03:54,085
+Tehát van egy lista a szavakról, amelyeket meg lehet adni, 
 
 73
-00:03:37,120 --> 00:03:39,000
-De ki tudja, talán ez jobb nyitás. 
+00:03:54,085 --> 00:03:57,880
+és amelyek érvényes találgatásnak számítanak, és amely körülbelül 13 000 szó hosszú.
 
 74
-00:03:39,320 --> 00:03:41,553
-Van-e valamilyen mennyiségi pontszám, amelyet 
+00:03:58,320 --> 00:04:01,577
+De ha megnézed, egy csomó igazán szokatlan dolog van benne, olyanok, 
 
 75
-00:03:41,553 --> 00:03:44,320
-megadhatunk a potenciális tipp minőségének megítélésére? 
+00:04:01,577 --> 00:04:05,590
+mint a fej vagy Ali és az ARG, olyan szavak, amelyek családi vitákat váltanak ki egy 
 
 76
-00:03:45,340 --> 00:03:48,164
-Most, hogy beállítsuk, hogyan rangsoroljuk a lehetséges találgatásokat, 
+00:04:05,590 --> 00:04:06,440
+Scrabble-játékban.
 
 77
-00:03:48,164 --> 00:03:51,420
-térjünk vissza, és adjunk hozzá egy kis világosságot a játék pontos beállításához. 
+00:04:06,960 --> 00:04:10,540
+De a játék hangulata az, hogy a válasz mindig egy tisztességesen gyakori szó lesz.
 
 78
-00:03:51,420 --> 00:03:54,311
-Tehát van egy listája azoknak a szavaknak, amelyekbe beírhatja, 
+00:04:10,960 --> 00:04:14,065
+És valójában van egy másik lista, amely körülbelül 2300 szót tartalmaz, 
 
 79
-00:03:54,311 --> 00:03:57,880
-és amelyek érvényesnek számítanak, és amely csak körülbelül 13 000 szóból áll. 
+00:04:14,065 --> 00:04:15,360
+amelyek a lehetséges válaszok.
 
 80
-00:03:58,320 --> 00:04:02,647
-De ha ránézünk, sok nagyon szokatlan dolog van, például egy fej vagy Ali és ARG, 
+00:04:15,940 --> 00:04:18,274
+És ez egy ember által összeállított lista, azt hiszem, 
 
 81
-00:04:02,647 --> 00:04:06,440
-olyan szavak, amelyek családi vitákat váltanak ki a Scrabble játékban. 
+00:04:18,274 --> 00:04:21,160
+kifejezetten a játékkészítők barátnője által, ami elég szórakoztató.
 
 82
-00:04:06,960 --> 00:04:10,540
-De a játék hangulata az, hogy a válasz mindig egy tisztességesen gyakori szó lesz. 
+00:04:21,820 --> 00:04:25,173
+De amit szeretnék tenni, a kihívásunk a projektben az, hogy megnézzük, 
 
 83
-00:04:10,960 --> 00:04:13,939
-Valójában van egy másik lista, amely körülbelül 2300 szóból áll, 
+00:04:25,173 --> 00:04:27,440
+tudunk-e olyan wordle-t megoldó programot írni, 
 
 84
-00:04:13,939 --> 00:04:15,360
-amelyek a lehetséges válaszok. 
+00:04:27,440 --> 00:04:30,180
+amely nem foglalja magában a listáról való korábbi tudást.
 
 85
-00:04:15,940 --> 00:04:18,783
-És ez egy emberi összeállítású lista, szerintem kifejezetten 
+00:04:30,720 --> 00:04:34,640
+Először is, rengeteg olyan gyakori ötbetűs szó van, amelyet nem találsz meg ezen a listán.
 
 86
-00:04:18,783 --> 00:04:21,160
-a játék készítőjének barátnője, ami egyfajta móka. 
+00:04:34,940 --> 00:04:37,930
+Szóval jobb lenne egy olyan programot írni, ami egy kicsit rugalmasabb, 
 
 87
-00:04:21,820 --> 00:04:24,577
-De amit szeretnék csinálni, a kihívásunk ebben a projektben az, 
+00:04:37,930 --> 00:04:41,460
+és bárki ellen játszana wordle-t, nem csak ami történetesen a hivatalos honlapon van.
 
 88
-00:04:24,577 --> 00:04:27,335
-hogy megtudjuk, tudunk-e olyan Wordle-t megoldó programot írni, 
+00:04:41,920 --> 00:04:47,000
+És azért tudjuk, hogy mi ez a lehetséges válaszok listája, mert látható a forráskódban.
 
 89
-00:04:27,335 --> 00:04:30,180
-amely nem tartalmazza a listával kapcsolatos korábbi ismereteket. 
+00:04:47,000 --> 00:04:51,267
+De a forráskódban látható, hogy a válaszok napról-napra meghatározott 
 
 90
-00:04:30,720 --> 00:04:34,640
-Egyrészt rengeteg elég gyakori ötbetűs szó van, amelyeket nem találsz a listában. 
+00:04:51,267 --> 00:04:55,840
+sorrendben jelennek meg, hogy mindig megnézheted, mi lesz a holnapi válasz.
 
 91
-00:04:34,940 --> 00:04:37,748
-Ezért jobb lenne egy kicsit ellenállóbb programot írni, 
+00:04:56,420 --> 00:04:58,880
+Tehát nyilvánvaló, hogy a lista használata bizonyos értelemben csalásnak minősül.
 
 92
-00:04:37,748 --> 00:04:41,460
-és bárki ellen kijátszana a Wordle-t, nem csak a hivatalos webhely ellen. 
+00:04:59,100 --> 00:05:02,012
+Érdekesebb rejtvényt és gazdagabb információelméleti leckét adna, 
 
 93
-00:04:41,920 --> 00:04:45,130
-És az oka annak, hogy tudjuk, mi ez a lehetséges válaszok listája, 
+00:05:02,012 --> 00:05:04,439
+ha ehelyett olyan univerzálisabb adatokat használnánk, 
 
 94
-00:04:45,130 --> 00:04:47,000
-az az, hogy ez látható a forráskódban. 
+00:05:04,439 --> 00:05:07,704
+mint például a relatív szófrekvenciák, hogy megragadjuk ezt az intuíciót, 
 
 95
-00:04:47,000 --> 00:04:49,347
-De az a mód, ahogyan ez látható a forráskódban, 
+00:05:07,704 --> 00:05:10,440
+miszerint a gyakrabban használt szavakat előnyben részesítjük.
 
 96
-00:04:49,347 --> 00:04:53,260
-abban a konkrét sorrendben történik, ahogy a válaszok napról napra megjelennek. 
+00:05:11,600 --> 00:05:15,900
+Tehát ebből a 13 000 lehetőségből hogyan válasszuk ki a nyitó tippet?
 
 97
-00:04:53,260 --> 00:04:55,840
-Így mindig csak utánanézhet, mi lesz holnap a válasz. 
+00:05:16,400 --> 00:05:19,780
+Ha például a barátom fáradtságot javasol, hogyan elemezzük annak minőségét?
 
 98
-00:04:56,420 --> 00:04:58,880
-Nyilvánvaló, hogy a lista használata csalásnak minősül. 
-
-99
-00:04:59,100 --> 00:05:02,763
-És ami érdekesebbé teszi a rejtvényt és gazdagabb információelméleti leckét, az az, 
-
-100
-00:05:02,763 --> 00:05:05,162
-hogy ehelyett néhány univerzálisabb adatot használunk, 
-
-101
-00:05:05,162 --> 00:05:08,739
-például általában a relatív szógyakoriságokat, hogy megragadjuk ezt az intuíciót, 
-
-102
-00:05:08,739 --> 00:05:10,440
-hogy a gyakoribb szavakat preferáljuk. 
-
-103
-00:05:11,600 --> 00:05:15,900
-Tehát ebből a 13 000 lehetőségből hogyan válasszuk ki a nyitó tippet? 
-
-104
-00:05:16,400 --> 00:05:19,780
-Például, ha a barátom fáradtságot javasol, hogyan elemezzük a minőségét? 
-
-105
-00:05:20,520 --> 00:05:23,238
+00:05:20,520 --> 00:05:23,580
 Nos, azért mondta, hogy szereti ezt a valószínűtlen W-t, 
 
+99
+00:05:23,580 --> 00:05:27,340
+mert szereti, hogy mennyire jó érzés, ha sikerül eltalálnod azt a W-t.
+
+100
+00:05:27,920 --> 00:05:31,267
+Ha például az első felfedezett minta valami ilyesmi, akkor kiderül, 
+
+101
+00:05:31,267 --> 00:05:35,600
+hogy ebben a hatalmas lexikonban csak 58 olyan szó van, amely megfelel ennek a mintának.
+
+102
+00:05:36,060 --> 00:05:38,400
+Ez tehát hatalmas csökkenés a 13 000-hez képest.
+
+103
+00:05:38,780 --> 00:05:43,020
+De ennek persze az a másik oldala, hogy nagyon ritka az ilyen minta.
+
+104
+00:05:43,020 --> 00:05:46,860
+Pontosabban, ha minden szó egyforma valószínűséggel lenne a válasz, 
+
+105
+00:05:46,860 --> 00:05:51,040
+akkor a minta eltalálásának valószínűsége 58 osztva körülbelül 13 000-rel.
+
 106
-00:05:23,238 --> 00:05:27,340
-mert szereti a hosszú távú természetét, hogy milyen jó érzés, ha eltalálja azt a W-t. 
+00:05:51,580 --> 00:05:53,600
+Természetesen nem egyformán valószínű, hogy ezek a válaszok.
 
 107
-00:05:27,920 --> 00:05:31,456
-Például, ha az első feltárt minta valami ilyesmi volt, akkor kiderül, 
+00:05:53,720 --> 00:05:56,220
+Ezek többsége nagyon homályos, sőt megkérdőjelezhető szavak.
 
 108
-00:05:31,456 --> 00:05:35,600
-hogy ebben az óriási lexikonban csak 58 szó van, amely megfelel ennek a mintának. 
+00:05:56,600 --> 00:06:00,048
+De legalábbis az első körben feltételezzük, hogy mindegyik egyformán valószínű, 
 
 109
-00:05:36,060 --> 00:05:38,400
-Tehát ez óriási csökkenés 13 000-hez képest. 
+00:06:00,048 --> 00:06:01,600
+és ezt később finomítsuk egy kicsit.
 
 110
-00:05:38,780 --> 00:05:43,020
-De ennek persze az a másik oldala, hogy nagyon ritka az ilyen minta. 
+00:06:02,020 --> 00:06:06,048
+A lényeg az, hogy a sok információval rendelkező minta természeténél fogva nem valószínű, 
 
 111
-00:05:43,020 --> 00:05:46,885
-Pontosabban, ha minden szó egyenlő valószínűséggel lenne a válasz, 
+00:06:06,048 --> 00:06:06,720
+hogy előfordul.
 
 112
-00:05:46,885 --> 00:05:51,040
-akkor ennek a mintának a valószínűsége 58 osztva körülbelül 13 000-rel. 
+00:06:07,280 --> 00:06:10,800
+Valójában azt jelenti, hogy informatív, hogy valószínűtlen.
 
 113
-00:05:51,580 --> 00:05:53,600
-Természetesen nem egyforma valószínűséggel lesznek válaszok. 
+00:06:11,720 --> 00:06:16,349
+Sokkal valószínűbb, hogy valami ilyesmit látnánk ezzel a nyitással, 
 
 114
-00:05:53,720 --> 00:05:56,220
-Ezek többsége nagyon homályos, sőt megkérdőjelezhető szavak. 
+00:06:16,349 --> 00:06:18,120
+ahol persze nincs benne W.
 
 115
-00:05:56,600 --> 00:06:00,048
-De legalább az első lépésünknél tegyük fel, hogy mindegyik egyformán valószínű, 
+00:06:18,240 --> 00:06:21,400
+Talán van egy E, és talán nincs A, nincs R, nincs Y.
 
 116
-00:06:00,048 --> 00:06:01,600
-majd finomítsunk egy kicsit később. 
+00:06:22,080 --> 00:06:24,560
+Ebben az esetben 1400 lehetséges találat van.
 
 117
-00:06:02,020 --> 00:06:05,996
-A lényeg az, hogy a sok információt tartalmazó minta természeténél fogva nem valószínű, 
+00:06:25,080 --> 00:06:27,993
+Ha mindegyik egyformán valószínű lenne, akkor körülbelül 
 
 118
-00:06:05,996 --> 00:06:06,720
-hogy előfordul. 
+00:06:27,993 --> 00:06:30,600
+11%-os valószínűséggel ez a mintázat lenne látható.
 
 119
-00:06:07,280 --> 00:06:10,800
-Valójában informatívnak lenni azt jelenti, hogy nem valószínű. 
+00:06:30,900 --> 00:06:33,340
+Tehát a legvalószínűbb eredmények egyben a legkevésbé informatívak is.
 
 120
-00:06:11,719 --> 00:06:16,067
-Sokkal valószínűbb mintát látni ennél a nyitásnál valami ilyesmi lenne, 
+00:06:34,240 --> 00:06:37,690
+Hogy átfogó képet kapjunk, hadd mutassam meg a valószínűségek 
 
 121
-00:06:16,067 --> 00:06:18,120
-ahol természetesen nincs benne W. 
+00:06:37,690 --> 00:06:41,140
+teljes eloszlását az összes különböző mintára, amit láthatunk.
 
 122
-00:06:18,240 --> 00:06:21,400
-Lehet, hogy van E, és lehet, hogy nincs A, nincs R, nincs Y. 
+00:06:41,740 --> 00:06:45,827
+Tehát minden egyes sáv, amelyet nézel, megfelel a színek egy lehetséges mintázatának, 
 
 123
-00:06:22,080 --> 00:06:24,560
-Ebben az esetben 1400 egyezés lehetséges. 
+00:06:45,827 --> 00:06:48,679
+amely feltárulhat, és amelyből 3-tól az 5. lehetőségig van, 
 
 124
-00:06:25,080 --> 00:06:27,817
-Ha mindegyik egyforma valószínűségű lenne, akkor körülbelül 
+00:06:48,679 --> 00:06:52,340
+és balról jobbra vannak elrendezve, a leggyakoribbtól a legkevésbé gyakoriig.
 
 125
-00:06:27,817 --> 00:06:30,600
-11%-os valószínűséggel alakulna ki, hogy ezt a mintát látná. 
+00:06:52,920 --> 00:06:56,000
+Tehát a leggyakoribb lehetőség itt az, hogy minden szürke lesz.
 
 126
-00:06:30,900 --> 00:06:33,340
-Tehát a legvalószínűbb eredmények a legkevésbé informatívak. 
+00:06:56,100 --> 00:06:58,120
+Ez az esetek körülbelül 14%-ában fordul elő.
 
 127
-00:06:34,240 --> 00:06:37,955
-Ahhoz, hogy átfogóbb képet kaphasson itt, hadd mutassam meg a valószínűségek 
+00:06:58,580 --> 00:07:03,097
+És azt reméljük, hogy amikor tippelünk, akkor valahol a hosszú farokban kötünk ki, 
 
 128
-00:06:37,955 --> 00:06:41,140
-teljes eloszlását az esetlegesen látható különböző minták között. 
+00:07:03,097 --> 00:07:07,561
+például itt, ahol csak 18 lehetőség van arra, hogy mi felel meg ennek a mintának, 
 
 129
-00:06:41,740 --> 00:06:45,513
-Tehát minden megtekintett sáv megfelel egy lehetséges színmintának, 
+00:07:07,561 --> 00:07:09,140
+ami nyilvánvalóan így néz ki.
 
 130
-00:06:45,513 --> 00:06:48,122
-amely felfedhető, amelyből 3-5. lehetőség van, 
+00:07:09,920 --> 00:07:13,800
+Vagy ha egy kicsit balra merészkedünk, tudod, talán egészen idáig megyünk.
 
 131
-00:06:48,122 --> 00:06:52,340
-és balról jobbra vannak rendezve, a leggyakoribbtól a legkevésbé gyakoriig. 
+00:07:14,940 --> 00:07:16,180
+Oké, itt egy jó kis rejtvény.
 
 132
-00:06:52,920 --> 00:06:56,000
-Tehát itt a leggyakoribb lehetőség az, hogy minden szürke színt kap. 
+00:07:16,540 --> 00:07:19,816
+Melyik az a három szó az angol nyelvben, amely W-vel kezdődik, 
 
 133
-00:06:56,100 --> 00:06:58,120
-Ez az esetek 14%-ában történik. 
+00:07:19,816 --> 00:07:22,000
+Y-nal végződik és valahol van benne egy R?
 
 134
-00:06:58,580 --> 00:07:01,597
-És abban reménykedsz, amikor tippelsz, hogy valahol kint, 
+00:07:22,480 --> 00:07:26,800
+Kiderült, hogy a válaszok, lássuk csak, szókimondó, kukacos és kukacos.
 
 135
-00:07:01,597 --> 00:07:05,758
-ebben a hosszú farokban kötsz ki, például itt, ahol csak 18 lehetőség van arra, 
-
-136
-00:07:05,758 --> 00:07:09,140
-hogy mi illik ehhez a mintázathoz, ami nyilvánvalóan így néz ki. 
-
-137
-00:07:09,920 --> 00:07:13,800
-Vagy ha kicsit messzebbre merészkedünk balra, tudod, talán egészen idáig megyünk. 
-
-138
-00:07:14,940 --> 00:07:16,180
-Oké, itt van egy jó rejtvény a számodra. 
-
-139
-00:07:16,540 --> 00:07:19,674
-Mi az a három szó az angol nyelvben, amelyek W-vel kezdődnek, 
-
-140
-00:07:19,674 --> 00:07:22,000
-Y-ra végződnek, és van bennük valahol R betű? 
-
-141
-00:07:22,480 --> 00:07:26,800
-Kiderült, hogy a válaszok, lássuk, bőbeszédűek, férgesek és fanyarok. 
-
-142
-00:07:27,500 --> 00:07:30,683
+00:07:27,500 --> 00:07:30,512
 Tehát annak megítéléséhez, hogy mennyire jó ez a szó összességében, 
 
+136
+00:07:30,512 --> 00:07:34,145
+szükségünk van valamilyen mérőszámra, amely a várható információmennyiséget méri, 
+
+137
+00:07:34,145 --> 00:07:35,740
+amelyet ebből az eloszlásból kapunk.
+
+138
+00:07:35,740 --> 00:07:38,518
+Ha végigmegyünk minden egyes mintán, és megszorozzuk az 
+
+139
+00:07:38,518 --> 00:07:41,147
+előfordulási valószínűségét valamivel, ami azt méri, 
+
+140
+00:07:41,147 --> 00:07:44,720
+hogy mennyire informatív, akkor talán kaphatunk egy objektív pontszámot.
+
+141
+00:07:45,960 --> 00:07:49,840
+Most az első megérzésed, hogy mi legyen ez a valami, lehet, hogy a mérkőzések száma.
+
+142
+00:07:50,160 --> 00:07:52,400
+Alacsonyabb átlagos mérkőzésszámot szeretne.
+
 143
-00:07:30,683 --> 00:07:33,820
-szeretnénk valamilyen mérőszámot a várható információmennyiségről, 
+00:07:52,800 --> 00:07:55,904
+Ehelyett azonban egy univerzálisabb mérőszámot szeretnék használni, 
 
 144
-00:07:33,820 --> 00:07:35,740
-amelyet ebből a terjesztésből kapni fog. 
+00:07:55,904 --> 00:07:59,329
+amelyet gyakran tulajdonítunk az információnak, és amely rugalmasabb lesz, 
 
 145
-00:07:35,740 --> 00:07:39,341
-Ha végigmegyünk az egyes mintákon, és megszorozzuk annak valószínűségét, 
+00:07:59,329 --> 00:08:02,753
+ha egyszer mind a 13 000 szóhoz különböző valószínűséggel rendeljük hozzá, 
 
 146
-00:07:39,341 --> 00:07:42,598
-hogy bekövetkezik valami, ami azt méri, hogy mennyire informatív, 
+00:08:02,753 --> 00:08:04,260
+hogy valóban a válasz-e vagy sem.
 
 147
-00:07:42,598 --> 00:07:44,720
-az talán objektív pontszámot adhat nekünk. 
+00:08:10,320 --> 00:08:14,616
+Az információ szabványos egysége a bit, amelynek egy kicsit furcsa képlete van, 
 
 148
-00:07:45,960 --> 00:07:49,840
-Most az első megérzése, hogy mi legyen ennek a valaminek, a mérkőzések száma lehet. 
+00:08:14,616 --> 00:08:16,980
+de igazán intuitív, ha csak példákat nézünk.
 
 149
-00:07:50,160 --> 00:07:52,400
-Alacsonyabb átlagos mérkőzésszámot szeretne. 
+00:08:17,780 --> 00:08:21,078
+Ha van egy olyan megfigyelésünk, amely a lehetőségek terét a felére csökkenti, 
 
 150
-00:07:52,800 --> 00:07:55,472
-De ehelyett egy univerzálisabb mérést szeretnék használni, 
+00:08:21,078 --> 00:08:23,500
+akkor azt mondjuk, hogy egy bit információval rendelkezik.
 
 151
-00:07:55,472 --> 00:07:59,413
-amelyet gyakran az információnak tulajdonítunk, és egy olyant, amely rugalmasabb lesz, 
+00:08:24,180 --> 00:08:27,201
+A példánkban a lehetőségek tere az összes lehetséges szó, és kiderül, 
 
 152
-00:07:59,413 --> 00:08:02,402
-ha mind a 13 000 szóhoz különböző valószínűséget rendelünk ahhoz, 
+00:08:27,201 --> 00:08:30,223
+hogy az ötbetűs szavak körülbelül felében van egy S, kicsit kevesebb, 
 
 153
-00:08:02,402 --> 00:08:04,260
-hogy valóban ezek a válaszok-e vagy sem. 
+00:08:30,223 --> 00:08:31,260
+de körülbelül a felében.
 
 154
-00:08:10,320 --> 00:08:14,543
-Az információ szabványos egysége a bit, aminek van egy kicsit vicces képlete, 
+00:08:31,780 --> 00:08:34,320
+Ez a megfigyelés tehát egy kis információt adna.
 
 155
-00:08:14,543 --> 00:08:16,980
-de nagyon intuitív, ha csak példákat nézünk. 
+00:08:34,880 --> 00:08:38,500
+Ha ehelyett egy új tény négyszeresére csökkenti a lehetőségek számát, 
 
 156
-00:08:17,780 --> 00:08:20,904
-Ha van olyan megfigyelése, amely felére csökkenti a lehetőségek terét, 
+00:08:38,500 --> 00:08:41,500
+akkor azt mondjuk, hogy két bit információval rendelkezik.
 
 157
-00:08:20,904 --> 00:08:23,500
-akkor azt mondjuk, hogy egy kis információval rendelkezik. 
+00:08:41,980 --> 00:08:44,460
+Kiderült például, hogy ezeknek a szavaknak körülbelül egynegyedében van egy T betű.
 
 158
-00:08:24,180 --> 00:08:27,720
-Példánkban a lehetőségek tere az összes lehetséges szó, és ez kb. 
+00:08:45,020 --> 00:08:48,210
+Ha a megfigyelés nyolcszorosára csökkenti ezt a helyet, akkor azt mondjuk, 
 
 159
-00:08:27,720 --> 00:08:31,260
-Az ötbetűs szavak felében van S, ennél valamivel kevesebb, de kb. 
+00:08:48,210 --> 00:08:50,720
+hogy ez három bit információ, és így tovább, és így tovább.
 
 160
-00:08:31,780 --> 00:08:34,320
-Tehát ez a megfigyelés egy kis információval szolgálna. 
+00:08:50,900 --> 00:08:53,880
+Négy bitből tizenhatod, öt bitből harminc másodperc lesz.
 
 161
-00:08:34,880 --> 00:08:38,342
-Ha ehelyett egy új tény négyszeresére vágja le a lehetőségek terét, 
+00:08:54,960 --> 00:08:58,418
+Tehát most érdemes egy pillanatra megállni és megkérdezni magunktól, 
 
 162
-00:08:38,342 --> 00:08:41,500
-akkor azt mondjuk, hogy két bitnyi információval rendelkezik. 
+00:08:58,418 --> 00:09:02,278
+hogy mi a bitek számának információs képlete az előfordulás valószínűségének 
 
 163
-00:08:41,980 --> 00:08:44,460
-Például kiderül, hogy ezeknek a szavaknak körülbelül egynegyedében van T. 
+00:09:02,278 --> 00:09:02,980
+szempontjából?
 
 164
-00:08:45,020 --> 00:08:48,186
-Ha a megfigyelés ezt a helyet nyolcszorosára csökkenti, akkor azt mondjuk, 
+00:09:03,920 --> 00:09:07,569
+Nos, itt alapvetően azt mondjuk, hogy ha a bitek számának felét vesszük, 
 
 165
-00:08:48,186 --> 00:08:50,720
-hogy ez három bit információ, és így tovább, és így tovább. 
+00:09:07,569 --> 00:09:11,270
+akkor az ugyanaz, mint a valószínűség, ami ugyanaz, mintha azt mondanánk, 
 
 166
-00:08:50,900 --> 00:08:55,060
-Négy bit 16-osra, öt bit 32-esre vágja. 
+00:09:11,270 --> 00:09:14,670
+hogy a bitek számának kétszeres hatványa egy a valószínűség felett, 
 
 167
-00:08:55,060 --> 00:08:58,579
-Tehát most érdemes szünetet tartani, és feltenni magának a kérdést, 
+00:09:14,670 --> 00:09:18,920
+ami azt jelenti, hogy az információ az egynek a logaritmusa osztva a valószínűséggel.
 
 168
-00:08:58,579 --> 00:09:02,980
-hogy mi a képlet a bitszám információhoz az előfordulás valószínűsége szempontjából? 
+00:09:19,620 --> 00:09:21,801
+És néha ezt még egy átrendeződéssel is láthatjuk, 
 
 169
-00:09:03,920 --> 00:09:07,610
-Itt azt mondjuk, hogy amikor a bitek számának egy felét veszünk, az ugyanaz, 
+00:09:21,801 --> 00:09:24,900
+ahol az információ a valószínűség negatív logaritmusának kettes bázisa.
 
 170
-00:09:07,610 --> 00:09:10,293
-mint a valószínűség, ami ugyanaz, mintha azt mondanánk, 
+00:09:25,660 --> 00:09:28,691
+Így kifejezve kicsit furcsának tűnhet a beavatatlanok számára, 
 
 171
-00:09:10,293 --> 00:09:13,888
-hogy a bitek számának hatványára kettő eggyel meghaladja a valószínűséget, 
+00:09:28,691 --> 00:09:32,107
+de valójában ez csak az a nagyon intuitív gondolat, hogy megkérdezzük, 
 
 172
-00:09:13,888 --> 00:09:17,673
-ami átrendezi tovább, és azt mondja, hogy az információ az egy naplóalap kettő 
+00:09:32,107 --> 00:09:34,080
+hányszor vágtuk felére a lehetőségeinket.
 
 173
-00:09:17,673 --> 00:09:18,920
-osztva a valószínűséggel. 
+00:09:35,180 --> 00:09:38,006
+Ha most azon tűnődsz, tudod, azt hittem, hogy csak egy vicces szójátékot játszunk, 
 
 174
-00:09:19,620 --> 00:09:22,315
-És néha ezt még egy átrendezéssel látja, ahol az 
+00:09:38,006 --> 00:09:39,300
+miért kerülnek a képbe a logaritmusok?
 
 175
-00:09:22,315 --> 00:09:24,900
-információ a valószínűség negatív logaritmusa. 
+00:09:39,780 --> 00:09:43,000
+Az egyik ok, amiért ez egy szebb egység, hogy sokkal könnyebb nagyon 
 
 176
-00:09:25,660 --> 00:09:28,754
-Így kifejezve kissé furcsának tűnhet az avatatlanok számára, 
-
-177
-00:09:28,754 --> 00:09:32,051
-de valójában csak az a nagyon intuitív ötlet, hogy megkérdezzük, 
-
-178
-00:09:32,051 --> 00:09:34,080
-hányszor vágtad félbe a lehetőségeidet. 
-
-179
-00:09:35,180 --> 00:09:37,841
-Ha kíváncsi vagy, azt hittem, csak egy szórakoztató szójátékot játszunk, 
-
-180
-00:09:37,841 --> 00:09:39,300
-miért lépnek be a képbe a logaritmusok? 
-
-181
-00:09:39,780 --> 00:09:42,949
-Az egyik oka ennek a szebb egységnek, mert sokkal könnyebb nagyon 
-
-182
-00:09:42,949 --> 00:09:46,119
+00:09:43,000 --> 00:09:46,079
 valószínűtlen eseményekről beszélni, sokkal könnyebb azt mondani, 
 
+177
+00:09:46,079 --> 00:09:49,113
+hogy egy megfigyelés 20 bit információval rendelkezik, mint azt, 
+
+178
+00:09:49,113 --> 00:09:52,940
+hogy az ilyen és ehhez hasonló események bekövetkezésének valószínűsége 0,0000095.
+
+179
+00:09:53,300 --> 00:09:57,185
+De egy sokkal lényegesebb ok, amiért ez a logaritmikus kifejezés nagyon hasznos 
+
+180
+00:09:57,185 --> 00:10:01,460
+kiegészítésnek bizonyult a valószínűségelmélethez, az az információ összeadásának módja.
+
+181
+00:10:02,060 --> 00:10:04,747
+Például, ha egy megfigyelés két bit információt ad, 
+
+182
+00:10:04,747 --> 00:10:08,262
+ami négyszeresére csökkenti a helyet, majd egy második megfigyelés, 
+
 183
-00:09:46,119 --> 00:09:49,481
-hogy egy megfigyelésnek 20 bitnyi információja van, mint azt mondani, 
+00:10:08,262 --> 00:10:12,294
+például a Wordle-ben a második találgatásod további három bit információt ad, 
 
 184
-00:09:49,481 --> 00:09:52,940
-hogy az ilyen és ehhez hasonló előfordulásának valószínűsége 0.0000095. 
+00:10:12,294 --> 00:10:16,740
+ami még nyolcszorosára csökkenti a helyet, akkor a kettő együtt öt bit információt ad.
 
 185
-00:09:53,300 --> 00:09:57,228
-De egy lényegesebb oka annak, hogy ez a logaritmikus kifejezés nagyon hasznos 
+00:10:17,160 --> 00:10:21,020
+Ahogy a valószínűségek szeretnek szorozni, úgy az információ is szeret összeadni.
 
 186
-00:09:57,228 --> 00:10:01,460
-adaléknak bizonyult a valószínűségelmélethez, az az információ összeadásának módja. 
+00:10:21,960 --> 00:10:24,774
+Tehát amint olyan dolgok birodalmába kerülünk, mint például egy várható érték, 
 
 187
-00:10:02,060 --> 00:10:07,009
-Például, ha az egyik megfigyelés két bit információt ad, ami néggyel csökkenti a teret, 
+00:10:24,774 --> 00:10:27,980
+ahol egy csomó számot adunk össze, a naplók sokkal könnyebben kezelhetővé teszik a dolgot.
 
 188
-00:10:07,009 --> 00:10:10,440
-majd egy második megfigyelés, mint a Wordle második sejtése, 
+00:10:28,480 --> 00:10:32,127
+Menjünk vissza a fáradt eloszlásunkhoz, és adjunk hozzá egy másik kis nyomkövetőt, 
 
 189
-00:10:10,440 --> 00:10:14,715
-további három bit információt ad, további nyolcszoros faktorral csökkentve, 
+00:10:32,127 --> 00:10:34,940
+amely megmutatja, hogy mennyi információ van az egyes mintákhoz.
 
 190
-00:10:14,715 --> 00:10:16,740
-kettő együtt öt bit információt ad. 
+00:10:35,580 --> 00:10:37,647
+A legfontosabb dolog, amit szeretném, ha észrevennétek, 
 
 191
-00:10:17,160 --> 00:10:21,020
-Ugyanúgy, ahogy a valószínűségek szeretnek szaporodni, az információ szeret összeadni. 
+00:10:37,647 --> 00:10:40,712
+hogy minél nagyobb a valószínűség, ahogy eljutunk ezekhez a valószínűbb mintákhoz, 
 
 192
-00:10:21,960 --> 00:10:24,877
-Tehát amint egy várható értékhez hasonló birodalmába kerülünk, 
+00:10:40,712 --> 00:10:42,780
+annál kisebb az információ, annál kevesebb bitet kaptok.
 
 193
-00:10:24,877 --> 00:10:27,980
-ahol egy csomó számot adunk össze, a naplók sokkal jobban kezelik. 
+00:10:43,500 --> 00:10:48,020
+Ennek a találgatásnak a minőségét úgy mérjük, hogy az információ várható értékét vesszük.
 
 194
-00:10:28,480 --> 00:10:32,229
-Térjünk vissza a Weary disztribúciójához, és adjunk hozzá még egy kis nyomkövetőt, 
+00:10:48,420 --> 00:10:51,562
+Amikor végigmegyünk minden egyes mintán, megmondjuk, hogy mennyire valószínű, 
 
 195
-00:10:32,229 --> 00:10:34,940
-amely megmutatja, mennyi információ van az egyes mintákhoz. 
+00:10:51,562 --> 00:10:54,060
+majd ezt megszorozzuk azzal, hogy hány bit információt kapunk.
 
 196
-00:10:35,580 --> 00:10:37,716
-A legfontosabb dolog, amit észre akarok venni, az az, 
+00:10:54,710 --> 00:10:58,120
+A weary példájában ez 4,9 bit.
 
 197
-00:10:37,716 --> 00:10:40,406
-hogy minél nagyobb a valószínűsége a valószínűbb minták elérésének, 
-
-198
-00:10:40,406 --> 00:10:42,780
-minél alacsonyabb az információ, annál kevesebb bitet nyer. 
-
-199
-00:10:43,500 --> 00:10:47,104
-Ennek a találgatásnak a minőségét úgy mérjük, hogy felvesszük ennek az információnak 
-
-200
-00:10:47,104 --> 00:10:49,988
-a várható értékét, ahol végigmegyünk az egyes mintákon, megmondjuk, 
-
-201
-00:10:49,988 --> 00:10:52,490
-hogy mekkora a valószínűsége, majd ezt megszorozzuk azzal, 
-
-202
-00:10:52,490 --> 00:10:54,060
-hogy hány bittel kapunk információt. 
-
-203
-00:10:54,710 --> 00:10:58,120
-És Weary példájában ez a 4.9 bites. 
-
-204
-00:10:58,560 --> 00:11:02,398
+00:10:58,560 --> 00:11:02,172
 Tehát átlagosan az ebből a nyitó tippből származó információ olyan jó, 
 
+198
+00:11:02,172 --> 00:11:05,480
+mintha a lehetőségek körét körülbelül ötször felére csökkentenéd.
+
+199
+00:11:05,960 --> 00:11:08,827
+Ezzel szemben a magasabb várható információértékkel 
+
+200
+00:11:08,827 --> 00:11:11,640
+rendelkező találgatásra példa lehet például a pala.
+
+201
+00:11:13,120 --> 00:11:15,620
+Ebben az esetben észreveheti, hogy az eloszlás sokkal laposabbnak tűnik.
+
+202
+00:11:15,940 --> 00:11:20,600
+Különösen az összes szürke szín legvalószínűbb előfordulásának csak 
+
+203
+00:11:20,600 --> 00:11:25,260
+körülbelül 6% az esélye, így legalább 3,9 bitnyi információt kapunk.
+
+204
+00:11:25,920 --> 00:11:28,560
+De ez a minimum, ennél jellemzőbb, hogy ennél jobbat kapunk.
+
 205
-00:11:02,398 --> 00:11:05,480
-mintha körülbelül ötször kettévágná a lehetőségek terét. 
+00:11:29,100 --> 00:11:31,577
+És kiderül, hogy ha összeszámoljuk a számokat, 
 
 206
-00:11:05,960 --> 00:11:11,577
-Ezzel szemben a magasabb várható információértékkel rendelkező találgatás például a Slate.
+00:11:31,577 --> 00:11:35,900
+és összeadjuk az összes releváns kifejezést, az átlagos információ körülbelül 5,8.
 
 207
-00:11:11,577 --> 00:11:11,640
- 
+00:11:37,360 --> 00:11:40,450
+Tehát a fáradtakkal ellentétben a lehetőségek tere 
 
 208
-00:11:13,120 --> 00:11:15,620
-Ebben az esetben észre fogja venni, hogy az elosztás sokkal laposabbnak tűnik. 
+00:11:40,450 --> 00:11:43,540
+átlagosan fele akkora lesz az első találgatás után.
 
 209
-00:11:15,940 --> 00:11:20,661
-Konkrétan az összes szürke legvalószínűbb előfordulásának csak körülbelül 6% 
+00:11:44,420 --> 00:11:46,714
+Az információmennyiség várható értékének elnevezéséhez 
 
 210
-00:11:20,661 --> 00:11:25,260
-az esélye az előfordulásra, tehát legalább 3-at kapsz. 9 bites információ. 
+00:11:46,714 --> 00:11:48,300
+valójában egy vicces történet fűződik.
 
 211
-00:11:25,920 --> 00:11:28,560
-De ez a minimum, jellemzőbb, hogy ennél jobbat kapsz. 
-
-212
-00:11:29,100 --> 00:11:33,865
-És kiderül, hogy ha összetörjük a számokat, és összeadjuk az összes releváns kifejezést, 
-
-213
-00:11:33,865 --> 00:11:35,900
-az átlagos információ körülbelül 5.8. 
-
-214
-00:11:37,360 --> 00:11:40,591
-Tehát Weary-vel ellentétben a lehetőségek tere átlagosan 
-
-215
-00:11:40,591 --> 00:11:43,540
-körülbelül feleakkora lesz az első találgatás után. 
-
-216
-00:11:44,420 --> 00:11:47,504
-Valójában van egy szórakoztató történet az információmennyiség 
-
-217
-00:11:47,504 --> 00:11:49,120
-várható értékének elnevezéséről. 
-
-218
-00:11:49,200 --> 00:11:51,547
+00:11:48,300 --> 00:11:50,794
 Az információelméletet Claude Shannon dolgozta ki, 
 
+212
+00:11:50,794 --> 00:11:53,777
+aki az 1940-es években a Bell Labs-nél dolgozott, de néhány, 
+
+213
+00:11:53,777 --> 00:11:57,054
+még publikálásra váró ötletéről John von Neumann-nal beszélgetett, 
+
+214
+00:11:57,054 --> 00:12:00,087
+aki a kor szellemi óriása volt, aki a matematika és a fizika, 
+
+215
+00:12:00,087 --> 00:12:03,560
+valamint az informatika kezdeteinek kezdeteinél nagyon kiemelkedő volt.
+
+216
+00:12:04,100 --> 00:12:06,943
+És amikor megemlítette, hogy nincs igazán jó neve erre az 
+
+217
+00:12:06,943 --> 00:12:10,424
+információmennyiség várható értékére, von Neumann állítólag azt mondta 
+
+218
+00:12:10,424 --> 00:12:14,200
+- így szól a történet -, nos, akkor nevezzük entrópiának, mégpedig két okból.
+
 219
-00:11:51,547 --> 00:11:53,848
-aki az 1940-es években a Bell Labs-nál dolgozott, 
+00:12:14,540 --> 00:12:18,847
+Először is, a bizonytalansági függvényedet már használták a statisztikai mechanikában 
 
 220
-00:11:53,848 --> 00:11:57,162
-de néhány még publikálásra váró ötletéről beszélt John von Neumann-nal, 
+00:12:18,847 --> 00:12:23,204
+ezen a néven, tehát már van neve, másodszor pedig, ami még fontosabb, senki sem tudja, 
 
 221
-00:11:57,162 --> 00:12:01,258
-aki akkoriban ez a nagyon prominens szellemi óriás volt. a matematikában és a fizikában, 
+00:12:23,204 --> 00:12:26,760
+mi is az entrópia valójában, így egy vitában mindig te leszel előnyben.
 
 222
-00:12:01,258 --> 00:12:03,560
-valamint az informatikává váló kezdetek kezdetén. 
+00:12:27,700 --> 00:12:29,662
+Ha tehát a név egy kicsit titokzatosnak tűnik, 
 
 223
-00:12:04,100 --> 00:12:07,195
-És amikor megemlítette, hogy nem igazán van jó neve ennek az 
+00:12:29,662 --> 00:12:32,460
+és ha hinni lehet ennek a történetnek, akkor ez egyfajta szándékos.
 
 224
-00:12:07,195 --> 00:12:10,697
-információmennyiség várható értékének, Neumann állítólag azt mondta, 
+00:12:33,280 --> 00:12:37,405
+Ha a fizikából a termodinamika második törvényével való kapcsolatára kíváncsiak, 
 
 225
-00:12:10,697 --> 00:12:14,200
-szóval a történet úgy megy, hogy nevezzük entrópiának, és két okból. 
+00:12:37,405 --> 00:12:40,971
+akkor határozottan van kapcsolat, de eredetileg Shannon csak a tiszta 
 
 226
-00:12:14,540 --> 00:12:18,830
-Először is, a bizonytalansági függvényt ezen a néven használták a statisztikai 
+00:12:40,971 --> 00:12:43,875
+valószínűségelmélettel foglalkozott, és a mi céljainkra, 
 
 227
-00:12:18,830 --> 00:12:23,229
-mechanikában, tehát már van neve, másodszor, ami még fontosabb, senki sem tudja, 
+00:12:43,875 --> 00:12:46,269
+amikor az entrópia szót használom, azt akarom, 
 
 228
-00:12:23,229 --> 00:12:26,760
-mi is az entrópia valójában, ezért a vitákban mindig előnye van. 
+00:12:46,269 --> 00:12:49,580
+hogy egy adott találgatás várható információértékére gondoljanak.
 
 229
-00:12:27,700 --> 00:12:29,697
-Tehát ha a név egy kicsit titokzatosnak tűnik, 
+00:12:50,700 --> 00:12:53,780
+Az entrópiára úgy is gondolhatunk, mint két dolog egyidejű mérésére.
 
 230
-00:12:29,697 --> 00:12:32,460
-és ha hinni lehet ennek a történetnek, akkor ez valamiféle terv. 
+00:12:54,240 --> 00:12:56,780
+Az első az, hogy mennyire lapos az eloszlás?
 
 231
-00:12:33,280 --> 00:12:37,279
-Valamint ha kíváncsiak vagytok a termodinamika fizika azon második törvényével 
+00:12:57,320 --> 00:13:01,120
+Minél közelebb van egy eloszlás az egyenleteshez, annál nagyobb lesz az entrópia.
 
 232
-00:12:37,279 --> 00:12:41,379
-való kapcsolatára, biztosan van összefüggés, de Shannon eredetileg csak a tiszta 
+00:13:01,580 --> 00:13:06,752
+A mi esetünkben, ahol összesen 3-5 minta van, egy egyenletes eloszlás esetén 
 
 233
-00:12:41,379 --> 00:12:45,378
-valószínűségelmélettel foglalkozott, és a mi céljainkra, amikor a szóentrópia, 
+00:13:06,752 --> 00:13:11,321
+bármelyik megfigyelése a 3-5 logaritmusának 2-es bázisát jelentené, 
 
 234
-00:12:45,378 --> 00:12:49,580
-csak azt szeretném, ha egy adott találgatás várható információs értékére gondolna. 
+00:13:11,321 --> 00:13:17,300
+ami történetesen 7,92, tehát ez az abszolút maximum, amit az entrópia esetében kaphatunk.
 
 235
-00:12:50,700 --> 00:12:53,780
-Az entrópiát úgy képzelheti el, hogy két dolgot mér egyszerre. 
+00:13:17,840 --> 00:13:22,080
+De az entrópia egyfajta mérőszáma annak is, hogy egyáltalán hány lehetőség van.
 
 236
-00:12:54,240 --> 00:12:56,780
-Az első az, hogy mennyire lapos az eloszlás. 
+00:13:22,320 --> 00:13:26,709
+Ha például van egy olyan szó, amelyben csak 16 lehetséges minta van, 
 
 237
-00:12:57,320 --> 00:13:01,120
-Minél közelebb van egy eloszlás az egyenleteshez, annál nagyobb lesz az entrópia. 
+00:13:26,709 --> 00:13:32,180
+és mindegyik egyformán valószínű, akkor ez az entrópia, ez a várható információ 4 bit.
 
 238
-00:13:01,580 --> 00:13:04,825
-Esetünkben, ahol 3-tól 5-ig összesen mintázat van, 
+00:13:32,580 --> 00:13:36,530
+De ha van egy másik szó, ahol 64 lehetséges minta jöhet létre, 
 
 239
-00:13:04,825 --> 00:13:10,362
-az egyenletes eloszlás érdekében bármelyiket megfigyelve a 2-es információs naplóbázis 
+00:13:36,530 --> 00:13:40,480
+és mindegyik egyformán valószínű, akkor az entrópia 6 bit lesz.
 
 240
-00:13:10,362 --> 00:13:15,136
-3-tól az 5-ig terjed, ami történetesen 7.92, tehát ez az abszolút maximum, 
+00:13:41,500 --> 00:13:45,535
+Ha tehát a természetben olyan eloszlást látunk, amelynek entrópiája 6 bit, 
 
 241
-00:13:15,136 --> 00:13:17,300
-amit ennél az entrópiánál kaphat. 
+00:13:45,535 --> 00:13:50,056
+az olyan, mintha azt mondaná, hogy ugyanannyi variáció és bizonytalanság van abban, 
 
 242
-00:13:17,840 --> 00:13:22,080
-De az entrópia egyfajta mérőszáma is annak, hogy hány lehetőség van az első helyen. 
+00:13:50,056 --> 00:13:53,500
+ami történni fog, mintha 64 egyformán valószínű kimenetel lenne.
 
 243
-00:13:22,320 --> 00:13:26,312
-Például, ha van egy olyan szó, ahol csak 16 lehetséges minta van, 
+00:13:54,360 --> 00:13:57,960
+A Wurtelebot első átadásakor alapvetően csak ezt csináltam vele.
 
 244
-00:13:26,312 --> 00:13:30,002
-és mindegyik egyforma valószínűséggel, akkor ez az entrópia, 
-
-245
-00:13:30,002 --> 00:13:32,180
-ez a várt információ 4 bites lenne. 
-
-246
-00:13:32,579 --> 00:13:36,186
-De ha van egy másik szó, ahol 64 lehetséges minta jöhet szóba, 
-
-247
-00:13:36,186 --> 00:13:40,480
-és mindegyik egyformán valószínű, akkor az entrópia 6 bitesnek bizonyulna. 
-
-248
-00:13:41,500 --> 00:13:45,754
-Tehát ha látunk valami eloszlást a természetben, amelynek entrópiája 6 bites, 
-
-249
-00:13:45,754 --> 00:13:49,736
-az olyan, mintha azt mondaná, annyi eltérés és bizonytalanság van abban, 
-
-250
-00:13:49,736 --> 00:13:53,500
-hogy mi fog történni, mintha 64 egyformán valószínű kimenetel lenne. 
-
-251
-00:13:54,360 --> 00:13:59,320
-A Wurtelebotnál az első bérletemnél alapvetően ezt kellett csinálnom. 
-
-252
-00:13:59,320 --> 00:14:02,812
+00:13:57,960 --> 00:14:02,257
 Végigmegy az összes lehetséges találgatáson, mind a 13 000 szón, 
 
+245
+00:14:02,257 --> 00:14:07,083
+kiszámítja mindegyiknek az entrópiáját, pontosabban az összes lehetséges 
+
+246
+00:14:07,083 --> 00:14:11,314
+minta eloszlásának entrópiáját, és kiválasztja a legmagasabbat, 
+
+247
+00:14:11,314 --> 00:14:16,140
+mivel ez az, amelyik a lehető legjobban lecsökkenti a lehetőségek számát.
+
+248
+00:14:17,140 --> 00:14:21,100
+És bár itt csak az első tippről beszéltem, ugyanezt teszi a következő tippeknél is.
+
+249
+00:14:21,560 --> 00:14:24,172
+Például miután az első találgatáson meglát valamilyen mintát, 
+
+250
+00:14:24,172 --> 00:14:27,923
+ami a lehetséges szavak kisebb számára korlátozná a lehetséges szavak számát az alapján, 
+
+251
+00:14:27,923 --> 00:14:31,252
+hogy mi egyezik ezzel, csak ugyanazt a játékot játssza a szavak kisebb halmaza 
+
+252
+00:14:31,252 --> 00:14:31,800
+tekintetében.
+
 253
-00:14:02,812 --> 00:14:06,897
-mindegyikre kiszámítja az entrópiát, pontosabban az eloszlás entrópiáját az 
+00:14:32,260 --> 00:14:36,388
+A javasolt második találgatáshoz megnézzük az összes olyan minta eloszlását, 
 
 254
-00:14:06,897 --> 00:14:10,873
-összes látható minta között, mindegyikre, és kiválasztja a legmagasabbat, 
+00:14:36,388 --> 00:14:40,891
+amely a szavak szűkebb halmazából előfordulhat, átnézzük mind a 13 000 lehetőséget, 
 
 255
-00:14:10,873 --> 00:14:14,957
-mivel ez az, amely valószínűleg a lehető legnagyobb mértékben lecsökkenti a 
+00:14:40,891 --> 00:14:43,840
+és megtaláljuk azt, amelyik maximalizálja az entrópiát.
 
 256
-00:14:14,957 --> 00:14:16,140
-lehetőségek tárházát. 
-
-257
-00:14:17,140 --> 00:14:19,120
-És bár itt csak az első találgatásról beszéltem, 
-
-258
-00:14:19,120 --> 00:14:21,100
-a következő néhány találgatásnál ugyanezt teszi. 
-
-259
-00:14:21,560 --> 00:14:24,828
-Például, miután az első találgatáson lát valamilyen mintát, 
-
-260
-00:14:24,828 --> 00:14:28,531
-amely kevesebb szóra korlátozza, az alapján, hogy mi egyezik ezzel, 
-
-261
-00:14:28,531 --> 00:14:31,800
-ugyanazt a játékot játssza el azzal a kisebb szókészlettel. 
-
-262
-00:14:32,260 --> 00:14:36,231
-A javasolt második tipphez megvizsgálja az összes mintázat eloszlását, 
-
-263
-00:14:36,231 --> 00:14:40,651
-amely a szűkebb szókészletből származhat, átkutatja mind a 13 000 lehetőséget, 
-
-264
-00:14:40,651 --> 00:14:43,840
-és megtalálja azt, amely maximalizálja ezt az entrópiát. 
-
-265
-00:14:45,420 --> 00:14:47,790
+00:14:45,420 --> 00:14:47,475
 Hogy megmutassam, hogyan működik ez a gyakorlatban, 
 
+257
+00:14:47,475 --> 00:14:49,887
+hadd mutassam meg Wurtele egy kis változatát, amit én írtam, 
+
+258
+00:14:49,887 --> 00:14:52,180
+és amely a margón mutatja az elemzés legfontosabb elemeit.
+
+259
+00:14:53,680 --> 00:14:56,629
+Tehát miután elvégezte az entrópia számításokat, itt jobbra megmutatja, 
+
+260
+00:14:56,629 --> 00:14:59,660
+hogy melyek azok, amelyek a legnagyobb várható információval rendelkeznek.
+
+261
+00:15:00,280 --> 00:15:05,623
+Kiderült, hogy a legjobb válasz, legalábbis jelenleg, ezt majd később pontosítjuk, 
+
+262
+00:15:05,623 --> 00:15:10,580
+a Tares, ami azt jelenti, hogy, öhm, persze, bükköny, a leggyakoribb bükköny.
+
+263
+00:15:11,040 --> 00:15:13,101
+Minden egyes alkalommal, amikor itt tippelünk, 
+
+264
+00:15:13,101 --> 00:15:16,391
+ahol talán figyelmen kívül hagyom az ajánlásait, és a pala mellett döntök, 
+
+265
+00:15:16,391 --> 00:15:19,550
+mert szeretem a pala-t, láthatjuk, hogy mennyi várható információ volt, 
+
 266
-00:14:47,790 --> 00:14:50,616
-hadd húzzak fel egy kis változatot a Wurtele-ről, amit írtam, 
+00:15:19,550 --> 00:15:22,972
+de aztán itt a szó jobb oldalán megmutatja, hogy mennyi tényleges információt 
 
 267
-00:14:50,616 --> 00:14:54,080
-és amely a margókon mutatja be ennek az elemzésnek a legfontosabb pontjait. 
+00:15:22,972 --> 00:15:24,420
+kaptunk az adott mintát tekintve.
 
 268
-00:14:54,080 --> 00:14:57,193
-Miután elvégezte az összes entrópiaszámítást, itt a jobb oldalon megmutatja, 
+00:15:25,000 --> 00:15:27,244
+Szóval itt úgy néz ki, hogy egy kicsit pechesek voltunk, 
 
 269
-00:14:57,193 --> 00:14:59,660
-hogy melyek rendelkeznek a legmagasabb elvárt információval. 
+00:15:27,244 --> 00:15:30,120
+5,8-as értéket vártunk, de történetesen ennél kevesebbel kaptunk valamit.
 
 270
-00:15:00,280 --> 00:15:05,497
-Kiderült, hogy a legjobb válasz, legalábbis jelenleg, ezt később finomítjuk, 
+00:15:30,600 --> 00:15:35,020
+A bal oldalon pedig megmutatja az összes lehetséges szót, tekintve, hogy hol vagyunk most.
 
 271
-00:15:05,497 --> 00:15:10,580
-a Tares, ami azt jelenti, hm, persze, a bükkönyt, a leggyakoribb bükkönyt. 
+00:15:35,800 --> 00:15:39,061
+A kék sávok azt mutatják, hogy az egyes szavak milyen valószínűséggel fordulnak elő, 
 
 272
-00:15:11,040 --> 00:15:14,856
-Minden alkalommal, amikor tippelünk, lehet, hogy figyelmen kívül hagyom az ajánlásait, 
+00:15:39,061 --> 00:15:42,323
+tehát jelenleg azt feltételezi, hogy minden szó egyforma valószínűséggel fordul elő, 
 
 273
-00:15:14,856 --> 00:15:17,620
-és inkább a palat választom, mert szeretem a palat, láthatjuk, 
+00:15:42,323 --> 00:15:43,360
+de ezt mindjárt finomítjuk.
 
 274
-00:15:17,620 --> 00:15:20,822
-hogy mennyi várt információja volt, de akkor a szó jobb oldalán látható, 
+00:15:44,060 --> 00:15:47,662
+Ez a bizonytalansági mérés pedig a lehetséges szavak eloszlásának 
 
 275
-00:15:20,822 --> 00:15:24,420
-hogy mennyit. aktuális információkat kaptunk, tekintettel erre a konkrét mintára. 
+00:15:47,662 --> 00:15:51,647
+entrópiáját mutatja meg, ami jelenleg, mivel ez egy egyenletes eloszlás, 
 
 276
-00:15:25,000 --> 00:15:27,293
-Szóval itt úgy néz ki, hogy kicsit balszerencsénk volt, 
+00:15:51,647 --> 00:15:55,960
+csak egy szükségtelenül bonyolult módja a lehetőségek számának megszámlálására.
 
 277
-00:15:27,293 --> 00:15:30,120
-5-öt vártak ránk. 8, de véletlenül kaptunk valamit ennél kevesebbel. 
+00:15:56,560 --> 00:16:02,180
+Ha például a 2-t 13,66 hatványára emelnénk, akkor ez a 13 000 lehetőség körül lenne.
 
 278
-00:15:30,600 --> 00:15:33,611
-És akkor itt a bal oldalon az összes lehetséges szót mutatja, 
+00:16:02,900 --> 00:16:06,140
+Um, itt egy kicsit eltértem, de csak azért, mert nem mutatom az összes tizedesjegyet.
 
 279
-00:15:33,611 --> 00:15:35,020
-a jelenlegi helyzet alapján. 
+00:16:06,720 --> 00:16:09,683
+Jelenleg úgy tűnhet, hogy ez felesleges és túlságosan bonyolítja a dolgokat, 
 
 280
-00:15:35,800 --> 00:15:38,685
-A kék sávok azt mutatják, hogy mennyire valószínűnek tartja az egyes szavakat, 
+00:16:09,683 --> 00:16:12,340
+de egy perc múlva látni fogod, miért hasznos, ha mindkét szám megvan.
 
 281
-00:15:38,685 --> 00:15:41,972
-ezért jelenleg azt feltételezi, hogy mindegyik szó előfordulásának valószínűsége egyenlő, 
+00:16:12,760 --> 00:16:17,308
+Tehát itt úgy tűnik, hogy a második tippünkhöz a legmagasabb entrópiát a Raman jelöli, 
 
 282
-00:15:41,972 --> 00:15:43,360
-de ezt egy pillanat alatt finomítjuk. 
+00:16:17,308 --> 00:16:19,400
+ami megint csak nem igazán tűnik szónak.
 
 283
-00:15:44,060 --> 00:15:48,026
-És akkor ez a bizonytalanságmérés megmondja ennek az eloszlásnak az entrópiáját 
+00:16:19,980 --> 00:16:24,060
+Szóval, hogy erkölcsileg magasra tegyem a lécet, megyek előre és beírom Rains-t.
 
 284
-00:15:48,026 --> 00:15:51,894
-a lehetséges szavak között, ami jelenleg, mivel egységes eloszlásról van szó, 
+00:16:25,440 --> 00:16:27,340
+És megint úgy tűnik, hogy egy kicsit pechesek voltunk.
 
 285
-00:15:51,894 --> 00:15:55,960
-csak egy szükségtelenül bonyolult módszer a lehetőségek számának megszámlálására. 
+00:16:27,520 --> 00:16:31,360
+Mi 4,3 bitet vártunk, és csak 3,39 bit információt kaptunk.
 
 286
-00:15:56,560 --> 00:15:59,458
-Például, ha 2-t 13 hatványára vennénk. 66, ennek 
+00:16:31,940 --> 00:16:33,940
+Így már csak 55 lehetőségünk van.
 
 287
-00:15:59,458 --> 00:16:02,180
-körülbelül a 13 000 lehetőségnek kell lennie. 
+00:16:34,900 --> 00:16:37,701
+És itt talán tényleg csak azt fogom követni, amit sugall, 
 
 288
-00:16:02,900 --> 00:16:06,140
-Kicsit elkanyarodok itt, de csak azért, mert nem mutatok minden tizedesjegyet. 
+00:16:37,701 --> 00:16:39,440
+ami a kombó, bármit is jelentsen ez.
 
 289
-00:16:06,720 --> 00:16:09,624
-Pillanatnyilag ez feleslegesnek tűnhet, és túlságosan bonyolítja a dolgokat, 
+00:16:40,040 --> 00:16:42,920
+És, oké, ez tulajdonképpen egy jó lehetőség egy rejtvényre.
 
 290
-00:16:09,624 --> 00:16:12,340
-de látni fogod, miért hasznos, ha mindkét szám egy perc alatt elérhető. 
+00:16:42,920 --> 00:16:46,380
+Azt mondja nekünk, hogy ez a minta 4,7 bit információt ad.
 
 291
-00:16:12,760 --> 00:16:16,159
-Tehát itt úgy tűnik, hogy második tippünk szerint a legmagasabb 
+00:16:47,060 --> 00:16:51,720
+De a bal oldalon, mielőtt ezt a mintát látnánk, 5,78 bit bizonytalanság volt.
 
 292
-00:16:16,159 --> 00:16:19,400
-entrópiát a Ramen jelenti, ami megint csak nem tűnik szónak. 
+00:16:52,420 --> 00:16:56,340
+Tehát kvízkérdésként: mit jelent ez a fennmaradó lehetőségek számával kapcsolatban?
 
 293
-00:16:19,980 --> 00:16:24,060
-Tehát, hogy itt az erkölcsi magaslatot megtegyem, megyek előre, és beírom, hogy Rains. 
+00:16:58,040 --> 00:17:01,388
+Nos, ez azt jelenti, hogy 1 bizonytalansági tényezőre redukálódunk, 
 
 294
-00:16:25,440 --> 00:16:27,340
-És megint úgy tűnik, hogy egy kicsit szerencsétlenek voltunk. 
+00:17:01,388 --> 00:17:04,540
+ami ugyanaz, mintha azt mondanánk, hogy 2 lehetséges válasz van.
 
 295
-00:16:27,520 --> 00:16:31,360
-4-re számítottunk. 3 bit és csak 3-at kaptunk. 39 bites információ. 
+00:17:04,700 --> 00:17:05,700
+Ez egy 50-50%-os választás.
 
 296
-00:16:31,940 --> 00:16:33,940
-Ez 55 lehetőségre vezet le minket. 
+00:17:06,500 --> 00:17:08,840
+És innen, mivel te és én tudjuk, hogy melyik szó a leggyakoribb, 
 
 297
-00:16:34,900 --> 00:16:37,438
-És itt talán csak azt fogom folytatni, amit sugall, 
+00:17:08,840 --> 00:17:10,640
+tudjuk, hogy a válasznak a mélységnek kell lennie.
 
 298
-00:16:37,438 --> 00:16:39,440
-ami a kombinált, bármit is jelentsen ez. 
+00:17:11,180 --> 00:17:13,280
+De ahogyan most meg van írva, a program ezt nem tudja.
 
 299
-00:16:40,040 --> 00:16:42,920
-És oké, ez egy jó lehetőség egy rejtvényre. 
+00:17:13,540 --> 00:17:16,442
+Tehát csak megy tovább, megpróbál annyi információt szerezni, 
 
 300
-00:16:42,920 --> 00:16:46,380
-Azt mondja nekünk, hogy ez a minta 4-et ad. 7 bit információ. 
+00:17:16,442 --> 00:17:19,859
+amennyit csak tud, amíg csak egy lehetőség marad, és akkor kitalálja azt.
 
 301
-00:16:47,060 --> 00:16:51,720
-De a bal oldalon, mielőtt láttuk ezt a mintát, 5 volt. 78 bites bizonytalanság. 
+00:17:20,380 --> 00:17:22,993
+Tehát nyilvánvalóan szükségünk van egy jobb végjáték-stratégiára, 
 
 302
-00:16:52,420 --> 00:16:56,340
-Tehát kvízként, mit jelent ez a fennmaradó lehetőségek számáról? 
+00:17:22,993 --> 00:17:25,527
+de mondjuk, hogy a wordle megoldónk 1. verziójának nevezzük el, 
 
 303
-00:16:58,040 --> 00:17:01,121
-Nos, ez azt jelenti, hogy egy kis bizonytalanságra csökkentünk, 
+00:17:25,527 --> 00:17:28,260
+majd lefuttatunk néhány szimulációt, hogy megnézzük, hogyan teljesít.
 
 304
-00:17:01,121 --> 00:17:04,540
-ami ugyanaz, mintha azt mondanánk, hogy két lehetséges válasz létezik. 
+00:17:30,360 --> 00:17:34,120
+Tehát ez úgy működik, hogy minden lehetséges wordle játékot lejátszik.
 
 305
-00:17:04,700 --> 00:17:05,700
-50-50 közötti választás. 
+00:17:34,240 --> 00:17:38,540
+Végigmegy mindazon a 2315 szón, amelyek a tényleges wordle válaszok.
 
 306
-00:17:06,500 --> 00:17:09,004
-És innentől kezdve, mivel te és én tudjuk, hogy melyik szavak gyakoribbak, 
+00:17:38,540 --> 00:17:40,580
+Alapvetően ezt használja tesztkészletként.
 
 307
-00:17:09,004 --> 00:17:10,640
-tudjuk, hogy a válasznak mélységben kell lennie. 
+00:17:41,360 --> 00:17:44,767
+És ezzel a naiv módszerrel, amely nem veszi figyelembe, hogy egy szó mennyire gyakori, 
 
 308
-00:17:11,180 --> 00:17:13,280
-De ahogy most írják, a program ezt nem tudja. 
+00:17:44,767 --> 00:17:48,096
+és csak megpróbálja maximalizálni az információt minden egyes lépésnél az út mentén, 
 
 309
-00:17:13,540 --> 00:17:16,211
-Tehát csak megy, próbál annyi információt szerezni, 
+00:17:48,096 --> 00:17:49,820
+amíg le nem jut egy és csak egy választásig.
 
 310
-00:17:16,211 --> 00:17:19,859
-amennyit csak tud, amíg már csak egy lehetőség marad, aztán kitalálja. 
+00:17:50,360 --> 00:17:54,300
+A szimuláció végére az átlagos pontszám 4,124 körül alakul.
 
 311
-00:17:20,380 --> 00:17:22,339
-Tehát nyilvánvalóan jobb végjáték-stratégiára van szükségünk. 
+00:17:55,320 --> 00:17:59,240
+Ami nem rossz, hogy őszinte legyek, én valahogy rosszabbra számítottam.
 
 312
-00:17:22,599 --> 00:17:25,536
-De tegyük fel, hogy ezt a verziót az egyik szómegoldónknak nevezzük, 
+00:17:59,660 --> 00:18:01,280
+De azok, akik wordle-t játszanak, azt fogják mondani, 
 
 313
-00:17:25,536 --> 00:17:28,260
-majd futunk néhány szimulációt, hogy megnézzük, hogyan működik. 
+00:18:01,280 --> 00:18:02,600
+hogy általában 4-ben is meg tudják csinálni.
 
 314
-00:17:30,360 --> 00:17:34,120
-Tehát ez úgy működik, hogy minden lehetséges szójátékot lejátsz. 
+00:18:02,860 --> 00:18:05,380
+Az igazi kihívás az, hogy minél többet szerezz 3-ban.
 
 315
-00:17:34,240 --> 00:17:38,540
-Végigmegy azon a 2315 szón, amelyek a tényleges szóbeli válaszok. 
+00:18:05,380 --> 00:18:08,080
+Elég nagy ugrás a 4-es és a 3-as pontszám között.
 
 316
-00:17:38,540 --> 00:17:40,580
-Alapvetően ezt tesztkészletként használja. 
+00:18:08,860 --> 00:18:12,026
+A nyilvánvalóan alacsonyan lógó gyümölcs itt az, hogy valahogy beépítsük, 
 
 317
-00:17:41,360 --> 00:17:43,783
-És ezzel a naiv módszerrel, hogy nem veszi figyelembe, 
+00:18:12,026 --> 00:18:14,980
+hogy egy szó gyakori-e vagy sem, és pontosan hogyan is csináljuk ezt.
 
 318
-00:17:43,783 --> 00:17:46,427
-mennyire gyakori egy szó, és csak próbálja maximalizálni az 
+00:18:22,800 --> 00:18:26,418
+Én úgy közelítettem meg a dolgot, hogy az angol nyelv összes szavának relatív 
 
 319
-00:17:46,427 --> 00:17:49,820
-információt az út minden lépésében, amíg el nem jut az egyetlen választásig. 
+00:18:26,418 --> 00:18:29,943
+gyakoriságát tartalmazó listát kaptam, és csak a Mathematica szógyakorisági 
 
 320
-00:17:50,360 --> 00:17:54,300
-A szimuláció végére az átlagos pontszám körülbelül 4 lesz. 124. 
+00:18:29,943 --> 00:18:33,654
+adatfüggvényét használtam, amely maga is a Google Books English Ngram nyilvános 
 
 321
-00:17:55,319 --> 00:17:59,240
-Ami nem rossz, hogy őszinte legyek, valahogy rosszabbra számítottam. 
+00:18:33,654 --> 00:18:34,860
+adatkészletéből származik.
 
 322
-00:17:59,660 --> 00:18:02,600
-De azok, akik wordle-t játszanak, azt mondják, hogy általában 4-ben is megkapják. 
+00:18:35,460 --> 00:18:37,857
+És elég szórakoztató megnézni, például ha a leggyakoribb 
 
 323
-00:18:02,860 --> 00:18:05,380
-Az igazi kihívás az, hogy minél többet szerezz be 3-ba. 
+00:18:37,857 --> 00:18:39,960
+szavaktól a legkevésbé gyakori szavakig rendezzük.
 
 324
-00:18:05,380 --> 00:18:08,080
-Elég nagy ugrás a 4-es és a 3-as pontszám között. 
+00:18:40,120 --> 00:18:43,080
+Nyilvánvalóan ezek a leggyakoribb, 5 betűs szavak az angol nyelvben.
 
 325
-00:18:08,860 --> 00:18:12,310
-A nyilvánvaló, alacsonyan lógó gyümölcs itt az, hogy valahogyan bele kell foglalni, 
+00:18:43,700 --> 00:18:45,840
+Vagy inkább ezek a 8. leggyakoribbak.
 
 326
-00:18:12,310 --> 00:18:14,980
-hogy egy szó gyakori-e vagy sem, és pontosan hogyan tesszük ezt. 
+00:18:46,280 --> 00:18:48,880
+Az első az, ami, utána pedig az ott és az ott.
 
 327
-00:18:22,800 --> 00:18:27,824
-Úgy közelítettem meg, hogy az összes angol nyelvű szó relatív gyakoriságáról kapok listát.
+00:18:49,260 --> 00:18:52,044
+Maga az első nem első, hanem 9., és van értelme, 
 
 328
-00:18:27,824 --> 00:18:27,880
- 
+00:18:52,044 --> 00:18:56,647
+hogy ezek a többi szó gyakrabban fordulhat elő, ahol az első után az után, ahol, 
 
 329
-00:18:28,220 --> 00:18:31,277
-És csak a Mathematica szófrekvenciás adatfüggvényét használtam, 
+00:18:56,647 --> 00:18:58,580
+és azok csak egy kicsit ritkábban.
 
 330
-00:18:31,277 --> 00:18:34,860
-amely maga a Google Books angol Ngram nyilvános adatkészletéből származik. 
+00:18:59,160 --> 00:19:02,585
+Most, amikor ezeket az adatokat arra használjuk, hogy modellezzük, 
 
 331
-00:18:35,460 --> 00:18:37,665
-És szórakoztató nézni, például ha a leggyakoribb 
+00:19:02,585 --> 00:19:06,061
+hogy az egyes szavak milyen valószínűséggel lesznek a végső válasz, 
 
 332
-00:18:37,665 --> 00:18:39,960
-szavaktól a legkevésbé gyakori szavakig rendezzük. 
+00:19:06,061 --> 00:19:08,567
+nem csak a gyakorisággal kell arányosnak lennie, 
 
 333
-00:18:40,120 --> 00:18:43,080
-Nyilvánvalóan ezek a leggyakoribb, 5 betűből álló szavak az angol nyelvben. 
+00:19:08,567 --> 00:19:11,634
+mert például a ami 0,002 pontot kap ebben az adathalmazban, 
 
 334
-00:18:43,700 --> 00:18:45,840
-Illetve ez a 8. leggyakoribb. 
+00:19:11,634 --> 00:19:15,060
+míg a fonás szó bizonyos értelemben 1000-szer kisebb valószínűségű.
 
 335
-00:18:46,280 --> 00:18:48,880
-Először melyik, utána ott és ott. 
+00:19:15,560 --> 00:19:17,806
+De mindkettő elég gyakori szó ahhoz, hogy szinte biztos, 
 
 336
-00:18:49,260 --> 00:18:51,785
-Az első önmagában nem az első, hanem a 9., és logikus, 
+00:19:17,806 --> 00:19:21,000
+hogy érdemes figyelembe venni őket, ezért inkább bináris elválasztást szeretnénk.
 
 337
-00:18:51,785 --> 00:18:53,988
-hogy ezek a többi szó gyakrabban fordulhat elő, 
+00:19:21,860 --> 00:19:26,229
+Úgy jártam el, hogy elképzeltem, hogy veszem ezt az egész szavak rendezett listáját, 
 
 338
-00:18:53,988 --> 00:18:56,559
-ahol az első utániak az után következnek, hol, és azok, 
+00:19:26,229 --> 00:19:29,725
+majd elrendezem az x-tengelyen, és alkalmazom a szigmoid függvényt, 
 
 339
-00:18:56,559 --> 00:18:58,580
-amelyek egy kicsit ritkábban fordulnak elő. 
+00:19:29,725 --> 00:19:32,913
+ami a szokásos módja annak, hogy egy olyan függvényt kapjunk, 
 
 340
-00:18:59,160 --> 00:19:01,758
-Ha ezeket az adatokat használjuk annak modellezésére, 
+00:19:32,913 --> 00:19:35,689
+amelynek kimenete alapvetően bináris, vagy 0, vagy 1, 
 
 341
-00:19:01,758 --> 00:19:04,501
-hogy ezeknek a szavaknak a valószínűsége a végső válasz, 
+00:19:35,689 --> 00:19:38,260
+de van egy simítás a bizonytalansági tartományban.
 
 342
-00:19:04,501 --> 00:19:06,860
-nem csak a gyakorisággal kell arányosnak lennie. 
+00:19:39,160 --> 00:19:42,809
+Tehát lényegében az a valószínűség, amit az egyes szavakhoz rendelek, 
 
 343
-00:19:06,860 --> 00:19:10,302
-Például ami 0 pontot kap. 002 ebben az adatkészletben, 
+00:19:42,809 --> 00:19:46,354
+hogy a végső listán szerepeljenek, a szigmoid függvény értéke lesz, 
 
 344
-00:19:10,302 --> 00:19:15,060
-míg a fonat szó bizonyos értelemben körülbelül 1000-szer kevésbé valószínű. 
+00:19:46,354 --> 00:19:48,440
+bárhol is helyezkedik el az x-tengelyen.
 
 345
-00:19:15,560 --> 00:19:18,840
-De mindkettő elég gyakori szó ahhoz, hogy szinte biztosan megfontolandó. 
+00:19:49,520 --> 00:19:52,172
+Ez nyilvánvalóan függ néhány paramétertől, például attól, 
 
 346
-00:19:19,340 --> 00:19:21,000
-Tehát inkább bináris levágást akarunk. 
+00:19:52,172 --> 00:19:55,235
+hogy az x-tengelyen milyen széles teret töltenek ki ezek a szavak, 
 
 347
-00:19:21,860 --> 00:19:25,849
-Úgy jártam el, hogy elképzelem, hogy ezt az egész soros szólistát egy x 
+00:19:55,235 --> 00:19:58,802
+meghatározza, hogy mennyire fokozatosan vagy meredeken csökkenünk 1-től 0-ig, 
 
 348
-00:19:25,849 --> 00:19:30,614
-tengelyre rendezem, majd alkalmazom a szigmoid függvényt, ami a szokásos módja annak, 
+00:19:58,802 --> 00:20:02,140
+és hogy hol helyezzük el őket balról jobbra, meghatározza a határértéket.
 
 349
-00:19:30,614 --> 00:19:34,547
-hogy olyan függvényt készítsünk, amelynek kimenete alapvetően bináris. 
+00:20:02,980 --> 00:20:05,966
+És hogy őszinte legyek, én ezt úgy csináltam, hogy megnyaltam az ujjam, 
 
 350
-00:19:34,547 --> 00:19:38,260
-vagy 0, vagy 1, de van egy simítás a bizonytalansági régió között. 
+00:20:05,966 --> 00:20:06,920
+és beledugtam a szélbe.
 
 351
-00:19:39,160 --> 00:19:43,722
-Tehát lényegében annak a valószínűsége, hogy minden szót hozzárendelek a végső listában 
+00:20:07,140 --> 00:20:10,043
+Végignéztem a rendezett listát, és megpróbáltam megtalálni azt az ablakot, 
 
 352
-00:19:43,722 --> 00:19:48,388
-való szerepléshez, a fenti szigmoid függvény értéke lesz, bárhol is legyen az x tengelyen.
+00:20:10,043 --> 00:20:12,984
+ahol, amikor ránéztem, úgy gondoltam, hogy ezeknek a szavaknak körülbelül a 
 
 353
-00:19:48,388 --> 00:19:48,440
- 
+00:20:12,984 --> 00:20:16,120
+fele valószínűbb, mint hogy nem a végső válasz, és ezt használtam határértékként.
 
 354
-00:19:49,520 --> 00:19:52,264
-Ez nyilvánvalóan néhány paramétertől függ, például az, 
+00:20:17,100 --> 00:20:19,603
+Ha már van egy ilyen eloszlásunk a szavak között, 
 
 355
-00:19:52,264 --> 00:19:55,706
-hogy az x tengelyen milyen széles szóközt töltenek ki ezek a szavak, 
+00:20:19,603 --> 00:20:23,860
+akkor egy újabb helyzetet kapunk, ahol az entrópia igazán hasznos mérőeszközzé válik.
 
 356
-00:19:55,706 --> 00:19:59,548
-meghatározza, hogy milyen fokozatosan vagy meredeken zuhanunk le 1-ről 0-ra, 
+00:20:24,500 --> 00:20:28,145
+Mondjuk, mondjuk, játszottunk egy játékot, és a régi nyitószavaimmal kezdünk, 
 
 357
-00:19:59,548 --> 00:20:03,240
-és hogy hol helyezzük el őket balról jobbra, az határozza meg a levágást. 
+00:20:28,145 --> 00:20:31,090
+amelyek a más és a szögek voltak, és olyan helyzetbe kerülünk, 
 
 358
-00:20:03,240 --> 00:20:06,920
-Őszintén szólva, ahogy ezt csináltam, csak megnyaltam az ujjamat, és beledugtam a szélbe. 
+00:20:31,090 --> 00:20:33,240
+ahol négy lehetséges szó is van, ami illik rá.
 
 359
-00:20:07,140 --> 00:20:10,095
-Átnéztem a rendezett listán, és megpróbáltam találni egy ablakot, 
+00:20:33,560 --> 00:20:36,240
+És tegyük fel, hogy mindegyiket egyformán valószínűnek tartjuk, 
 
 360
-00:20:10,095 --> 00:20:13,453
-ahol amikor ránéztem, arra jutottam, hogy ezeknek a szavaknak körülbelül a 
+00:20:36,240 --> 00:20:38,880
+hadd kérdezzem meg, mekkora ennek az eloszlásnak az entrópiája?
 
 361
-00:20:13,453 --> 00:20:17,260
-fele valószínűbb, mint hogy ne legyen a végső válasz, és ezt használtam zárójelként. 
+00:20:41,080 --> 00:20:45,296
+Nos, a fenti lehetőségek mindegyikéhez tartozó információ a 4 
 
 362
-00:20:17,260 --> 00:20:21,358
-Ha ilyen eloszlást kapunk a szavak között, akkor egy újabb helyzetet kapunk, 
+00:20:45,296 --> 00:20:50,260
+logaritmikus bázisának 2-es bázisa lesz, mivel mindegyik 1 és 4, és ez 2.
 
 363
-00:20:21,358 --> 00:20:23,860
-ahol az entrópia válik igazán hasznos méréssé. 
+00:20:50,640 --> 00:20:52,460
+2 bit információ, 4 lehetőség.
 
 364
-00:20:24,500 --> 00:20:28,280
-Tegyük fel például, hogy játszunk egy játékot, és a régi nyitóimmal kezdjük, 
+00:20:52,760 --> 00:20:53,580
+Ez mind nagyon szép és jó.
 
 365
-00:20:28,280 --> 00:20:31,570
-amelyek egy toll és szögek voltak, és egy olyan helyzethez jutunk, 
+00:20:54,300 --> 00:20:57,800
+De mi van, ha azt mondom, hogy valójában több mint 4 mérkőzés van?
 
 366
-00:20:31,570 --> 00:20:33,240
-ahol négy lehetséges szó egyezik. 
+00:20:58,260 --> 00:21:02,460
+A valóságban, ha végignézzük a teljes szólistát, 16 olyan szó van, amely megfelel.
 
 367
-00:20:33,560 --> 00:20:35,620
-És tegyük fel, hogy mindegyiket egyformán valószínűnek tartjuk. 
+00:21:02,580 --> 00:21:06,026
+De tegyük fel, hogy a modellünk nagyon alacsony valószínűséggel teszi fel, 
 
 368
-00:20:36,220 --> 00:20:38,880
-Hadd kérdezzem meg, mi ennek az eloszlásnak az entrópiája? 
+00:21:06,026 --> 00:21:09,473
+hogy a másik 12 szó valóban a végső válasz lesz, körülbelül 1 az 1000-hez, 
 
 369
-00:20:41,080 --> 00:20:47,351
-Nos, az ezekhez a lehetőségekhez tartozó információ a 2-es naplóalap 4 lesz, 
+00:21:09,473 --> 00:21:10,760
+mert ezek nagyon homályosak.
 
 370
-00:20:47,351 --> 00:20:50,040
-mivel mindegyik 1 és 4, és ez 2. 
+00:21:11,500 --> 00:21:14,260
+Most hadd kérdezzem meg, mekkora ennek az eloszlásnak az entrópiája?
 
 371
-00:20:50,040 --> 00:20:52,460
-Két bit információ, négy lehetőség. 
+00:21:15,420 --> 00:21:19,315
+Ha az entrópia pusztán az egyezések számát mérné, akkor azt várhatnánk, 
 
 372
-00:20:52,760 --> 00:20:53,580
-Minden nagyon jó és jó. 
+00:21:19,315 --> 00:21:22,183
+hogy ez valami olyasmi, mint a 16 logbázis 2, ami 4, 
 
 373
-00:20:54,300 --> 00:20:57,800
-De mi lenne, ha azt mondanám, hogy valójában négynél több meccs van? 
+00:21:22,183 --> 00:21:25,700
+azaz kettővel több bit bizonytalanságot jelentene, mint korábban.
 
 374
-00:20:58,260 --> 00:21:02,460
-A valóságban, ha végignézzük a teljes szólistát, 16 szó van, ami megfelel. 
+00:21:26,180 --> 00:21:29,132
+De természetesen a tényleges bizonytalanság nem sokban különbözik attól, 
 
 375
-00:21:02,580 --> 00:21:06,746
-De tegyük fel, hogy a modellünk nagyon alacsony valószínűséggel teszi azt a másik 
+00:21:29,132 --> 00:21:29,860
+ami korábban volt.
 
 376
-00:21:06,746 --> 00:21:10,760
-12 szót a végső válasznak, valami 1 az 1000-hez, mert ezek valóban homályosak. 
+00:21:30,160 --> 00:21:33,661
+Csak azért, mert van ez a 12 igazán homályos szó, még nem jelenti azt, 
 
 377
-00:21:11,500 --> 00:21:14,260
-Most pedig hadd kérdezzem meg, mi ennek az eloszlásnak az entrópiája? 
+00:21:33,661 --> 00:21:37,360
+hogy még meglepőbb lenne, ha megtudnánk, hogy a végső válasz például a báj.
 
 378
-00:21:15,420 --> 00:21:18,436
-Ha az entrópia pusztán az egyezések számát mérné itt, 
+00:21:38,180 --> 00:21:41,757
+Ha tehát ténylegesen elvégezzük a számítást, és összeadjuk az egyes 
 
 379
-00:21:18,436 --> 00:21:21,118
-akkor azt várhatnánk, hogy valami olyasmi lesz, 
+00:21:41,757 --> 00:21:46,020
+előfordulások valószínűségét és a megfelelő információt, akkor 2,11 bitet kapunk.
 
 380
-00:21:21,118 --> 00:21:25,700
-mint a 16-os 2-es log-alap, ami 4, két bittel több bizonytalanság, mint korábban. 
-
-381
-00:21:26,180 --> 00:21:29,860
-De természetesen a tényleges bizonytalanság nem igazán különbözik a korábbiaktól. 
-
-382
-00:21:30,160 --> 00:21:33,884
-Csak azért, mert ott van ez a 12 nagyon homályos szó, még nem jelenti azt, 
-
-383
-00:21:33,884 --> 00:21:37,360
-hogy még meglepőbb lenne megtudni, hogy a végső válasz például a báj. 
-
-384
-00:21:38,180 --> 00:21:41,820
-Tehát amikor itt elvégzi a számítást, és összeadja az egyes előfordulások 
-
-385
-00:21:41,820 --> 00:21:45,560
-valószínűségét a megfelelő információ szorzatával, akkor 2-t kap. 11 bites. 
-
-386
-00:21:45,560 --> 00:21:49,552
+00:21:46,020 --> 00:21:49,671
 Csak azt mondom, hogy ez alapvetően két bit, alapvetően ez a négy lehetőség, 
 
+381
+00:21:49,671 --> 00:21:53,465
+de van egy kicsit több bizonytalanság a sok nagyon valószínűtlen esemény miatt, 
+
+382
+00:21:53,465 --> 00:21:56,500
+bár ha megtudnád őket, akkor rengeteg információt kapnál belőle.
+
+383
+00:21:57,160 --> 00:21:59,221
+Szóval, ha kicsinyítünk, ez az, ami a Wordle-t olyan 
+
+384
+00:21:59,221 --> 00:22:01,400
+szép példává teszi egy információelméleti lecke számára.
+
+385
+00:22:01,600 --> 00:22:04,640
+Az entrópiának ez a két különböző érzésű alkalmazása van.
+
+386
+00:22:05,160 --> 00:22:08,072
+Az első azt mondja meg, hogy mi a várható információ, 
+
 387
-00:21:49,552 --> 00:21:53,648
-de egy kicsit több a bizonytalanság a rendkívül valószínűtlen események miatt, 
+00:22:08,072 --> 00:22:10,876
+amit egy adott tippből kapunk, a második pedig azt, 
 
 388
-00:21:53,648 --> 00:21:56,500
-bár ha megismernéd őket, rengeteg információhoz jutna. 
+00:22:10,876 --> 00:22:15,460
+hogy meg tudjuk-e mérni a fennmaradó bizonytalanságot az összes lehetséges szó közül.
 
 389
-00:21:57,160 --> 00:21:59,342
-Tehát a kicsinyítés része annak, ami miatt a Wordle 
+00:22:16,460 --> 00:22:18,775
+És hangsúlyoznom kell, hogy ebben az első esetben, 
 
 390
-00:21:59,342 --> 00:22:01,400
-olyan szép példa egy információelméleti leckére. 
+00:22:18,775 --> 00:22:22,724
+amikor egy találgatás várható információját nézzük, ha a szavak súlyozása egyenlőtlen, 
 
 391
-00:22:01,600 --> 00:22:04,640
-Az entrópiának ez a két eltérő érzésalkalmazása van. 
+00:22:22,724 --> 00:22:24,540
+az hatással van az entrópia számítására.
 
 392
-00:22:05,160 --> 00:22:07,984
-Az első azt mondja meg, hogy mi a várt információ, 
+00:22:24,980 --> 00:22:29,081
+Hadd vegyem például elő ugyanazt az esetet, amit korábban a Weary szóhoz kapcsolódó 
 
 393
-00:22:07,984 --> 00:22:11,528
-amelyet egy adott sejtésből kapunk, a második pedig azt mondja, 
+00:22:29,081 --> 00:22:33,427
+eloszlásról néztünk, de ezúttal nem egyenletes eloszlást használunk az összes lehetséges 
 
 394
-00:22:11,528 --> 00:22:15,460
-hogy mérhetjük-e az összes lehetséges szó fennmaradó bizonytalanságát. 
+00:22:33,427 --> 00:22:33,720
+szóra.
 
 395
-00:22:16,460 --> 00:22:18,749
-És hangsúlyoznom kell, hogy abban az első esetben, 
+00:22:34,500 --> 00:22:38,280
+Hadd nézzem, hátha találok itt egy részt, amely elég jól illusztrálja ezt.
 
 396
-00:22:18,749 --> 00:22:21,083
-amikor a feltételezés várható információját nézzük, 
+00:22:40,940 --> 00:22:42,360
+Oké, itt van, ez elég jó.
 
 397
-00:22:21,083 --> 00:22:24,540
-ha a szavak egyenlőtlen súlyozása van, az befolyásolja az entrópiaszámítást. 
+00:22:42,360 --> 00:22:46,622
+Itt van két szomszédos minta, amelyek nagyjából egyforma valószínűségűek, 
 
 398
-00:22:24,980 --> 00:22:29,400
-Például hadd húzzam fel ugyanazt az esetet, amelyet korábban megvizsgáltunk a Weary-hez 
+00:22:46,622 --> 00:22:49,100
+de az egyiknek 32 lehetséges szó felel meg.
 
 399
-00:22:29,400 --> 00:22:33,720
-kapcsolódó eloszlásról, de ezúttal nem egységes eloszlást használva az összes szóban. 
+00:22:49,280 --> 00:22:52,583
+És ha megnézzük, hogy mik ezek, ez az a 32, amelyek mind csak nagyon 
 
 400
-00:22:34,500 --> 00:22:38,280
-Szóval hadd lássam, találok-e itt olyan részt, ami elég jól illusztrálja. 
+00:22:52,583 --> 00:22:55,600
+valószínűtlen szavak, ahogy végigpásztázzuk a szemünket rajtuk.
 
 401
-00:22:40,940 --> 00:22:42,360
-Oké, ez itt nagyon jó. 
+00:22:55,840 --> 00:22:59,510
+Nehéz olyanokat találni, amelyek hihető válasznak tűnnek, esetleg kiabálnak, 
 
 402
-00:22:42,360 --> 00:22:46,054
-Itt van két szomszédos mintánk, amelyek körülbelül egyformán valószínűek, 
+00:22:59,510 --> 00:23:01,988
+de ha megnézzük a szomszédos mintát az eloszlásban, 
 
 403
-00:22:46,054 --> 00:22:49,100
-de az egyiknek 32 lehetséges szója van, amelyek megfelelnek. 
+00:23:01,988 --> 00:23:04,944
+amelyet éppen olyan valószínűnek tartanak, akkor azt mondják, 
 
 404
-00:22:49,280 --> 00:22:52,414
-És ha megnézzük, hogy mik ezek, ez az a 32, amelyek mind csak 
+00:23:04,944 --> 00:23:06,660
+hogy csak 8 lehetséges egyezése van.
 
 405
-00:22:52,414 --> 00:22:55,600
-nagyon valószínűtlen szavak, ahogy végignézed rajtuk a szemed. 
+00:23:06,880 --> 00:23:09,520
+Tehát negyedannyi meccs, de nagyjából ugyanannyi a valószínűsége.
 
 406
-00:22:55,840 --> 00:22:59,595
-Nehéz találni olyanokat, amelyek elfogadható válasznak tűnnek, esetleg kiabálásnak, 
+00:23:09,860 --> 00:23:12,140
+És amikor elővesszük ezeket a mérkőzéseket, láthatjuk, hogy miért.
 
 407
-00:22:59,595 --> 00:23:02,054
-de ha megnézzük a szomszédos mintát a disztribúcióban, 
+00:23:12,500 --> 00:23:16,300
+Ezek közül néhány valóban hihető válasz, mint a gyűrű, a harag vagy a rap.
 
 408
-00:23:02,054 --> 00:23:04,960
-amelyet nagyjából ugyanolyan valószínűnek tartanak, azt mondják, 
+00:23:17,900 --> 00:23:20,272
+Annak illusztrálására, hogy mindezt hogyan építjük be, 
 
 409
-00:23:04,960 --> 00:23:07,910
-hogy csak 8 lehetséges egyezése van, tehát egy negyede sok meccs, 
+00:23:20,272 --> 00:23:22,300
+hadd mutassam be a Wordlebot második verzióját.
 
 410
-00:23:07,910 --> 00:23:09,520
-de nagyjából ennyi a valószínűsége. 
+00:23:22,560 --> 00:23:25,280
+És van két-három fő különbség az elsőhöz képest, amit láttunk.
 
 411
-00:23:09,860 --> 00:23:12,140
-És amikor felhúzzuk ezeket a meccseket, láthatjuk, miért. 
+00:23:25,860 --> 00:23:29,597
+Először is, ahogy az imént említettem, az a mód, ahogyan ezeket az entrópiákat, 
 
 412
-00:23:12,500 --> 00:23:16,300
-Ezek közül néhány ténylegesen elfogadható válasz, például csengetés, harag vagy rap. 
+00:23:29,597 --> 00:23:33,755
+az információ várható értékeit kiszámítjuk, most a mintákon belüli finomabb eloszlásokat 
 
 413
-00:23:17,900 --> 00:23:21,756
-Annak szemléltetésére, hogyan építjük be mindezt, hadd húzzam ide a Wordlebot 2. 
+00:23:33,755 --> 00:23:36,558
+használja, amelyek magukban foglalják annak valószínűségét, 
 
 414
-00:23:21,756 --> 00:23:25,280
-verzióját, és két-három fő különbség van az elsőhöz képest, amit láttunk. 
+00:23:36,558 --> 00:23:38,240
+hogy egy adott szó valóban a válasz.
 
 415
-00:23:25,860 --> 00:23:29,703
-Először is, ahogy az imént mondtam, az a mód, ahogyan ezeket az entrópiákat, 
+00:23:38,880 --> 00:23:41,511
+Történetesen a könnyek még mindig az első helyen állnak, 
 
 416
-00:23:29,703 --> 00:23:34,146
-az információ várható értékeit kiszámítjuk, most a minták finomabb eloszlását használja, 
+00:23:41,511 --> 00:23:43,820
+bár az utánuk következők kicsit másképp néznek ki.
 
 417
-00:23:34,146 --> 00:23:38,240
-amely magában foglalja annak valószínűségét, hogy egy adott szó valóban a válasz. 
-
-418
-00:23:38,879 --> 00:23:42,120
-Megtörténik, hogy a könnyek továbbra is az 1. helyen állnak, 
-
-419
-00:23:42,120 --> 00:23:43,820
-bár a következő egy kicsit más. 
-
-420
-00:23:44,360 --> 00:23:46,847
+00:23:44,360 --> 00:23:46,663
 Másodszor, amikor rangsorolja a legjobb választásokat, 
 
+418
+00:23:46,663 --> 00:23:49,384
+akkor mostantól egy modellt fog vezetni arról a valószínűségről, 
+
+419
+00:23:49,384 --> 00:23:52,358
+hogy az egyes szavak a tényleges válaszok, és ezt beépíti a döntésébe, 
+
+420
+00:23:52,358 --> 00:23:55,080
+ami könnyebben látható, ha már van néhány találgatás az asztalon.
+
 421
-00:23:46,847 --> 00:23:49,561
-most modellt fog tartani annak valószínűségére vonatkozóan, 
+00:23:55,860 --> 00:23:58,394
+Ismét figyelmen kívül hagyva az ajánlását, mert nem hagyhatjuk, 
 
 422
-00:23:49,561 --> 00:23:53,632
-hogy minden szó a tényleges válasz, és ezt beépíti a döntésébe, ami könnyebben belátható, 
+00:23:58,394 --> 00:23:59,780
+hogy gépek irányítsák az életünket.
 
 423
-00:23:53,632 --> 00:23:55,080
-ha van néhány tippünk a asztal. 
+00:24:01,140 --> 00:24:04,142
+És azt hiszem, meg kell említenem egy másik dolgot, ami itt más, 
 
 424
-00:23:55,860 --> 00:23:58,394
-Ismét figyelmen kívül hagyjuk az ajánlást, mert nem hagyhatjuk, 
+00:24:04,142 --> 00:24:06,914
+a bal oldalon, hogy a bizonytalansági érték, a bitek száma, 
 
 425
-00:23:58,394 --> 00:23:59,780
-hogy a gépek irányítsák életünket. 
+00:24:06,914 --> 00:24:09,640
+már nem csak a lehetséges egyezések számának redundanciája.
 
 426
-00:24:01,140 --> 00:24:04,891
-És azt hiszem, meg kell említenem egy másik dolgot, ami itt a bal oldalon van, 
+00:24:10,080 --> 00:24:15,234
+Ha most felhúzzuk és kiszámítjuk a 2-t a 8,02-hez, ami egy kicsit több mint 256, 
 
 427
-00:24:04,891 --> 00:24:09,165
-hogy a bizonytalansági érték, a bitek száma már nem csak redundáns a lehetséges egyezések 
+00:24:15,234 --> 00:24:19,370
+azt hiszem 259, akkor azt mondja, hogy bár összesen 526 szó van, 
 
 428
-00:24:09,165 --> 00:24:09,640
-számával. 
+00:24:19,370 --> 00:24:24,143
+ami ténylegesen megfelel ennek a mintának, a bizonytalanság mértéke inkább 
 
 429
-00:24:10,080 --> 00:24:15,015
-Ha most felhúzzuk és kiszámoljuk a 2-t a 8-hoz. 02, ami valamivel 256 felett van, 
+00:24:24,143 --> 00:24:28,980
+hasonlít ahhoz, ami akkor lenne, ha 259 egyformán valószínű kimenetel lenne.
 
 430
-00:24:15,015 --> 00:24:19,289
-azt hiszem, 259, amit mond, annak ellenére, hogy összesen 526 szó van, 
+00:24:29,720 --> 00:24:30,740
+Gondolhatod ezt így is.
 
 431
-00:24:19,289 --> 00:24:23,803
-amely valójában megfelel ennek a mintának, a bizonytalanság mértéke inkább 
+00:24:31,020 --> 00:24:34,660
+Tudja, hogy a borks nem a válasz, ugyanúgy, mint a yorts, a zorl és a zorus.
 
 432
-00:24:23,803 --> 00:24:28,980
-hasonlít ahhoz, ami akkor lenne, ha 259 ugyanolyan valószínűséggel lenne. eredmények. 
+00:24:34,660 --> 00:24:37,680
+Tehát ez egy kicsit kevésbé bizonytalan, mint az előző esetben.
 
 433
-00:24:29,720 --> 00:24:30,740
-Ezt így is el lehet képzelni. 
+00:24:37,820 --> 00:24:39,280
+Ez a bitek száma kisebb lesz.
 
 434
-00:24:31,020 --> 00:24:33,888
-Tudja, hogy nem a borx a megoldás, ugyanúgy, mint a yorts, 
+00:24:40,220 --> 00:24:44,012
+És ha tovább játszom a játékot, akkor ezt finomítom le egy pár találgatással, 
 
 435
-00:24:33,888 --> 00:24:37,680
-a zorl és a zorus, így egy kicsit kevésbé bizonytalan, mint az előző esetben. 
+00:24:44,012 --> 00:24:46,540
+ami apropója annak, amit itt szeretnék elmagyarázni.
 
 436
-00:24:37,820 --> 00:24:39,280
-Ez a bitszám kisebb lesz. 
+00:24:48,360 --> 00:24:50,985
+A negyedik tippnél, ha megnézzük a legjobb tippjeit, 
 
 437
-00:24:40,220 --> 00:24:43,455
-És ha folytatom a játékot, finomítok ezen néhány találgatással, 
+00:24:50,985 --> 00:24:53,760
+láthatjuk, hogy már nem csak az entrópiát maximalizálja.
 
 438
-00:24:43,455 --> 00:24:46,540
-amelyek megfelelnek annak, amit itt el szeretnék magyarázni. 
+00:24:54,460 --> 00:24:57,597
+Tehát jelenleg technikailag hét lehetőség van, de az egyetlenek, 
 
 439
-00:24:48,360 --> 00:24:50,822
-A negyedik tippre, ha megnézzük a legjobb választásokat, 
+00:24:57,597 --> 00:25:00,300
+amelyeknek érdemi esélye van, a kollégiumok és a szavak.
 
 440
-00:24:50,822 --> 00:24:53,760
-láthatjuk, hogy már nem csak az entrópia maximalizálásáról van szó. 
+00:25:00,300 --> 00:25:03,992
+És láthatod, hogy mindkettőt az összes többi érték fölé helyezi, 
 
 441
-00:24:54,460 --> 00:24:57,352
-Tehát ezen a ponton technikailag hét lehetőség van, 
+00:25:03,992 --> 00:25:06,720
+amelyek szigorúan véve több információt adnának.
 
 442
-00:24:57,352 --> 00:25:00,300
-de csak a kollégiumoknak és a szavaknak van értelme. 
+00:25:07,240 --> 00:25:10,364
+Az első alkalommal, amikor ezt csináltam, csak összeadtam ezt a két számot, 
 
 443
-00:25:00,300 --> 00:25:04,200
-És láthatja, hogy mindkettőt választva a többi érték fölé kerül, 
+00:25:10,364 --> 00:25:13,900
+hogy mérjem az egyes tippek minőségét, ami jobban működött, mint ahogy azt gyanítanád.
 
 444
-00:25:04,200 --> 00:25:06,720
-ami szigorúan véve több információt adna. 
+00:25:14,300 --> 00:25:15,900
+De tényleg nem éreztem szisztematikusnak.
 
 445
-00:25:07,240 --> 00:25:10,242
-A legelső alkalommal, amikor ezt megtettem, csak összeadtam ezt a két számot, 
+00:25:16,100 --> 00:25:17,880
+És biztos vagyok benne, hogy az emberek más megközelítéseket is alkalmazhatnának.
 
 446
-00:25:10,242 --> 00:25:13,284
-hogy megmérjem az egyes találgatások minőségét, ami valójában jobban működött, 
+00:25:17,900 --> 00:25:19,340
+De itt van az, amelyikre rátaláltam.
 
 447
-00:25:13,284 --> 00:25:13,900
-mint gondolnád. 
+00:25:19,760 --> 00:25:23,879
+Ha a következő tippelés lehetőségét mérlegeljük, mint ebben az esetben a szavakat, 
 
 448
-00:25:14,300 --> 00:25:16,445
-De tényleg nem tűnt szisztematikusnak, és biztos vagyok benne, 
+00:25:23,879 --> 00:25:27,900
+akkor az érdekel minket, hogy milyen várható pontszámot érünk el, ha ezt tesszük.
 
 449
-00:25:16,445 --> 00:25:19,340
-hogy az emberek más megközelítéseket is alkalmazhatnak, de ez az, amelyre ráakadtam. 
+00:25:28,230 --> 00:25:32,741
+És hogy kiszámítsuk ezt a várható pontszámot, azt mondjuk, hogy mi a valószínűsége annak, 
 
 450
-00:25:19,760 --> 00:25:24,403
-Ha egy következő tippelés lehetőségét vesszük fontolóra, mint ebben az esetben a szavak, 
+00:25:32,741 --> 00:25:35,900
+hogy a szavak a tényleges válasz, ami jelenleg 58% -ra írja le.
 
 451
-00:25:24,403 --> 00:25:27,900
-akkor igazán érdekel a játékunk várható pontszáma, ha ezt tesszük. 
+00:25:36,040 --> 00:25:39,540
+Azt mondjuk, hogy 58%-os eséllyel a mi pontszámunk ebben a játékban négy lenne.
 
 452
-00:25:28,230 --> 00:25:32,157
-És a várható pontszám kiszámításához megmondjuk, hogy mekkora a valószínűsége annak, 
+00:25:40,320 --> 00:25:45,640
+És akkor az egy mínusz 58%-os valószínűséggel a pontszámunk több lesz, mint a négy.
 
 453
-00:25:32,157 --> 00:25:35,900
-hogy a szavak jelentik a tényleges választ, amely pillanatnyilag 58%-át írja le. 
+00:25:46,220 --> 00:25:49,361
+Hogy mennyivel több, azt nem tudjuk, de meg tudjuk becsülni az alapján, 
 
 454
-00:25:36,040 --> 00:25:39,540
-Azt mondjuk, 58%-os eséllyel 4 lenne a pontszámunk ebben a játékban. 
+00:25:49,361 --> 00:25:52,460
+hogy mennyi bizonytalanság valószínűsíthető, ha egyszer eljutunk odáig.
 
 455
-00:25:40,320 --> 00:25:45,640
-És akkor 1 mínusz 58% valószínűséggel a pontszámunk több lesz, mint a 4. 
+00:25:52,960 --> 00:25:55,940
+Pontosabban, jelenleg 1,44 bit bizonytalanság van.
 
 456
-00:25:46,220 --> 00:25:49,692
-Hogy mennyit, azt még nem tudjuk, de meg tudjuk becsülni az alapján, 
+00:25:56,440 --> 00:26:01,120
+Ha szavakat tippelünk, akkor azt mondja, hogy a várható információ, amit kapunk, 1,27 bit.
 
 457
-00:25:49,692 --> 00:25:52,460
-hogy mennyi bizonytalanság várható, ha eljutunk odáig. 
+00:26:01,620 --> 00:26:04,438
+Ha tehát szavakat találgatunk, akkor ez a különbség azt jelzi, 
 
 458
-00:25:52,960 --> 00:25:55,940
-Pontosabban, jelenleg 1 db van. 44 bit bizonytalanság. 
+00:26:04,438 --> 00:26:07,660
+hogy mekkora bizonytalanságot hagyunk magunk után, miután ez megtörtént.
 
 459
-00:25:56,440 --> 00:26:01,120
-Ha szavakat tippelünk, az azt jelenti, hogy a várt információ 1.27 bites. 
+00:26:08,260 --> 00:26:11,000
+Szükségünk van valamilyen függvényre, amit itt f-nek nevezek, 
 
 460
-00:26:01,620 --> 00:26:04,590
-Tehát ha kitaláljuk a szavakat, ez a különbség azt mutatja, 
+00:26:11,000 --> 00:26:13,740
+amely ezt a bizonytalanságot egy várható pontszámhoz társítja.
 
 461
-00:26:04,590 --> 00:26:07,660
-hogy mennyi bizonytalanság marad ránk, miután ez megtörténik. 
+00:26:14,240 --> 00:26:18,166
+És a mód, ahogyan ezt csinálta, az volt, hogy a bot első verziója alapján egy 
 
 462
-00:26:08,260 --> 00:26:10,979
-Szükségünk van valamiféle függvényre, amelyet itt f-nek nevezek, 
+00:26:18,166 --> 00:26:21,387
+csomó adatot ábrázolt a korábbi játékokból, hogy megmondja, hé, 
 
 463
-00:26:10,979 --> 00:26:13,740
-és amely ezt a bizonytalanságot egy várható pontszámmal társítja. 
+00:26:21,387 --> 00:26:24,004
+mi volt a tényleges pontszám különböző pontok után, 
 
 464
-00:26:14,240 --> 00:26:18,374
-És úgy ment ez a dolog, hogy a bot 1. verziója alapján csak egy csomó adatot 
+00:26:24,004 --> 00:26:26,320
+bizonyos nagyon jól mérhető bizonytalansággal?
 
 465
-00:26:18,374 --> 00:26:21,004
-ábrázoltak a korábbi játékokból, hogy kimondják, 
+00:26:27,020 --> 00:26:31,144
+Például ezek az adatpontok itt, amelyek egy 8,7 körüli érték felett vannak, 
 
 466
-00:26:21,004 --> 00:26:25,031
-mi volt a tényleges pontszám különböző pontok után bizonyos nagyon mérhető 
+00:26:31,144 --> 00:26:34,509
+azt jelentik, hogy néhány játék esetében egy olyan pont után, 
 
 467
-00:26:25,031 --> 00:26:26,320
-bizonytalanság mellett. 
+00:26:34,509 --> 00:26:38,960
+ahol 8,7 bit bizonytalanság volt, két találgatásra volt szükség a végső válaszhoz.
 
 468
-00:26:27,020 --> 00:26:31,168
-Például ezek az adatpontok itt, amelyek egy 8 körüli érték felett vannak. 
+00:26:39,320 --> 00:26:40,660
+Más játékok esetében három találgatásra volt szükség.
 
 469
-00:26:31,168 --> 00:26:35,260
-Néhány meccsre körülbelül 7 mondható egy olyan pont után, amikor 8 volt. 
+00:26:40,820 --> 00:26:42,240
+Más játékoknál négy találgatás kellett.
 
 470
-00:26:35,260 --> 00:26:38,960
-7 bites bizonytalanság, két találgatás kellett a végső válaszhoz. 
+00:26:43,140 --> 00:26:46,309
+Ha itt balra toljuk, a nulla feletti pontok azt mondják, 
 
 471
-00:26:39,320 --> 00:26:42,240
-Más játékoknál három, más játékoknál négy tipp kellett. 
+00:26:46,309 --> 00:26:50,368
+hogy amikor nulla bit bizonytalanság van, vagyis csak egy lehetőség van, 
 
 472
-00:26:43,140 --> 00:26:46,663
-Ha itt átváltunk balra, a nulla feletti összes pont azt mondja, 
+00:26:50,368 --> 00:26:54,260
+akkor a szükséges találgatások száma mindig csak egy, ami megnyugtató.
 
 473
-00:26:46,663 --> 00:26:50,351
-ha nulla bitnyi bizonytalanság van, vagyis csak egy lehetőség van, 
+00:26:54,780 --> 00:26:59,503
+Amikor csak egy kis bizonytalanság volt, vagyis lényegében csak két lehetőség volt, 
 
 474
-00:26:50,351 --> 00:26:54,260
-akkor a szükséges találgatások száma mindig csak egy, ami megnyugtató. 
+00:26:59,503 --> 00:27:03,609
+akkor néha még egy találgatásra volt szükség, néha még két találgatásra, 
 
 475
-00:26:54,780 --> 00:26:57,691
-Valahányszor volt egy kis bizonytalanság, ami azt jelenti, 
+00:27:03,609 --> 00:27:05,240
+és így tovább, és így tovább.
 
 476
-00:26:57,691 --> 00:27:01,194
-hogy lényegében csak két lehetőségre volt szükség, akkor néha még egy, 
+00:27:05,740 --> 00:27:08,410
+Talán egy kicsit egyszerűbb módja az adatok megjelenítésének, 
 
 477
-00:27:01,194 --> 00:27:03,020
-néha két további találgatás kellett. 
+00:27:08,410 --> 00:27:10,220
+ha összevonjuk őket, és átlagokat veszünk.
 
 478
-00:27:03,080 --> 00:27:05,240
-És így tovább és így tovább itt. 
+00:27:11,000 --> 00:27:14,873
+Például ez a sáv itt azt mutatja, hogy az összes olyan pont közül, 
 
 479
-00:27:05,740 --> 00:27:08,437
-Talán egy kicsit egyszerűbb módja ezeknek az adatoknak az, 
+00:27:14,873 --> 00:27:19,960
+ahol egy kis bizonytalanság volt, átlagosan körülbelül 1,5 új találgatásra volt szükség.
 
 480
-00:27:08,437 --> 00:27:10,220
-ha összegyűjtjük és átlagokat veszünk. 
+00:27:22,140 --> 00:27:24,874
+A sáv itt azt mutatja, hogy az összes olyan játék közül, 
 
 481
-00:27:11,000 --> 00:27:14,559
-Például ez a sáv itt azt mondja, hogy azon pontok között, 
+00:27:24,874 --> 00:27:28,088
+ahol a bizonytalanság valamikor valamivel több mint négy bit volt, 
 
 482
-00:27:14,559 --> 00:27:19,960
-ahol volt egy kis bizonytalanságunk, átlagosan körülbelül 1 volt az új tippek száma. 5. 
+00:27:28,088 --> 00:27:31,446
+ami azt jelenti, hogy 16 különböző lehetőségre szűkítettük le a kört, 
 
 483
-00:27:22,140 --> 00:27:26,638
-És az itteni sáv azt mondja, hogy a különböző játékok között valamikor a bizonytalanság 
+00:27:31,446 --> 00:27:35,380
+átlagosan valamivel több mint két találgatásra van szükség attól a ponttól kezdve.
 
 484
-00:27:26,638 --> 00:27:31,034
-valamivel négy bit felett volt, ami olyan, mintha 16 különböző lehetőségre szűkítené, 
+00:27:36,060 --> 00:27:38,594
+És innen csak egy regressziót csináltam, hogy illeszkedjen egy olyan függvényhez, 
 
 485
-00:27:31,034 --> 00:27:35,380
-akkor átlagosan kicsivel több, mint két találgatás szükséges ettől a ponttól. előre. 
+00:27:38,594 --> 00:27:39,460
+amely ésszerűnek tűnt ehhez.
 
 486
-00:27:36,060 --> 00:27:38,092
-És innen csak egy regressziót végeztem, hogy illeszkedjek 
+00:27:39,980 --> 00:27:44,341
+És ne feledjük, hogy mindez azért van, hogy számszerűsíteni tudjuk azt az intuíciót, 
 
 487
-00:27:38,092 --> 00:27:39,460
-egy ehhez ésszerűnek tűnő függvényhez. 
+00:27:44,341 --> 00:27:48,960
+hogy minél több információt nyerünk egy szóból, annál alacsonyabb lesz a várható pontszám.
 
 488
-00:27:39,980 --> 00:27:42,545
-És ne feledje, hogy ennek az egésznek az a lényege, 
+00:27:49,680 --> 00:27:54,964
+Tehát, ezzel a 2.0-s verzióval, ha visszamegyünk, és lefuttatjuk ugyanazt a szimulációt, 
 
 489
-00:27:42,545 --> 00:27:46,838
-hogy számszerűsítsük azt az intuíciót, hogy minél több információt nyerünk egy szóból, 
+00:27:54,964 --> 00:27:59,240
+és mind a 2315 lehetséges wordle-válasz ellen játszunk, hogyan teljesít?
 
 490
-00:27:46,838 --> 00:27:48,960
-annál alacsonyabb lesz az elvárt pontszám. 
+00:28:00,280 --> 00:28:03,420
+Nos, az első verzióhoz képest határozottan jobb, ami megnyugtató.
 
 491
-00:27:49,680 --> 00:27:52,785
-Tehát ezzel a 2-es verzióval. 0, ha visszamegyünk, 
+00:28:04,020 --> 00:28:06,180
+Mindent összevetve, az átlag 3,6 körül van.
 
 492
-00:27:52,785 --> 00:27:58,265
-és ugyanazt a szimulációkészletet futtatjuk, ha mind a 2315 szóbeli válasz ellen játszik, 
+00:28:06,540 --> 00:28:09,228
+Bár az első változattal ellentétben van egy párszor, 
 
 493
-00:27:58,265 --> 00:27:59,240
-hogyan működik? 
+00:28:09,228 --> 00:28:12,120
+hogy veszít, és hatnál többet igényel ebben a helyzetben.
 
 494
-00:28:00,280 --> 00:28:03,420
-Nos, az első verziónkkal ellentétben határozottan jobb, ami megnyugtató. 
+00:28:12,640 --> 00:28:15,269
+Feltehetően azért, mert van, amikor az információ maximalizálása 
 
 495
-00:28:04,020 --> 00:28:08,513
-Az átlag 3 körül van. 6, bár az első verziótól eltérően van néhány alkalom, 
+00:28:15,269 --> 00:28:17,940
+helyett inkább a cél elérése érdekében kell kompromisszumot kötni.
 
 496
-00:28:08,513 --> 00:28:12,120
-amikor elveszíti, és ebben az esetben hatnál többet igényel. 
+00:28:19,040 --> 00:28:21,000
+Szóval, tudunk-e jobbat nyújtani 3,6-nál?
 
 497
-00:28:12,639 --> 00:28:15,154
-Feltehetően azért, mert vannak esetek, amikor kompromisszumot kell kötni, 
+00:28:22,080 --> 00:28:22,920
+Határozottan megtehetjük.
 
 498
-00:28:15,154 --> 00:28:17,940
-hogy ténylegesen a célt szolgálják, ahelyett, hogy maximalizálnák az információt. 
+00:28:23,280 --> 00:28:25,425
+Nos, az elején azt mondtam, hogy a legszórakoztatóbb, 
 
 499
-00:28:19,040 --> 00:28:21,000
-Tehát tudunk jobbat csinálni, mint a 3.6? 
+00:28:25,425 --> 00:28:28,207
+ha megpróbáljuk nem beépíteni a wordle válaszok valódi listáját abba, 
 
 500
-00:28:22,080 --> 00:28:22,920
-Biztosan tudunk. 
+00:28:28,207 --> 00:28:29,360
+ahogyan a modelljét felépíti.
 
 501
-00:28:23,280 --> 00:28:25,769
-Most már az elején azt mondtam, hogy az a legszórakoztatóbb, 
+00:28:29,880 --> 00:28:34,180
+De ha mégis beépítjük, a legjobb teljesítmény, amit kaptam, 3,43 körül volt.
 
 502
-00:28:25,769 --> 00:28:29,360
-ha megpróbáljuk nem a szóbeli válaszok valódi listáját beépíteni a modell felépítésébe. 
+00:28:35,160 --> 00:28:37,027
+Tehát ha megpróbálunk kifinomultabbak lenni annál, 
 
 503
-00:28:29,880 --> 00:28:34,180
-De ha beépítjük, a legjobb teljesítmény, amit elérhettem, 3 körül volt. 43. 
+00:28:37,027 --> 00:28:40,285
+minthogy csak a szógyakorisági adatokat használjuk az előzetes eloszlás kiválasztásához, 
 
 504
-00:28:35,160 --> 00:28:37,045
-Tehát ha megpróbálunk kifinomultabb lenni annál, 
+00:28:40,285 --> 00:28:42,298
+akkor ez a 3,43 valószínűleg megadja a maximumot arra, 
 
 505
-00:28:37,045 --> 00:28:39,545
-mint hogy pusztán a szógyakorisági adatokat használjuk a korábbi 
+00:28:42,298 --> 00:28:44,312
+hogy milyen jót tudnánk elérni ezzel, vagy legalábbis, 
 
 506
-00:28:39,545 --> 00:28:42,508
-eloszlás kiválasztásához, akkor ez a 3. A 43 valószínűleg maximumot ad arra, 
+00:28:44,312 --> 00:28:45,740
+hogy én milyen jót tudnék elérni ezzel.
 
 507
-00:28:42,508 --> 00:28:45,740
-hogy ezzel mennyire lehetünk jók, vagy legalábbis én milyen jót tudok ezzel elérni. 
+00:28:46,240 --> 00:28:49,433
+Ez a legjobb teljesítmény lényegében csak azokat az ötleteket használja, 
 
 508
-00:28:46,240 --> 00:28:49,465
-Ez a legjobb teljesítmény lényegében csak azokat az ötleteket használja fel, 
+00:28:49,433 --> 00:28:51,751
+amelyekről itt beszéltem, de egy kicsit tovább megy, 
 
 509
-00:28:49,465 --> 00:28:51,852
-amelyekről itt beszéltem, de egy kicsit messzebbre megy, 
+00:28:51,751 --> 00:28:55,120
+például a várt információ keresése két lépéssel előre, nem pedig csak eggyel.
 
 510
-00:28:51,852 --> 00:28:55,120
-például két lépéssel előre keresi a várt információkat, nem pedig csak egyet. 
+00:28:55,620 --> 00:28:57,963
+Eredetileg azt terveztem, hogy többet beszélek erről, 
 
 511
-00:28:55,620 --> 00:28:58,175
-Eredetileg azt terveztem, hogy többet fogok beszélni erről, 
+00:28:57,963 --> 00:29:00,220
+de rájöttem, hogy már így is elég hosszúra nyúltunk.
 
 512
-00:28:58,175 --> 00:29:00,220
-de rájöttem, hogy valójában elég régen mentünk. 
+00:29:00,580 --> 00:29:04,028
+Az egyetlen dolog, amit mondhatok, hogy miután elvégeztem ezt a kétlépcsős keresést, 
 
 513
-00:29:00,580 --> 00:29:03,769
-Az egyetlen dolog, amit elmondok, miután elvégeztem ezt a kétlépcsős keresést, 
+00:29:04,028 --> 00:29:06,503
+majd lefuttattam néhány mintaszimulációt a csúcsjelölteknél, 
 
 514
-00:29:03,769 --> 00:29:06,394
-majd lefuttattam néhány minta szimulációt a legjobb jelöltekben, 
+00:29:06,503 --> 00:29:09,100
+eddig legalábbis számomra úgy tűnik, hogy Crane a legjobb nyitó.
 
 515
-00:29:06,394 --> 00:29:09,100
-legalábbis eddig számomra úgy tűnik, hogy a Crane a legjobb nyitó. 
+00:29:09,100 --> 00:29:10,060
+Ki gondolta volna?
 
 516
-00:29:09,100 --> 00:29:10,060
-Ki sejtette volna? 
+00:29:10,920 --> 00:29:14,587
+Ha a valódi wordle-listát használod a lehetőségek körének meghatározásához, 
 
 517
-00:29:10,920 --> 00:29:14,481
-Ha a valódi szólistát használja a lehetőségek meghatározásához, 
+00:29:14,587 --> 00:29:17,820
+akkor a bizonytalanság, amivel indulsz, valamivel több mint 11 bit.
 
 518
-00:29:14,481 --> 00:29:17,820
-akkor a kezdeti bizonytalanság valamivel több, mint 11 bit. 
+00:29:18,300 --> 00:29:21,975
+És kiderül, hogy a nyers erővel végzett keresés alapján az első 
 
 519
-00:29:18,300 --> 00:29:21,157
-És kiderült, pusztán egy brute force keresésből, 
+00:29:21,975 --> 00:29:25,880
+két találgatás után a maximális várható információ 10 bit körül van.
 
 520
-00:29:21,157 --> 00:29:25,880
-az első két találgatás után a maximálisan elvárható információ 10 bit körül van. 
+00:29:26,500 --> 00:29:30,261
+Ami azt sugallja, hogy a legjobb esetben az első két találgatás után, 
 
 521
-00:29:26,500 --> 00:29:30,283
-Ez azt sugallja, hogy a legjobb esetben az első két találgatás után, 
+00:29:30,261 --> 00:29:34,560
+tökéletesen optimális játék mellett, körülbelül egy bitnyi bizonytalanság marad.
 
 522
-00:29:30,283 --> 00:29:34,560
-tökéletesen optimális játék mellett, körülbelül egy kis bizonytalanság marad. 
+00:29:34,800 --> 00:29:37,320
+Ami ugyanaz, mintha csak két lehetséges tipp lenne.
 
 523
-00:29:34,800 --> 00:29:37,960
-Ez ugyanaz, mintha két lehetséges találgatásra támaszkodnánk. 
+00:29:37,740 --> 00:29:40,959
+De azt hiszem, tisztességes és valószínűleg elég konzervatív azt mondani, 
 
 524
-00:29:37,960 --> 00:29:41,776
-Szóval szerintem tisztességes és valószínűleg meglehetősen konzervatív azt állítani, 
+00:29:40,959 --> 00:29:44,614
+hogy soha nem lehet olyan algoritmust írni, amely ezt az átlagot háromra csökkenti, 
 
 525
-00:29:41,776 --> 00:29:45,413
-hogy soha nem tudna olyan algoritmust írni, amelynél ez az átlag 3-ra csökkenne, 
+00:29:44,614 --> 00:29:47,660
+mert a rendelkezésre álló szavakkal egyszerűen nincs elég hely ahhoz, 
 
 526
-00:29:45,413 --> 00:29:49,229
-mert a rendelkezésünkre álló szavakkal egyszerűen nincs helye elegendő információhoz 
+00:29:47,660 --> 00:29:50,096
+hogy két lépés után elegendő információt kapjunk ahhoz, 
 
 527
-00:29:49,229 --> 00:29:53,000
-két lépés után. minden alkalommal hiba nélkül garantálni tudja a választ a harmadik 
-
-528
-00:29:53,000 --> 00:29:53,360
-résben. 
+00:29:50,096 --> 00:29:53,360
+hogy a harmadik résben minden egyes alkalommal garantálni tudjuk a választ.
 
