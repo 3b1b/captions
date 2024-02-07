@@ -1,0 +1,1148 @@
+1
+00:00:04,220 --> 00:00:05,400
+Este é um 3.
+
+2
+00:00:06,060 --> 00:00:10,460
+É mal escrito e renderizado em uma resolução extremamente baixa de 28x28 pixels, 
+
+3
+00:00:10,460 --> 00:00:13,720
+mas seu cérebro não tem problemas em reconhecê-lo como um 3.
+
+4
+00:00:14,340 --> 00:00:16,545
+E quero que você pare um momento para avaliar como é 
+
+5
+00:00:16,545 --> 00:00:18,960
+louco que o cérebro possa fazer isso com tanta facilidade.
+
+6
+00:00:19,700 --> 00:00:23,268
+Quero dizer, isso, isso e isso também são reconhecíveis como 3s, 
+
+7
+00:00:23,268 --> 00:00:27,716
+embora os valores específicos de cada pixel sejam muito diferentes de uma imagem 
+
+8
+00:00:27,716 --> 00:00:28,320
+para outra.
+
+9
+00:00:28,900 --> 00:00:32,775
+As células sensíveis à luz em seu olho que disparam quando você vê 
+
+10
+00:00:32,775 --> 00:00:36,940
+este 3 são muito diferentes daquelas que disparam quando você vê este 3.
+
+11
+00:00:37,520 --> 00:00:40,942
+Mas algo nesse seu córtex visual extremamente inteligente 
+
+12
+00:00:40,942 --> 00:00:44,424
+resolve que elas representam a mesma ideia, ao mesmo tempo 
+
+13
+00:00:44,424 --> 00:00:48,260
+que reconhece outras imagens como suas próprias ideias distintas.
+
+14
+00:00:49,220 --> 00:00:54,938
+Mas se eu lhe dissesse, ei, sente-se e escreva para mim um programa que pegue uma grade 
+
+15
+00:00:54,938 --> 00:00:59,227
+de 28x28 pixels como esta e produza um único número entre 0 e 10, 
+
+16
+00:00:59,227 --> 00:01:04,555
+dizendo o que ele acha que é o dígito, bem, a tarefa vai de comicamente trivial a 
+
+17
+00:01:04,555 --> 00:01:06,180
+assustadoramente difícil.
+
+18
+00:01:07,160 --> 00:01:09,081
+A menos que você esteja vivendo sob uma rocha, 
+
+19
+00:01:09,081 --> 00:01:11,574
+acho que não preciso motivar a relevância e a importância do 
+
+20
+00:01:11,574 --> 00:01:14,640
+aprendizado de máquina e das redes neurais para o presente e para o futuro.
+
+21
+00:01:15,120 --> 00:01:18,218
+Mas o que quero fazer aqui é mostrar o que realmente é uma rede neural, 
+
+22
+00:01:18,218 --> 00:01:21,920
+sem assumir nenhum conhecimento prévio, e ajudar a visualizar o que ela está fazendo, 
+
+23
+00:01:21,920 --> 00:01:24,460
+não como uma palavra da moda, mas como uma peça matemática.
+
+24
+00:01:25,020 --> 00:01:28,312
+Minha esperança é que você saia sentindo que a própria estrutura 
+
+25
+00:01:28,312 --> 00:01:31,452
+está motivada e sinta que sabe o que isso significa quando lê 
+
+26
+00:01:31,452 --> 00:01:34,340
+ou ouve sobre um aprendizado de rede neural, entre aspas.
+
+27
+00:01:35,360 --> 00:01:38,530
+Este vídeo será dedicado apenas ao componente de estrutura disso, 
+
+28
+00:01:38,530 --> 00:01:40,260
+e o seguinte abordará o aprendizado.
+
+29
+00:01:40,960 --> 00:01:43,473
+O que vamos fazer é montar uma rede neural que 
+
+30
+00:01:43,473 --> 00:01:46,040
+possa aprender a reconhecer dígitos manuscritos.
+
+31
+00:01:49,360 --> 00:01:52,245
+Este é um exemplo um tanto clássico de introdução ao tópico, 
+
+32
+00:01:52,245 --> 00:01:55,794
+e estou feliz em manter o status quo aqui, porque no final dos dois vídeos 
+
+33
+00:01:55,794 --> 00:01:59,153
+quero apontar alguns bons recursos onde você pode aprender mais e onde 
+
+34
+00:01:59,153 --> 00:02:03,080
+você pode baixar o código que faz isso e brincar com ele em seu próprio computador.
+
+35
+00:02:05,040 --> 00:02:08,574
+Existem muitas variantes de redes neurais e, nos últimos anos, 
+
+36
+00:02:08,574 --> 00:02:11,717
+houve uma espécie de boom na pesquisa dessas variantes, 
+
+37
+00:02:11,717 --> 00:02:16,430
+mas nesses dois vídeos introdutórios você e eu vamos apenas dar uma olhada na forma 
+
+38
+00:02:16,430 --> 00:02:19,180
+mais simples e simples, sem frescuras adicionais.
+
+39
+00:02:19,860 --> 00:02:24,282
+Este é um pré-requisito necessário para a compreensão de qualquer uma das variantes 
+
+40
+00:02:24,282 --> 00:02:28,600
+modernas mais poderosas e, acredite, ainda há muita complexidade para entendermos.
+
+41
+00:02:29,120 --> 00:02:33,273
+Mas mesmo nesta forma mais simples ele pode aprender a reconhecer dígitos manuscritos, 
+
+42
+00:02:33,273 --> 00:02:36,520
+o que é uma coisa muito legal para um computador ser capaz de fazer.
+
+43
+00:02:37,480 --> 00:02:40,117
+E, ao mesmo tempo, você verá como isso fica aquém 
+
+44
+00:02:40,117 --> 00:02:42,280
+de algumas esperanças que poderíamos ter.
+
+45
+00:02:43,380 --> 00:02:48,500
+Como o nome sugere, as redes neurais são inspiradas no cérebro, mas vamos analisar isso.
+
+46
+00:02:48,520 --> 00:02:51,660
+O que são os neurônios e em que sentido eles estão interligados?
+
+47
+00:02:52,500 --> 00:02:56,383
+Neste momento, quando digo neurônio, tudo que quero que você pense 
+
+48
+00:02:56,383 --> 00:03:00,440
+é em algo que contém um número, especificamente um número entre 0 e 1.
+
+49
+00:03:00,680 --> 00:03:02,560
+Na verdade não é mais do que isso.
+
+50
+00:03:03,780 --> 00:03:08,892
+Por exemplo, a rede começa com um grupo de neurônios correspondentes a 
+
+51
+00:03:08,892 --> 00:03:14,220
+cada um dos 28x28 pixels da imagem de entrada, que totaliza 784 neurônios.
+
+52
+00:03:14,700 --> 00:03:19,385
+Cada um deles contém um número que representa o valor da escala de cinza do 
+
+53
+00:03:19,385 --> 00:03:24,380
+pixel correspondente, variando de 0 para pixels pretos até 1 para pixels brancos.
+
+54
+00:03:25,300 --> 00:03:28,199
+Esse número dentro do neurônio é chamado de ativação, 
+
+55
+00:03:28,199 --> 00:03:32,549
+e a imagem que você pode ter em mente aqui é que cada neurônio fica aceso quando 
+
+56
+00:03:32,549 --> 00:03:34,160
+sua ativação é um número alto.
+
+57
+00:03:36,720 --> 00:03:41,860
+Portanto, todos esses 784 neurônios constituem a primeira camada da nossa rede.
+
+58
+00:03:46,500 --> 00:03:49,579
+Agora, saltando para a última camada, esta possui 10 neurônios, 
+
+59
+00:03:49,579 --> 00:03:51,360
+cada um representando um dos dígitos.
+
+60
+00:03:52,040 --> 00:03:56,035
+A ativação nesses neurônios, novamente algum número entre 0 e 1, 
+
+61
+00:03:56,035 --> 00:04:00,952
+representa o quanto o sistema pensa que uma determinada imagem corresponde a um 
+
+62
+00:04:00,952 --> 00:04:02,120
+determinado dígito.
+
+63
+00:04:03,040 --> 00:04:06,611
+Há também algumas camadas intermediárias chamadas de camadas ocultas, 
+
+64
+00:04:06,611 --> 00:04:10,182
+que por enquanto deveriam ser apenas um ponto de interrogação gigante 
+
+65
+00:04:10,182 --> 00:04:13,600
+sobre como esse processo de reconhecimento de dígitos será tratado.
+
+66
+00:04:14,260 --> 00:04:18,119
+Nesta rede escolhi duas camadas ocultas, cada uma com 16 neurônios, 
+
+67
+00:04:18,119 --> 00:04:20,560
+e admito que essa é uma escolha arbitrária.
+
+68
+00:04:21,019 --> 00:04:24,770
+Para ser honesto, escolhi duas camadas com base em como quero motivar a estrutura 
+
+69
+00:04:24,770 --> 00:04:28,200
+em apenas um momento, e 16, bem, esse foi um bom número para caber na tela.
+
+70
+00:04:28,780 --> 00:04:32,340
+Na prática, há aqui muito espaço para experimentar uma estrutura específica.
+
+71
+00:04:33,020 --> 00:04:35,721
+Da forma como a rede opera, as ativações em uma 
+
+72
+00:04:35,721 --> 00:04:38,480
+camada determinam as ativações da próxima camada.
+
+73
+00:04:39,200 --> 00:04:43,779
+E, claro, o cerne da rede como mecanismo de processamento de informações se resume 
+
+74
+00:04:43,779 --> 00:04:48,580
+exatamente em como essas ativações de uma camada provocam ativações na camada seguinte.
+
+75
+00:04:49,140 --> 00:04:53,642
+O objetivo é ser vagamente análogo ao modo como, nas redes biológicas de neurônios, 
+
+76
+00:04:53,642 --> 00:04:57,180
+o disparo de alguns grupos de neurônios causa o disparo de outros.
+
+77
+00:04:58,120 --> 00:05:01,472
+Agora, a rede que estou mostrando aqui já foi treinada para reconhecer dígitos, 
+
+78
+00:05:01,472 --> 00:05:03,400
+e deixe-me mostrar o que quero dizer com isso.
+
+79
+00:05:03,640 --> 00:05:06,321
+Isso significa que se você alimentar uma imagem, 
+
+80
+00:05:06,321 --> 00:05:11,026
+iluminando todos os 784 neurônios da camada de entrada de acordo com o brilho de cada 
+
+81
+00:05:11,026 --> 00:05:15,459
+pixel da imagem, esse padrão de ativações causa algum padrão muito específico na 
+
+82
+00:05:15,459 --> 00:05:18,961
+próxima camada que causa algum padrão na camada seguinte. isso, 
+
+83
+00:05:18,961 --> 00:05:22,080
+o que finalmente fornece algum padrão na camada de saída.
+
+84
+00:05:22,560 --> 00:05:26,414
+E o neurônio mais brilhante dessa camada de saída é a escolha da rede, 
+
+85
+00:05:26,414 --> 00:05:29,400
+por assim dizer, de qual dígito esta imagem representa.
+
+86
+00:05:32,560 --> 00:05:36,119
+E antes de entrarmos na matemática de como uma camada influencia a próxima, 
+
+87
+00:05:36,119 --> 00:05:39,679
+ou como o treinamento funciona, vamos apenas falar sobre por que é razoável 
+
+88
+00:05:39,679 --> 00:05:43,520
+esperar que uma estrutura em camadas como essa se comporte de maneira inteligente.
+
+89
+00:05:44,060 --> 00:05:45,220
+O que esperamos aqui?
+
+90
+00:05:45,400 --> 00:05:47,600
+Qual é a melhor esperança para essas camadas intermediárias?
+
+91
+00:05:48,920 --> 00:05:53,520
+Bem, quando você ou eu reconhecemos dígitos, juntamos vários componentes.
+
+92
+00:05:54,200 --> 00:05:56,820
+Um 9 tem um laço no topo e uma linha à direita.
+
+93
+00:05:57,380 --> 00:05:59,221
+Um 8 também tem um loop na parte superior, mas 
+
+94
+00:05:59,221 --> 00:06:01,180
+está emparelhado com outro loop na parte inferior.
+
+95
+00:06:01,980 --> 00:06:06,820
+Um 4 basicamente se divide em três linhas específicas e coisas assim.
+
+96
+00:06:07,600 --> 00:06:11,587
+Agora, em um mundo perfeito, poderíamos esperar que cada neurônio na 
+
+97
+00:06:11,587 --> 00:06:14,881
+penúltima camada corresponda a um desses subcomponentes, 
+
+98
+00:06:14,881 --> 00:06:19,041
+que sempre que você alimentar uma imagem com, digamos, um loop no topo, 
+
+99
+00:06:19,041 --> 00:06:23,780
+como um 9 ou um 8, haja algum neurônio específico cuja ativação será próxima de 1.
+
+100
+00:06:24,500 --> 00:06:26,968
+E não me refiro a esse loop específico de pixels, 
+
+101
+00:06:26,968 --> 00:06:30,572
+a esperança seria que qualquer padrão geralmente loop em direção ao topo 
+
+102
+00:06:30,572 --> 00:06:31,560
+ative esse neurônio.
+
+103
+00:06:32,440 --> 00:06:36,129
+Dessa forma, passar da terceira camada para a última requer apenas 
+
+104
+00:06:36,129 --> 00:06:40,040
+aprender qual combinação de subcomponentes corresponde a quais dígitos.
+
+105
+00:06:41,000 --> 00:06:43,075
+É claro que isso apenas lança o problema mais adiante, 
+
+106
+00:06:43,075 --> 00:06:46,470
+porque como você reconheceria esses subcomponentes ou até mesmo aprenderia quais deveriam 
+
+107
+00:06:46,470 --> 00:06:47,640
+ser os subcomponentes corretos?
+
+108
+00:06:48,060 --> 00:06:50,852
+E ainda nem falei sobre como uma camada influencia a próxima, 
+
+109
+00:06:50,852 --> 00:06:53,060
+mas continue comigo neste assunto por um momento.
+
+110
+00:06:53,680 --> 00:06:56,680
+O reconhecimento de um loop também pode ser dividido em subproblemas.
+
+111
+00:06:57,280 --> 00:06:59,976
+Uma maneira razoável de fazer isso seria primeiro 
+
+112
+00:06:59,976 --> 00:07:02,780
+reconhecer as várias pequenas arestas que o compõem.
+
+113
+00:07:03,780 --> 00:07:07,829
+Da mesma forma, uma linha longa, como a que você pode ver nos dígitos 1, 
+
+114
+00:07:07,829 --> 00:07:11,158
+4 ou 7, é na verdade apenas uma borda longa, ou talvez você 
+
+115
+00:07:11,158 --> 00:07:14,320
+pense nela como um certo padrão de várias bordas menores.
+
+116
+00:07:15,140 --> 00:07:18,900
+Então, talvez nossa esperança seja que cada neurônio na segunda 
+
+117
+00:07:18,900 --> 00:07:22,720
+camada da rede corresponda às várias pequenas arestas relevantes.
+
+118
+00:07:23,540 --> 00:07:27,378
+Talvez quando uma imagem como esta aparece, ela ilumine todos os 
+
+119
+00:07:27,378 --> 00:07:31,393
+neurônios associados a cerca de 8 a 10 pequenas bordas específicas, 
+
+120
+00:07:31,393 --> 00:07:35,409
+que por sua vez iluminam os neurônios associados ao loop superior e 
+
+121
+00:07:35,409 --> 00:07:39,720
+a uma longa linha vertical, e esses iluminam o neurônio associado a um 9.
+
+122
+00:07:40,680 --> 00:07:44,473
+Se isso é ou não o que nossa rede final realmente faz é outra questão, 
+
+123
+00:07:44,473 --> 00:07:47,197
+à qual voltarei quando vermos como treinar a rede, 
+
+124
+00:07:47,197 --> 00:07:51,097
+mas esta é uma esperança que possamos ter, uma espécie de objetivo com a 
+
+125
+00:07:51,097 --> 00:07:52,540
+estrutura em camadas assim.
+
+126
+00:07:53,160 --> 00:07:56,637
+Além disso, você pode imaginar como ser capaz de detectar bordas e padrões 
+
+127
+00:07:56,637 --> 00:08:00,300
+como esse seria realmente útil para outras tarefas de reconhecimento de imagem.
+
+128
+00:08:00,880 --> 00:08:04,299
+E mesmo além do reconhecimento de imagem, há todo tipo de coisas inteligentes 
+
+129
+00:08:04,299 --> 00:08:07,280
+que você pode querer fazer e que se dividem em camadas de abstração.
+
+130
+00:08:08,040 --> 00:08:12,433
+Analisar a fala, por exemplo, envolve pegar o áudio bruto e selecionar sons distintos, 
+
+131
+00:08:12,433 --> 00:08:16,575
+que se combinam para formar certas sílabas, que se combinam para formar palavras, 
+
+132
+00:08:16,575 --> 00:08:20,060
+que se combinam para formar frases e pensamentos mais abstratos, etc.
+
+133
+00:08:21,100 --> 00:08:24,187
+Mas voltando ao modo como tudo isso realmente funciona, 
+
+134
+00:08:24,187 --> 00:08:28,431
+imagine-se agora mesmo projetando como exatamente as ativações em uma camada 
+
+135
+00:08:28,431 --> 00:08:29,920
+podem determinar a próxima.
+
+136
+00:08:30,860 --> 00:08:35,845
+O objetivo é ter algum mecanismo que possa combinar pixels em bordas, 
+
+137
+00:08:35,845 --> 00:08:38,980
+ou bordas em padrões, ou padrões em dígitos.
+
+138
+00:08:39,440 --> 00:08:44,965
+E para ampliar um exemplo muito específico, digamos que a esperança é que um neurônio 
+
+139
+00:08:44,965 --> 00:08:50,620
+específico na segunda camada perceba se a imagem tem ou não uma borda nesta região aqui.
+
+140
+00:08:51,440 --> 00:08:55,100
+A questão em questão é quais parâmetros a rede deve ter?
+
+141
+00:08:55,640 --> 00:08:59,869
+Quais mostradores e botões você deve ajustar para que sejam expressivos o suficiente 
+
+142
+00:08:59,869 --> 00:09:03,700
+para potencialmente capturar esse padrão, ou qualquer outro padrão de pixel, 
+
+143
+00:09:03,700 --> 00:09:07,780
+ou o padrão em que várias bordas podem formar um loop e outras coisas semelhantes?
+
+144
+00:09:08,720 --> 00:09:12,283
+Bem, o que faremos é atribuir um peso a cada uma das conexões 
+
+145
+00:09:12,283 --> 00:09:15,560
+entre o nosso neurônio e os neurônios da primeira camada.
+
+146
+00:09:16,320 --> 00:09:17,700
+Esses pesos são apenas números.
+
+147
+00:09:18,540 --> 00:09:22,142
+Em seguida, pegue todas essas ativações da primeira camada 
+
+148
+00:09:22,142 --> 00:09:25,500
+e calcule sua soma ponderada de acordo com esses pesos.
+
+149
+00:09:27,700 --> 00:09:32,054
+Acho útil pensar nesses pesos como organizados em uma pequena grade própria, 
+
+150
+00:09:32,054 --> 00:09:36,803
+e usarei pixels verdes para indicar pesos positivos e pixels vermelhos para indicar 
+
+151
+00:09:36,803 --> 00:09:41,780
+pesos negativos, onde o brilho desse pixel é algum representação solta do valor do peso.
+
+152
+00:09:42,780 --> 00:09:46,482
+Agora, se zerarmos os pesos associados a quase todos os pixels, 
+
+153
+00:09:46,482 --> 00:09:50,068
+exceto alguns pesos positivos nesta região que nos interessa, 
+
+154
+00:09:50,068 --> 00:09:55,159
+então tomar a soma ponderada de todos os valores dos pixels equivale a somar os valores 
+
+155
+00:09:55,159 --> 00:09:57,820
+do pixel apenas em a região que nos interessa.
+
+156
+00:09:59,140 --> 00:10:02,144
+E se você realmente quiser saber se há uma vantagem aqui, 
+
+157
+00:10:02,144 --> 00:10:06,600
+o que você pode fazer é ter alguns pesos negativos associados aos pixels circundantes.
+
+158
+00:10:07,480 --> 00:10:10,533
+Então a soma é maior quando os pixels do meio são brilhantes, 
+
+159
+00:10:10,533 --> 00:10:12,700
+mas os pixels circundantes são mais escuros.
+
+160
+00:10:14,260 --> 00:10:18,637
+Ao calcular uma soma ponderada como esta, você pode obter qualquer número, 
+
+161
+00:10:18,637 --> 00:10:23,540
+mas para esta rede o que queremos é que as ativações tenham algum valor entre 0 e 1.
+
+162
+00:10:24,120 --> 00:10:28,017
+Portanto, uma coisa comum a fazer é bombear essa soma ponderada para 
+
+163
+00:10:28,017 --> 00:10:32,140
+alguma função que comprima a reta numérica real no intervalo entre 0 e 1.
+
+164
+00:10:32,460 --> 00:10:35,535
+E uma função comum que faz isso é chamada de função sigmóide, 
+
+165
+00:10:35,535 --> 00:10:37,420
+também conhecida como curva logística.
+
+166
+00:10:38,000 --> 00:10:41,475
+Basicamente, entradas muito negativas terminam perto de 0, 
+
+167
+00:10:41,475 --> 00:10:46,600
+entradas positivas terminam perto de 1 e aumentam constantemente em torno da entrada 0.
+
+168
+00:10:49,120 --> 00:10:52,573
+Portanto, a ativação do neurônio aqui é basicamente 
+
+169
+00:10:52,573 --> 00:10:56,360
+uma medida de quão positiva é a soma ponderada relevante.
+
+170
+00:10:57,540 --> 00:11:01,880
+Mas talvez você não queira que o neurônio acenda quando a soma ponderada for maior que 0.
+
+171
+00:11:02,280 --> 00:11:06,360
+Talvez você só queira que ele esteja ativo quando a soma for maior que, digamos, 10.
+
+172
+00:11:06,840 --> 00:11:10,260
+Ou seja, você quer algum preconceito para que ele fique inativo.
+
+173
+00:11:11,380 --> 00:11:15,574
+O que faremos então é apenas adicionar algum outro número, como 10 negativo, 
+
+174
+00:11:15,574 --> 00:11:19,660
+a essa soma ponderada antes de conectá-lo à função de esmagamento sigmóide.
+
+175
+00:11:20,580 --> 00:11:22,440
+Esse número adicional é chamado de viés.
+
+176
+00:11:23,460 --> 00:11:27,493
+Portanto, os pesos informam qual padrão de pixel esse neurônio na segunda 
+
+177
+00:11:27,493 --> 00:11:31,200
+camada está captando, e o viés informa o quão alta a soma ponderada 
+
+178
+00:11:31,200 --> 00:11:35,180
+precisa ser antes que o neurônio comece a ficar significativamente ativo.
+
+179
+00:11:36,120 --> 00:11:37,680
+E isso é apenas um neurônio.
+
+180
+00:11:38,280 --> 00:11:44,391
+Todos os outros neurônios nesta camada serão conectados a todos os 784 neurônios de 
+
+181
+00:11:44,391 --> 00:11:50,940
+pixels da primeira camada, e cada uma dessas 784 conexões terá seu próprio peso associado.
+
+182
+00:11:51,600 --> 00:11:54,647
+Além disso, cada um tem algum viés, algum outro número que você 
+
+183
+00:11:54,647 --> 00:11:57,600
+adiciona à soma ponderada antes de comprimi-lo com o sigmóide.
+
+184
+00:11:58,110 --> 00:11:59,540
+E isso é muito em que pensar!
+
+185
+00:11:59,960 --> 00:12:06,376
+Com essa camada oculta de 16 neurônios, isso dá um total de 784 vezes 16 pesos, 
+
+186
+00:12:06,376 --> 00:12:07,980
+junto com 16 vieses.
+
+187
+00:12:08,840 --> 00:12:11,940
+E tudo isso são apenas conexões da primeira camada para a segunda.
+
+188
+00:12:12,520 --> 00:12:15,107
+As conexões entre as outras camadas também possuem 
+
+189
+00:12:15,107 --> 00:12:17,340
+vários pesos e tendências associadas a elas.
+
+190
+00:12:18,340 --> 00:12:23,800
+Dito e feito, esta rede tem quase exatamente 13.000 pesos e preconceitos totais.
+
+191
+00:12:23,800 --> 00:12:26,831
+13.000 botões e mostradores que podem ser ajustados e girados 
+
+192
+00:12:26,831 --> 00:12:29,960
+para fazer com que esta rede se comporte de maneiras diferentes.
+
+193
+00:12:31,040 --> 00:12:34,463
+Então, quando falamos sobre aprendizagem, isso se refere a fazer com 
+
+194
+00:12:34,463 --> 00:12:38,581
+que o computador encontre uma configuração válida para todos esses muitos números, 
+
+195
+00:12:38,581 --> 00:12:41,360
+de modo que ele realmente resolva o problema em questão.
+
+196
+00:12:42,620 --> 00:12:47,011
+Um experimento mental que é ao mesmo tempo divertido e um tanto horrível é imaginar 
+
+197
+00:12:47,011 --> 00:12:50,305
+sentar e definir todos esses pesos e preconceitos manualmente, 
+
+198
+00:12:50,305 --> 00:12:54,488
+ajustando propositalmente os números para que a segunda camada capte as bordas, 
+
+199
+00:12:54,488 --> 00:12:56,580
+a terceira camada capte os padrões, etc.
+
+200
+00:12:56,980 --> 00:13:01,108
+Pessoalmente, acho isso satisfatório, em vez de apenas tratar a rede como uma caixa 
+
+201
+00:13:01,108 --> 00:13:04,793
+preta total, porque quando a rede não funciona da maneira que você espera, 
+
+202
+00:13:04,793 --> 00:13:08,823
+se você construiu um pouco de relacionamento com o que esses pesos e preconceitos 
+
+203
+00:13:08,823 --> 00:13:13,000
+realmente significam , você tem um ponto de partida para experimentar como alterar a 
+
+204
+00:13:13,000 --> 00:13:14,180
+estrutura para melhorar.
+
+205
+00:13:14,960 --> 00:13:18,203
+Ou quando a rede funciona, mas não pelos motivos que você espera, 
+
+206
+00:13:18,203 --> 00:13:21,790
+investigar o que os pesos e preconceitos estão fazendo é uma boa maneira 
+
+207
+00:13:21,790 --> 00:13:25,820
+de desafiar suas suposições e realmente expor todo o espaço de soluções possíveis.
+
+208
+00:13:26,840 --> 00:13:30,680
+A propósito, a função real aqui é um pouco complicada de escrever, não acha?
+
+209
+00:13:32,500 --> 00:13:34,756
+Então, deixe-me mostrar uma maneira mais compacta em 
+
+210
+00:13:34,756 --> 00:13:37,140
+termos de notação como essas conexões são representadas.
+
+211
+00:13:37,660 --> 00:13:40,520
+É assim que você veria se decidisse ler mais sobre redes neurais.
+
+212
+00:13:41,380 --> 00:13:47,414
+Organize todas as ativações de uma camada em uma coluna, 
+
+213
+00:13:47,414 --> 00:13:56,094
+pois uma matriz corresponde às conexões entre uma camada e um neurônio específico 
+
+214
+00:13:56,094 --> 00:13:58,000
+na próxima camada.
+
+215
+00:13:58,540 --> 00:14:02,282
+O que isso significa é que tomar a soma ponderada das ativações na 
+
+216
+00:14:02,282 --> 00:14:06,193
+primeira camada de acordo com esses pesos corresponde a um dos termos 
+
+217
+00:14:06,193 --> 00:14:09,880
+do produto vetorial matricial de tudo o que temos à esquerda aqui.
+
+218
+00:14:14,000 --> 00:14:17,500
+A propósito, grande parte do aprendizado de máquina se resume a ter uma boa 
+
+219
+00:14:17,500 --> 00:14:21,046
+noção de álgebra linear, então, para qualquer um de vocês que deseja uma boa 
+
+220
+00:14:21,046 --> 00:14:25,053
+compreensão visual de matrizes e o que significa multiplicação de vetores de matrizes, 
+
+221
+00:14:25,053 --> 00:14:28,600
+dê uma olhada na série que fiz em álgebra linear, especialmente o capítulo 3.
+
+222
+00:14:29,240 --> 00:14:33,417
+De volta à nossa expressão, em vez de falar em adicionar a tendência a cada um 
+
+223
+00:14:33,417 --> 00:14:37,541
+destes valores de forma independente, representamo-la organizando todas essas 
+
+224
+00:14:37,541 --> 00:14:42,300
+tendências num vetor e adicionando o vetor inteiro ao produto vetorial da matriz anterior.
+
+225
+00:14:43,280 --> 00:14:47,393
+Então, como etapa final, envolverei um sigmóide do lado de fora aqui, 
+
+226
+00:14:47,393 --> 00:14:51,390
+e o que isso deve representar é que você aplicará a função sigmóide 
+
+227
+00:14:51,390 --> 00:14:54,740
+a cada componente específico do vetor resultante interno.
+
+228
+00:14:55,940 --> 00:14:59,821
+Então, uma vez que você escreve essa matriz de pesos e esses vetores como 
+
+229
+00:14:59,821 --> 00:15:03,911
+seus próprios símbolos, você pode comunicar a transição completa de ativações 
+
+230
+00:15:03,911 --> 00:15:08,579
+de uma camada para a próxima em uma pequena expressão extremamente precisa e organizada, 
+
+231
+00:15:08,579 --> 00:15:12,355
+e isso torna o código relevante muito mais simples e muito mais rápido, 
+
+232
+00:15:12,355 --> 00:15:15,660
+já que muitas bibliotecas otimizam a multiplicação de matrizes.
+
+233
+00:15:17,820 --> 00:15:19,605
+Lembra-se de como eu disse anteriormente que esses 
+
+234
+00:15:19,605 --> 00:15:21,460
+neurônios são simplesmente coisas que contêm números?
+
+235
+00:15:22,220 --> 00:15:27,680
+Bem, é claro que os números específicos que eles contêm dependem da imagem que você 
+
+236
+00:15:27,680 --> 00:15:32,360
+alimenta, então é mais preciso pensar em cada neurônio como uma função, 
+
+237
+00:15:32,360 --> 00:15:37,560
+que recebe as saídas de todos os neurônios da camada anterior e cospe um número 
+
+238
+00:15:37,560 --> 00:15:38,340
+entre 0 e 1.
+
+239
+00:15:39,200 --> 00:15:43,130
+Na verdade, toda a rede é apenas uma função, que recebe 
+
+240
+00:15:43,130 --> 00:15:47,060
+784 números como entrada e produz 10 números como saída.
+
+241
+00:15:47,560 --> 00:15:52,407
+É uma função absurdamente complicada, que envolve 13.000 parâmetros na forma desses 
+
+242
+00:15:52,407 --> 00:15:57,369
+pesos e vieses que captam certos padrões, e que envolve a iteração de muitos produtos 
+
+243
+00:15:57,369 --> 00:16:00,658
+de vetores de matriz e a função de esmagamento sigmóide, 
+
+244
+00:16:00,658 --> 00:16:04,178
+mas mesmo assim é apenas uma função, e em um de certa forma, 
+
+245
+00:16:04,178 --> 00:16:06,660
+é meio reconfortante que pareça complicado.
+
+246
+00:16:07,340 --> 00:16:09,852
+Quero dizer, se fosse mais simples, que esperança teríamos 
+
+247
+00:16:09,852 --> 00:16:12,280
+de que pudesse enfrentar o desafio de reconhecer dígitos?
+
+248
+00:16:13,340 --> 00:16:14,700
+E como ele enfrenta esse desafio?
+
+249
+00:16:15,080 --> 00:16:19,360
+Como essa rede aprende os pesos e tendências apropriados apenas observando os dados?
+
+250
+00:16:20,140 --> 00:16:23,053
+Bom, é isso que vou mostrar no próximo vídeo, e também vou me aprofundar um 
+
+251
+00:16:23,053 --> 00:16:26,120
+pouco mais no que essa rede específica que estamos vendo realmente está fazendo.
+
+252
+00:16:27,580 --> 00:16:30,768
+Agora é o ponto que suponho que devo dizer para se inscrever para ser 
+
+253
+00:16:30,768 --> 00:16:33,866
+notificado quando um vídeo ou qualquer novo vídeo for lançado, mas, 
+
+254
+00:16:33,866 --> 00:16:37,420
+realisticamente, a maioria de vocês não recebe notificações do YouTube, não é?
+
+255
+00:16:38,020 --> 00:16:41,362
+Talvez, mais honestamente, eu deva dizer: inscreva-se para que as redes neurais 
+
+256
+00:16:41,362 --> 00:16:44,537
+subjacentes ao algoritmo de recomendação do YouTube estejam preparadas para 
+
+257
+00:16:44,537 --> 00:16:47,880
+acreditar que você deseja que o conteúdo deste canal seja recomendado para você.
+
+258
+00:16:48,560 --> 00:16:49,940
+De qualquer forma, fique informado para mais informações.
+
+259
+00:16:50,760 --> 00:16:53,500
+Muito obrigado a todos que apoiam esses vídeos no Patreon.
+
+260
+00:16:54,000 --> 00:16:57,448
+Tenho demorado um pouco para progredir na série de probabilidades neste verão, 
+
+261
+00:16:57,448 --> 00:17:00,154
+mas estou voltando depois deste projeto, para que os clientes 
+
+262
+00:17:00,154 --> 00:17:01,900
+possam ficar atentos às atualizações lá.
+
+263
+00:17:03,600 --> 00:17:07,150
+Para encerrar aqui, tenho Leisha Lee comigo, que fez seu trabalho de doutorado no lado 
+
+264
+00:17:07,150 --> 00:17:10,701
+teórico do aprendizado profundo e que atualmente trabalha em uma empresa de capital de 
+
+265
+00:17:10,701 --> 00:17:14,375
+risco chamada Amplify Partners, que gentilmente forneceu parte do financiamento para este 
+
+266
+00:17:14,375 --> 00:17:14,619
+vídeo.
+
+267
+00:17:15,460 --> 00:17:17,367
+Então, Leisha, uma coisa que acho que deveríamos 
+
+268
+00:17:17,367 --> 00:17:19,119
+mencionar rapidamente é essa função sigmóide.
+
+269
+00:17:19,700 --> 00:17:22,894
+Pelo que entendi, as primeiras redes usam isso para comprimir a soma 
+
+270
+00:17:22,894 --> 00:17:25,950
+ponderada relevante naquele intervalo entre zero e um, você sabe, 
+
+271
+00:17:25,950 --> 00:17:29,840
+meio que motivado por essa analogia biológica de neurônios sendo inativos ou ativos.
+
+272
+00:17:30,280 --> 00:17:30,300
+Exatamente.
+
+273
+00:17:30,560 --> 00:17:34,040
+Mas relativamente poucas redes modernas ainda usam sigmóide.
+
+274
+00:17:34,320 --> 00:17:34,320
+Sim.
+
+275
+00:17:34,440 --> 00:17:35,540
+É meio old school, certo?
+
+276
+00:17:35,760 --> 00:17:38,980
+Sim, ou melhor, relu parece ser muito mais fácil de treinar.
+
+277
+00:17:39,400 --> 00:17:42,340
+E relu significa unidade linear retificada?
+
+278
+00:17:42,680 --> 00:17:48,222
+Sim, é esse tipo de função em que você está apenas pegando um máximo de zero e um onde 
+
+279
+00:17:48,222 --> 00:17:53,319
+a é dado pelo que você estava explicando no vídeo e pelo que isso foi motivado, 
+
+280
+00:17:53,319 --> 00:17:58,989
+acho que foi parcialmente por uma analogia biológica com a forma como os neurônios seria 
+
+281
+00:17:58,989 --> 00:18:03,959
+ativado ou não e, se passar de um certo limite, seria a função de identidade, 
+
+282
+00:18:03,959 --> 00:18:08,482
+mas se não passasse, simplesmente não seria ativado, então seria zero, 
+
+283
+00:18:08,482 --> 00:18:10,840
+então é uma espécie de simplificação.
+
+284
+00:18:11,160 --> 00:18:15,332
+Usar sigmóides não ajudou no treinamento ou foi muito difícil 
+
+285
+00:18:15,332 --> 00:18:19,841
+treinar em algum momento e as pessoas simplesmente tentaram o relu 
+
+286
+00:18:19,841 --> 00:18:24,620
+e funcionou muito bem para essas redes neurais incrivelmente profundas.
+
+287
+00:18:25,100 --> 00:18:25,640
+Tudo bem, obrigado Alícia.
+
