@@ -9,10 +9,10 @@ Machine translation is often far from perfect, so I'll only feel comfortable wit
 
 ### How to help
 
-I'm still figuring out the best way to incorporate community contributions.
+We're figuring out the best way to incorporate community contributions.
 If you'd like to help out, it might be best to hold off until a proper system is in place, and note your interest in this [Google form](https://forms.gle/AR8YQPL1USxhM5989).
 
-If you're eager to start and don't mind an imperfect system, there is room to get started by making Pull requests on GitHub.
+The existing imperfect flow for contribution looks roughly like this:
 
 - Check the existing pull requests to see if anyone has already submitted edits to the translation you're interested in reviewing.
 - You also can use [this discord](https://discord.gg/MSKzxDgTGE) for coordination and discussion.
@@ -24,7 +24,9 @@ If you're eager to start and don't mind an imperfect system, there is room to ge
 - By clicking the pencil icon in the upper right, you can offer edits directly in the browser. Opening it in github.dev may offer a nicer experience there.
 - You can then submit those edits as a pull request.
   - It's most helpful if the title of the pull request includes the language and video name.
-- [Here](https://docs.google.com/spreadsheets/d/1S_1hMnre_Cu3NpabO0ZUDyVm9xyRB6FP1w1r-T1W-7s/edit?usp=sharing) is my extremely imperfect means of recording which files have undergone some form of review.
+- [Here](https://docs.google.com/spreadsheets/d/1S_1hMnre_Cu3NpabO0ZUDyVm9xyRB6FP1w1r-T1W-7s/edit?usp=sharing) is my extremely imperfect means of recording which files have undergone some form of review and been merged.
 
 Once edits to one of the sentence_translations.json files are made, subtitles can be generated automatically, and the plan is also to use this data to create automatic dubbings.
-We'll start those experiments with the files that have already received review from native speakers, get some feedback on how the results sound, and iterate from there.
+
+For at least the next week or two I'd recommend holding off on making any contributions.
+We'll take the existing contributions and use them to do some initial experiments on the text-to-voice part of the pipeline, and in all likelihood, we'll put together a better system for community contribution than raw edits to JSON files.
