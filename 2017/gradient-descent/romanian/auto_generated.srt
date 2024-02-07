@@ -1,0 +1,1280 @@
+1
+00:00:04,180 --> 00:00:07,280
+În ultimul videoclip am prezentat structura unei rețele neuronale.
+
+2
+00:00:07,680 --> 00:00:10,236
+Voi face o scurtă recapitulare aici, pentru a ne rămâne în minte, 
+
+3
+00:00:10,236 --> 00:00:12,600
+iar apoi am două obiective principale pentru acest videoclip.
+
+4
+00:00:13,100 --> 00:00:15,273
+Prima este de a introduce ideea de coborâre a gradientului, 
+
+5
+00:00:15,273 --> 00:00:17,846
+care stă la baza nu numai a modului în care învață rețelele neuronale, 
+
+6
+00:00:17,846 --> 00:00:20,600
+ci și a modului în care funcționează multe alte tipuri de învățare automată.
+
+7
+00:00:21,120 --> 00:00:24,234
+După aceea, vom cerceta puțin mai amănunțit modul în care 
+
+8
+00:00:24,234 --> 00:00:27,940
+funcționează această rețea și ce caută straturile ascunse de neuroni.
+
+9
+00:00:28,980 --> 00:00:32,903
+Vă reamintim că obiectivul nostru este exemplul clasic de recunoaștere 
+
+10
+00:00:32,903 --> 00:00:36,220
+a cifrelor scrise de mână, lumea bună a rețelelor neuronale.
+
+11
+00:00:37,020 --> 00:00:40,048
+Aceste cifre sunt redate pe o grilă de 28x28 pixeli, 
+
+12
+00:00:40,048 --> 00:00:43,420
+fiecare pixel având o valoare de nivel de gri între 0 și 1.
+
+13
+00:00:43,820 --> 00:00:46,961
+Acestea sunt cele care determină activările celor 
+
+14
+00:00:46,961 --> 00:00:50,040
+784 de neuroni din stratul de intrare al rețelei.
+
+15
+00:00:51,180 --> 00:00:55,737
+Apoi, activarea fiecărui neuron din straturile următoare se bazează pe o sumă 
+
+16
+00:00:55,737 --> 00:01:00,820
+ponderată a tuturor activărilor din stratul anterior, plus un număr special numit bias.
+
+17
+00:01:02,160 --> 00:01:04,555
+Apoi compuneți această sumă cu o altă funcție, 
+
+18
+00:01:04,555 --> 00:01:08,940
+cum ar fi squishificarea sigmoidă sau o relu, așa cum am arătat în videoclipul trecut.
+
+19
+00:01:09,480 --> 00:01:14,507
+În total, având în vedere alegerea oarecum arbitrară a două straturi ascunse cu 16 
+
+20
+00:01:14,507 --> 00:01:19,413
+neuroni fiecare, rețeaua are aproximativ 13 000 de ponderi și polarizări pe care 
+
+21
+00:01:19,413 --> 00:01:24,380
+le putem ajusta, iar aceste valori sunt cele care determină ce anume face rețeaua.
+
+22
+00:01:24,880 --> 00:01:28,087
+Atunci, când spunem că această rețea clasifică o anumită cifră, 
+
+23
+00:01:28,087 --> 00:01:32,097
+ne referim la faptul că cel mai luminos dintre cei 10 neuroni din stratul final 
+
+24
+00:01:32,097 --> 00:01:33,300
+corespunde acelei cifre.
+
+25
+00:01:34,100 --> 00:01:37,561
+Și nu uitați, motivația pe care am avut-o în minte aici pentru structura 
+
+26
+00:01:37,561 --> 00:01:41,260
+stratificată a fost că poate al doilea strat ar putea să detecteze marginile, 
+
+27
+00:01:41,260 --> 00:01:44,911
+iar al treilea strat ar putea să detecteze modele precum buclele și liniile, 
+
+28
+00:01:44,911 --> 00:01:48,800
+iar ultimul ar putea să pună cap la cap aceste modele pentru a recunoaște cifrele.
+
+29
+00:01:49,800 --> 00:01:52,240
+Deci, aici învățăm cum învață rețeaua.
+
+30
+00:01:52,640 --> 00:01:56,923
+Ceea ce ne dorim este un algoritm prin care să putem arăta acestei rețele o mulțime de 
+
+31
+00:01:56,923 --> 00:02:01,306
+date de antrenament, care se prezintă sub forma unor imagini diferite de cifre scrise de 
+
+32
+00:02:01,306 --> 00:02:05,737
+mână, împreună cu etichete pentru ceea ce ar trebui să fie, iar aceasta va ajusta cele 13.
+
+33
+00:02:05,737 --> 00:02:10,120
+000 de ponderi și polarizări pentru a-și îmbunătăți performanța pe datele de antrenament.
+
+34
+00:02:10,720 --> 00:02:13,767
+Să sperăm că această structură stratificată va însemna că ceea ce se 
+
+35
+00:02:13,767 --> 00:02:16,860
+învață se va generaliza la imagini dincolo de acele date de instruire.
+
+36
+00:02:17,640 --> 00:02:20,837
+Modul în care testăm acest lucru este ca, după ce ați antrenat rețeaua, 
+
+37
+00:02:20,837 --> 00:02:23,768
+să îi arătați mai multe date etichetate pe care nu le-a mai văzut 
+
+38
+00:02:23,768 --> 00:02:26,700
+până acum și să vedeți cât de precis clasifică aceste noi imagini.
+
+39
+00:02:31,120 --> 00:02:34,327
+Din fericire pentru noi, și ceea ce face ca acesta să fie un exemplu atât de 
+
+40
+00:02:34,327 --> 00:02:37,493
+comun pentru început, este faptul că oamenii buni din spatele bazei de date 
+
+41
+00:02:37,493 --> 00:02:40,742
+MNIST au adunat o colecție de zeci de mii de imagini cu cifre scrise de mână, 
+
+42
+00:02:40,742 --> 00:02:44,200
+fiecare dintre ele fiind etichetată cu numerele pe care ar trebui să le reprezinte.
+
+43
+00:02:44,900 --> 00:02:48,708
+Și oricât de provocator ar fi să descrii o mașină ca fiind de învățare, 
+
+44
+00:02:48,708 --> 00:02:51,882
+odată ce vezi cum funcționează, pare mai puțin ca o premisă 
+
+45
+00:02:51,882 --> 00:02:55,480
+științifico-fantastică nebună și mai mult ca un exercițiu de calcul.
+
+46
+00:02:56,200 --> 00:02:59,960
+Adică, practic, se reduce la găsirea minimului unei anumite funcții.
+
+47
+00:03:01,940 --> 00:03:04,423
+Amintiți-vă că, din punct de vedere conceptual, 
+
+48
+00:03:04,423 --> 00:03:08,820
+ne gândim la fiecare neuron ca fiind conectat la toți neuronii din stratul anterior, 
+
+49
+00:03:08,820 --> 00:03:13,062
+iar ponderile din suma ponderată care definește activarea sa sunt ca și cum ar fi 
+
+50
+00:03:13,062 --> 00:03:17,356
+puterea acestor conexiuni, iar tendința este o indicație a faptului că acel neuron 
+
+51
+00:03:17,356 --> 00:03:18,960
+tinde să fie activ sau inactiv.
+
+52
+00:03:19,720 --> 00:03:24,400
+Pentru a începe, vom inițializa toate aceste ponderi și polarizări în mod total aleatoriu.
+
+53
+00:03:24,940 --> 00:03:27,790
+Nu mai este nevoie să spunem că această rețea va avea performanțe destul 
+
+54
+00:03:27,790 --> 00:03:30,720
+de slabe pe un anumit exemplu de antrenament, deoarece face ceva aleatoriu.
+
+55
+00:03:31,040 --> 00:03:33,717
+De exemplu, introduceți această imagine a unui 3, 
+
+56
+00:03:33,717 --> 00:03:36,020
+iar stratul de ieșire arată ca un dezastru.
+
+57
+00:03:36,600 --> 00:03:40,180
+Deci, ceea ce trebuie să faci este să definești o funcție de cost, 
+
+58
+00:03:40,180 --> 00:03:42,958
+un mod de a-i spune computerului, nu, computer rău, 
+
+59
+00:03:42,958 --> 00:03:47,286
+că ieșirea ar trebui să aibă activări care sunt 0 pentru majoritatea neuronilor, 
+
+60
+00:03:47,286 --> 00:03:50,760
+dar 1 pentru acest neuron, ceea ce mi-ai dat este un gunoi total.
+
+61
+00:03:51,720 --> 00:03:54,514
+Pentru a spune acest lucru într-un mod mai matematic, 
+
+62
+00:03:54,514 --> 00:03:58,758
+se adună pătratele diferențelor dintre fiecare dintre aceste activări de ieșire a 
+
+63
+00:03:58,758 --> 00:04:01,242
+gunoiului și valoarea pe care doriți să o aibă, 
+
+64
+00:04:01,242 --> 00:04:05,020
+iar acesta este ceea ce vom numi costul unui singur exemplu de instruire.
+
+65
+00:04:05,960 --> 00:04:11,082
+Observați că această sumă este mică atunci când rețeaua clasifică cu încredere 
+
+66
+00:04:11,082 --> 00:04:16,399
+imaginea în mod corect, dar este mare atunci când rețeaua pare că nu știe ce face.
+
+67
+00:04:18,640 --> 00:04:21,907
+Deci, ceea ce trebuie să faceți este să luați în considerare costul mediu 
+
+68
+00:04:21,907 --> 00:04:25,440
+pentru toate zecile de mii de exemple de formare pe care le aveți la dispoziție.
+
+69
+00:04:27,040 --> 00:04:29,819
+Acest cost mediu este măsura noastră pentru cât de proastă 
+
+70
+00:04:29,819 --> 00:04:32,740
+este rețeaua și cât de rău ar trebui să se simtă calculatorul.
+
+71
+00:04:33,420 --> 00:04:34,600
+Iar acesta este un lucru complicat.
+
+72
+00:04:35,040 --> 00:04:38,449
+Vă amintiți cum rețeaua în sine era practic o funcție, 
+
+73
+00:04:38,449 --> 00:04:42,415
+una care primește 784 de numere ca intrări, valorile pixelilor, 
+
+74
+00:04:42,415 --> 00:04:47,002
+și emite 10 numere ca ieșire și, într-un fel, este parametrizată de toate 
+
+75
+00:04:47,002 --> 00:04:48,800
+aceste ponderi și polarizări?
+
+76
+00:04:49,500 --> 00:04:52,820
+Ei bine, funcția de cost este un strat de complexitate în plus.
+
+77
+00:04:53,100 --> 00:04:58,425
+Aceasta ia ca intrare cele aproximativ 13 000 de ponderi și polarizări și emite un singur 
+
+78
+00:04:58,425 --> 00:05:02,331
+număr care descrie cât de rele sunt aceste ponderi și polarizări, 
+
+79
+00:05:02,331 --> 00:05:07,538
+iar modul în care este definit depinde de comportamentul rețelei pe toate zecile de mii 
+
+80
+00:05:07,538 --> 00:05:08,900
+de date de antrenament.
+
+81
+00:05:09,520 --> 00:05:11,000
+Sunt multe lucruri la care trebuie să te gândești.
+
+82
+00:05:12,400 --> 00:05:15,820
+Dar nu este de prea mare ajutor să-i spui calculatorului ce treabă proastă face.
+
+83
+00:05:16,220 --> 00:05:18,140
+Vreți să-i spuneți cum să schimbe aceste ponderi 
+
+84
+00:05:18,140 --> 00:05:20,060
+și prejudecăți astfel încât să se îmbunătățească.
+
+85
+00:05:20,780 --> 00:05:25,575
+Pentru a ușura lucrurile, în loc să vă străduiți să vă imaginați o funcție cu 13 000 de 
+
+86
+00:05:25,575 --> 00:05:30,480
+intrări, imaginați-vă o funcție simplă care are un număr ca intrare și un număr ca ieșire.
+
+87
+00:05:31,480 --> 00:05:35,300
+Cum se găsește o intrare care minimizează valoarea acestei funcții?
+
+88
+00:05:36,460 --> 00:05:40,438
+Studenții de la calcul știu că, uneori, se poate afla acest minim în mod explicit, 
+
+89
+00:05:40,438 --> 00:05:44,177
+dar acest lucru nu este întotdeauna fezabil pentru funcții foarte complicate, 
+
+90
+00:05:44,177 --> 00:05:47,820
+cu siguranță nu în versiunea cu 13.000 de intrări a acestei situații pentru 
+
+91
+00:05:47,820 --> 00:05:51,080
+funcția de cost a rețelei noastre neuronale nebunește de complicate.
+
+92
+00:05:51,580 --> 00:05:55,413
+O tactică mai flexibilă este să începeți de la orice intrare și să vă dați seama 
+
+93
+00:05:55,413 --> 00:05:59,200
+în ce direcție ar trebui să pășiți pentru a face ca acea ieșire să fie mai mică.
+
+94
+00:06:00,080 --> 00:06:03,922
+Mai exact, dacă vă puteți da seama de panta funcției în locul în care vă aflați, 
+
+95
+00:06:03,922 --> 00:06:07,385
+atunci deplasați la stânga dacă această pantă este pozitivă și deplasați 
+
+96
+00:06:07,385 --> 00:06:09,900
+intrarea la dreapta dacă această pantă este negativă.
+
+97
+00:06:11,960 --> 00:06:15,950
+Dacă faceți acest lucru în mod repetat, verificând în fiecare punct noua pantă 
+
+98
+00:06:15,950 --> 00:06:19,840
+și făcând pasul corespunzător, vă veți apropia de un minim local al funcției.
+
+99
+00:06:20,640 --> 00:06:23,800
+Imaginea pe care o aveți în minte aici este o minge care se rostogolește pe un deal.
+
+100
+00:06:24,620 --> 00:06:28,602
+Observați că, chiar și în cazul acestei funcții simplificate cu o singură intrare, 
+
+101
+00:06:28,602 --> 00:06:31,146
+există multe văi posibile în care ați putea ateriza, 
+
+102
+00:06:31,146 --> 00:06:33,737
+în funcție de intrarea aleatorie de la care începeți, 
+
+103
+00:06:33,737 --> 00:06:37,432
+și nu există nicio garanție că minimul local în care aterizați va fi cea mai 
+
+104
+00:06:37,432 --> 00:06:39,400
+mică valoare posibilă a funcției de cost.
+
+105
+00:06:40,220 --> 00:06:42,620
+Acest lucru se va aplica și în cazul rețelei neuronale.
+
+106
+00:06:43,180 --> 00:06:47,666
+De asemenea, vreau să observați cum, dacă mărim pașii proporțional cu panta, 
+
+107
+00:06:47,666 --> 00:06:52,327
+atunci când panta se aplatizează spre minim, pașii devin din ce în ce mai mici, 
+
+108
+00:06:52,327 --> 00:06:54,600
+ceea ce vă ajută să nu depășiți limita.
+
+109
+00:06:55,940 --> 00:06:58,460
+Pentru a mări puțin complexitatea, imaginați-vă 
+
+110
+00:06:58,460 --> 00:07:00,980
+în schimb o funcție cu două intrări și o ieșire.
+
+111
+00:07:01,500 --> 00:07:04,250
+Vă puteți gândi la spațiul de intrare ca fiind planul xy, 
+
+112
+00:07:04,250 --> 00:07:08,140
+iar funcția de cost ca fiind reprezentată grafic ca o suprafață deasupra acestuia.
+
+113
+00:07:08,760 --> 00:07:11,914
+În loc să vă întrebați despre panta funcției, trebuie să vă 
+
+114
+00:07:11,914 --> 00:07:15,279
+întrebați în ce direcție ar trebui să pășiți în acest spațiu de 
+
+115
+00:07:15,279 --> 00:07:18,960
+intrare pentru a diminua cât mai repede valoarea de ieșire a funcției.
+
+116
+00:07:19,720 --> 00:07:21,760
+Cu alte cuvinte, care este direcția de coborâre?
+
+117
+00:07:22,380 --> 00:07:25,560
+Din nou, este util să ne gândim la o minge care se rostogolește pe acel deal.
+
+118
+00:07:26,660 --> 00:07:30,596
+Cei dintre voi care sunteți familiarizați cu calculul multivariabil știu că 
+
+119
+00:07:30,596 --> 00:07:34,377
+gradientul unei funcții vă oferă direcția de ascensiune cea mai abruptă, 
+
+120
+00:07:34,377 --> 00:07:38,780
+care este direcția în care ar trebui să pășiți pentru a crește funcția cel mai rapid.
+
+121
+00:07:39,560 --> 00:07:42,041
+În mod firesc, dacă se ia negativul acestui gradient, 
+
+122
+00:07:42,041 --> 00:07:46,040
+se obține direcția în care trebuie să pășești pentru ca funcția să scadă cel mai rapid.
+
+123
+00:07:47,240 --> 00:07:50,566
+Mai mult decât atât, lungimea acestui vector de gradient este 
+
+124
+00:07:50,566 --> 00:07:53,840
+o indicație pentru cât de abruptă este cea mai abruptă pantă.
+
+125
+00:07:54,540 --> 00:07:57,390
+Dacă nu sunteți familiarizați cu calculul multivariabil și doriți să aflați mai multe, 
+
+126
+00:07:57,390 --> 00:08:00,340
+consultați o parte din lucrarea pe care am realizat-o pentru Khan Academy pe această temă.
+
+127
+00:08:00,860 --> 00:08:04,540
+Sincer să fiu, tot ce contează pentru noi doi în acest moment este că, 
+
+128
+00:08:04,540 --> 00:08:07,701
+în principiu, există o modalitate de a calcula acest vector, 
+
+129
+00:08:07,701 --> 00:08:11,900
+acest vector care vă spune care este direcția de coborâre și cât de abruptă este.
+
+130
+00:08:12,400 --> 00:08:14,334
+Vei fi în regulă dacă asta e tot ce știi și nu ești 
+
+131
+00:08:14,334 --> 00:08:16,120
+solid ca o stâncă în ceea ce privește detaliile.
+
+132
+00:08:17,200 --> 00:08:20,509
+Dacă puteți obține acest lucru, algoritmul de minimizare a funcției 
+
+133
+00:08:20,509 --> 00:08:22,846
+este de a calcula această direcție de gradient, 
+
+134
+00:08:22,846 --> 00:08:26,740
+apoi de a face un mic pas în jos și de a repeta această operațiune la nesfârșit.
+
+135
+00:08:27,700 --> 00:08:32,820
+Este aceeași idee de bază pentru o funcție care are 13.000 de intrări în loc de 2 intrări.
+
+136
+00:08:33,400 --> 00:08:36,404
+Imaginați-vă organizarea tuturor celor 13.000 de ponderi și 
+
+137
+00:08:36,404 --> 00:08:39,460
+prejudecăți ale rețelei noastre într-un vector coloană uriaș.
+
+138
+00:08:40,140 --> 00:08:44,036
+Gradientul negativ al funcției de cost este doar un vector, 
+
+139
+00:08:44,036 --> 00:08:48,971
+este o direcție în interiorul acestui spațiu de intrare incredibil de mare, 
+
+140
+00:08:48,971 --> 00:08:53,776
+care vă spune care dintre aceste numere va cauza cea mai rapidă scădere a 
+
+141
+00:08:53,776 --> 00:08:54,880
+funcției de cost.
+
+142
+00:08:55,640 --> 00:08:58,685
+Și, bineînțeles, cu funcția noastră de cost special concepută, 
+
+143
+00:08:58,685 --> 00:09:02,601
+modificarea ponderilor și a polarizărilor pentru a o diminua înseamnă că ieșirea 
+
+144
+00:09:02,601 --> 00:09:06,420
+rețelei pentru fiecare bucată de date de instruire nu mai seamănă atât de mult 
+
+145
+00:09:06,420 --> 00:09:10,143
+cu o matrice aleatorie de 10 valori, cât mai mult cu o decizie reală pe care 
+
+146
+00:09:10,143 --> 00:09:10,820
+dorim să o ia.
+
+147
+00:09:11,440 --> 00:09:14,523
+Este important de reținut că această funcție de cost implică o 
+
+148
+00:09:14,523 --> 00:09:17,900
+medie pe toate datele de instruire, astfel încât, dacă o minimizați, 
+
+149
+00:09:17,900 --> 00:09:21,180
+înseamnă că este o performanță mai bună pe toate aceste eșantioane.
+
+150
+00:09:23,820 --> 00:09:27,376
+Algoritmul pentru calcularea eficientă a acestui gradient, care este, 
+
+151
+00:09:27,376 --> 00:09:30,271
+de fapt, inima modului în care o rețea neuronală învață, 
+
+152
+00:09:30,271 --> 00:09:33,980
+se numește backpropagation și despre el voi vorbi în următorul videoclip.
+
+153
+00:09:34,660 --> 00:09:38,989
+Acolo, vreau să îmi fac timp pentru a explica ce se întâmplă exact cu fiecare greutate 
+
+154
+00:09:38,989 --> 00:09:41,924
+și părtinire pentru o anumită bucată de date de instruire, 
+
+155
+00:09:41,924 --> 00:09:46,104
+încercând să dau o senzație intuitivă a ceea ce se întâmplă dincolo de calculele și 
+
+156
+00:09:46,104 --> 00:09:47,100
+formulele relevante.
+
+157
+00:09:47,780 --> 00:09:51,223
+Chiar aici, chiar acum, principalul lucru pe care vreau să îl știți, 
+
+158
+00:09:51,223 --> 00:09:54,617
+indiferent de detaliile de implementare, este că atunci când vorbim 
+
+159
+00:09:54,617 --> 00:09:58,360
+despre o rețea care învață, ne referim la minimizarea unei funcții de cost.
+
+160
+00:09:59,300 --> 00:10:03,504
+Observați că o consecință a acestui fapt este că este important ca această funcție de 
+
+161
+00:10:03,504 --> 00:10:07,904
+cost să aibă o ieșire netedă, astfel încât să putem găsi un minim local prin pași mici în 
+
+162
+00:10:07,904 --> 00:10:08,100
+jos.
+
+163
+00:10:09,260 --> 00:10:12,536
+Acesta este motivul pentru care, apropo, neuronii artificiali au 
+
+164
+00:10:12,536 --> 00:10:15,913
+activări care variază continuu, în loc să fie pur și simplu activi 
+
+165
+00:10:15,913 --> 00:10:19,140
+sau inactivi într-un mod binar, așa cum sunt neuronii biologici.
+
+166
+00:10:20,220 --> 00:10:23,576
+Acest proces care constă în stimularea repetată a unei intrări a unei funcții 
+
+167
+00:10:23,576 --> 00:10:26,760
+cu un multiplu al gradientului negativ se numește coborâre a gradientului.
+
+168
+00:10:27,300 --> 00:10:31,078
+Este o modalitate de a converge către un minim local al unei funcții de cost, 
+
+169
+00:10:31,078 --> 00:10:32,580
+practic o vale în acest grafic.
+
+170
+00:10:33,440 --> 00:10:36,635
+Vă arăt în continuare imaginea unei funcții cu două intrări, desigur, 
+
+171
+00:10:36,635 --> 00:10:40,288
+pentru că nuanțele într-un spațiu de intrare cu 13 000 de dimensiuni sunt puțin 
+
+172
+00:10:40,288 --> 00:10:44,260
+cam greu de înțeles, dar există o modalitate non-spațială de a vă gândi la acest lucru.
+
+173
+00:10:45,080 --> 00:10:48,440
+Fiecare componentă a gradientului negativ ne spune două lucruri.
+
+174
+00:10:49,060 --> 00:10:52,025
+Semnul, desigur, ne spune dacă componenta corespunzătoare a 
+
+175
+00:10:52,025 --> 00:10:55,140
+vectorului de intrare trebuie să fie împinsă în sus sau în jos.
+
+176
+00:10:55,800 --> 00:10:59,260
+Dar, ceea ce este important, magnitudinea relativă a tuturor 
+
+177
+00:10:59,260 --> 00:11:02,720
+acestor componente ne spune ce schimbări sunt mai importante.
+
+178
+00:11:05,220 --> 00:11:09,130
+Vedeți, în rețeaua noastră, o ajustare a uneia dintre ponderi ar putea avea un 
+
+179
+00:11:09,130 --> 00:11:13,040
+impact mult mai mare asupra funcției de cost decât ajustarea unei alte ponderi.
+
+180
+00:11:14,800 --> 00:11:18,200
+Unele dintre aceste conexiuni sunt mai importante pentru datele noastre de instruire.
+
+181
+00:11:19,320 --> 00:11:22,485
+Deci, un mod în care vă puteți gândi la acest vector de gradient al 
+
+182
+00:11:22,485 --> 00:11:25,557
+funcției noastre de cost extrem de masive este că acesta codifică 
+
+183
+00:11:25,557 --> 00:11:28,117
+importanța relativă a fiecărei ponderi și prejudecăți, 
+
+184
+00:11:28,117 --> 00:11:31,469
+adică care dintre aceste modificări va aduce cel mai mult profit pentru 
+
+185
+00:11:31,469 --> 00:11:32,400
+banii dumneavoastră.
+
+186
+00:11:33,620 --> 00:11:36,640
+Acesta este doar un alt mod de a gândi despre direcție.
+
+187
+00:11:37,100 --> 00:11:41,302
+Pentru a lua un exemplu mai simplu, dacă aveți o funcție cu două variabile ca 
+
+188
+00:11:41,302 --> 00:11:45,504
+intrare și calculați că gradientul său într-un anumit punct este 3,1, atunci, 
+
+189
+00:11:45,504 --> 00:11:48,737
+pe de o parte, puteți interpreta acest lucru ca spunând că, 
+
+190
+00:11:48,737 --> 00:11:52,993
+atunci când vă aflați la acea intrare, deplasarea de-a lungul acestei direcții 
+
+191
+00:11:52,993 --> 00:11:57,195
+mărește funcția cel mai rapid, și că, atunci când reprezentați grafic funcția 
+
+192
+00:11:57,195 --> 00:12:01,236
+deasupra planului punctelor de intrare, acel vector este cel care vă oferă 
+
+193
+00:12:01,236 --> 00:12:02,260
+direcția de urcare.
+
+194
+00:12:02,860 --> 00:12:06,480
+Dar un alt mod de a citi această afirmație este să spunem că modificările 
+
+195
+00:12:06,480 --> 00:12:10,246
+acestei prime variabile au o importanță de 3 ori mai mare decât modificările 
+
+196
+00:12:10,246 --> 00:12:14,454
+celei de-a doua variabile, că, cel puțin în vecinătatea datelor de intrare relevante, 
+
+197
+00:12:14,454 --> 00:12:16,900
+modificarea valorii x are un impact mult mai mare.
+
+198
+00:12:19,880 --> 00:12:22,340
+Să facem un zoom out și să rezumăm unde ne aflăm până acum.
+
+199
+00:12:22,840 --> 00:12:26,980
+Rețeaua în sine este această funcție cu 784 de intrări și 10 ieșiri, 
+
+200
+00:12:26,980 --> 00:12:30,040
+definite în funcție de toate aceste sume ponderate.
+
+201
+00:12:30,640 --> 00:12:33,680
+Funcția de cost este un strat de complexitate în plus.
+
+202
+00:12:33,980 --> 00:12:37,729
+Acesta ia cele 13.000 de ponderi și prejudecăți ca intrări și 
+
+203
+00:12:37,729 --> 00:12:41,720
+emite o singură măsură a prostiei pe baza exemplelor de instruire.
+
+204
+00:12:42,440 --> 00:12:46,900
+Iar gradientul funcției de cost este încă un strat de complexitate.
+
+205
+00:12:47,360 --> 00:12:51,042
+Aceasta ne spune ce modificări ale tuturor acestor ponderi și prejudecăți determină 
+
+206
+00:12:51,042 --> 00:12:53,365
+cea mai rapidă schimbare a valorii funcției de cost, 
+
+207
+00:12:53,365 --> 00:12:56,915
+ceea ce poate fi interpretat ca și cum ați spune ce modificări ale căror ponderi 
+
+208
+00:12:56,915 --> 00:12:57,880
+contează cel mai mult.
+
+209
+00:13:02,560 --> 00:13:06,138
+Așadar, atunci când inițializați rețeaua cu ponderi și polarizări aleatorii 
+
+210
+00:13:06,138 --> 00:13:10,045
+și le ajustați de mai multe ori pe baza acestui proces de coborâre a gradientului, 
+
+211
+00:13:10,045 --> 00:13:13,200
+cât de bine se comportă cu imagini pe care nu le-a văzut niciodată?
+
+212
+00:13:14,100 --> 00:13:19,031
+Cea pe care am descris-o aici, cu cele două straturi ascunse de 16 neuroni fiecare, 
+
+213
+00:13:19,031 --> 00:13:21,908
+alese mai ales din motive estetice, nu este rea, 
+
+214
+00:13:21,908 --> 00:13:25,960
+clasificând corect aproximativ 96% din noile imagini pe care le vede.
+
+215
+00:13:26,680 --> 00:13:30,494
+Și, sincer, dacă te uiți la unele dintre exemplele în care greșește, 
+
+216
+00:13:30,494 --> 00:13:32,540
+te simți obligat să o lași mai moale.
+
+217
+00:13:36,220 --> 00:13:40,608
+Acum, dacă vă jucați cu structura stratului ascuns și faceți câteva modificări, 
+
+218
+00:13:40,608 --> 00:13:41,760
+puteți ajunge la 98%.
+
+219
+00:13:41,760 --> 00:13:42,720
+Și asta e destul de bine!
+
+220
+00:13:43,020 --> 00:13:46,651
+Nu este cea mai bună, cu siguranță puteți obține performanțe mai bune dacă 
+
+221
+00:13:46,651 --> 00:13:49,217
+deveniți mai sofisticați decât această rețea simplă, 
+
+222
+00:13:49,217 --> 00:13:52,074
+dar având în vedere cât de dificilă este sarcina inițială, 
+
+223
+00:13:52,074 --> 00:13:55,900
+cred că este ceva incredibil ca o rețea să se descurce atât de bine cu imagini 
+
+224
+00:13:55,900 --> 00:13:59,725
+pe care nu le-a mai văzut niciodată, având în vedere că nu i-am spus niciodată 
+
+225
+00:13:59,725 --> 00:14:01,420
+în mod specific ce tipare să caute.
+
+226
+00:14:02,560 --> 00:14:06,364
+Inițial, modul în care am motivat această structură a fost prin descrierea unei speranțe 
+
+227
+00:14:06,364 --> 00:14:09,998
+pe care am putea să o avem, că al doilea strat ar putea să detecteze marginile mici, 
+
+228
+00:14:09,998 --> 00:14:13,546
+că al treilea strat ar pune cap la cap aceste margini pentru a recunoaște bucle și 
+
+229
+00:14:13,546 --> 00:14:17,180
+linii mai lungi, iar acestea ar putea fi puse cap la cap pentru a recunoaște cifrele.
+
+230
+00:14:17,960 --> 00:14:20,400
+Deci, asta face de fapt rețeaua noastră?
+
+231
+00:14:21,080 --> 00:14:24,400
+Ei bine, cel puțin în cazul acesta, deloc.
+
+232
+00:14:24,820 --> 00:14:28,815
+Vă amintiți că în ultimul video am văzut cum ponderile conexiunilor de la toți 
+
+233
+00:14:28,815 --> 00:14:33,114
+neuronii din primul strat la un anumit neuron din al doilea strat pot fi vizualizate 
+
+234
+00:14:33,114 --> 00:14:37,060
+ca un anumit model de pixeli pe care neuronul din al doilea strat îl captează?
+
+235
+00:14:37,780 --> 00:14:43,000
+Ei bine, atunci când facem acest lucru pentru greutățile asociate cu aceste tranziții, 
+
+236
+00:14:43,000 --> 00:14:48,339
+de la primul strat la următorul, în loc de a detecta mici margini izolate aici și acolo, 
+
+237
+00:14:48,339 --> 00:14:53,680
+ele arată, ei bine, aproape la întâmplare, doar cu câteva modele foarte libere în mijloc.
+
+238
+00:14:53,760 --> 00:14:58,964
+S-ar părea că, în spațiul imens de 13 000 de dimensiuni al ponderilor și prejudecăților 
+
+239
+00:14:58,964 --> 00:15:02,927
+posibile, rețeaua noastră a găsit un mic minim local fericit care, 
+
+240
+00:15:02,927 --> 00:15:05,825
+deși clasifică cu succes majoritatea imaginilor, 
+
+241
+00:15:05,825 --> 00:15:08,960
+nu detectează exact modelele pe care le-am fi sperat.
+
+242
+00:15:09,780 --> 00:15:11,800
+Și pentru ca acest lucru să fie clar, urmăriți ce se 
+
+243
+00:15:11,800 --> 00:15:13,820
+întâmplă atunci când introduceți o imagine aleatorie.
+
+244
+00:15:14,320 --> 00:15:18,256
+Dacă sistemul ar fi fost inteligent, v-ați fi așteptat să se simtă nesigur, 
+
+245
+00:15:18,256 --> 00:15:22,090
+poate că nu ar fi activat niciunul dintre cei 10 neuroni de ieșire sau că 
+
+246
+00:15:22,090 --> 00:15:26,027
+i-ar fi activat pe toți în mod egal, dar în schimb vă oferă cu încredere un 
+
+247
+00:15:26,027 --> 00:15:30,015
+răspuns fără sens, ca și cum ar fi la fel de sigur că acest zgomot aleatoriu 
+
+248
+00:15:30,015 --> 00:15:34,160
+este un 5 ca și cum ar fi la fel de sigur că o imagine reală a unui 5 este un 5.
+
+249
+00:15:34,540 --> 00:15:38,496
+Altfel spus, chiar dacă această rețea poate recunoaște destul de bine cifrele, 
+
+250
+00:15:38,496 --> 00:15:40,700
+nu are nicio idee despre cum să le deseneze.
+
+251
+00:15:41,420 --> 00:15:43,347
+O mare parte din acest lucru se datorează faptului că 
+
+252
+00:15:43,347 --> 00:15:45,240
+este o configurație de antrenament atât de restrânsă.
+
+253
+00:15:45,880 --> 00:15:47,740
+Adică, puneți-vă în locul rețelei.
+
+254
+00:15:48,140 --> 00:15:52,520
+Din punctul său de vedere, întregul univers nu constă decât în cifre nemișcate și clar 
+
+255
+00:15:52,520 --> 00:15:56,548
+definite, centrate într-o grilă minusculă, iar funcția sa de cost nu i-a oferit 
+
+256
+00:15:56,548 --> 00:16:01,080
+niciodată vreun stimulent pentru a fi altfel decât extrem de încrezător în deciziile sale.
+
+257
+00:16:02,120 --> 00:16:05,745
+Astfel, având această imagine a ceea ce fac cu adevărat neuronii din al doilea strat, 
+
+258
+00:16:05,745 --> 00:16:08,444
+vă puteți întreba de ce aș introduce această rețea cu motivația 
+
+259
+00:16:08,444 --> 00:16:09,920
+de a detecta marginile și modelele.
+
+260
+00:16:09,920 --> 00:16:12,300
+Vreau să spun că nu este deloc ceea ce ajunge să facă.
+
+261
+00:16:13,380 --> 00:16:17,180
+Ei bine, acesta nu este menit să fie obiectivul nostru final, ci un punct de plecare.
+
+262
+00:16:17,640 --> 00:16:21,680
+Sincer, aceasta este o tehnologie veche, de genul celei cercetate în anii '80 și '90, 
+
+263
+00:16:21,680 --> 00:16:25,814
+pe care trebuie să o înțelegeți înainte de a înțelege variantele moderne mai detaliate, 
+
+264
+00:16:25,814 --> 00:16:29,196
+și este evident că este capabilă să rezolve unele probleme interesante, 
+
+265
+00:16:29,196 --> 00:16:33,095
+dar cu cât vă adânciți mai mult în ceea ce fac cu adevărat acele straturi ascunse, 
+
+266
+00:16:33,095 --> 00:16:34,740
+cu atât mai puțin inteligentă pare.
+
+267
+00:16:38,480 --> 00:16:41,060
+Dacă ne mutăm pentru o clipă atenția de la modul în care rețelele 
+
+268
+00:16:41,060 --> 00:16:43,680
+învață la modul în care înveți tu, acest lucru se va întâmpla doar 
+
+269
+00:16:43,680 --> 00:16:46,300
+dacă te implici activ în materialul de aici, într-un fel sau altul.
+
+270
+00:16:47,060 --> 00:16:50,575
+Un lucru destul de simplu pe care aș vrea să îl faceți este să vă opriți 
+
+271
+00:16:50,575 --> 00:16:54,090
+acum și să vă gândiți profund pentru un moment la ce schimbări ați putea 
+
+272
+00:16:54,090 --> 00:16:57,605
+face în acest sistem și la modul în care percepe imaginile dacă ați dori 
+
+273
+00:16:57,605 --> 00:17:00,880
+ca acesta să sesizeze mai bine lucruri precum marginile și modelele.
+
+274
+00:17:01,480 --> 00:17:04,628
+Dar, mai mult decât atât, pentru a vă familiariza cu acest material, 
+
+275
+00:17:04,628 --> 00:17:08,233
+vă recomand cu căldură cartea lui Michael Nielsen despre învățarea profundă și 
+
+276
+00:17:08,233 --> 00:17:09,099
+rețelele neuronale.
+
+277
+00:17:09,680 --> 00:17:13,919
+În ea, puteți găsi codul și datele pe care să le descărcați și cu care să vă jucați 
+
+278
+00:17:13,919 --> 00:17:18,359
+pentru acest exemplu exact, iar cartea vă va explica pas cu pas ce face codul respectiv.
+
+279
+00:17:19,300 --> 00:17:22,435
+Ceea ce este minunat este că această carte este gratuită și disponibilă publicului, 
+
+280
+00:17:22,435 --> 00:17:25,159
+așa că, dacă ați învățat ceva din ea, luați în considerare posibilitatea 
+
+281
+00:17:25,159 --> 00:17:27,660
+de a face o donație pentru eforturile lui Nielsen, alături de mine.
+
+282
+00:17:27,660 --> 00:17:30,651
+De asemenea, în descriere am pus un link către alte câteva resurse 
+
+283
+00:17:30,651 --> 00:17:33,597
+care îmi plac foarte mult, inclusiv către fenomenalul și frumosul 
+
+284
+00:17:33,597 --> 00:17:36,500
+articol de blog al lui Chris Ola și către articolele din Distill.
+
+285
+00:17:38,280 --> 00:17:41,055
+Pentru a încheia aici ultimele minute, vreau să revin la 
+
+286
+00:17:41,055 --> 00:17:43,880
+un fragment din interviul pe care l-am avut cu Leisha Lee.
+
+287
+00:17:44,300 --> 00:17:46,081
+Poate că vă amintiți de ea din ultimul videoclip, 
+
+288
+00:17:46,081 --> 00:17:47,720
+ea și-a făcut doctoratul în învățare profundă.
+
+289
+00:17:48,300 --> 00:17:50,833
+În acest mic fragment, ea vorbește despre două lucrări recente 
+
+290
+00:17:50,833 --> 00:17:53,246
+care analizează cu adevărat modul în care unele dintre cele 
+
+291
+00:17:53,246 --> 00:17:55,780
+mai moderne rețele de recunoaștere a imaginilor învață de fapt.
+
+292
+00:17:56,120 --> 00:17:58,300
+Doar pentru a stabili unde ne aflăm în conversație, 
+
+293
+00:17:58,300 --> 00:18:01,528
+prima lucrare a luat una dintre aceste rețele neuronale deosebit de profunde 
+
+294
+00:18:01,528 --> 00:18:03,792
+care este foarte bună la recunoașterea imaginilor și, 
+
+295
+00:18:03,792 --> 00:18:06,559
+în loc să o antreneze pe un set de date etichetate corespunzător, 
+
+296
+00:18:06,559 --> 00:18:08,740
+a amestecat toate etichetele înainte de antrenament.
+
+297
+00:18:09,480 --> 00:18:12,991
+Evident, acuratețea testelor nu a fost mai bună decât cea aleatorie, 
+
+298
+00:18:12,991 --> 00:18:16,859
+deoarece totul este etichetat la întâmplare, dar a reușit să obțină aceeași 
+
+299
+00:18:16,859 --> 00:18:20,880
+acuratețe de instruire ca și în cazul unui set de date etichetat corespunzător.
+
+300
+00:18:21,600 --> 00:18:26,589
+Practic, milioanele de ponderi pentru această rețea au fost suficiente pentru ca aceasta 
+
+301
+00:18:26,589 --> 00:18:31,578
+să memoreze datele aleatorii, ceea ce ridică întrebarea dacă minimizarea acestei funcții 
+
+302
+00:18:31,578 --> 00:18:36,400
+de cost corespunde de fapt vreunui tip de structură a imaginii sau este doar memorare?
+
+303
+00:18:51,440 --> 00:18:58,560
+Dacă vă uitați la curba de acuratețe, dacă v-ați antrena pe un set de date aleatoriu, 
+
+304
+00:18:58,560 --> 00:19:05,350
+curba a coborât foarte încet, aproape liniar, astfel încât vă străduiți să găsiți 
+
+305
+00:19:05,350 --> 00:19:12,140
+minimul local al posibilelor ponderi corecte care să vă asigure această acuratețe.
+
+306
+00:19:12,240 --> 00:19:16,268
+În timp ce, dacă te antrenezi pe un set de date structurat, 
+
+307
+00:19:16,268 --> 00:19:20,297
+unul care are etichetele corecte, te joci puțin la început, 
+
+308
+00:19:20,297 --> 00:19:25,265
+dar apoi ajungi foarte repede la acel nivel de acuratețe și, într-un fel, 
+
+309
+00:19:25,265 --> 00:19:28,220
+a fost mai ușor să găsești acel maxim local.
+
+310
+00:19:28,540 --> 00:19:33,567
+Ceea ce a fost interesant este că a scos la lumină o altă lucrare de acum câțiva ani, 
+
+311
+00:19:33,567 --> 00:19:37,776
+care are mult mai multe simplificări cu privire la straturile de rețea, 
+
+312
+00:19:37,776 --> 00:19:42,394
+dar unul dintre rezultate a fost că, dacă vă uitați la peisajul de optimizare, 
+
+313
+00:19:42,394 --> 00:19:47,655
+minimele locale pe care aceste rețele tind să le învețe sunt de fapt de aceeași calitate, 
+
+314
+00:19:47,655 --> 00:19:51,338
+astfel încât, într-un fel, dacă setul de date este structurat, 
+
+315
+00:19:51,338 --> 00:19:54,320
+ar trebui să puteți găsi mult mai ușor acest lucru.
+
+316
+00:19:58,160 --> 00:20:01,180
+Mulțumirile mele, ca întotdeauna, celor care mă susțin pe Patreon.
+
+317
+00:20:01,520 --> 00:20:04,111
+Am mai spus înainte ce schimbare de joc este Patreon, 
+
+318
+00:20:04,111 --> 00:20:06,800
+dar aceste videoclipuri nu ar fi fost posibile fără voi.
+
+319
+00:20:07,460 --> 00:20:10,120
+De asemenea, doresc să mulțumesc în mod special firmei de capital de risc 
+
+320
+00:20:10,120 --> 00:20:12,780
+Amplify Partners, care a sprijinit aceste videoclipuri inițiale din serie.
+

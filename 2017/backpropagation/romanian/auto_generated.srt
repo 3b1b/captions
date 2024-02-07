@@ -1,0 +1,800 @@
+1
+00:00:04,059 --> 00:00:06,513
+Aici, vom aborda propagarea inversă, algoritmul de bază 
+
+2
+00:00:06,513 --> 00:00:08,880
+din spatele modului de învățare a rețelelor neuronale.
+
+3
+00:00:09,400 --> 00:00:11,861
+După o scurtă recapitulare a punctului în care ne aflăm, 
+
+4
+00:00:11,861 --> 00:00:15,661
+primul lucru pe care îl voi face este o prezentare intuitivă a ceea ce face algoritmul, 
+
+5
+00:00:15,661 --> 00:00:17,000
+fără nicio referire la formule.
+
+6
+00:00:17,660 --> 00:00:20,182
+Apoi, pentru aceia dintre voi care doresc să se scufunde în matematică, 
+
+7
+00:00:20,182 --> 00:00:23,020
+următorul videoclip prezintă calculele care stau la baza tuturor acestor lucruri.
+
+8
+00:00:23,820 --> 00:00:27,456
+Dacă ați vizionat ultimele două videoclipuri sau dacă ați intrat în joc cu un 
+
+9
+00:00:27,456 --> 00:00:31,000
+fundal adecvat, știți ce este o rețea neuronală și cum transmite informații.
+
+10
+00:00:31,680 --> 00:00:35,519
+Aici, facem exemplul clasic de recunoaștere a cifrelor scrise de mână, 
+
+11
+00:00:35,519 --> 00:00:40,278
+ale căror valori de pixeli sunt introduse în primul strat al rețelei cu 784 de neuroni, 
+
+12
+00:00:40,278 --> 00:00:44,551
+și am prezentat o rețea cu două straturi ascunse având doar 16 neuroni fiecare 
+
+13
+00:00:44,551 --> 00:00:49,040
+și un strat de ieșire de 10 neuroni, care indică ce cifră alege rețeaua ca răspuns.
+
+14
+00:00:50,040 --> 00:00:53,202
+Mă aștept, de asemenea, să înțelegeți coborârea gradientului, 
+
+15
+00:00:53,202 --> 00:00:56,823
+așa cum a fost descrisă în ultimul videoclip, și să înțelegeți că prin 
+
+16
+00:00:56,823 --> 00:01:01,260
+învățare dorim să găsim ce ponderi și polarizări minimizează o anumită funcție de cost.
+
+17
+00:01:02,040 --> 00:01:06,398
+Pentru a vă reaminti rapid, pentru costul unui singur exemplu de instruire, 
+
+18
+00:01:06,398 --> 00:01:10,642
+luați ieșirea pe care o dă rețeaua, împreună cu ieșirea pe care ați dorit 
+
+19
+00:01:10,642 --> 00:01:14,600
+să o dea și adunați pătratele diferențelor dintre fiecare componentă.
+
+20
+00:01:15,380 --> 00:01:18,479
+Dacă faceți acest lucru pentru toate zecile de mii de exemple de 
+
+21
+00:01:18,479 --> 00:01:22,200
+antrenament și faceți media rezultatelor, veți obține costul total al rețelei.
+
+22
+00:01:22,200 --> 00:01:26,506
+Și, ca și cum nu ar fi de ajuns, așa cum am descris în ultimul videoclip, 
+
+23
+00:01:26,506 --> 00:01:30,405
+ceea ce căutăm este gradientul negativ al acestei funcții de cost, 
+
+24
+00:01:30,405 --> 00:01:34,595
+care ne spune cum trebuie să modificăm toate ponderile și polarizările, 
+
+25
+00:01:34,595 --> 00:01:38,320
+toate aceste conexiuni, pentru a reduce cât mai eficient costul.
+
+26
+00:01:43,260 --> 00:01:46,053
+Backpropagation, subiectul acestui videoclip, este un algoritm 
+
+27
+00:01:46,053 --> 00:01:48,580
+pentru calcularea acestui gradient nebunesc de complicat.
+
+28
+00:01:49,140 --> 00:01:52,815
+Iar ideea din ultimul filmuleț pe care aș vrea să o rețineți cu tărie 
+
+29
+00:01:52,815 --> 00:01:56,333
+în minte acum este că, deoarece gândirea vectorului de gradient ca 
+
+30
+00:01:56,333 --> 00:01:59,431
+o direcție în 13.000 de dimensiuni este, ca să spunem așa, 
+
+31
+00:01:59,431 --> 00:02:03,580
+dincolo de imaginația noastră, există un alt mod în care vă puteți gândi la el.
+
+32
+00:02:04,600 --> 00:02:07,586
+Magnitudinea fiecărei componente de aici vă spune cât de 
+
+33
+00:02:07,586 --> 00:02:10,940
+sensibilă este funcția de cost la fiecare pondere și polarizare.
+
+34
+00:02:11,800 --> 00:02:16,507
+De exemplu, să presupunem că treceți prin procesul pe care urmează să îl descriu și 
+
+35
+00:02:16,507 --> 00:02:21,383
+calculați gradientul negativ, iar componenta asociată cu ponderea pe această muchie de 
+
+36
+00:02:21,383 --> 00:02:26,260
+aici este de 3,2, în timp ce componenta asociată cu această muchie de aici este de 0,1.
+
+37
+00:02:26,820 --> 00:02:30,155
+Modul în care ați putea interpreta acest lucru este că costul funcției este 
+
+38
+00:02:30,155 --> 00:02:33,316
+de 32 de ori mai sensibil la modificările primei ponderi, astfel încât, 
+
+39
+00:02:33,316 --> 00:02:35,466
+dacă ar trebui să mișcați puțin această valoare, 
+
+40
+00:02:35,466 --> 00:02:37,661
+aceasta va cauza o anumită modificare a costului, 
+
+41
+00:02:37,661 --> 00:02:40,777
+iar această modificare este de 32 de ori mai mare decât cea pe care ar 
+
+42
+00:02:40,777 --> 00:02:43,060
+produce-o aceeași mișcare a celei de-a doua ponderi.
+
+43
+00:02:48,420 --> 00:02:52,129
+Personal, atunci când am învățat pentru prima dată despre backpropagation, 
+
+44
+00:02:52,129 --> 00:02:55,740
+cred că cel mai confuz aspect a fost doar notarea și urmărirea indexului.
+
+45
+00:02:56,220 --> 00:02:59,520
+Dar, odată ce ai descoperit ce face fiecare parte a acestui algoritm, 
+
+46
+00:02:59,520 --> 00:03:02,962
+fiecare efect individual pe care îl are este de fapt destul de intuitiv, 
+
+47
+00:03:02,962 --> 00:03:06,640
+doar că există o mulțime de mici ajustări care se suprapun unele peste altele.
+
+48
+00:03:07,740 --> 00:03:12,056
+Așadar, voi începe aici fără a ține cont de notație și voi trece în revistă efectele 
+
+49
+00:03:12,056 --> 00:03:16,120
+pe care fiecare exemplu de antrenament le are asupra ponderilor și a biasurilor.
+
+50
+00:03:17,020 --> 00:03:21,622
+Deoarece funcția de cost implică medierea unui anumit cost per exemplu pe toate zecile 
+
+51
+00:03:21,622 --> 00:03:26,225
+de mii de exemple de formare, modul în care ajustăm ponderile și polarizările pentru o 
+
+52
+00:03:26,225 --> 00:03:29,558
+singură etapă de coborâre a gradientului depinde, de asemenea, 
+
+53
+00:03:29,558 --> 00:03:31,040
+de fiecare exemplu în parte.
+
+54
+00:03:31,680 --> 00:03:35,461
+Sau, mai degrabă, în principiu ar trebui, dar pentru eficiență computațională vom face un 
+
+55
+00:03:35,461 --> 00:03:39,200
+mic truc mai târziu pentru a nu fi nevoie să accesați fiecare exemplu pentru fiecare pas.
+
+56
+00:03:39,200 --> 00:03:44,437
+În alte cazuri, în acest moment, ne vom concentra atenția asupra unui singur exemplu, 
+
+57
+00:03:44,437 --> 00:03:45,960
+această imagine a unui 2.
+
+58
+00:03:46,720 --> 00:03:49,201
+Ce efect ar trebui să aibă acest exemplu de instruire asupra 
+
+59
+00:03:49,201 --> 00:03:51,480
+modului în care se ajustează ponderile și prejudecățile?
+
+60
+00:03:52,680 --> 00:03:56,551
+Să spunem că ne aflăm într-un punct în care rețeaua nu este încă bine antrenată, 
+
+61
+00:03:56,551 --> 00:03:59,419
+așa că activările din ieșire vor arăta destul de aleatoriu, 
+
+62
+00:03:59,419 --> 00:04:02,000
+poate ceva de genul 0,5, 0,8, 0,2, și așa mai departe.
+
+63
+00:04:02,520 --> 00:04:07,160
+Nu putem modifica direct aceste activări, ci doar influența ponderile și polarizările.
+
+64
+00:04:07,160 --> 00:04:09,786
+Dar este util să ținem evidența ajustărilor pe 
+
+65
+00:04:09,786 --> 00:04:12,580
+care dorim să le efectuăm la acel strat de ieșire.
+
+66
+00:04:13,360 --> 00:04:16,467
+Și, din moment ce dorim să clasificăm imaginea ca fiind 2, 
+
+67
+00:04:16,467 --> 00:04:19,100
+dorim ca această a treia valoare să fie ridicată, 
+
+68
+00:04:19,100 --> 00:04:21,260
+în timp ce toate celelalte sunt coborâte.
+
+69
+00:04:22,060 --> 00:04:25,710
+În plus, mărimea acestor impulsuri ar trebui să fie proporțională cu 
+
+70
+00:04:25,710 --> 00:04:29,520
+distanța la care se află fiecare valoare curentă față de valoarea țintă.
+
+71
+00:04:30,220 --> 00:04:34,007
+De exemplu, creșterea activării neuronului numărul 2 este, într-un fel, 
+
+72
+00:04:34,007 --> 00:04:37,269
+mai importantă decât scăderea activării neuronului numărul 8, 
+
+73
+00:04:37,269 --> 00:04:40,900
+care este deja destul de aproape de nivelul în care ar trebui să fie.
+
+74
+00:04:42,040 --> 00:04:45,302
+Deci, dacă mărim mai mult, să ne concentrăm doar pe acest neuron, 
+
+75
+00:04:45,302 --> 00:04:47,280
+cel a cărui activare dorim să o creștem.
+
+76
+00:04:48,180 --> 00:04:52,288
+Amintiți-vă că activarea este definită ca o anumită sumă ponderată a 
+
+77
+00:04:52,288 --> 00:04:55,919
+tuturor activărilor din stratul anterior, plus o polarizare, 
+
+78
+00:04:55,919 --> 00:05:01,040
+care este apoi introdusă în ceva de genul funcției de squishificare sigmoidă sau ReLU.
+
+79
+00:05:01,640 --> 00:05:04,406
+Așadar, există trei căi diferite care pot fi folosite 
+
+80
+00:05:04,406 --> 00:05:07,020
+împreună pentru a contribui la creșterea activării.
+
+81
+00:05:07,440 --> 00:05:10,740
+Puteți crește polarizarea, puteți crește ponderile 
+
+82
+00:05:10,740 --> 00:05:14,040
+și puteți modifica activările din stratul anterior.
+
+83
+00:05:14,940 --> 00:05:17,965
+Concentrându-ne asupra modului în care ar trebui ajustate ponderile, 
+
+84
+00:05:17,965 --> 00:05:20,860
+observați cum ponderile au de fapt niveluri diferite de influență.
+
+85
+00:05:21,440 --> 00:05:25,640
+Conexiunile cu cei mai luminoși neuroni din stratul precedent au cel mai mare efect, 
+
+86
+00:05:25,640 --> 00:05:29,100
+deoarece aceste ponderi sunt înmulțite cu valori de activare mai mari.
+
+87
+00:05:31,460 --> 00:05:34,035
+Deci, dacă ar fi să măriți una dintre aceste ponderi, 
+
+88
+00:05:34,035 --> 00:05:37,994
+aceasta are de fapt o influență mai puternică asupra funcției finale de cost decât 
+
+89
+00:05:37,994 --> 00:05:40,665
+creșterea ponderilor conexiunilor cu neuroni mai slabi, 
+
+90
+00:05:40,665 --> 00:05:43,480
+cel puțin în ceea ce privește acest exemplu de antrenament.
+
+91
+00:05:44,420 --> 00:05:46,956
+Nu uitați că, atunci când vorbim despre coborârea gradientului, 
+
+92
+00:05:46,956 --> 00:05:50,207
+nu ne interesează doar dacă fiecare componentă ar trebui să crească sau să scadă, 
+
+93
+00:05:50,207 --> 00:05:53,220
+ci ne interesează care dintre ele vă oferă cel mai bun raport calitate-preț.
+
+94
+00:05:55,020 --> 00:05:57,836
+Apropo, acest lucru amintește, cel puțin într-o oarecare măsură, 
+
+95
+00:05:57,836 --> 00:06:01,520
+de o teorie din domeniul neuroștiințelor privind modul în care rețelele biologice de 
+
+96
+00:06:01,520 --> 00:06:04,163
+neuroni învață, teoria Hebbian, adesea rezumată în expresia: 
+
+97
+00:06:04,163 --> 00:06:06,460
+"Neuronii care trag împreună se conectează împreună".
+
+98
+00:06:07,260 --> 00:06:10,153
+În acest caz, cele mai mari creșteri ale greutăților, 
+
+99
+00:06:10,153 --> 00:06:13,689
+cele mai mari consolidări ale conexiunilor, au loc între neuronii 
+
+100
+00:06:13,689 --> 00:06:17,280
+care sunt cei mai activi și cei pe care dorim să devină mai activi.
+
+101
+00:06:17,940 --> 00:06:21,144
+Într-un anumit sens, neuronii care se activează în timp ce văd un 2 sunt 
+
+102
+00:06:21,144 --> 00:06:24,480
+mai puternic legați de cei care se activează atunci când se gândesc la un 2.
+
+103
+00:06:25,400 --> 00:06:29,326
+Pentru a fi clar, nu sunt în măsură să fac declarații într-un fel sau altul cu privire la 
+
+104
+00:06:29,326 --> 00:06:32,860
+faptul că rețelele artificiale de neuroni se comportă în vreun fel asemănător cu 
+
+105
+00:06:32,860 --> 00:06:36,613
+creierele biologice, iar această idee de "fire together wire together" vine cu câteva 
+
+106
+00:06:36,613 --> 00:06:39,536
+asteriscuri semnificative, dar, luată ca o analogie foarte liberă, 
+
+107
+00:06:39,536 --> 00:06:41,020
+mi se pare interesant de remarcat.
+
+108
+00:06:41,940 --> 00:06:45,443
+În orice caz, al treilea mod în care putem contribui la creșterea activării 
+
+109
+00:06:45,443 --> 00:06:49,040
+acestui neuron este prin modificarea tuturor activărilor din stratul anterior.
+
+110
+00:06:49,040 --> 00:06:52,750
+Mai exact, dacă tot ceea ce este conectat la acel neuron de cifră 2 cu o 
+
+111
+00:06:52,750 --> 00:06:56,410
+pondere pozitivă devine mai luminos, iar tot ceea ce este conectat cu o 
+
+112
+00:06:56,410 --> 00:07:00,680
+pondere negativă devine mai slab, atunci acel neuron de cifră 2 va deveni mai activ.
+
+113
+00:07:02,540 --> 00:07:04,914
+Și, la fel ca în cazul modificărilor de greutate, 
+
+114
+00:07:04,914 --> 00:07:08,570
+veți obține cel mai bun rezultat dacă veți căuta modificări proporționale cu 
+
+115
+00:07:08,570 --> 00:07:10,280
+mărimea greutăților corespunzătoare.
+
+116
+00:07:12,140 --> 00:07:14,903
+Desigur, nu putem influența în mod direct aceste activări, 
+
+117
+00:07:14,903 --> 00:07:17,480
+avem control doar asupra ponderilor și a polarizărilor.
+
+118
+00:07:17,480 --> 00:07:20,836
+Dar, la fel ca în cazul ultimului strat, este 
+
+119
+00:07:20,836 --> 00:07:24,120
+util să notați care sunt modificările dorite.
+
+120
+00:07:24,580 --> 00:07:26,804
+Dar rețineți că, dacă mărim cu un pas aici, aceasta 
+
+121
+00:07:26,804 --> 00:07:29,200
+este doar ceea ce dorește neuronii de ieșire a cifrei 2.
+
+122
+00:07:29,760 --> 00:07:33,731
+Nu uitați că dorim ca toți ceilalți neuroni din ultimul strat să devină mai puțin activi, 
+
+123
+00:07:33,731 --> 00:07:37,128
+iar fiecare dintre acești neuroni de ieșire are propriile gânduri cu privire 
+
+124
+00:07:37,128 --> 00:07:39,600
+la ceea ce ar trebui să se întâmple cu penultimul strat.
+
+125
+00:07:42,700 --> 00:07:47,190
+Așadar, dorința acestui neuron de cifră 2 este adăugată împreună cu dorințele 
+
+126
+00:07:47,190 --> 00:07:51,623
+tuturor celorlalți neuroni de ieșire pentru ceea ce ar trebui să se întâmple 
+
+127
+00:07:51,623 --> 00:07:56,114
+în acest penultim strat, din nou proporțional cu ponderile corespunzătoare și 
+
+128
+00:07:56,114 --> 00:08:00,720
+proporțional cu cât de mult trebuie să se schimbe fiecare dintre acești neuroni.
+
+129
+00:08:01,600 --> 00:08:05,480
+Aici intervine ideea de propagare inversă.
+
+130
+00:08:05,820 --> 00:08:09,475
+Adunând toate aceste efecte dorite, obțineți practic o listă de 
+
+131
+00:08:09,475 --> 00:08:13,360
+impulsuri pe care doriți să le obțineți pentru acest penultim strat.
+
+132
+00:08:14,220 --> 00:08:18,038
+Și odată ce le aveți, puteți aplica recursiv același proces la ponderile 
+
+133
+00:08:18,038 --> 00:08:20,967
+și polarizările relevante care determină aceste valori, 
+
+134
+00:08:20,967 --> 00:08:25,100
+repetând același proces pe care tocmai l-am parcurs și mergând înapoi în rețea.
+
+135
+00:08:28,960 --> 00:08:32,712
+Și dacă mărim puțin mai mult, nu uitați că toate acestea sunt doar modul în care un 
+
+136
+00:08:32,712 --> 00:08:36,464
+singur exemplu de instruire dorește să influențeze fiecare dintre aceste ponderi și 
+
+137
+00:08:36,464 --> 00:08:37,000
+prejudecăți.
+
+138
+00:08:37,480 --> 00:08:40,415
+Dacă am asculta doar ceea ce dorește acel 2, rețeaua ar fi în cele 
+
+139
+00:08:40,415 --> 00:08:43,220
+din urmă stimulată doar să clasifice toate imaginile ca fiind 2.
+
+140
+00:08:44,059 --> 00:08:48,009
+Deci, ceea ce trebuie să faceți este să treceți prin aceeași rutină de backprop pentru 
+
+141
+00:08:48,009 --> 00:08:52,050
+fiecare alt exemplu de antrenament, înregistrând modul în care fiecare dintre ei ar dori 
+
+142
+00:08:52,050 --> 00:08:56,000
+să modifice ponderile și polarizările și să faceți o medie a acestor modificări dorite.
+
+143
+00:09:01,720 --> 00:09:05,770
+Această colecție de aici, care reprezintă media impulsurilor pentru fiecare greutate 
+
+144
+00:09:05,770 --> 00:09:09,725
+și bias, reprezintă, în linii mari, gradientul negativ al funcției de cost la care 
+
+145
+00:09:09,725 --> 00:09:13,680
+s-a făcut referire în ultimul videoclip, sau cel puțin ceva proporțional cu acesta.
+
+146
+00:09:14,380 --> 00:09:17,712
+Spun "în sens larg" doar pentru că încă nu am reușit să fiu mai precis din 
+
+147
+00:09:17,712 --> 00:09:20,379
+punct de vedere cantitativ în legătură cu aceste impulsuri, 
+
+148
+00:09:20,379 --> 00:09:23,623
+dar dacă ați înțeles fiecare schimbare la care tocmai am făcut referire, 
+
+149
+00:09:23,623 --> 00:09:26,911
+de ce unele sunt proporțional mai mari decât altele și cum trebuie să fie 
+
+150
+00:09:26,911 --> 00:09:30,288
+adăugate toate împreună, ați înțeles mecanismul pentru ceea ce face de fapt 
+
+151
+00:09:30,288 --> 00:09:31,000
+backpropagation.
+
+152
+00:09:33,960 --> 00:09:38,252
+Apropo, în practică, calculatoarele au nevoie de foarte mult timp pentru a adăuga 
+
+153
+00:09:38,252 --> 00:09:42,440
+influența fiecărui exemplu de formare la fiecare pas de coborâre a gradientului.
+
+154
+00:09:43,140 --> 00:09:44,820
+Așa că iată ce se face în mod obișnuit în loc.
+
+155
+00:09:45,480 --> 00:09:49,497
+Amestecați aleatoriu datele de instruire și apoi le împărțiți în mai multe mini loturi, 
+
+156
+00:09:49,497 --> 00:09:52,420
+să spunem că fiecare dintre ele are 100 de exemple de instruire.
+
+157
+00:09:52,940 --> 00:09:56,200
+Apoi se calculează un pas în funcție de mini-lot.
+
+158
+00:09:56,960 --> 00:10:01,866
+Nu va fi gradientul real al funcției de cost, care depinde de toate datele de instruire, 
+
+159
+00:10:01,866 --> 00:10:05,504
+nu de acest mic subset, deci nu este cel mai eficient pas în jos, 
+
+160
+00:10:05,504 --> 00:10:08,977
+dar fiecare mini-lot vă oferă o aproximație destul de bună și, 
+
+161
+00:10:08,977 --> 00:10:12,120
+mai important, vă oferă o viteză de calcul semnificativă.
+
+162
+00:10:12,820 --> 00:10:16,840
+Dacă ar fi să trasați traiectoria rețelei dvs. sub suprafața de cost relevantă, 
+
+163
+00:10:16,840 --> 00:10:21,163
+aceasta ar semăna mai degrabă cu un om beat care se poticnește fără țintă pe un deal, 
+
+164
+00:10:21,163 --> 00:10:25,636
+dar care face pași rapizi, decât cu un om care își calculează cu atenție direcția exactă 
+
+165
+00:10:25,636 --> 00:10:30,160
+de coborâre a fiecărui pas înainte de a face un pas foarte lent și atent în acea direcție.
+
+166
+00:10:31,540 --> 00:10:34,660
+Această tehnică este denumită coborâre stocastică a gradientului.
+
+167
+00:10:35,960 --> 00:10:39,620
+Se întâmplă multe lucruri aici, așa că hai să le rezumăm pentru noi înșine, bine?
+
+168
+00:10:40,440 --> 00:10:44,119
+Backpropagation este algoritmul care determină modul în care un singur exemplu de 
+
+169
+00:10:44,119 --> 00:10:46,811
+instruire ar dori să influențeze ponderile și polarizările, 
+
+170
+00:10:46,811 --> 00:10:50,220
+nu doar în ceea ce privește dacă acestea ar trebui să crească sau să scadă, 
+
+171
+00:10:50,220 --> 00:10:54,034
+ci și în ceea ce privește proporțiile relative ale acestor modificări care determină 
+
+172
+00:10:54,034 --> 00:10:55,560
+cea mai rapidă scădere a costului.
+
+173
+00:10:56,260 --> 00:10:58,920
+Un pas adevărat de coborâre a gradientului ar implica să faceți 
+
+174
+00:10:58,920 --> 00:11:01,622
+acest lucru pentru toate zecile de mii de exemple de antrenament 
+
+175
+00:11:01,622 --> 00:11:04,200
+și să calculați media schimbărilor dorite pe care le obțineți.
+
+176
+00:11:04,860 --> 00:11:08,690
+Dar acest lucru este lent din punct de vedere computațional, așa că, în schimb, 
+
+177
+00:11:08,690 --> 00:11:12,809
+subdivizați aleatoriu datele în mini-loturi și calculați fiecare pas cu privire la un 
+
+178
+00:11:12,809 --> 00:11:13,240
+mini-lot.
+
+179
+00:11:14,000 --> 00:11:17,682
+Trecând în mod repetat prin toate mini loturile și făcând aceste ajustări, 
+
+180
+00:11:17,682 --> 00:11:22,053
+veți converge către un minim local al funcției de cost, ceea ce înseamnă că rețeaua dvs. 
+
+181
+00:11:22,053 --> 00:11:25,540
+va sfârși prin a face o treabă foarte bună cu exemplele de antrenament.
+
+182
+00:11:27,240 --> 00:11:32,087
+Acestea fiind spuse, fiecare linie de cod care ar trebui implementată pentru a implementa 
+
+183
+00:11:32,087 --> 00:11:36,720
+backprop corespunde de fapt cu ceva ce ați văzut acum, cel puțin în termeni informali.
+
+184
+00:11:37,560 --> 00:11:41,221
+Dar, uneori, să știi ce face matematica este doar jumătate din bătălie, 
+
+185
+00:11:41,221 --> 00:11:44,120
+iar reprezentarea lucrurilor devine confuză și încurcată.
+
+186
+00:11:44,860 --> 00:11:47,300
+Așadar, pentru cei care doresc să aprofundeze acest subiect, 
+
+187
+00:11:47,300 --> 00:11:50,819
+videoclipul următor trece în revistă aceleași idei care tocmai au fost prezentate aici, 
+
+188
+00:11:50,819 --> 00:11:53,260
+dar în termeni de calcul de bază, ceea ce ar trebui, sperăm, 
+
+189
+00:11:53,260 --> 00:11:56,420
+să vă fie puțin mai familiar pe măsură ce vedeți acest subiect în alte resurse.
+
+190
+00:11:57,340 --> 00:11:59,291
+Înainte de asta, un lucru care merită subliniat este că, 
+
+191
+00:11:59,291 --> 00:12:02,099
+pentru ca acest algoritm să funcționeze, și acest lucru este valabil pentru toate 
+
+192
+00:12:02,099 --> 00:12:04,222
+tipurile de învățare automată, dincolo de rețelele neuronale, 
+
+193
+00:12:04,222 --> 00:12:05,900
+aveți nevoie de o mulțime de date de antrenament.
+
+194
+00:12:06,420 --> 00:12:09,222
+În cazul nostru, un lucru care face ca cifrele scrise de mână să 
+
+195
+00:12:09,222 --> 00:12:12,196
+fie un exemplu atât de bun este faptul că există baza de date MNIST, 
+
+196
+00:12:12,196 --> 00:12:14,740
+cu atât de multe exemple care au fost etichetate de oameni.
+
+197
+00:12:15,300 --> 00:12:18,105
+Așadar, o provocare obișnuită cu care cei care lucrează în domeniul 
+
+198
+00:12:18,105 --> 00:12:21,158
+învățării automate sunt familiarizați este obținerea datelor de instruire 
+
+199
+00:12:21,158 --> 00:12:24,170
+etichetate de care aveți nevoie, fie că este vorba de etichetarea a zeci 
+
+200
+00:12:24,170 --> 00:12:27,100
+de mii de imagini sau de orice alt tip de date cu care aveți de-a face.
+
