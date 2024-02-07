@@ -1,0 +1,572 @@
+1
+00:00:04,019 --> 00:00:06,890
+Presupunem că ați vizionat partea a treia, care oferă 
+
+2
+00:00:06,890 --> 00:00:09,920
+o prezentare intuitivă a algoritmului de backpropagation.
+
+3
+00:00:11,040 --> 00:00:14,220
+Aici devenim un pic mai formali și intrăm în calculele relevante.
+
+4
+00:00:14,820 --> 00:00:17,070
+Este normal ca acest lucru să fie cel puțin puțin puțin derutant, 
+
+5
+00:00:17,070 --> 00:00:19,218
+așa că mantra de a lua o pauză și de a reflecta în mod regulat 
+
+6
+00:00:19,218 --> 00:00:21,400
+se aplică cu siguranță la fel de mult aici ca oriunde altundeva.
+
+7
+00:00:21,940 --> 00:00:25,780
+Scopul nostru principal este de a arăta cum se gândesc oamenii din domeniul învățării 
+
+8
+00:00:25,780 --> 00:00:28,593
+automate la regula lanțului din calcul în contextul rețelelor, 
+
+9
+00:00:28,593 --> 00:00:32,434
+ceea ce are un aspect diferit de modul în care majoritatea cursurilor introductive de 
+
+10
+00:00:32,434 --> 00:00:33,640
+calcul abordează subiectul.
+
+11
+00:00:34,340 --> 00:00:37,325
+Pentru aceia dintre voi care nu se simt confortabil cu calculele relevante, 
+
+12
+00:00:37,325 --> 00:00:38,740
+am o serie întreagă pe această temă.
+
+13
+00:00:39,960 --> 00:00:46,020
+Să începem cu o rețea extrem de simplă, una în care fiecare strat are un singur neuron.
+
+14
+00:00:46,320 --> 00:00:49,860
+Această rețea este determinată de trei ponderi și trei polarizări, 
+
+15
+00:00:49,860 --> 00:00:53,981
+iar scopul nostru este de a înțelege cât de sensibilă este funcția de cost la 
+
+16
+00:00:53,981 --> 00:00:54,880
+aceste variabile.
+
+17
+00:00:55,420 --> 00:00:58,120
+În acest fel, știm ce ajustări ale acestor termeni vor 
+
+18
+00:00:58,120 --> 00:01:00,820
+determina cea mai eficientă scădere a funcției de cost.
+
+19
+00:01:01,960 --> 00:01:04,840
+Și ne vom concentra doar pe conexiunea dintre ultimii doi neuroni.
+
+20
+00:01:05,980 --> 00:01:09,875
+Să etichetăm activarea ultimului neuron cu un superscript L, 
+
+21
+00:01:09,875 --> 00:01:15,560
+indicând stratul în care se află, astfel încât activarea neuronului anterior să fie Al-1.
+
+22
+00:01:16,360 --> 00:01:19,629
+Aceștia nu sunt exponenți, ci doar un mod de a indexa ceea ce vorbim, 
+
+23
+00:01:19,629 --> 00:01:23,040
+deoarece vreau să păstrez subscriptele pentru diferiți indici mai târziu.
+
+24
+00:01:23,720 --> 00:01:27,804
+Să spunem că valoarea pe care dorim să o aibă această ultimă activare 
+
+25
+00:01:27,804 --> 00:01:32,180
+pentru un anumit exemplu de formare este y, de exemplu, y poate fi 0 sau 1.
+
+26
+00:01:32,840 --> 00:01:39,240
+Astfel, costul acestei rețele pentru un singur exemplu de instruire este Al-y2.
+
+27
+00:01:40,260 --> 00:01:44,380
+Vom numi costul acelui exemplu de formare ca fiind c0.
+
+28
+00:01:45,900 --> 00:01:50,013
+Ca o reamintire, această ultimă activare este determinată de o pondere, 
+
+29
+00:01:50,013 --> 00:01:53,783
+pe care o voi numi WL, înmulțită cu activarea neuronului anterior 
+
+30
+00:01:53,783 --> 00:01:56,640
+plus o anumită distorsiune, pe care o voi numi BL.
+
+31
+00:01:57,420 --> 00:02:00,234
+Și apoi se pompează prin intermediul unei funcții neliniare speciale, 
+
+32
+00:02:00,234 --> 00:02:01,320
+cum ar fi Sigmoid sau ReLU.
+
+33
+00:02:01,800 --> 00:02:06,136
+De fapt, ne va fi mai ușor dacă vom da un nume special acestei sume ponderate, 
+
+34
+00:02:06,136 --> 00:02:09,320
+cum ar fi z, cu același indice ca și activările relevante.
+
+35
+00:02:10,380 --> 00:02:14,329
+Este vorba de o mulțime de termeni, iar un mod în care ați putea conceptualiza 
+
+36
+00:02:14,329 --> 00:02:18,130
+acest lucru este că ponderea, acțiunea anterioară și tendința sunt folosite 
+
+37
+00:02:18,130 --> 00:02:21,829
+împreună pentru a calcula z, care la rândul său ne permite să calculăm a, 
+
+38
+00:02:21,829 --> 00:02:25,480
+care, în final, împreună cu o constantă y, ne permite să calculăm costul.
+
+39
+00:02:27,340 --> 00:02:32,186
+Și, desigur, Al-1 este influențat de propria sa greutate și de prejudecăți și altele, 
+
+40
+00:02:32,186 --> 00:02:35,060
+dar nu ne vom concentra asupra acestui aspect acum.
+
+41
+00:02:35,700 --> 00:02:37,620
+Toate acestea sunt doar numere, nu-i așa?
+
+42
+00:02:38,060 --> 00:02:41,040
+Și poate fi plăcut să ne gândim că fiecare dintre ele are propria linie numerică.
+
+43
+00:02:41,720 --> 00:02:45,479
+Primul nostru obiectiv este să înțelegem cât de sensibilă este 
+
+44
+00:02:45,479 --> 00:02:49,000
+funcția de cost la mici modificări ale ponderii noastre WL.
+
+45
+00:02:49,540 --> 00:02:54,860
+Sau, altfel spus, care este derivata lui c în raport cu WL?
+
+46
+00:02:55,600 --> 00:03:01,693
+Atunci când vedeți acest termen del W, gândiți-vă la el ca la o mică modificare a lui W, 
+
+47
+00:03:01,693 --> 00:03:05,663
+cum ar fi o schimbare de 0,01, iar termenul del c ca la o 
+
+48
+00:03:05,663 --> 00:03:08,060
+modificare a costului care rezultă.
+
+49
+00:03:08,060 --> 00:03:10,220
+Ceea ce dorim este raportul lor.
+
+50
+00:03:11,260 --> 00:03:14,586
+Din punct de vedere conceptual, acest mic impuls asupra lui WL 
+
+51
+00:03:14,586 --> 00:03:17,543
+determină un impuls asupra lui ZL, care, la rândul său, 
+
+52
+00:03:17,543 --> 00:03:21,240
+determină un impuls asupra lui AL, ceea ce influențează direct costul.
+
+53
+00:03:23,120 --> 00:03:28,123
+Astfel, vom analiza mai întâi raportul dintre o mică schimbare a lui 
+
+54
+00:03:28,123 --> 00:03:33,200
+ZL și această mică schimbare W, adică derivata lui ZL în raport cu WL.
+
+55
+00:03:33,200 --> 00:03:36,934
+De asemenea, trebuie să luați în considerare raportul dintre modificarea 
+
+56
+00:03:36,934 --> 00:03:39,697
+lui AL și micuța modificare a lui ZL care a cauzat-o, 
+
+57
+00:03:39,697 --> 00:03:43,534
+precum și raportul dintre modificarea finală a lui c și această modificare 
+
+58
+00:03:43,534 --> 00:03:44,660
+intermediară a lui AL.
+
+59
+00:03:45,740 --> 00:03:50,328
+Aceasta de aici este regula lanțului, unde înmulțirea acestor 
+
+60
+00:03:50,328 --> 00:03:55,140
+trei rapoarte ne dă sensibilitatea lui c la mici schimbări în WL.
+
+61
+00:03:56,880 --> 00:04:01,396
+Pe ecran sunt o mulțime de simboluri și asigurați-vă că este clar ce 
+
+62
+00:04:01,396 --> 00:04:06,240
+reprezintă toate acestea, pentru că acum vom calcula derivatele relevante.
+
+63
+00:04:07,440 --> 00:04:13,160
+Derivata lui c în raport cu AL este 2AL-y.
+
+64
+00:04:13,980 --> 00:04:17,390
+Observați că acest lucru înseamnă că dimensiunea sa este proporțională 
+
+65
+00:04:17,390 --> 00:04:20,463
+cu diferența dintre rezultatul rețelei și ceea ce dorim să fie, 
+
+66
+00:04:20,463 --> 00:04:23,153
+astfel încât, dacă acel rezultat a fost foarte diferit, 
+
+67
+00:04:23,153 --> 00:04:27,140
+chiar și schimbările ușoare pot avea un impact mare asupra funcției de cost finale.
+
+68
+00:04:27,840 --> 00:04:32,553
+Derivata lui AL în raport cu ZL este doar derivata funcției noastre sigmoide, 
+
+69
+00:04:32,553 --> 00:04:36,180
+sau orice altă neliniaritate pe care alegeți să o utilizați.
+
+70
+00:04:37,220 --> 00:04:44,660
+Iar derivata lui ZL în raport cu WL rezultă a fi AL-1.
+
+71
+00:04:45,760 --> 00:04:50,041
+Nu știu ce părere aveți voi, dar eu cred că este ușor să te blochezi cu capul în formule, 
+
+72
+00:04:50,041 --> 00:04:53,420
+fără să te gândești puțin și să-ți amintești ce înseamnă toate acestea.
+
+73
+00:04:53,920 --> 00:04:58,341
+În cazul acestei ultime derivate, valoarea în care micul impuls dat ponderii 
+
+74
+00:04:58,341 --> 00:05:02,820
+influențează ultimul strat depinde de cât de puternic este neuronii anteriori.
+
+75
+00:05:03,380 --> 00:05:08,280
+Nu uitați, aici intervine ideea neuronilor care trag împreună, se conectează împreună.
+
+76
+00:05:09,200 --> 00:05:12,545
+Și toate acestea reprezintă derivația în raport cu WL doar 
+
+77
+00:05:12,545 --> 00:05:15,720
+a costului pentru un singur exemplu specific de formare.
+
+78
+00:05:16,440 --> 00:05:20,213
+Deoarece funcția de cost complet implică calcularea mediei tuturor acestor 
+
+79
+00:05:20,213 --> 00:05:22,931
+costuri pentru mai multe exemple de formare diferite, 
+
+80
+00:05:22,931 --> 00:05:27,460
+derivata sa necesită calcularea mediei acestei expresii pentru toate exemplele de formare.
+
+81
+00:05:28,380 --> 00:05:31,890
+Și, desigur, aceasta este doar o componentă a vectorului de gradient, 
+
+82
+00:05:31,890 --> 00:05:35,000
+care la rândul său este construit din derivatele parțiale ale 
+
+83
+00:05:35,000 --> 00:05:38,260
+funcției de cost în raport cu toate aceste ponderi și polarizări.
+
+84
+00:05:40,640 --> 00:05:42,841
+Dar chiar dacă aceasta este doar una dintre multele derivate 
+
+85
+00:05:42,841 --> 00:05:45,260
+parțiale de care avem nevoie, reprezintă mai mult de 50% din muncă.
+
+86
+00:05:46,340 --> 00:05:49,720
+De exemplu, sensibilitatea față de polarizare este aproape identică.
+
+87
+00:05:50,040 --> 00:05:55,020
+Trebuie doar să schimbăm acest termen del z del w cu un del z del b.
+
+88
+00:05:58,420 --> 00:06:02,400
+Și dacă vă uitați la formula relevantă, derivata este 1.
+
+89
+00:06:06,140 --> 00:06:09,916
+De asemenea, și aici intervine ideea de propagare inversă, 
+
+90
+00:06:09,916 --> 00:06:14,524
+puteți vedea cât de sensibilă este această funcție de cost la activarea 
+
+91
+00:06:14,524 --> 00:06:15,740
+stratului anterior.
+
+92
+00:06:15,740 --> 00:06:20,387
+Mai exact, această derivată inițială din expresia regulii în lanț, 
+
+93
+00:06:20,387 --> 00:06:25,660
+sensibilitatea lui z la activarea anterioară, se dovedește a fi ponderea WL.
+
+94
+00:06:26,640 --> 00:06:30,991
+Și, din nou, chiar dacă nu vom putea influența direct activarea stratului anterior, 
+
+95
+00:06:30,991 --> 00:06:34,928
+este util să ținem evidența, deoarece acum putem continua să iterăm aceeași 
+
+96
+00:06:34,928 --> 00:06:38,813
+idee de regulă în lanț în sens invers pentru a vedea cât de sensibilă este 
+
+97
+00:06:38,813 --> 00:06:42,440
+funcția de cost la ponderile anterioare și la polarizările anterioare.
+
+98
+00:06:43,180 --> 00:06:45,822
+S-ar putea să credeți că acesta este un exemplu prea simplu, 
+
+99
+00:06:45,822 --> 00:06:47,858
+deoarece toate straturile au un singur neuron, 
+
+100
+00:06:47,858 --> 00:06:51,020
+iar lucrurile vor deveni exponențial mai complicate pentru o rețea reală.
+
+101
+00:06:51,700 --> 00:06:55,937
+Dar, sincer, nu se schimbă prea mult atunci când oferim mai mulți neuroni straturilor, 
+
+102
+00:06:55,937 --> 00:06:58,860
+ci doar câțiva indici în plus de care trebuie să ținem cont.
+
+103
+00:06:59,380 --> 00:07:03,093
+În loc ca activarea unui anumit strat să fie pur și simplu AL, 
+
+104
+00:07:03,093 --> 00:07:07,160
+va avea și un subscript care va indica ce neuron din acel strat este.
+
+105
+00:07:07,160 --> 00:07:14,420
+Să folosim litera k pentru a indexa stratul L-1, iar j pentru a indexa stratul L.
+
+106
+00:07:15,260 --> 00:07:18,523
+Pentru cost, ne uităm din nou la rezultatul dorit, 
+
+107
+00:07:18,523 --> 00:07:23,516
+dar de data aceasta adunăm pătratele diferențelor dintre activările ultimului 
+
+108
+00:07:23,516 --> 00:07:25,180
+strat și rezultatul dorit.
+
+109
+00:07:26,080 --> 00:07:30,840
+Adică, se face o sumă peste ALj minus Yj la pătrat.
+
+110
+00:07:33,040 --> 00:07:37,081
+Deoarece există mult mai multe greutăți, fiecare dintre ele trebuie să aibă câțiva 
+
+111
+00:07:37,081 --> 00:07:40,148
+indici în plus pentru a ține evidența locului în care se află, 
+
+112
+00:07:40,148 --> 00:07:43,994
+astfel încât să numim greutatea muchiei care leagă acest al k-lea neuron de al 
+
+113
+00:07:43,994 --> 00:07:44,920
+j-lea neuron, WLjk.
+
+114
+00:07:45,620 --> 00:07:48,046
+Acești indici ar putea părea un pic pe dos la început, 
+
+115
+00:07:48,046 --> 00:07:51,884
+dar se aliniază cu modul în care ați indexa matricea de greutate despre care am vorbit 
+
+116
+00:07:51,884 --> 00:07:53,120
+în partea 1 a videoclipului.
+
+117
+00:07:53,620 --> 00:07:57,531
+La fel ca înainte, este bine să dați un nume sumei ponderate relevante, 
+
+118
+00:07:57,531 --> 00:08:01,715
+cum ar fi z, astfel încât activarea ultimului strat să fie doar funcția dvs. 
+
+119
+00:08:01,715 --> 00:08:04,160
+specială, cum ar fi sigmoidul, aplicată la z.
+
+120
+00:08:04,660 --> 00:08:07,953
+Puteți vedea la ce mă refer, unde toate acestea sunt, în esență, 
+
+121
+00:08:07,953 --> 00:08:12,007
+aceleași ecuații pe care le aveam înainte în cazul unui singur neuron pe strat, 
+
+122
+00:08:12,007 --> 00:08:13,680
+doar că pare puțin mai complicat.
+
+123
+00:08:15,440 --> 00:08:19,337
+Și, într-adevăr, expresia derivată în lanț care descrie cât de 
+
+124
+00:08:19,337 --> 00:08:23,420
+sensibil este costul la o anumită greutate arată în esență la fel.
+
+125
+00:08:23,920 --> 00:08:26,840
+Vă las pe voi să vă gândiți la fiecare dintre acești termeni, dacă doriți.
+
+126
+00:08:28,980 --> 00:08:32,999
+Ceea ce se schimbă aici, totuși, este derivata costului 
+
+127
+00:08:32,999 --> 00:08:36,659
+în raport cu una dintre activările din stratul L-1.
+
+128
+00:08:37,780 --> 00:08:40,237
+În acest caz, diferența constă în faptul că neuronii 
+
+129
+00:08:40,237 --> 00:08:42,880
+influențează funcția de cost prin mai multe căi diferite.
+
+130
+00:08:44,680 --> 00:08:49,695
+Adică, pe de o parte, influențează AL0, care joacă un rol în funcția de cost, 
+
+131
+00:08:49,695 --> 00:08:54,260
+dar are, de asemenea, o influență asupra AL1, care joacă, de asemenea, 
+
+132
+00:08:54,260 --> 00:08:57,540
+un rol în funcția de cost, și trebuie să le adunăm.
+
+133
+00:08:59,820 --> 00:09:03,040
+Și asta, ei bine, cam asta e tot.
+
+134
+00:09:03,500 --> 00:09:08,153
+Odată ce știți cât de sensibilă este funcția de cost la activările din penultimul strat, 
+
+135
+00:09:08,153 --> 00:09:12,860
+puteți repeta procesul pentru toate ponderile și polarizările care alimentează acel strat.
+
+136
+00:09:13,900 --> 00:09:14,960
+Așa că bate-te pe spate!
+
+137
+00:09:15,300 --> 00:09:19,299
+Dacă toate acestea au sens, înseamnă că ați pătruns adânc în inima backpropagation, 
+
+138
+00:09:19,299 --> 00:09:22,680
+motorul de lucru din spatele modului de învățare a rețelelor neuronale.
+
+139
+00:09:23,300 --> 00:09:26,742
+Aceste expresii ale regulilor în lanț vă oferă derivatele care 
+
+140
+00:09:26,742 --> 00:09:29,912
+determină fiecare componentă a gradientului care ajută la 
+
+141
+00:09:29,912 --> 00:09:33,300
+minimizarea costului rețelei prin coborârea repetată a pantei.
+
+142
+00:09:34,300 --> 00:09:38,699
+Dacă stai și te gândești la toate acestea, vei avea de înțeles că sunt multe straturi 
+
+143
+00:09:38,699 --> 00:09:42,740
+de complexitate, așa că nu-ți face griji dacă îți ia ceva timp să le asimilezi.
+
