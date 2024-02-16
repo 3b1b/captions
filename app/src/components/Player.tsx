@@ -25,7 +25,7 @@ let player: YouTubePlayer | null = null;
 
 let stopTimer = 0;
 
-export function playSegment(start = 0, end = 0) {
+export function playSentence(start = 0, end = 0) {
   player?.seekTo(start || 0, true);
   player?.playVideo();
   window.clearTimeout(stopTimer);

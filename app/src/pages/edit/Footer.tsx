@@ -3,19 +3,22 @@ import { useSnapshot } from "valtio";
 import Button from "@/components/Button";
 import Checkbox from "@/components/Checkbox";
 import Select from "@/components/Select";
-import { filter, filterFuncs, filters, segments, sticky } from "@/pages/Edit";
+import { filter, filterFuncs, filters, sentences, sticky } from "@/pages/Edit";
 import classes from "./Footer.module.css";
 
 function Footer() {
+  /** reactive state */
   const filterSnap = useSnapshot(filter);
   const stickySnap = useSnapshot(sticky);
-  const segmentsSnap = useSnapshot(segments);
+  const sentencesSnap = useSnapshot(sentences);
 
+  /** get count for each filter */
   const filterCounts = filters.map((filter) => ({
     ...filter,
-    count: segmentsSnap.filter(filterFuncs[filter.id]).length,
+    count: sentencesSnap.value.filter(filterFuncs[filter.id]).length,
   }));
 
+  /** edit filter count */
   const edits = filterCounts.find((filter) => filter.id === "my")?.count || 0;
 
   return (

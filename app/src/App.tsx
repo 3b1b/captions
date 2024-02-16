@@ -8,9 +8,10 @@ import {
 } from "react-router-dom";
 import { QueryParamProvider } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
-import Edit from "@/pages/Edit";
+import Edit, { loader as editLoader } from "@/pages/Edit";
 import Home from "@/pages/Home";
 
+/** entrypoint component */
 function App() {
   return <RouterProvider router={router} />;
 }
@@ -42,22 +43,18 @@ const routes: RouteObject[] = [
       {
         index: true,
         element: <Home />,
-        loader: async () => {
-          /** handle 404 redirect */
-          const url = window.sessionStorage.redirect as string;
-          if (url) {
-            console.info("Redirecting to:", url);
-            window.sessionStorage.removeItem("redirect");
-            return redirect(url);
-          } else return null;
-        },
+        loader: spaRedirect,
       },
+
       {
-        path: "edit/:video/:language",
+        path: "edit/:lesson/:language",
         element: <Edit />,
+        loader: editLoader,
       },
     ],
   },
+
+  /** 404 */
   {
     path: "*",
     element: <Home />,
@@ -71,3 +68,14 @@ const routes: RouteObject[] = [
 const router = createBrowserRouter(routes, {
   basename: import.meta.env.BASE_URL,
 });
+
+/** handle single-page-app redirect */
+async function spaRedirect() {
+  /** see /public/404.html */
+  const url = window.sessionStorage.redirect as string;
+  if (url) {
+    console.info("Redirecting to:", url);
+    window.sessionStorage.removeItem("redirect");
+    return redirect(url);
+  } else return null;
+}
