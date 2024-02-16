@@ -1,4 +1,6 @@
 import { ComponentProps } from "react";
+import { FaRegSquare, FaSquareCheck } from "react-icons/fa6";
+import classNames from "classnames";
 import classes from "./Checkbox.module.css";
 
 type Props = {
@@ -10,8 +12,10 @@ type Props = {
 function Checkbox({ label, value, onChange, ...props }: Props) {
   return (
     <label className={classes.label}>
+      {value && <FaSquareCheck className={classes.icon} />}
+      {!value && <FaRegSquare className={classes.icon} />}
       <input
-        className={classes.checkbox}
+        className={classNames(classes.checkbox, "sr-only")}
         type="checkbox"
         checked={value}
         onChange={(event) => onChange(event.target.checked)}
