@@ -1,4 +1,4 @@
-import { LoaderFunction } from "react-router";
+import { LoaderFunction, useBlocker } from "react-router";
 import { proxy, useSnapshot } from "valtio";
 import Footer from "@/pages/edit/Footer";
 import Header from "@/pages/edit/Header";
@@ -6,6 +6,13 @@ import Sentences from "@/pages/edit/Sentences";
 
 /** video edit page */
 function Edit() {
+  useBlocker(
+    () =>
+      !window.confirm(
+        "Are you sure you want to navigate away from this page? Unsaved changes will be lost.",
+      ),
+  );
+
   return (
     <>
       <Header />

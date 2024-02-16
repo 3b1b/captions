@@ -22,19 +22,18 @@ function Sentences() {
 
   /** when user seeks youtube player */
   useEffect(() => {
-    /** if seek was triggered by textbox focus instead of from player directly */
+    /** don't scroll */
     if (preventScroll) {
-      /** don't scroll */
       preventScroll = false;
       return;
     }
 
     /** go through sentence rows */
-    const rows = document.querySelectorAll(`.${classes.row}[data-index]`);
+    const rows = document.querySelectorAll(`.${classes.row}`);
     for (const element of rows) {
       /** get time range */
       const start = Number(element.getAttribute("data-start")) || 0;
-      const end = Number(element.getAttribute("data-start")) || 0;
+      const end = Number(element.getAttribute("data-end")) || 0;
 
       /** find first row that falls in seeked time range */
       if (timeSnap.value > start && timeSnap.value < end) {
@@ -66,6 +65,7 @@ function Sentences() {
               )}
               title={`${formatTime(start)} – ${formatTime(end)}`}
             >
+              {/* actions */}
               <div
                 className={classes.actions}
                 title="Number of edits"
@@ -77,6 +77,7 @@ function Sentences() {
                 </span>
               </div>
 
+              {/* edit textbox */}
               <Textarea
                 className={classes.edit}
                 value={
@@ -89,12 +90,14 @@ function Sentences() {
                 }
                 onFocus={() => {
                   preventScroll = true;
+                  /** seek video to associated time */
                   playSentence(start, end);
                 }}
                 title={`Translated ${language} text`}
                 aria-label={`Translated ${language} text`}
               />
 
+              {/* original english text */}
               <div
                 title="Original English text"
                 aria-label="Original English text"
@@ -110,4 +113,6 @@ function Sentences() {
 
 export default Sentences;
 
+/** flag for if video seek was triggered by textbox focus instead of from user
+ * directly seeking in video player, to prevent unnecessary scroll */
 let preventScroll = false;

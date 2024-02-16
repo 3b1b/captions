@@ -5,6 +5,7 @@ import { useSnapshot } from "valtio";
 import Player from "@/components/Player";
 import { id, sticky, title } from "@/pages/Edit";
 import classes from "./Header.module.css";
+import { Link } from "react-router-dom";
 
 function Header() {
   /** url params */
@@ -19,12 +20,13 @@ function Header() {
   const titleSnap = useSnapshot(title);
   const stickySnap = useSnapshot(sticky);
 
-  const titleFallback = titleSnap.value?.editHistory.at(-1)?.text || lesson;
+  /** title, with fallback */
+  const _title = titleSnap.value?.editHistory.at(-1)?.text || lesson;
 
   /** update browser tab title */
   useEffect(() => {
-    document.title = [titleFallback, language].join(" | ");
-  }, [titleFallback, language]);
+    document.title = [_title, language].join(" | ");
+  }, [_title, language]);
 
   return (
     <header
@@ -36,11 +38,11 @@ function Header() {
       <nav className={classes.text}>
         <h1 className="sr-only">{import.meta.env.VITE_TITLE}</h1>
 
-        <h2>{titleFallback}</h2>
+        <h2>{_title}</h2>
 
-        <a href="./" title="Switch language" aria-label="Switch language">
-          {language}
-        </a>
+        <span>{language}</span>
+
+        <Link to="/">Home</Link>
       </nav>
     </header>
   );

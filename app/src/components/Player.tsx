@@ -5,12 +5,17 @@ import classes from "./Player.module.css";
 
 type Props = { video: string };
 
+/** youtube video player */
 function Player({ video }: Props) {
   return (
     <YouTube
       videoId={video}
-      onReady={(event) => (player = event.target)}
+      onReady={(event) => {
+        /** update internal player object */
+        player = event.target;
+      }}
       onStateChange={(event) => {
+        /** when user seeks and releases */
         if (event.data === 1) updatePlayerTime();
       }}
       className={classes.player}
@@ -21,22 +26,29 @@ function Player({ video }: Props) {
 
 export default Player;
 
+/** internal player object */
 let player: YouTubePlayer | null = null;
 
-let stopTimer = 0;
+/** timer to pause playing at end of sentence */
+let pausetimer = 0;
 
 export function playSentence(start = 0, end = 0) {
+  /** play from start */
   player?.seekTo(start || 0, true);
   player?.playVideo();
-  window.clearTimeout(stopTimer);
-  stopTimer = window.setTimeout(
+
+  /** pause after end */
+  window.clearTimeout(pausetimer);
+  pausetimer = window.setTimeout(
     () => player?.pauseVideo(),
     (end - start) * 1000,
   );
 }
 
+/** current play time in seconds */
 export const playerTime = proxy({ value: 0 });
 
+/** update play time */
 async function updatePlayerTime() {
   playerTime.value = (await player?.getCurrentTime()) || 0;
 }
