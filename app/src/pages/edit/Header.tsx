@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useParams } from "react-router";
 import { startCase } from "lodash";
+import Player from "@/components/Player";
 import classes from "./Header.module.css";
 
 function Header() {
@@ -12,7 +13,8 @@ function Header() {
 
   return (
     <header className={classes.header}>
-      <div className={classes.video}></div>
+      <Player video="2g811Eo7K8U" />
+
       <nav className={classes.text}>
         <h1 className="sr-only">{import.meta.env.VITE_TITLE}</h1>
 
