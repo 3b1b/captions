@@ -15,7 +15,7 @@ function Title() {
       : [];
 
   return (
-    <section>
+    <section data-full>
       <h2 className={classes.heading}>Title</h2>
 
       <div className={classes.rows}>

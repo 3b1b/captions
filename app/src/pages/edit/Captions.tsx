@@ -36,7 +36,7 @@ function Captions() {
   }, [timeSnap.value]);
 
   return (
-    <section>
+    <section data-full>
       <h2 className={classes.heading}>Captions</h2>
 
       <div className={classes.rows}>

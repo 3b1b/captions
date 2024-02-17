@@ -23,7 +23,7 @@ function Header() {
   /** title, with fallback */
   const _title = titleSnap.value?.original || lesson;
 
-  /** update browser tab title */
+  /** set browser tab title */
   useEffect(() => {
     document.title = [_title, language].join(" | ");
   }, [_title, language]);

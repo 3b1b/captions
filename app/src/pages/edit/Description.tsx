@@ -9,7 +9,7 @@ function Description() {
   const descriptionSnap = useSnapshot(description, { sync: true });
 
   return (
-    <section>
+    <section data-full>
       <h2 className={classes.heading}>Description</h2>
 
       <div className={classes.rows}>
