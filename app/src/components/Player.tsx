@@ -1,6 +1,7 @@
 import YouTube from "react-youtube";
 import { proxy } from "valtio";
 import type { YouTubePlayer } from "youtube-player/dist/types";
+import { ReadonlyCaption } from "@/pages/Edit";
 import classes from "./Player.module.css";
 
 type Props = { video: string };
@@ -29,10 +30,15 @@ export default Player;
 /** internal player object */
 let player: YouTubePlayer | null = null;
 
-/** timer to pause playing at end of sentence */
+/** timer to pause playing at end of caption */
 let pausetimer = 0;
 
-export function playSentence(start = 0, end = 0) {
+export function playCaption(caption: ReadonlyCaption) {
+  /** get time range */
+  const { timeRange } = caption;
+  if (!timeRange) return;
+  const [start, end] = timeRange;
+
   /** play from start */
   player?.seekTo(start || 0, true);
   player?.playVideo();

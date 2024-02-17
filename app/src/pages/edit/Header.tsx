@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useParams } from "react-router";
+import { Link } from "react-router-dom";
 import { startCase } from "lodash";
 import { useSnapshot } from "valtio";
 import Player from "@/components/Player";
 import { id, sticky, title } from "@/pages/Edit";
 import classes from "./Header.module.css";
-import { Link } from "react-router-dom";
 
 function Header() {
   /** url params */
@@ -21,7 +21,7 @@ function Header() {
   const stickySnap = useSnapshot(sticky);
 
   /** title, with fallback */
-  const _title = titleSnap.value?.editHistory.at(-1)?.text || lesson;
+  const _title = titleSnap.value?.original || lesson;
 
   /** update browser tab title */
   useEffect(() => {

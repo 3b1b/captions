@@ -1,8 +1,10 @@
 import { LoaderFunction, useBlocker } from "react-router";
 import { proxy, useSnapshot } from "valtio";
+import Captions from "@/pages/edit/Captions";
+import Description from "@/pages/edit/Description";
 import Footer from "@/pages/edit/Footer";
 import Header from "@/pages/edit/Header";
-import Sentences from "@/pages/edit/Sentences";
+import Title from "@/pages/edit/Title";
 
 /** video edit page */
 function Edit() {
@@ -17,7 +19,9 @@ function Edit() {
     <>
       <Header />
       <main>
-        <Sentences />
+        <Title />
+        <Description />
+        <Captions />
       </main>
       <Footer />
     </>
@@ -26,8 +30,8 @@ function Edit() {
 
 export default Edit;
 
-/** sentence format on github */
-type _Sentence = {
+/** caption format on github */
+type _Caption = {
   input: string;
   translatedText: string;
   time_range?: [number, number];
@@ -73,7 +77,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     /** map raw format to format needed for app */
     id.value = data.split("/").pop() || "";
   } catch (error) {
-    console.error("Couldn't load sentence data");
+    console.error("Couldn't load caption data");
   }
 
   /** add to base url */
@@ -84,7 +88,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     const url = `${base}/title.json`;
     const { input, translatedText } = (await (
       await fetch(url)
-    ).json()) as _Sentence;
+    ).json()) as _Caption;
 
     /** map raw format to format needed for app */
     title.value = {
@@ -99,7 +103,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   /** load description */
   try {
     const url = `${base}/description.json`;
-    const data = (await (await fetch(url)).json()) as _Sentence[];
+    const data = (await (await fetch(url)).json()) as _Caption[];
 
     /** map raw format to format needed for app */
     description.value = data.map(({ input, translatedText }) => ({
@@ -111,20 +115,20 @@ export const loader: LoaderFunction = async ({ params }) => {
     console.error("Couldn't load description data");
   }
 
-  /** load sentences */
+  /** load captions */
   try {
     const url = `${base}/sentence_translations.json`;
-    const data = (await (await fetch(url)).json()) as _Sentence[];
+    const data = (await (await fetch(url)).json()) as _Caption[];
 
     /** map raw format to format needed for app */
-    sentences.value = data.map(({ input, translatedText, time_range }) => ({
+    captions.value = data.map(({ input, translatedText, time_range }) => ({
       original: input,
       editHistory: [{ text: translatedText }],
       timeRange: time_range || [0, 0],
       currentEdit: null,
     }));
   } catch (error) {
-    console.error("Couldn't load sentence data");
+    console.error("Couldn't load caption data");
   }
 
   return null;
@@ -136,27 +140,25 @@ export const filters = [
   { id: "original", label: "Original AI-generated" },
   { id: "human", label: "Human-edited" },
   { id: "my", label: "My edits" },
-  // "Heavily edited sentences",
-  // "Recently edited sentences",
+  // "Heavily edited captions",
+  // "Recently edited captions",
 ] as const;
 
 /** filter option id enum */
 type Filter = (typeof filters)[number]["id"];
 
 /** selected filter id */
-export const filter = proxy<{ value: Filter }>({
-  value: "all",
-});
+export const filter = proxy<{ value: Filter }>({ value: "all" });
 
-/** take in a sentence and return whether it should be kept */
-type FilterFunc = (value: ReadonlySentence) => boolean;
+/** take in a caption and return whether it should be kept */
+type FilterFunc = (value: ReadonlyCaption) => boolean;
 
 /** filter function for each filter option */
 export const filterFuncs: Record<Filter, FilterFunc> = {
   all: () => true,
-  original: (sentence) => sentence.editHistory.length === 1,
-  human: (sentence) => sentence.editHistory.length > 1,
-  my: (sentence) => sentence.currentEdit !== null,
+  original: (caption) => caption.editHistory.length === 1,
+  human: (caption) => caption.editHistory.length > 1,
+  my: (caption) => caption.currentEdit !== null,
 };
 
 /** whether header/footer are sticky */
@@ -166,27 +168,21 @@ export const sticky = proxy({ value: true });
 export const id = proxy({ value: "" });
 
 /** video title */
-export const title = proxy<{ value: Omit<Sentence, "timeRange"> | null }>({
-  value: null,
-});
+export const title = proxy<{ value: Caption | null }>({ value: null });
 
 /** video description */
-export const description = proxy<{
-  value: Omit<Sentence, "timeRange">[];
-}>({
-  value: [],
-});
+export const description = proxy<{ value: Caption[] }>({ value: [] });
 
-/** sentence data */
-export type Sentence = {
-  timeRange: [number, number];
-  currentEdit: string | null;
-  editHistory: { text: string }[];
+/** caption data */
+export type Caption = {
   original: string;
+  editHistory: { text: string }[];
+  currentEdit: string | null;
+  timeRange?: [number, number];
 };
 
-/** sentence, but deeply readonly (when using snapshot) */
-type ReadonlySentence = ReturnType<typeof useSnapshot<Sentence>>;
+/** caption, but deeply readonly (when using snapshot) */
+export type ReadonlyCaption = ReturnType<typeof useSnapshot<Caption>>;
 
-/** editable sentences state */
-export const sentences = proxy<{ value: Sentence[] }>({ value: [] });
+/** editable captions state */
+export const captions = proxy<{ value: Caption[] }>({ value: [] });
