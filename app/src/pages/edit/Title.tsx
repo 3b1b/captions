@@ -3,6 +3,7 @@ import { filter, filterFuncs, title } from "@/pages/Edit";
 import Row from "@/pages/edit/Row";
 import classes from "../Edit.module.css";
 
+/** title editor row */
 function Title() {
   /** reactive state */
   const filterSnap = useSnapshot(filter);
@@ -16,18 +17,14 @@ function Title() {
 
   return (
     <section data-full>
-      <h2 className={classes.heading}>Title</h2>
+      <h2>Title</h2>
 
       <div className={classes.rows}>
         {_title.map((caption, index) => (
           <Row
             key={index}
             caption={caption}
-            value={
-              titleSnap.value!.currentEdit !== null
-                ? titleSnap.value!.currentEdit!
-                : titleSnap.value!.editHistory.at(-1)?.text || ""
-            }
+            value={titleSnap.value!.currentEdit || ""}
             onChange={(value) => (title.value!.currentEdit = value)}
           />
         ))}

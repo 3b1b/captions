@@ -3,6 +3,7 @@ import { description, filter, filterFuncs } from "@/pages/Edit";
 import Row from "@/pages/edit/Row";
 import classes from "../Edit.module.css";
 
+/** description editor rows */
 function Description() {
   /** reactive state */
   const filterSnap = useSnapshot(filter);
@@ -10,7 +11,7 @@ function Description() {
 
   return (
     <section data-full>
-      <h2 className={classes.heading}>Description</h2>
+      <h2>Description</h2>
 
       <div className={classes.rows}>
         {descriptionSnap.value
@@ -19,11 +20,7 @@ function Description() {
             <Row
               key={index}
               caption={caption}
-              value={
-                descriptionSnap.value[index]!.currentEdit !== null
-                  ? descriptionSnap.value[index]!.currentEdit!
-                  : descriptionSnap.value[index]!.editHistory.at(-1)?.text || ""
-              }
+              value={descriptionSnap.value[index]!.currentEdit || ""}
               onChange={(value) =>
                 (description.value[index]!.currentEdit = value)
               }

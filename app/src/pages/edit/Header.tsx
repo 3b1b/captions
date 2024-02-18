@@ -1,27 +1,31 @@
 import { useEffect } from "react";
+import {
+  FaAngleLeft,
+  FaAngleRight,
+  FaClockRotateLeft,
+  FaHouse,
+  FaRegCircleQuestion,
+} from "react-icons/fa6";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { startCase } from "lodash";
 import { useSnapshot } from "valtio";
 import Player from "@/components/Player";
-import { id, sticky, title } from "@/pages/Edit";
+import { meta, sticky, title, video } from "@/pages/Edit";
 import classes from "./Header.module.css";
 
 function Header() {
   /** url params */
-  let { lesson = "", language = "" } = useParams();
-
-  /** de-kebab */
-  lesson = startCase(lesson);
-  language = startCase(language);
+  const { slug = "", language = "" } = useParams();
 
   /** reactive state */
-  const idSnap = useSnapshot(id);
+  const metaSnap = useSnapshot(meta);
+  const videoSnap = useSnapshot(video);
   const titleSnap = useSnapshot(title);
   const stickySnap = useSnapshot(sticky);
 
   /** title, with fallback */
-  const _title = titleSnap.value?.original || lesson;
+  const _title = titleSnap.value?.original || startCase(slug);
 
   /** set browser tab title */
   useEffect(() => {
@@ -33,17 +37,52 @@ function Header() {
       className={classes.header}
       style={{ position: stickySnap.value ? "sticky" : undefined }}
     >
-      <Player video={idSnap.value} />
+      {/* video */}
+      <Player video={videoSnap.value} />
 
-      <nav className={classes.text}>
-        <h1 className="sr-only">{import.meta.env.VITE_TITLE}</h1>
+      {/* text and nav */}
+      <div className={classes.text}>
+        {/* links */}
+        <nav className={classes.nav}>
+          <Link to="/">
+            <FaHouse />
+            Home
+          </Link>
 
-        <h2>{_title}</h2>
+          <Link to="https://github.com/3b1b/captions/issues" target="_blank">
+            <FaRegCircleQuestion />
+            Help
+          </Link>
 
-        <span>{language}</span>
+          {metaSnap.value?.path && (
+            <Link
+              to={`https://github.com/3b1b/captions/commits/main/${metaSnap.value?.path}`}
+              target="_blank"
+            >
+              <FaClockRotateLeft />
+              Edit History
+            </Link>
+          )}
 
-        <Link to="/">Home</Link>
-      </nav>
+          {metaSnap.value?.previousLesson && (
+            <Link to={`/edit/${metaSnap.value?.previousLesson}/${language}`}>
+              <FaAngleLeft />
+              Previous
+            </Link>
+          )}
+
+          {metaSnap.value?.nextLesson && (
+            <Link to={`/edit/${metaSnap.value?.nextLesson}/${language}`}>
+              <FaAngleRight />
+              Next
+            </Link>
+          )}
+        </nav>
+
+        {/* lesson info */}
+        <h1>{_title}</h1>
+        <div>{startCase(language)}</div>
+      </div>
     </header>
   );
 }

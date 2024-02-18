@@ -6,6 +6,7 @@ import Row from "@/pages/edit/Row";
 import { scrollIntoView } from "@/util/dom";
 import classes from "../Edit.module.css";
 
+/** caption editor rows */
 function Captions() {
   /** reactive state */
   const timeSnap = useSnapshot(playerTime);
@@ -37,7 +38,7 @@ function Captions() {
 
   return (
     <section data-full>
-      <h2 className={classes.heading}>Captions</h2>
+      <h2>Captions</h2>
 
       <div className={classes.rows}>
         {captionsSnap.value
@@ -46,11 +47,7 @@ function Captions() {
             <Row
               key={index}
               caption={caption}
-              value={
-                captionsSnap.value[index]!.currentEdit !== null
-                  ? captionsSnap.value[index]!.currentEdit!
-                  : captionsSnap.value[index]!.editHistory.at(-1)?.text || ""
-              }
+              value={captionsSnap.value[index]!.currentEdit || ""}
               onChange={(value) => (captions.value[index]!.currentEdit = value)}
               onFocus={() => {
                 preventScroll = true;

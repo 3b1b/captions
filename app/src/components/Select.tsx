@@ -2,8 +2,10 @@ import { ComponentProps } from "react";
 import classes from "./Select.module.css";
 
 type Props<O extends Option> = {
+  /** dropdown options */
   options: readonly O[];
   label: string;
+  /** selected option id */
   value: O["id"];
   onChange: (value: O["id"]) => void;
 } & Omit<ComponentProps<"select">, "onChange">;
@@ -28,7 +30,8 @@ function Select<O extends Option>({
       >
         {options.map((option, index) => (
           <option key={index} value={option.id}>
-            {option.label} ({option.count})
+            {option.label}{" "}
+            {option.count !== undefined && `(${option.count.toLocaleString()})`}
           </option>
         ))}
       </select>

@@ -47,7 +47,7 @@ const routes: RouteObject[] = [
       },
 
       {
-        path: "edit/:lesson/:language",
+        path: "edit/:slug/:language",
         element: <Edit />,
         loader: editLoader,
       },

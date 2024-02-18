@@ -1,19 +1,19 @@
 import { LoaderFunction, useBlocker } from "react-router";
 import { proxy, useSnapshot } from "valtio";
+import lessonMeta from "@/data/lesson-meta.json";
 import Captions from "@/pages/edit/Captions";
 import Description from "@/pages/edit/Description";
 import Footer from "@/pages/edit/Footer";
 import Header from "@/pages/edit/Header";
 import Title from "@/pages/edit/Title";
 
-/** video edit page */
+const navWarning =
+  "Are you sure you want to navigate away from this page? Unsaved changes will be lost.";
+
+/** translation edit page */
 function Edit() {
-  useBlocker(
-    () =>
-      !window.confirm(
-        "Are you sure you want to navigate away from this page? Unsaved changes will be lost.",
-      ),
-  );
+  /** protect users from losing work */
+  useBlocker(() => !window.confirm(navWarning));
 
   return (
     <>
@@ -40,52 +40,44 @@ type _Caption = {
 /** page data loader */
 export const loader: LoaderFunction = async ({ params }) => {
   /** get lesson and language slug from url */
-  const { lesson, language } = params;
+  const { slug = "", language = "" } = params;
+
+  /** lookup lesson metadata */
+  meta.value =
+    lessonMeta.find(
+      (lesson) => lesson.slug === slug && lesson.languages.includes(language),
+    ) || null;
+
+  if (!meta.value) {
+    video.value = "";
+    title.value = null;
+    description.value = [];
+    captions.value = [];
+    console.error("Couldn't load lesson meta");
+    return;
+  }
 
   /** base raw folder containing json files */
-  let base = `https://raw.githubusercontent.com/3b1b/captions/main`;
-
-  /** try years until we get right one */
-  let year = 0;
-  for (let y = 2015; y < 2030; y++) {
-    /** try to lookup folder on github */
-    try {
-      const url = `${base}/${y}/${lesson}/video_url.txt`;
-      const response = await fetch(url);
-      if (!response.ok) throw Error();
-      year = y;
-      break;
-    } catch (error) {
-      continue;
-    }
-  }
-
-  /** check if we found year */
-  if (!year) {
-    console.error("Couldn't find video folder");
-    year = new Date().getFullYear();
-  }
-
-  /** add to base url */
-  base += `/${year}/${lesson}`;
+  const base = `https://raw.githubusercontent.com/3b1b/captions/main`;
 
   /** load video id */
   try {
-    const url = `${base}/video_url.txt`;
+    const url = `${base}/${meta.value.path}/video_url.txt`;
     const data = (await (await fetch(url)).text()) as string;
 
     /** map raw format to format needed for app */
-    id.value = data.split("/").pop() || "";
+    video.value = data.split("/").pop() || "";
   } catch (error) {
-    console.error("Couldn't load caption data");
+    console.error("Couldn't load video data");
+    video.value = "";
   }
 
-  /** add to base url */
-  base += `/${language}`;
+  /** add language to path */
+  meta.value.path += `/${language}`;
 
   /** load title */
   try {
-    const url = `${base}/title.json`;
+    const url = `${base}/${meta.value.path}/title.json`;
     const { input, translatedText } = (await (
       await fetch(url)
     ).json()) as _Caption;
@@ -93,42 +85,48 @@ export const loader: LoaderFunction = async ({ params }) => {
     /** map raw format to format needed for app */
     title.value = {
       original: input,
-      editHistory: [{ text: translatedText }],
-      currentEdit: null,
+      edits: 1,
+      latestEdit: translatedText,
+      currentEdit: translatedText,
     };
   } catch (error) {
     console.error("Couldn't load title data");
+    title.value = null;
   }
 
   /** load description */
   try {
-    const url = `${base}/description.json`;
+    const url = `${base}/${meta.value.path}/description.json`;
     const data = (await (await fetch(url)).json()) as _Caption[];
 
     /** map raw format to format needed for app */
     description.value = data.map(({ input, translatedText }) => ({
       original: input,
-      editHistory: [{ text: translatedText }],
-      currentEdit: null,
+      edits: 1,
+      latestEdit: translatedText,
+      currentEdit: translatedText,
     }));
   } catch (error) {
     console.error("Couldn't load description data");
+    description.value = [];
   }
 
   /** load captions */
   try {
-    const url = `${base}/sentence_translations.json`;
+    const url = `${base}/${meta.value.path}/sentence_translations.json`;
     const data = (await (await fetch(url)).json()) as _Caption[];
 
     /** map raw format to format needed for app */
     captions.value = data.map(({ input, translatedText, time_range }) => ({
       original: input,
-      editHistory: [{ text: translatedText }],
+      edits: 1,
       timeRange: time_range || [0, 0],
-      currentEdit: null,
+      latestEdit: translatedText,
+      currentEdit: translatedText,
     }));
   } catch (error) {
     console.error("Couldn't load caption data");
+    captions.value = [];
   }
 
   return null;
@@ -156,28 +154,34 @@ type FilterFunc = (value: ReadonlyCaption) => boolean;
 /** filter function for each filter option */
 export const filterFuncs: Record<Filter, FilterFunc> = {
   all: () => true,
-  original: (caption) => caption.editHistory.length === 1,
-  human: (caption) => caption.editHistory.length > 1,
-  my: (caption) => caption.currentEdit !== null,
+  original: (caption) => caption.edits === 1,
+  human: (caption) => caption.edits > 1,
+  my: (caption) => caption.currentEdit !== caption.latestEdit,
 };
 
 /** whether header/footer are sticky */
 export const sticky = proxy({ value: true });
 
-/** video id */
-export const id = proxy({ value: "" });
+/** lesson metadata */
+export const meta = proxy<{ value: (typeof lessonMeta)[number] | null }>({
+  value: null,
+});
 
-/** video title */
+/** video id */
+export const video = proxy({ value: "" });
+
+/** lesson title */
 export const title = proxy<{ value: Caption | null }>({ value: null });
 
-/** video description */
+/** lesson description */
 export const description = proxy<{ value: Caption[] }>({ value: [] });
 
 /** caption data */
 export type Caption = {
   original: string;
-  editHistory: { text: string }[];
-  currentEdit: string | null;
+  edits: number;
+  currentEdit: string;
+  latestEdit: string;
   timeRange?: [number, number];
 };
 

@@ -4,7 +4,10 @@ import type { YouTubePlayer } from "youtube-player/dist/types";
 import { ReadonlyCaption } from "@/pages/Edit";
 import classes from "./Player.module.css";
 
-type Props = { video: string };
+type Props = {
+  /** youtube video id */
+  video: string;
+};
 
 /** youtube video player */
 function Player({ video }: Props) {

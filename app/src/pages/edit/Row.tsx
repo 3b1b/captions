@@ -12,9 +12,11 @@ type Props = {
   onFocus?: () => void;
 };
 
+/** editable caption/title/description row */
 function Row({ caption, value, onChange, onFocus }: Props) {
-  const { timeRange: [start, end] = [], editHistory, original } = caption;
+  const { timeRange: [start, end] = [], edits, original } = caption;
 
+  /** formatted time range */
   const range =
     start && end ? `${formatTime(start)} – ${formatTime(end)}` : undefined;
 
@@ -36,7 +38,7 @@ function Row({ caption, value, onChange, onFocus }: Props) {
       >
         <span className={classes.action}>
           <FaClockRotateLeft />
-          <span>{editHistory.length}</span>
+          <span>{edits}</span>
         </span>
       </div>
 
@@ -51,7 +53,11 @@ function Row({ caption, value, onChange, onFocus }: Props) {
       />
 
       {/* original english text */}
-      <div title="Original English text" aria-label="Original English text">
+      <div
+        className={classes.original}
+        title="Original English text"
+        aria-label="Original English text"
+      >
         {original}
       </div>
     </div>
