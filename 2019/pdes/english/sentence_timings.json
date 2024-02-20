@@ -1,0 +1,672 @@
+[
+ [
+  "After seeing how we think about ordinary differential equations in chapter 1, we turn now to an example of a partial differential equation, the heat equation.",
+  3.9,
+  12.52
+ ],
+ [
+  "To set things up, imagine you have some object, like a piece of metal, and you know how the heat is distributed across it at any one moment, that is, what's the temperature of every individual point along this plate.",
+  13.4,
+  23.88
+ ],
+ [
+  "The question is, how will this distribution change over time, as the heat flows from warmer spots to cooler ones?",
+  24.64,
+  30.92
+ ],
+ [
+  "The image on the left shows the temperature of an example plate using color, with the graph of that temperature being shown on the right.",
+  31.7,
+  38.34
+ ],
+ [
+  "To take a concrete one-dimensional example, let's say you have two different rods at different temperatures, where that temperature is uniform along each one.",
+  39.12,
+  46.58
+ ],
+ [
+  "You know that when you bring them into contact, the temperature will flow from the hot one to the cool one, tending to make the whole thing equal over time.",
+  47.16,
+  54.22
+ ],
+ [
+  "But how exactly?",
+  54.6,
+  56.16
+ ],
+ [
+  "What will the temperature distribution be at each point in time?",
+  56.16,
+  60.04
+ ],
+ [
+  "As is typical with differential equations, the idea is that it's easier to describe how this setup changes from moment to moment than it is to jump straight to a description of the full evolution.",
+  61.26,
+  71.14
+ ],
+ [
+  "We write this rule of change in the language of derivatives, though as you'll see, we'll need to expand our vocabulary a bit beyond ordinary derivatives.",
+  71.82,
+  79.58
+ ],
+ [
+  "And don't worry, we'll learn how to read the equations you're seeing now in just a minute.",
+  80.16,
+  83.48
+ ],
+ [
+  "Variations of the heat equation show up in many other parts of math and physics, like Brownian motion, the black-Scholes equations from finance, and all sorts of diffusion, so there are many dividends to be had from a deep understanding of this one setup.",
+  84.54,
+  97.34
+ ],
+ [
+  "In the last video we looked at ways of building understanding while acknowledging the truth that most differential equations are simply too difficult to actually solve.",
+  98.24,
+  106.12
+ ],
+ [
+  "And indeed, PDEs tend to be even harder than ODEs, largely because they involve modeling infinitely many values changing in concert.",
+  106.74,
+  114.62
+ ],
+ [
+  "But our main character for today is an equation we can actually solve.",
+  115.1,
+  118.92
+ ],
+ [
+  "In fact, if you've ever heard of Fourier series, you may be interested to know that this is the physical problem which Babyface Fourier over here was trying to solve when he stumbled across the corner of math that is now so replete with his name.",
+  119.48,
+  131.74
+ ],
+ [
+  "We'll dig into Fourier series much more deeply in the next chapter, but I would like to give you at least a little hint of the beautiful connection which is to come.",
+  132.44,
+  139.3
+ ],
+ [
+  "This animation you're seeing right now shows how lots of little rotating vectors, each rotating at some constant integer frequency, can trace out an arbitrary shape.",
+  142.26,
+  150.7
+ ],
+ [
+  "To be clear, what's happening is that these vectors are being added together, tip to tail, at each moment, and you might imagine that the last one has some sort of pencil at its tip, tracing a path as it goes.",
+  151.86,
+  165.1
+ ],
+ [
+  "For finitely many vectors, this tracing usually won't be a perfect replica of the target shape, which in this animation is a lowercase f, but the more circles you include, the closer it gets.",
+  165.88,
+  175.76
+ ],
+ [
+  "What you're seeing now uses only 100 circles, and I think you'd agree that the deviations from the real shape are negligible.",
+  176.26,
+  182.34
+ ],
+ [
+  "What's mind-blowing is that just by tweaking the initial size and angle of each vector, that gives you enough control to approximate any curve you want.",
+  183.4,
+  191.5
+ ],
+ [
+  "At first, this might seem like an idle curiosity, a neat art project, but little more.",
+  195.08,
+  200.16
+ ],
+ [
+  "In fact, the math that makes this possible is the same as the math describing the physics of heat flow.",
+  200.8,
+  206.34
+ ],
+ [
+  "But we're getting ahead of ourselves.",
+  209.84,
+  211.62
+ ],
+ [
+  "Step one is simply to build up the heat equation, and for that, let's start by being clear about what the function we're analyzing is exactly.",
+  212.02,
+  219.82
+ ],
+ [
+  "We have a rod in one dimension, and we're thinking of it as sitting on an x-axis, so each point of that rod is labeled with a unique number, x.",
+  220.46,
+  229.12
+ ],
+ [
+  "The temperature is some function of that position, t of x, shown here as a graph above it.",
+  231.14,
+  237.48
+ ],
+ [
+  "But really, since the value changes over time, we should think of this function as having one more input, t, for time.",
+  238.88,
+  244.8
+ ],
+ [
+  "You could, if you wanted, think of this input space as being two-dimensional, representing space and time together, with the temperature being graphed as a surface above it, each slice across time, showing you what that distribution looks like at any given moment.",
+  245.54,
+  259.9
+ ],
+ [
+  "Or you could simply think of this graph of temperature changing with time.",
+  262.68,
+  266.12
+ ],
+ [
+  "Both are equivalent.",
+  266.5,
+  267.42
+ ],
+ [
+  "This surface is not to be confused with what I was showing earlier, the temperature graph of a two-dimensional body.",
+  270.52,
+  276.12
+ ],
+ [
+  "Be mindful when you're studying equations like these of whether time is being represented with its own axis, or if it's being represented with literal changes over time, say in an animation.",
+  276.36,
+  286.06
+ ],
+ [
+  "Last chapter, we looked at some systems where just a handful of numbers changed over time, like the angle and angular velocity of a pendulum, describing that change in the language of derivatives.",
+  287.08,
+  297.12
+ ],
+ [
+  "But when we have an entire function changing with time, the mathematical tools become slightly more intricate.",
+  297.6,
+  303.1
+ ],
+ [
+  "Because we're thinking of this temperature function with multiple dimensions to its input space, in this case one for space and one for time, there are multiple different rates of change at play.",
+  303.1,
+  313.56
+ ],
+ [
+  "There's the derivative with respect to x, how rapidly the temperature changes as you move along the rod.",
+  314.8,
+  320.5
+ ],
+ [
+  "You might think of this as the slope of our surface when you slice it parallel to the x-axis, or given a tiny step in the x-direction and the tiny change to temperature caused by it, giving a ratio between the two.",
+  321.0,
+  332.36
+ ],
+ [
+  "But there's also the rate at which a single point on the rod changes with time, what you might think of as the slope of the surface when you slice it in the other direction, parallel to the time axis.",
+  334.04,
+  343.96
+ ],
+ [
+  "Each one of these derivatives tells only part of the story for how this temperature function changes, so we call them partial derivatives.",
+  344.58,
+  350.96
+ ],
+ [
+  "To emphasize this point, the notation changes a little, replacing the letter D with a special curly D, sometimes called del.",
+  351.54,
+  358.28
+ ],
+ [
+  "Personally, I think it's a little silly to change the notation for this since it's essentially the same operation.",
+  359.06,
+  364.12
+ ],
+ [
+  "I would rather see notation that emphasizes that the delT terms up in the numerators refer to different changes, one is a small change to temperature after a small change in time, the other is a small change to temperature after a small step in space.",
+  364.68,
+  379.3
+ ],
+ [
+  "To reiterate a point I made in the calculus series, I do think it's healthy to initially read derivatives like this as a literal ratio between a small change to the function's output and the small change to the input that caused it.",
+  382.2,
+  393.98
+ ],
+ [
+  "Just keep in mind that what this notation is meant to encode is the limit of that ratio for smaller and smaller nudges to the input, rather than a specific value of the ratio for a finitely small nudge.",
+  394.4,
+  405.38
+ ],
+ [
+  "This goes for partial derivatives just as much as it does for ordinary derivatives.",
+  405.62,
+  409.44
+ ],
+ [
+  "The heat equation is written in terms of these partial derivatives.",
+  412.98,
+  416.58
+ ],
+ [
+  "It tells us that the way this function changes with respect to time depends on how it changes with respect to space.",
+  417.08,
+  423.18
+ ],
+ [
+  "More specifically, it's proportional to the second partial derivative with respect to x.",
+  423.62,
+  428.72
+ ],
+ [
+  "At a high level, the intuition is that at points where the temperature distribution curves, it tends to change more quickly in the direction of that curvature.",
+  429.38,
+  437.68
+ ],
+ [
+  "Since a rule like this is written using partial derivatives, we call it a partial differential equation.",
+  438.26,
+  443.3
+ ],
+ [
+  "This has the funny result that to an outsider, the name sounds like a tamer version of ordinary differential equations, when quite to the contrary, partial differential equations tend to tell a much richer story than ODEs, and are much harder to solve in general.",
+  444.0,
+  456.7
+ ],
+ [
+  "The general heat equation applies to bodies in any number of dimensions, which would mean more inputs to our temperature function, but it'll be easiest for us to stay focused on the one-dimensional case of a rod.",
+  457.34,
+  467.56
+ ],
+ [
+  "As it is, graphing this in a way which gives time its own axis already pushes our visuals into the third dimension.",
+  468.1,
+  473.74
+ ],
+ [
+  "So I threw out this equation, but where does this come from?",
+  475.32,
+  478.32
+ ],
+ [
+  "How could you think up something like this yourself?",
+  478.56,
+  480.58
+ ],
+ [
+  "Well, for that let's simplify things by describing a discrete version of the setup, where you have only finitely many points x in a row.",
+  481.48,
+  488.8
+ ],
+ [
+  "This is sort of like working in a pixelated universe where instead of having a continuum of temperatures, we have a finite set of separate values.",
+  489.32,
+  496.3
+ ],
+ [
+  "The intuition here is simple.",
+  497.06,
+  498.26
+ ],
+ [
+  "For a particular point, if its two neighbors on either side are on average hotter than it is, it will heat up.",
+  498.56,
+  505.26
+ ],
+ [
+  "If they're cooler on average, it'll cool down.",
+  506.02,
+  508.66
+ ],
+ [
+  "Here, specifically focus on these three neighboring points x1, x2, and x3, with corresponding temperatures T1, T2, and T3.",
+  509.42,
+  517.26
+ ],
+ [
+  "What we want to compare is the average of T1 and T3 with the value of T2.",
+  517.53,
+  523.66
+ ],
+ [
+  "When this difference is greater than zero, T2 will tend to heat up.",
+  525.0,
+  529.18
+ ],
+ [
+  "And the bigger the difference, the faster it heats up.",
+  530.54,
+  533.46
+ ],
+ [
+  "Likewise, if it's negative, T2 will tend to cool down, at a rate proportional to that difference.",
+  535.86,
+  541.24
+ ],
+ [
+  "More formally, we write that the derivative of T2 with respect to time is proportional to the difference between its neighbors and its own value.",
+  542.94,
+  552.1
+ ],
+ [
+  "Alpha here is simply a proportionality constant.",
+  552.74,
+  555.38
+ ],
+ [
+  "To write this in a way which will ultimately explain the second derivative in the heat equation, let me rearrange this right hand a bit in terms of the difference between T1 and T2, and the difference between T2 and T3.",
+  556.44,
+  567.42
+ ],
+ [
+  "You can quickly check that these two are the same.",
+  568.02,
+  570.0
+ ],
+ [
+  "The top has half of T1, and in the bottom there are two minus signs in front of T1, so it's positive, and the half has been factored out.",
+  570.0,
+  579.32
+ ],
+ [
+  "Likewise, both have half of T3.",
+  580.5,
+  583.0
+ ],
+ [
+  "Then on the bottom we have a negative T2 that's effectively written twice, so when you take half of that it's the same as the single negative T2 written up top.",
+  584.6,
+  593.3
+ ],
+ [
+  "Like I said, the reason to rewrite it is that it takes us a step closer to the language of derivatives.",
+  595.44,
+  600.2
+ ],
+ [
+  "In fact, let's write these as delta T1 and delta T2.",
+  601.22,
+  605.5
+ ],
+ [
+  "It's the same value on the right hand side, but we're adding a new perspective to how to think about it.",
+  605.9,
+  610.62
+ ],
+ [
+  "Instead of comparing the average of the neighbors to T2, we're thinking about the difference of the differences.",
+  611.06,
+  616.38
+ ],
+ [
+  "Here, take a moment to gut check that this makes sense.",
+  617.14,
+  619.4
+ ],
+ [
+  "If those two differences are the same, then the average of T1 and T3 is the same as T2, so T2 will not tend to change.",
+  619.7,
+  627.7
+ ],
+ [
+  "If delta T2 is bigger than delta T1, meaning the difference of the differences is positive, notice how the average of T1 and T3 is bigger than T2, so T2 tends to increase.",
+  628.34,
+  641.12
+ ],
+ [
+  "And on the flip side, if the difference of the differences is negative, which means delta T2 is smaller than delta T1, it corresponds to an average of these neighbors being less than T2.",
+  642.54,
+  654.1
+ ],
+ [
+  "We could be especially compact with our notation and write this whole term, the difference between the differences, as delta delta T1.",
+  654.56,
+  662.02
+ ],
+ [
+  "This is known in the lingo as a second difference.",
+  663.02,
+  665.28
+ ],
+ [
+  "If it feels a little weird to think about, keep in mind, it's essentially a compact way of writing the idea of how much T2 differs from the average of its neighbors.",
+  665.88,
+  673.12
+ ],
+ [
+  "It just has this extra factor of one half, is all.",
+  673.68,
+  675.96
+ ],
+ [
+  "And that factor doesn't really matter, because either way we're writing this equation in terms of some proportionality constant.",
+  676.56,
+  681.52
+ ],
+ [
+  "The upshot is that the rate of change for the temperature of a point is proportional to the second difference around it.",
+  682.08,
+  688.26
+ ],
+ [
+  "As we go from this finite context to the infinite continuous case, the analog of a second difference is the second derivative.",
+  689.12,
+  696.02
+ ],
+ [
+  "Instead of looking at the difference between the temperature values at points some fixed distance apart, you instead consider what happens as you shrink the size of that step towards zero.",
+  698.58,
+  707.82
+ ],
+ [
+  "And in calculus, instead of talking about absolute differences, which would also approach zero, you think in terms of the rate of change.",
+  708.38,
+  715.26
+ ],
+ [
+  "In this case, what's the rate of change in temperature per unit distance?",
+  715.8,
+  719.42
+ ],
+ [
+  "And remember, there are two separate rates of change at play.",
+  720.14,
+  722.54
+ ],
+ [
+  "How does that temperature change as time progresses, and how does the temperature change as you move along the rod?",
+  722.86,
+  728.2
+ ],
+ [
+  "The core intuition remains the same as what we had in the discrete case.",
+  728.96,
+  731.96
+ ],
+ [
+  "To know how a point differs from its neighbors, look not just at how the function changes from one point to the next, but at how the rate of change itself changes.",
+  732.2,
+  740.26
+ ],
+ [
+  "Now in calculus land, we write this as del-squared t over del x-squared, the second partial derivative of our function with respect to x.",
+  742.76,
+  751.44
+ ],
+ [
+  "Notice how this slope increases at points where the graph curves upwards, meaning the rate of change of the rate of change is positive.",
+  752.18,
+  759.78
+ ],
+ [
+  "Similarly, that slope decreases at points where the graph curves downwards, where the rate of change of this rate of change is negative.",
+  760.58,
+  768.46
+ ],
+ [
+  "Tuck that away as a meaningful intuition for problems well beyond the heat equation.",
+  769.72,
+  773.42
+ ],
+ [
+  "Second derivatives give a measure of how a value compares to the average of its neighbors.",
+  773.88,
+  778.32
+ ],
+ [
+  "Hopefully that gives some satisfying added color to the equation.",
+  779.38,
+  782.44
+ ],
+ [
+  "It's already pretty intuitive when you read it as saying that curved points tend to flatten out, but I think there's something even more satisfying about seeing a partial differential equation like this arise almost mechanistically from thinking about each point as simply tending towards the average of its neighbors.",
+  782.92,
+  797.28
+ ],
+ [
+  "Take a moment to compare what this feels like to the case of ordinary differential equations.",
+  798.9,
+  803.08
+ ],
+ [
+  "For example, if we have multiple bodies in space tugging at each other with gravity, what we're analyzing is a handful of changing numbers, in this case the coordinates of each object.",
+  803.54,
+  813.5
+ ],
+ [
+  "The rate of change for any one of these values depends on the values of the other numbers, and we often write this down as a system of equations.",
+  814.1,
+  821.88
+ ],
+ [
+  "On the left, we have the derivative of each value with respect to time, and on the right there's some combination of all the other values.",
+  821.88,
+  829.22
+ ],
+ [
+  "In our partial differential equation, the difference is that we have infinitely many values changing from a continuum, and again, the way that any one of these values changes depends on the other values, but quite helpfully, each one only depends on its immediate neighbors in some limiting sense of the word neighbor.",
+  830.78,
+  848.74
+ ],
+ [
+  "So here, the relation on the right hand side is not a sum or product of the other numbers, it's instead a kind of derivative, just a derivative with respect to space instead of with respect to time.",
+  849.3,
+  860.0
+ ],
+ [
+  "In a sense, when you think about it, this one partial differential equation is like a system of infinitely many equations, one for each point on the rod.",
+  860.88,
+  869.24
+ ],
+ [
+  "You might wonder about objects which are spread out in more than one dimension, like a plate, or something three dimensional.",
+  871.84,
+  876.94
+ ],
+ [
+  "In that case the equation looks quite similar, but you include the second derivative with respect to the other spatial directions as well.",
+  876.94,
+  884.26
+ ],
+ [
+  "And adding up all of these second spatial derivatives like this is common enough as an operation that it has its own special name, the Laplacian, often written as this upside down triangle squared.",
+  885.66,
+  895.68
+ ],
+ [
+  "It's essentially a multivariable version of the second derivative, and the intuition for this equation is no different from the one dimensional case.",
+  896.38,
+  903.22
+ ],
+ [
+  "This Laplacian can still be thought of as measuring how different is a point from the average of its neighbors, but now these neighbors aren't just left and right of it, they're all around.",
+  903.64,
+  913.4
+ ],
+ [
+  "For the curious among you, I did a couple of videos during my time at Khan Academy on this operator if you want to go check them out.",
+  915.48,
+  920.64
+ ],
+ [
+  "For those of you with multivariable calculus under your belt, it's nice to think about as the divergence of the gradient.",
+  920.96,
+  926.02
+ ],
+ [
+  "But you don't have to worry about that, for our purposes let's stay focused on the one dimensional case.",
+  926.7,
+  931.14
+ ],
+ [
+  "If you feel like you understand all of this, pat yourself on the back.",
+  931.66,
+  935.22
+ ],
+ [
+  "Being able to read a PDE is no joke, and it's a powerful addition to have to your vocabulary for describing the world around you.",
+  935.68,
+  942.36
+ ],
+ [
+  "But after all of this time spent interpreting the equations, I say it's high time we start solving them, don't you?",
+  943.04,
+  949.12
+ ],
+ [
+  "And trust me, there are few pieces of math quite as satisfying as what Poodlehaired Fourier over here developed to solve this problem.",
+  949.56,
+  955.92
+ ],
+ [
+  "All this and more in the next chapter.",
+  956.56,
+  958.5
+ ],
+ [
+  "I was originally motivated to cover this particular topic when I got an early view of Steve Strogatz's new book Infinite Powers.",
+  964.7,
+  970.92
+ ],
+ [
+  "This isn't a sponsored message or anything like that, but all cards on the table I do have two selfish ulterior motives for mentioning it.",
+  971.52,
+  978.26
+ ],
+ [
+  "The first is that Steve has been a really strong, maybe even pivotal, advocate for the channel since the very beginning, and I've had an itch to repay that kindness for quite a while.",
+  978.68,
+  987.08
+ ],
+ [
+  "And the second is to make more people love math, and calculus in particular.",
+  987.52,
+  991.4
+ ],
+ [
+  "That might not sound selfish, but think about it, when more people love math, the potential audience base for these videos gets bigger.",
+  992.06,
+  997.9
+ ],
+ [
+  "And frankly there are few better ways to get people loving the subject than to expose them to Strogatz's writing.",
+  998.38,
+  1003.14
+ ],
+ [
+  "So if you have friends who you know who you think would enjoy the ideas of calculus but maybe have been a bit intimidated by math in the past, this book does a really outstanding job communicating the heart of the subject, both substantively and accessibly.",
+  1003.86,
+  1015.44
+ ],
+ [
+  "Its main theme is the idea of constructing solutions to complex real-world problems from simple idealized building blocks, which as you'll see is exactly what Fourier did.",
+  1015.44,
+  1024.7
+ ],
+ [
+  "And for those of you who already know and love the subject, you will find no shortage of fresh insights and enlightening stories.",
+  1025.44,
+  1030.62
+ ],
+ [
+  "I certainly enjoyed it.",
+  1030.82,
+  1032.06
+ ],
+ [
+  "Again, I kinda know that sounds like an ad, but it's not, I just actually think you'll enjoy the book.",
+  1032.5,
+  1036.6
+ ]
+]
