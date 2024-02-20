@@ -35,7 +35,7 @@ type _Caption = {
   input: string;
   translatedText: string;
   time_range?: [number, number];
-  n_edits?: number;
+  n_reviews?: number;
 };
 
 /** page data loader */
@@ -76,14 +76,14 @@ export const loader: LoaderFunction = async ({ params }) => {
   /** load title */
   try {
     const url = `${base}/${meta.value.path}/${language}/title.json`;
-    const { input, translatedText, n_edits } = (await (
+    const { input, translatedText, n_reviews } = (await (
       await fetch(url)
     ).json()) as _Caption;
 
     /** map raw format to format needed for app */
     title.value = {
       reviewed: false,
-      reviews: n_edits || 0,
+      reviews: n_reviews || 0,
       startingTranslation: translatedText,
       currentTranslation: translatedText,
       startingOriginal: input,
@@ -100,9 +100,9 @@ export const loader: LoaderFunction = async ({ params }) => {
     const data = (await (await fetch(url)).json()) as _Caption[];
 
     /** map raw format to format needed for app */
-    description.value = data.map(({ input, translatedText, n_edits }) => ({
+    description.value = data.map(({ input, translatedText, n_reviews }) => ({
       reviewed: false,
-      reviews: n_edits || 0,
+      reviews: n_reviews || 0,
       startingTranslation: translatedText,
       currentTranslation: translatedText,
       startingOriginal: input,
@@ -119,8 +119,8 @@ export const loader: LoaderFunction = async ({ params }) => {
     const data = (await (await fetch(url)).json()) as _Caption[];
 
     /** map raw format to format needed for app */
-    captions.value = data.map(({ input, translatedText, n_edits }) => ({
-      reviews: n_edits || 0,
+    captions.value = data.map(({ input, translatedText, n_reviews }) => ({
+      reviews: n_reviews || 0,
       reviewed: false,
       startingTranslation: translatedText,
       currentTranslation: translatedText,
@@ -235,7 +235,7 @@ export function exportData() {
     return {
       translatedText: currentTranslation,
       input: currentOriginal,
-      n_edits: reviews + Number(reviewed),
+      n_reviews: reviews + Number(reviewed),
     };
   }
 

@@ -70,17 +70,17 @@ function Footer() {
       </div>
 
       <div className={classes.row}>
+        <Button
+          icon={<FaDownload />}
+          data-tooltip="Download your changes as a backup or to submit a pull request manually."
+          onClick={() => downloadZip(exportData(), `${slug} ${language}`)}
+        />
+
         <Input
           value={user}
           onChange={setUser}
           placeholder="@github-user or name"
           data-tooltip="So we can tag you on GitHub and/or attribute these edits to you"
-        />
-
-        <Button
-          icon={<FaDownload />}
-          data-tooltip="Download your changes as a backup or to submit a pull request manually."
-          onClick={() => downloadZip(exportData(), `${slug} ${language}`)}
         />
 
         <Button

@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { FaFlag, FaPlay, FaRegThumbsUp, FaThumbsUp } from "react-icons/fa6";
+import {
+  FaArrowsRotate,
+  FaFlag,
+  FaPlay,
+  FaRegThumbsUp,
+  FaThumbsUp,
+} from "react-icons/fa6";
 import { Link, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { startCase } from "lodash";
@@ -129,6 +135,17 @@ function Row({ caption }: Props) {
 
       {/* secondary actions */}
       <div className={classes.actions}>
+        <button
+          onClick={() => {
+            caption.currentTranslation = caption.startingTranslation;
+            caption.currentOriginal = caption.startingOriginal;
+            caption.reviewed = false;
+          }}
+          data-tooltip="Reset entry"
+        >
+          <FaArrowsRotate />
+        </button>
+
         <Link
           to={issueLink(title, body)}
           target="_blank"
