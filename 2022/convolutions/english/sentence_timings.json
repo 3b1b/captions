@@ -1,0 +1,817 @@
+[
+ [
+  "Suppose I give you two different lists of numbers, or maybe two different functions, and I ask you to think of all the ways you might combine those two lists to get a new list of numbers, or combine the two functions to get a new function.",
+  0.0,
+  11.32
+ ],
+ [
+  "Maybe one simple way that comes to mind is to simply add them together term by term.",
+  12.12,
+  16.76
+ ],
+ [
+  "Likewise with the functions, you can add all the corresponding outputs.",
+  17.16,
+  19.92
+ ],
+ [
+  "In a similar vein, you could also multiply the two lists term by term and do the same thing with the functions.",
+  20.54,
+  25.68
+ ],
+ [
+  "But there's another kind of combination just as fundamental as both of those, but a lot less commonly discussed, known as a convolution.",
+  26.36,
+  33.5
+ ],
+ [
+  "But unlike the previous two cases, it's not something that's merely inherited from an operation you can do to numbers.",
+  34.08,
+  39.82
+ ],
+ [
+  "It's something genuinely new for the context of lists of numbers or combining functions.",
+  39.98,
+  44.7
+ ],
+ [
+  "They show up all over the place, they are ubiquitous in image processing, it's a core construct in the theory of probability, they're used a lot in solving differential equations, and one context where you've almost certainly seen it, if not by this name, is multiplying two polynomials together.",
+  45.32,
+  60.24
+ ],
+ [
+  "As someone in the business of visual explanations, this is an especially great topic, because the formulaic definition in isolation and without context can look kind of intimidating, but if we take the time to really unpack what it's saying, and before that actually motivate why you would want something like this, it's an incredibly beautiful operation.",
+  60.74,
+  78.32
+ ],
+ [
+  "And I have to admit, I actually learned a little something while putting together the visuals for this project.",
+  78.96,
+  83.54
+ ],
+ [
+  "In the case of convolving two different functions, I was trying to think of different ways you might picture what that could mean, and with one of them I had a little bit of an aha moment for why it is that normal distributions play the role that they do in probability, why it's such a natural shape for a function.",
+  83.54,
+  98.52
+ ],
+ [
+  "But I'm getting ahead of myself, there's a lot of setup for that one.",
+  99.02,
+  101.52
+ ],
+ [
+  "In this video, our primary focus is just going to be on the discrete case, and in particular building up to a very unexpected but very clever algorithm for computing these.",
+  101.84,
+  110.26
+ ],
+ [
+  "And I'll pull out the discussion for the continuous case into a second part.",
+  110.26,
+  114.48
+ ],
+ [
+  "It's very tempting to open up with the image processing examples, since they're visually the most intriguing, but there are a couple bits of finickiness that make the image processing case less representative of convolutions overall, so instead let's kick things off with probability, and in particular one of the simplest examples that I'm sure everyone here has thought about at some point in their life, which is rolling a pair of dice and figuring out the chances of seeing various different sums.",
+  118.58,
+  141.5
+ ],
+ [
+  "And you might say, not a problem, not a problem.",
+  142.46,
+  144.46
+ ],
+ [
+  "Each of your two dice has six different possible outcomes, which gives us a total of 36 distinct possible pairs of outcomes, and if we just look through them all we can count up how many pairs have a given sum.",
+  144.68,
+  155.86
+ ],
+ [
+  "And arranging all the pairs in a grid like this, one pretty nice thing is that all of the pairs that have a constant sum are visible along one of these different diagonals.",
+  156.6,
+  165.44
+ ],
+ [
+  "So simply counting how many exist on each of those diagonals will tell you how likely you are to see a particular sum.",
+  165.44,
+  172.12
+ ],
+ [
+  "And I'd say, very good, very good, but can you think of any other ways that you might visualize the same question?",
+  173.22,
+  178.66
+ ],
+ [
+  "Other images that can come to mind to think of all the distinct pairs that have a given sum?",
+  179.3,
+  184.06
+ ],
+ [
+  "And maybe one of you raises your hand and says, yeah, I've got one.",
+  184.86,
+  187.98
+ ],
+ [
+  "Let's say you picture these two different sets of possibilities each in a row, but you flip around that second row.",
+  188.28,
+  193.76
+ ],
+ [
+  "That way all of the different pairs which add up to seven line up vertically like this.",
+  193.76,
+  198.76
+ ],
+ [
+  "And if we slide that bottom row all the way to the right, then the unique pair that adds up to two, the snake eyes, are the only ones that align, and if I schlunk that over one unit to the right, the pairs which align are the two different pairs that add up to three.",
+  199.36,
+  212.08
+ ],
+ [
+  "And in general, different offset values of this lower array, which remember I had to flip around first, reveal all the distinct pairs that have a given sum.",
+  212.88,
+  221.46
+ ],
+ [
+  "As far as probability questions go, this still isn't especially interesting because all we're doing is counting how many outcomes there are in each of these categories.",
+  224.82,
+  232.64
+ ],
+ [
+  "But that is with the implicit assumption that there's an equal chance for each of these faces to come up.",
+  232.98,
+  238.12
+ ],
+ [
+  "But what if I told you I have a special set of dice that's not uniform?",
+  238.36,
+  241.62
+ ],
+ [
+  "Maybe the blue die has its own set of numbers describing the probabilities for each face coming up, and the red die has its own unique distinct set of numbers.",
+  242.06,
+  249.76
+ ],
+ [
+  "In that case, if you wanted to figure out, say, the probability of seeing a 2, you would multiply the probability that the blue die is a 1 times the probability that the red die is a 1.",
+  250.3,
+  259.86
+ ],
+ [
+  "And for the chances of seeing a 3, you look at the two distinct pairs where that's possible, and again multiply the corresponding probabilities and then add those two products together.",
+  260.28,
+  269.68
+ ],
+ [
+  "Similarly, the chances of seeing a 4 involves multiplying together three different pairs of possibilities and adding them all together.",
+  270.1,
+  276.82
+ ],
+ [
+  "And in the spirit of setting up some formulas, let's name these top probabilities a 1, a 2, a 3, and so on, and name the bottom ones b 1, b 2, b 3, and so on.",
+  276.82,
+  285.96
+ ],
+ [
+  "And in general, this process where we're taking two different arrays of numbers, flipping the second one around, and then lining them up at various different offset values, taking a bunch of pairwise products and adding them up, that's one of the fundamental ways to think about what a convolution is.",
+  286.4,
+  301.62
+ ],
+ [
+  "So just to spell it out a little more exactly, through this process, we just generated probabilities for seeing 2, 3, 4, on and on up to 12, and we got them by mixing together one list of values, a, and another list of values, b.",
+  304.86,
+  316.98
+ ],
+ [
+  "In the lingo, we'd say the convolution of those two sequences gives us this new sequence, the new sequence of 11 values, each of which looks like some sum of pairwise products.",
+  317.44,
+  327.34
+ ],
+ [
+  "If you prefer, another way you could think about the same operation is to first create a table of all the pairwise products, and then add up along all these diagonals.",
+  327.34,
+  336.98
+ ],
+ [
+  "Again, that's a way of mixing together these two sequences of numbers to get us a new sequence of 11 numbers.",
+  337.46,
+  342.76
+ ],
+ [
+  "It's the same operation as the sliding windows thought, just another perspective.",
+  343.24,
+  346.46
+ ],
+ [
+  "Putting a little notation to it, here's how you might see it written down.",
+  347.14,
+  349.8
+ ],
+ [
+  "The convolution of a and b, denoted with this little asterisk, is a new list, and the nth element of that list looks like a sum, and that sum goes over all different pairs of indices, i and j, so that the sum of those indices is equal to n.",
+  350.22,
+  364.86
+ ],
+ [
+  "It's kind of a mouthful, but for example, if n was 6, the pairs we're going over are 1 and 5, 2 and 4, 3 and 3, 4 and 2, 5 and 1, all the different pairs that add up to 6.",
+  365.28,
+  375.8
+ ],
+ [
+  "But honestly, however you write it down, the notation is secondary in importance to the visual you might hold in your head for the process.",
+  376.62,
+  382.34
+ ],
+ [
+  "Here, maybe it helps to do a super simple example, where I might ask you what's the convolution of the list 1, 2, 3 with the list 4, 5, 6.",
+  383.28,
+  390.78
+ ],
+ [
+  "You might picture taking both of these lists, flipping around that second one, and then starting with its lid all the way over to the left.",
+  391.48,
+  397.68
+ ],
+ [
+  "Then the pair of values which align are 1 and 4, multiply them together, and that gives us our first term of our output.",
+  398.18,
+  403.54
+ ],
+ [
+  "Slide that bottom array one unit to the right, the pairs which align are 1, 5 and 2 and 4, multiply those pairs, add them together, and that gives us 13, the next entry in our output.",
+  403.96,
+  414.46
+ ],
+ [
+  "Slide things over once more, and we'll take 1 times 6 plus 2 times 5 plus 3 times 4, which happens to be 28.",
+  414.96,
+  421.56
+ ],
+ [
+  "One more slide and we get 2 times 6 plus 3 times 5, and that gives us 27.",
+  422.02,
+  427.02
+ ],
+ [
+  "And finally the last term will look like 3 times 6.",
+  427.5,
+  430.12
+ ],
+ [
+  "If you'd like, you can pull up whatever your favorite programming language is and your favorite library that includes various numerical operations, and you can confirm I'm not lying to you.",
+  430.66,
+  438.98
+ ],
+ [
+  "If you take the convolution of 1, 2, 3 against 4, 5, 6, this is indeed the result that you'll get.",
+  438.98,
+  444.48
+ ],
+ [
+  "We've seen one case where this is a natural and desirable operation, adding up to probability distributions, and another common example would be a moving average.",
+  445.92,
+  453.66
+ ],
+ [
+  "Imagine you have some long list of numbers, and you take another smaller list of numbers that all add up to 1.",
+  454.08,
+  459.76
+ ],
+ [
+  "In this case, I just have a little list of 5 values and they're all equal to 1 5th.",
+  460.1,
+  464.06
+ ],
+ [
+  "Then if we do this sliding window convolution process, and kind of close our eyes and sweep under the rug what happens at the very beginning of it, once our smaller list of values entirely overlaps with the bigger one, think about what each term in this convolution really means.",
+  464.06,
+  478.7
+ ],
+ [
+  "At each iteration, what you're doing is multiplying each of the values from your data by 1 5th and adding them all together, which is to say you're taking an average of your data inside this little window.",
+  479.4,
+  490.52
+ ],
+ [
+  "Overall, the process gives you a smoothed out version of the original data, and you could modify this starting with a different little list of numbers, and as long as that little list all adds up to 1, you can still interpret it as a moving average.",
+  491.1,
+  502.72
+ ],
+ [
+  "In the example shown here, that moving average would be giving more weight towards the central value.",
+  503.4,
+  507.76
+ ],
+ [
+  "This also results in a smoothed out version of the data.",
+  508.42,
+  510.8
+ ],
+ [
+  "If you do kind of a two-dimensional analog of this, it gives you a fun algorithm for blurring a given image.",
+  513.14,
+  518.72
+ ],
+ [
+  "And I should say the animations I'm about to show are modified from something I originally made for part of a set of lectures I did with the Julia lab at MIT for a certain open courseware class that included an image processing unit.",
+  518.72,
+  531.08
+ ],
+ [
+  "There we did a little bit more to dive into the code behind all of this, so if you're curious, I'll leave you some links.",
+  531.56,
+  536.28
+ ],
+ [
+  "But focusing back on this blurring example, what's going on is I've got this little 3x3 grid of values that's marching along our original image, and if we zoom in, each one of those values is 1 9th, and what I'm doing at each iteration is multiplying each of those values by the corresponding pixel that it sits on top of.",
+  536.62,
+  553.62
+ ],
+ [
+  "And of course in computer science, we think of colors as little vectors of three values, representing the red, green, and blue components.",
+  553.9,
+  560.2
+ ],
+ [
+  "When I multiply all these little values by 1 9th and I add them together, it gives us an average along each color channel, and the corresponding pixel for the image on the right is defined to be that sum.",
+  560.56,
+  571.2
+ ],
+ [
+  "The overall effect, as we do this for every single pixel on the image, is that each one kind of bleeds into all of its neighbors, which gives us a blurrier version than the original.",
+  571.94,
+  580.86
+ ],
+ [
+  "In the lingo, we'd say that the image on the right is a convolution of our original image with a little grid of values.",
+  581.72,
+  587.74
+ ],
+ [
+  "Or more technically, maybe I should say that it's the convolution with a 180 degree rotated version of that little grid of values.",
+  588.14,
+  594.4
+ ],
+ [
+  "Not that it matters when the grid is symmetric, but it's just worth keeping in mind that the definition of a convolution, as inherited from the pure math context, should always invite you to think about flipping around that second array.",
+  594.62,
+  605.24
+ ],
+ [
+  "If we modify this slightly, we can get a much more elegant blurring effect by choosing a different grid of values.",
+  605.96,
+  611.1
+ ],
+ [
+  "In this case, I have a little 5x5 grid, but the distinction is not so much its size.",
+  611.44,
+  615.78
+ ],
+ [
+  "If we zoom in, we notice that the value in the middle is a lot bigger than the value towards the edges.",
+  615.98,
+  620.54
+ ],
+ [
+  "And where this is coming from is they're all sampled from a bell curve, known as a Gaussian distribution.",
+  621.18,
+  625.94
+ ],
+ [
+  "That way, when we multiply all of these values by the corresponding pixel that they're sitting on top of, we're giving a lot more weight to that central pixel, and much less towards the ones out at the edge.",
+  626.8,
+  636.38
+ ],
+ [
+  "And just as before, the corresponding pixel on the right is defined to be this sum.",
+  636.8,
+  640.56
+ ],
+ [
+  "As we do this process for every single pixel, it gives a blurring effect, which much more authentically simulates the notion of putting your lens out of focus, or something like that.",
+  641.32,
+  649.72
+ ],
+ [
+  "But blurring is far from the only thing that you can do with this idea.",
+  649.9,
+  653.36
+ ],
+ [
+  "For instance, take a look at this little grid of values, which involves some positive numbers on the left, and some negative numbers on the right, which I'll color with blue and red respectively.",
+  653.8,
+  662.9
+ ],
+ [
+  "Take a moment to see if you can predict and understand what effect this will have on the final image.",
+  663.64,
+  668.48
+ ],
+ [
+  "So in this case, I'll just be thinking of the image as grayscale instead of colored, so each of the pixels is just represented by one number instead of three.",
+  670.72,
+  678.12
+ ],
+ [
+  "And one thing worth noticing is that as we do this convolution, it's possible to get negative values.",
+  678.44,
+  683.06
+ ],
+ [
+  "For example, at this point here, if we zoom in, the left half of our little grid sits entirely on top of black pixels, which would have a value of zero, but the right half of negative values all sit on top of white pixels, which would have a value of one.",
+  683.06,
+  695.46
+ ],
+ [
+  "So when we multiply corresponding terms and add them together, the results will be very negative.",
+  696.18,
+  700.82
+ ],
+ [
+  "And the way I'm displaying this with the image on the right is to color negative values red and positive values blue.",
+  701.16,
+  706.36
+ ],
+ [
+  "Another thing to notice is that when you're on a patch that's all the same color, everything goes to zero, since the sum of the values in our little grid is zero.",
+  706.88,
+  714.08
+ ],
+ [
+  "This is very different from the previous two examples where the sum of our little grid was one, which let us interpret it as a moving average and hence a blur.",
+  715.18,
+  722.18
+ ],
+ [
+  "All in all, this little process basically detects wherever there's variation in the pixel value as you move from left to right, and so it gives you a kind of way to pick up on all the vertical edges from your image.",
+  723.64,
+  733.92
+ ],
+ [
+  "And similarly, if we rotated that grid around so that it varies as you move from the top to the bottom, this will be picking up on all the horizontal edges, which in the case of our little pie creature image does result in some pretty demonic eyes.",
+  736.5,
+  749.34
+ ],
+ [
+  "This smaller grid, by the way, is often called a kernel, and the beauty here is how just by choosing a different kernel, you can get different image processing effects, not just blurring your edge detection, but also things like sharpening.",
+  750.4,
+  760.84
+ ],
+ [
+  "For those of you who have heard of a convolutional neural network, the idea there is to use data to figure out what the kernels should be in the first place, as determined by whatever the neural network wants to detect.",
+  760.84,
+  771.48
+ ],
+ [
+  "Another thing I should maybe bring up is the length of the output.",
+  772.76,
+  775.52
+ ],
+ [
+  "For something like the moving average example, you might only want to think about the terms when both of the windows fully align with each other.",
+  775.82,
+  781.9
+ ],
+ [
+  "Or in the image processing example, maybe you want the final output to have the same size as the original.",
+  782.12,
+  787.28
+ ],
+ [
+  "Now, convolutions as a pure math operation always produce an array that's bigger than the two arrays that you started with, at least assuming one of them doesn't have a length of one.",
+  787.28,
+  796.18
+ ],
+ [
+  "Just know that in certain computer science contexts, you often want to deliberately truncate that output.",
+  796.72,
+  801.52
+ ],
+ [
+  "Another thing worth highlighting is that in the computer science context, this notion of flipping around that kernel before you let it march across the original often feels really weird and just uncalled for, but again, note that that's what's inherited from the pure math context, where like we saw with the probabilities, it's an incredibly natural thing to do.",
+  804.72,
+  822.44
+ ],
+ [
+  "And actually, I can show you one more pure math example where even the programmers should care about this one, because it opens the doors for a much faster algorithm to compute all of these.",
+  823.02,
+  832.02
+ ],
+ [
+  "To set up what I mean by faster here, let me go back and pull up some Python again, and I'm going to create two different relatively big arrays.",
+  832.62,
+  839.78
+ ],
+ [
+  "Each one will have a hundred thousand random elements in it, and I'm going to assess the runtime, of the convolve function from the NumPy library.",
+  839.94,
+  847.54
+ ],
+ [
+  "And in this case, it runs it for multiple different iterations, tries to find an average, and it looks like, on this computer at least, it averages at 4.87 seconds.",
+  848.18,
+  856.52
+ ],
+ [
+  "By contrast, if I use a different function from the SciPy library called fftConvolve, which is the same thing just implemented differently, that only takes 4.3 milliseconds on average, so three orders of magnitude improvement.",
+  856.96,
+  870.16
+ ],
+ [
+  "And again, even though it flies under a different name, it's giving the same output that the other convolve function does, it's just doing something to go about it in a cleverer way.",
+  870.16,
+  879.12
+ ],
+ [
+  "Remember how with the probability example, I said another way you could think about the convolution was to create this table of all the pairwise products, and then add up those pairwise products along the diagonals.",
+  882.2,
+  892.68
+ ],
+ [
+  "There's of course nothing specific to probability.",
+  893.66,
+  895.5
+ ],
+ [
+  "Any time you're convolving two different lists of numbers, you can think about it this way.",
+  895.66,
+  899.04
+ ],
+ [
+  "Create this kind of multiplication table with all pairwise products, and then each sum along the diagonal corresponds to one of your final outputs.",
+  899.04,
+  906.46
+ ],
+ [
+  "One context where this view is especially natural is when you multiply together two polynomials.",
+  907.6,
+  912.8
+ ],
+ [
+  "For example, let me take the little grid we already have and replace the top terms with 1, 2x, and 3x squared, and replace the other terms with 4, 5x, and 6x squared.",
+  913.3,
+  923.6
+ ],
+ [
+  "Now, think about what it means when we're creating all of these different pairwise products between the two lists.",
+  924.0,
+  928.84
+ ],
+ [
+  "What you're doing is essentially expanding out the full product of the two polynomials I have written down, and then when you add up along the diagonal, that corresponds to collecting all like terms.",
+  929.04,
+  939.9
+ ],
+ [
+  "Which is pretty neat.",
+  940.6,
+  941.5
+ ],
+ [
+  "Expanding a polynomial and collecting like terms is exactly the same process as a convolution.",
+  941.74,
+  946.44
+ ],
+ [
+  "But this allows us to do something that's pretty cool, because think about what we're saying here.",
+  947.74,
+  952.34
+ ],
+ [
+  "We're saying if you take two different functions and you multiply them together, which is a simple pointwise operation, that's the same thing as if you had first extracted the coefficients from each one of those, assuming they're polynomials, and then taken a convolution of those two lists of coefficients.",
+  952.34,
+  968.84
+ ],
+ [
+  "What makes that so interesting is that convolutions feel, in principle, a lot more complicated than simple multiplication.",
+  969.62,
+  975.36
+ ],
+ [
+  "And I don't just mean conceptually they're harder to think about.",
+  975.82,
+  978.46
+ ],
+ [
+  "I mean, computationally, it requires more steps to perform a convolution than it does to perform a pointwise product of two different lists.",
+  978.84,
+  985.76
+ ],
+ [
+  "For example, let's say I gave you two really big polynomials, say each one with a hundred different coefficients.",
+  986.32,
+  991.9
+ ],
+ [
+  "Then if the way you multiply them was to expand out this product, you know, filling in this entire 100 by 100 grid of pairwise products, that would require you to perform 10,000 different products.",
+  992.74,
+  1003.24
+ ],
+ [
+  "And then, when you're collecting all the like terms along the diagonals, that's another set of around 10,000 operations.",
+  1003.74,
+  1009.86
+ ],
+ [
+  "More generally, in the lingo, we'd say the algorithm is O of n squared, meaning for two lists of size n, the way that the number of operations scales is in proportion to the square of n.",
+  1010.7,
+  1021.14
+ ],
+ [
+  "On the other hand, if I think of two polynomials in terms of their outputs, for example, sampling their values at some handful of inputs, then multiplying them only requires as many operations as the number of samples, since again, it's a pointwise operation.",
+  1021.82,
+  1035.62
+ ],
+ [
+  "And with polynomials, you only need finitely many samples to be able to recover the coefficients.",
+  1036.18,
+  1040.54
+ ],
+ [
+  "For example, two outputs are enough to uniquely specify a linear polynomial, three outputs would be enough to uniquely specify a quadratic polynomial, and in general, if you know n distinct outputs, that's enough to uniquely specify a polynomial that has n different coefficients.",
+  1040.54,
+  1056.74
+ ],
+ [
+  "Or, if you prefer, we could phrase this in the language of systems of equations.",
+  1057.44,
+  1060.72
+ ],
+ [
+  "Imagine I tell you I have some polynomial, but I don't tell you what the coefficients are.",
+  1061.2,
+  1065.2
+ ],
+ [
+  "Those are a mystery to you.",
+  1065.26,
+  1066.52
+ ],
+ [
+  "In our example, you might think of this as the product that we're trying to figure out.",
+  1066.7,
+  1070.18
+ ],
+ [
+  "And then, suppose I say, I'll just tell you what the outputs of this polynomial would be if you inputted various different inputs, like 0, 1, 2, 3, on and on, and I give you enough so that you have as many equations as you have unknowns.",
+  1070.18,
+  1083.46
+ ],
+ [
+  "It even happens to be a linear system of equations, so that's nice, and in principle, at least, this should be enough to recover the coefficients.",
+  1084.14,
+  1090.9
+ ],
+ [
+  "So the rough algorithm outline then would be, whenever you want to convolve two lists of numbers, you treat them like they're coefficients of two polynomials, you sample those polynomials at enough outputs, multiply those samples point-wise, and then solve this system to recover the coefficients as a sneaky backdoor way to find the convolution.",
+  1091.74,
+  1110.56
+ ],
+ [
+  "And, as I've stated it so far, at least, some of you could rightfully complain, grant, that is an idiotic plan, because, for one thing, just calculating all these samples for one of the polynomials we know already takes on the order of n-squared operations.",
+  1111.42,
+  1125.12
+ ],
+ [
+  "Not to mention, solving that system is certainly going to be computationally as difficult as just doing the convolution in the first place.",
+  1125.6,
+  1132.1
+ ],
+ [
+  "So, like, sure, we have this connection between multiplication and convolutions, but all of the complexity happens in translating from one viewpoint to the other.",
+  1132.6,
+  1140.48
+ ],
+ [
+  "But there is a trick, and those of you who know about Fourier transforms and the FFT algorithm might see where this is going.",
+  1141.6,
+  1147.74
+ ],
+ [
+  "If you're unfamiliar with those topics, what I'm about to say might seem completely out of the blue.",
+  1147.74,
+  1152.18
+ ],
+ [
+  "Just know that there are certain paths you could have walked in math that make this more of an expected step.",
+  1152.26,
+  1156.86
+ ],
+ [
+  "Basically, the idea is that we have a freedom of choice here.",
+  1157.72,
+  1160.36
+ ],
+ [
+  "If instead of evaluating at some arbitrary set of inputs, like 0, 1, 2, 3, on and on, you choose to evaluate on a very specially selected set of complex numbers, specifically the ones that sit evenly spaced on the unit circle, what are known as the roots of unity, this gives us a friendlier system.",
+  1160.54,
+  1176.88
+ ],
+ [
+  "The basic idea is that by finding a number where taking its powers falls into this cycling pattern, it means that the system we generate is going to have a lot of redundancy in the different terms that you're calculating, and by being clever about how you leverage that redundancy, you can save yourself a lot of work.",
+  1178.36,
+  1194.46
+ ],
+ [
+  "This set of outputs that I've written has a special name.",
+  1196.02,
+  1198.56
+ ],
+ [
+  "It's called the discrete Fourier transform of the coefficients, and if you want to learn more, I actually did another lecture for that same Julia MIT class all about discrete Fourier transforms, and there's also a really excellent video on the channel Reducible talking about the fast Fourier transform, which is an algorithm for computing these more quickly.",
+  1198.9,
+  1217.12
+ ],
+ [
+  "Also Veritasium recently did a really good video on FFTs, so you've got lots of options.",
+  1217.48,
+  1221.76
+ ],
+ [
+  "And that fast algorithm really is the point for us.",
+  1222.26,
+  1224.66
+ ],
+ [
+  "Again, because of all this redundancy, there exists a method to go from the coefficients to all of these outputs, where instead of doing on the order of n squared operations, you do on the order of n times the log of n operations, which is much much better as you scale to big lists.",
+  1225.12,
+  1239.2
+ ],
+ [
+  "And, importantly, this FFT algorithm goes both ways.",
+  1239.66,
+  1242.54
+ ],
+ [
+  "It also lets you go from the outputs to the coefficients.",
+  1242.7,
+  1245.48
+ ],
+ [
+  "So, bringing it all together, let's look back at our algorithm outline.",
+  1246.22,
+  1249.06
+ ],
+ [
+  "Now we can say, whenever you're given two long lists of numbers, and you want to take their convolution, first compute the fast Fourier transform of each one of them, which, in the back of your mind, you can just think of as treating them like they're the coefficients of a polynomial, and evaluating it at a very specially selected set of points.",
+  1249.42,
+  1266.38
+ ],
+ [
+  "Then, multiply together the two results that you just got, point-wise, which is nice and fast, and then do an inverse fast Fourier transform, and what that gives you is the sneaky backdoor way to compute the convolution that we were looking for.",
+  1266.9,
+  1278.9
+ ],
+ [
+  "But this time, it only involves O of n log n operations.",
+  1279.04,
+  1282.24
+ ],
+ [
+  "That's really cool to me.",
+  1283.14,
+  1284.74
+ ],
+ [
+  "This very specific context where convolutions show up, multiplying two polynomials, opens the doors for an algorithm that's relevant everywhere else where convolutions might come up.",
+  1285.12,
+  1294.1
+ ],
+ [
+  "If you want to add probability distributions, do some large image processing, whatever it might be, and I just think that's such a good example of why you should be excited when you see some operation or concept in math show up in a lot of seemingly unrelated areas.",
+  1294.18,
+  1307.48
+ ],
+ [
+  "If you want a little homework, here's something that's fun to think about.",
+  1308.48,
+  1311.5
+ ],
+ [
+  "Explain why when you multiply two different numbers, just ordinary multiplication the way we all learn in elementary school, what you're doing is basically a convolution between the digits of those numbers.",
+  1311.72,
+  1321.98
+ ],
+ [
+  "There's some added steps with carries and the like, but the core step is a convolution.",
+  1322.5,
+  1326.46
+ ],
+ [
+  "In light of the existence of a fast algorithm, what that means is if you have two very large integers, then there exists a way to find their product that's faster than the method we learn in elementary school, that instead of requiring O of n squared operations, only requires O of n log n, which doesn't even feel like it should be possible.",
+  1327.28,
+  1344.92
+ ],
+ [
+  "The catch is that before this is actually useful in practice, your numbers would have to be absolutely monstrous.",
+  1345.38,
+  1350.84
+ ],
+ [
+  "But still, it's cool that such an algorithm exists.",
+  1351.22,
+  1353.86
+ ],
+ [
+  "And next up, we'll turn our attention to the continuous case with a special focus on probability distributions.",
+  1355.16,
+  1359.64
+ ]
+]
