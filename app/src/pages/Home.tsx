@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import ByLanguage from "@/pages/home/ByLanguage";
-import ByTopic from "@/pages/home/ByTopic";
 import Header from "@/pages/home/Header";
 import Search from "@/pages/home/Search";
 
@@ -17,7 +16,6 @@ function Home() {
       <main>
         <Search />
         <ByLanguage />
-        <ByTopic />
       </main>
     </>
   );

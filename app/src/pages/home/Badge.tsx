@@ -10,16 +10,21 @@ type Props = {
 
 /** percent, colored circle, content */
 function Badge({ completion, children }: Props) {
+  const percent = (completion * 100).toFixed(0).padStart(2, "0") + "%";
   return (
     <div className={classes.badge}>
       <svg
         viewBox="-50 -50 100 100"
         height="1em"
-        style={{ "--completion": `${completion * 100}%` } as CSSProperties}
+        style={{ "--completion": percent } as CSSProperties}
       >
         <circle r="50" />
       </svg>
-      <span>{(completion * 100).toFixed(0).padStart(2, "0")}%</span>
+      <span
+        data-tooltip={`${percent} of lines have been edited or reviewed by at least one human`}
+      >
+        {percent}
+      </span>
       {children}
     </div>
   );

@@ -53,7 +53,6 @@ const lessons: Record<string, Lesson> = {};
 
 /** tally of completions */
 const lessonCompletion: Record<string, Record<string, number>> = {};
-const topicCompletion: Record<string, number[]> = {};
 const languageCompletion: Record<string, number[]> = {};
 
 /** init basic info */
@@ -95,20 +94,17 @@ for (const { full, slug, language } of paths) {
     lessons[id].nextLesson = topic.lessons[index + 1];
 
   /** get completion */
-  // const captionsFile = `..${full}/sentence_translations.json`;
-  // const translation = JSON.parse(
-  //   readFileSync(captionsFile, { encoding: "utf8" }),
-  // );
-  // const completion =
-  //   translation.filter((entry) => entry.edits > 1).length /
-  //   translation.length;
-  const completion = Math.random();
+  const captionsFile = `..${full}/sentence_translations.json`;
+  const translation = JSON.parse(
+    readFileSync(captionsFile, { encoding: "utf8" }),
+  );
+  const completion =
+    translation.filter((entry) => entry.n_reviews > 0).length /
+    translation.length;
 
   /** tally completion */
   lessonCompletion[slug] ??= {};
   lessonCompletion[slug][language] = completion;
-  topicCompletion[topic.name] ??= [];
-  topicCompletion[topic.name].push(completion);
   languageCompletion[language] ??= [];
   languageCompletion[language].push(completion);
 }
@@ -116,10 +112,6 @@ for (const { full, slug, language } of paths) {
 /** write files */
 writeFile("src/data/lesson-meta.json", Object.values(lessons));
 writeFile("src/data/lesson-completion.json", lessonCompletion);
-writeFile(
-  "src/data/topic-completion.json",
-  mapValues(topicCompletion, average),
-);
 writeFile(
   "src/data/language-completion.json",
   mapValues(languageCompletion, average),

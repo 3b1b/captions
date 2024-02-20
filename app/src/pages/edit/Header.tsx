@@ -25,7 +25,7 @@ function Header() {
   const stickySnap = useSnapshot(sticky);
 
   /** title, with fallback */
-  const _title = titleSnap.value?.original || startCase(slug);
+  const _title = titleSnap.value?.startingOriginal || startCase(slug);
 
   /** set browser tab title */
   useEffect(() => {
@@ -44,12 +44,16 @@ function Header() {
       <div className={classes.text}>
         {/* links */}
         <nav className={classes.nav}>
-          <Link to="/">
+          <Link to="/" data-tooltip="Back to translations app homepage">
             <FaHouse />
             Home
           </Link>
 
-          <Link to="https://github.com/3b1b/captions/issues" target="_blank">
+          <Link
+            to="https://github.com/3b1b/captions/issues"
+            target="_blank"
+            data-tooltip="Get help or report an issue"
+          >
             <FaRegCircleQuestion />
             Help
           </Link>
@@ -58,6 +62,7 @@ function Header() {
             <Link
               to={`https://github.com/3b1b/captions/commits/main/${metaSnap.value?.path}`}
               target="_blank"
+              data-tooltip="See full edit history of this lesson and language on GitHub"
             >
               <FaClockRotateLeft />
               Edit History
@@ -65,14 +70,20 @@ function Header() {
           )}
 
           {metaSnap.value?.previousLesson && (
-            <Link to={`/edit/${metaSnap.value?.previousLesson}/${language}`}>
+            <Link
+              to={`/edit/${metaSnap.value?.previousLesson}/${language}`}
+              data-tooltip="Previous video in series or topic"
+            >
               <FaAngleLeft />
               Previous
             </Link>
           )}
 
           {metaSnap.value?.nextLesson && (
-            <Link to={`/edit/${metaSnap.value?.nextLesson}/${language}`}>
+            <Link
+              to={`/edit/${metaSnap.value?.nextLesson}/${language}`}
+              data-tooltip="Next video in series or topic"
+            >
               <FaAngleRight />
               Next
             </Link>

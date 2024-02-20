@@ -1,4 +1,5 @@
-import { FaPaperPlane } from "react-icons/fa6";
+import { FaDownload, FaPaperPlane } from "react-icons/fa6";
+import { useParams } from "react-router";
 import { useLocalStorage } from "react-use";
 import { useSnapshot } from "valtio";
 import Button from "@/components/Button";
@@ -8,15 +9,20 @@ import Select from "@/components/Select";
 import {
   captions,
   description,
+  exportData,
   filter,
   filterFuncs,
   filters,
   sticky,
   title,
 } from "@/pages/Edit";
+import { downloadZip } from "@/util/download";
 import classes from "./Footer.module.css";
 
 function Footer() {
+  /** url params */
+  const { slug = "", language = "" } = useParams();
+
   /** local state */
   const [user, setUser] = useLocalStorage("3b1b-captions", "");
 
@@ -53,11 +59,13 @@ function Footer() {
           options={filterOptions}
           value={filterSnap.value}
           onChange={(value) => (filter.value = value)}
+          data-tooltip="Show only certain entries"
         />
         <Checkbox
           label="Sticky header/footer"
           value={stickySnap.value}
           onChange={(value) => (sticky.value = value)}
+          data-tooltip="Keep the header/footer at the top/bottom of the screen"
         />
       </div>
 
@@ -66,12 +74,20 @@ function Footer() {
           value={user}
           onChange={setUser}
           placeholder="@github-user or name"
+          data-tooltip="So we can tag you on GitHub and/or attribute these edits to you"
+        />
+
+        <Button
+          icon={<FaDownload />}
+          data-tooltip="Download your changes as a backup or to submit a pull request manually."
+          onClick={() => downloadZip(exportData(), `${slug} ${language}`)}
         />
 
         <Button
           disabled={edits === 0}
           text={`Submit ${edits.toLocaleString()} Edit(s)`}
           icon={<FaPaperPlane />}
+          data-tooltip="Submit your changes to be reviewed. Opens a public a pull request on GitHub."
         />
       </div>
     </footer>

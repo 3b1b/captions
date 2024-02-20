@@ -3,13 +3,20 @@ import classNames from "classnames";
 import classes from "./Button.module.css";
 
 type Props = {
-  text: string;
+  text?: string;
   icon?: ReactNode;
 } & ComponentProps<"button">;
 
 function Button({ text, icon, className, ...props }: Props) {
   return (
-    <button className={classNames(classes.button, className)} {...props}>
+    <button
+      className={classNames(
+        classes.button,
+        icon && !text && classes.square,
+        className,
+      )}
+      {...props}
+    >
       {icon}
       {text}
     </button>

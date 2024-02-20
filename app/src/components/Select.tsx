@@ -8,6 +8,7 @@ type Props<O extends Option> = {
   /** selected option id */
   value: O["id"];
   onChange: (value: O["id"]) => void;
+  "data-tooltip"?: string;
 } & Omit<ComponentProps<"select">, "onChange">;
 
 export type Option = { id: string; label: string; count?: number };
@@ -17,10 +18,11 @@ function Select<O extends Option>({
   options,
   value,
   onChange,
+  "data-tooltip": tooltip,
   ...props
 }: Props<O>) {
   return (
-    <label className={classes.label}>
+    <label className={classes.label} data-tooltip={tooltip}>
       <span>{label}:</span>
       <select
         className={classes.select}

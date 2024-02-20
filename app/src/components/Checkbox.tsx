@@ -7,11 +7,18 @@ type Props = {
   label: string;
   value: boolean;
   onChange: (value: boolean) => void;
+  "data-tooltip"?: string;
 } & Omit<ComponentProps<"input">, "value" | "onChange">;
 
-function Checkbox({ label, value, onChange, ...props }: Props) {
+function Checkbox({
+  label,
+  value,
+  onChange,
+  "data-tooltip": tooltip,
+  ...props
+}: Props) {
   return (
-    <label className={classes.label}>
+    <label className={classes.label} data-tooltip={tooltip}>
       {value && <FaSquareCheck className={classes.icon} />}
       {!value && <FaRegSquare className={classes.icon} />}
       <input

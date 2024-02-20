@@ -10,6 +10,7 @@ import { QueryParamProvider } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
 import Edit, { loader as editLoader } from "@/pages/Edit";
 import Home from "@/pages/Home";
+import "@/components/tooltip";
 
 /** entrypoint component */
 function App() {

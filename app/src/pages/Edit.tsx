@@ -20,8 +20,8 @@ function Edit() {
       <Header />
       <main>
         <Title />
-        <Description />
         <Captions />
+        <Description />
       </main>
       <Footer />
     </>
@@ -35,6 +35,7 @@ type _Caption = {
   input: string;
   translatedText: string;
   time_range?: [number, number];
+  n_edits?: number;
 };
 
 /** page data loader */
@@ -54,7 +55,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     description.value = [];
     captions.value = [];
     console.error("Couldn't load lesson meta");
-    return;
+    return null;
   }
 
   /** base raw folder containing json files */
@@ -72,22 +73,21 @@ export const loader: LoaderFunction = async ({ params }) => {
     video.value = "";
   }
 
-  /** add language to path */
-  meta.value.path += `/${language}`;
-
   /** load title */
   try {
-    const url = `${base}/${meta.value.path}/title.json`;
-    const { input, translatedText } = (await (
+    const url = `${base}/${meta.value.path}/${language}/title.json`;
+    const { input, translatedText, n_edits } = (await (
       await fetch(url)
     ).json()) as _Caption;
 
     /** map raw format to format needed for app */
     title.value = {
-      original: input,
-      edits: 1,
-      latestEdit: translatedText,
-      currentEdit: translatedText,
+      reviewed: false,
+      reviews: n_edits || 0,
+      startingTranslation: translatedText,
+      currentTranslation: translatedText,
+      startingOriginal: input,
+      currentOriginal: input,
     };
   } catch (error) {
     console.error("Couldn't load title data");
@@ -96,15 +96,17 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   /** load description */
   try {
-    const url = `${base}/${meta.value.path}/description.json`;
+    const url = `${base}/${meta.value.path}/${language}/description.json`;
     const data = (await (await fetch(url)).json()) as _Caption[];
 
     /** map raw format to format needed for app */
-    description.value = data.map(({ input, translatedText }) => ({
-      original: input,
-      edits: 1,
-      latestEdit: translatedText,
-      currentEdit: translatedText,
+    description.value = data.map(({ input, translatedText, n_edits }) => ({
+      reviewed: false,
+      reviews: n_edits || 0,
+      startingTranslation: translatedText,
+      currentTranslation: translatedText,
+      startingOriginal: input,
+      currentOriginal: input,
     }));
   } catch (error) {
     console.error("Couldn't load description data");
@@ -113,20 +115,39 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   /** load captions */
   try {
-    const url = `${base}/${meta.value.path}/sentence_translations.json`;
+    const url = `${base}/${meta.value.path}/${language}/sentence_translations.json`;
     const data = (await (await fetch(url)).json()) as _Caption[];
 
     /** map raw format to format needed for app */
-    captions.value = data.map(({ input, translatedText, time_range }) => ({
-      original: input,
-      edits: 1,
-      timeRange: time_range || [0, 0],
-      latestEdit: translatedText,
-      currentEdit: translatedText,
+    captions.value = data.map(({ input, translatedText, n_edits }) => ({
+      reviews: n_edits || 0,
+      reviewed: false,
+      startingTranslation: translatedText,
+      currentTranslation: translatedText,
+      startingOriginal: input,
+      currentOriginal: input,
     }));
   } catch (error) {
     console.error("Couldn't load caption data");
     captions.value = [];
+  }
+
+  /** load caption timings */
+  try {
+    const url = `${base}/${meta.value.path}/english/sentence_timings.json`;
+    const data = (await (await fetch(url)).json()) as [
+      string,
+      number,
+      number,
+    ][];
+
+    /** map raw format to format needed for app */
+    data.forEach(
+      ([, start, end], index) =>
+        (captions.value[index]!.timeRange = [start, end]),
+    );
+  } catch (error) {
+    console.error("Couldn't load caption timings");
   }
 
   return null;
@@ -154,9 +175,11 @@ type FilterFunc = (value: ReadonlyCaption) => boolean;
 /** filter function for each filter option */
 export const filterFuncs: Record<Filter, FilterFunc> = {
   all: () => true,
-  original: (caption) => caption.edits === 1,
-  human: (caption) => caption.edits > 1,
-  my: (caption) => caption.currentEdit !== caption.latestEdit,
+  original: (caption) => caption.reviews === 0,
+  human: (caption) => caption.reviews > 0,
+  my: (caption) =>
+    caption.currentTranslation !== caption.startingTranslation ||
+    caption.currentOriginal !== caption.startingOriginal,
 };
 
 /** whether header/footer are sticky */
@@ -178,10 +201,19 @@ export const description = proxy<{ value: Caption[] }>({ value: [] });
 
 /** caption data */
 export type Caption = {
-  original: string;
-  edits: number;
-  currentEdit: string;
-  latestEdit: string;
+  /** number of reviews (upvotes/edits) */
+  reviews: number;
+  /** reviewed state */
+  reviewed: boolean;
+  /** starting translation state */
+  startingTranslation: string;
+  /** translation edit state */
+  currentTranslation: string;
+  /** starting original english state  */
+  startingOriginal: string;
+  /** original english edit state */
+  currentOriginal: string;
+  /** timestamp range */
   timeRange?: [number, number];
 };
 
@@ -190,3 +222,26 @@ export type ReadonlyCaption = ReturnType<typeof useSnapshot<Caption>>;
 
 /** editable captions state */
 export const captions = proxy<{ value: Caption[] }>({ value: [] });
+
+/** clean data for export */
+export function exportData() {
+  /** map entries back to raw format */
+  function revert({
+    reviews,
+    reviewed,
+    currentTranslation,
+    currentOriginal,
+  }: Caption): _Caption {
+    return {
+      translatedText: currentTranslation,
+      input: currentOriginal,
+      n_edits: reviews + Number(reviewed),
+    };
+  }
+
+  return {
+    title: title.value ? revert(title.value) : {},
+    description: description.value.map(revert),
+    sentence_translations: captions.value.map(revert),
+  };
+}
