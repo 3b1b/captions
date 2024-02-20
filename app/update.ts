@@ -24,7 +24,10 @@ const paths = globSync("**/**/", {
     };
   })
   /** remove irrelevant paths */
-  .filter(({ year, slug, language }) => year && slug && language);
+  .filter(
+    ({ year, slug, language }) =>
+      year && slug && language && language !== "english",
+  );
 
 /** get topic lists */
 type Topics = { name: string; lessons: string[] }[];
@@ -94,13 +97,16 @@ for (const { full, slug, language } of paths) {
     lessons[id].nextLesson = topic.lessons[index + 1];
 
   /** get completion */
-  const captionsFile = `..${full}/sentence_translations.json`;
-  const translation = JSON.parse(
-    readFileSync(captionsFile, { encoding: "utf8" }),
-  );
+  let translation: { n_reviews: number }[] = [];
+  try {
+    const captionsFile = `../${full}/${language}/sentence_translations.json`;
+    translation = JSON.parse(readFileSync(captionsFile, { encoding: "utf8" }));
+  } catch (error) {
+    console.warn(`No completion info for ${full}/${language}`);
+  }
   const completion =
     translation.filter((entry) => entry.n_reviews > 0).length /
-    translation.length;
+    (translation.length || 1);
 
   /** tally completion */
   lessonCompletion[slug] ??= {};

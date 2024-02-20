@@ -1,5 +1,4 @@
 import { Link, useParams } from "react-router-dom";
-import { startCase } from "lodash";
 import { useSnapshot } from "valtio";
 import { filter, filterFuncs, title } from "@/pages/Edit";
 import Row from "@/pages/edit/Row";
@@ -37,9 +36,7 @@ function Title() {
         <span>
           No title file found.{" "}
           <Link
-            to={issueLink(`${startCase(slug)} - ${startCase(language)}`, [
-              "Missing title file",
-            ])}
+            to={issueLink(`${slug}/${language}`, ["Missing title file"])}
             target="_blank"
           >
             Create an issue.

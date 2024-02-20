@@ -1,5 +1,4 @@
 import { Link, useParams } from "react-router-dom";
-import { startCase } from "lodash";
 import { useSnapshot } from "valtio";
 import { description, filter, filterFuncs } from "@/pages/Edit";
 import Row from "@/pages/edit/Row";
@@ -33,9 +32,7 @@ function Description() {
         <span>
           No description file found.{" "}
           <Link
-            to={issueLink(`${startCase(slug)} - ${startCase(language)}`, [
-              "Missing description file",
-            ])}
+            to={issueLink(`${slug}/${language}`, ["Missing description file"])}
             target="_blank"
           >
             Create an issue.

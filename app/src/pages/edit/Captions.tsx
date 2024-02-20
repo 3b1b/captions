@@ -1,5 +1,4 @@
 import { Link, useParams } from "react-router-dom";
-import { startCase } from "lodash";
 import { useSnapshot } from "valtio";
 import { captions, filter, filterFuncs } from "@/pages/Edit";
 import Row from "@/pages/edit/Row";
@@ -33,9 +32,7 @@ function Captions() {
         <span>
           No caption file found.{" "}
           <Link
-            to={issueLink(`${startCase(slug)} - ${startCase(language)}`, [
-              "Missing caption file",
-            ])}
+            to={issueLink(`${slug}/${language}`, ["Missing caption file"])}
             target="_blank"
           >
             Create an issue.

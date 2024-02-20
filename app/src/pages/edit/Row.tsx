@@ -8,7 +8,6 @@ import {
 } from "react-icons/fa6";
 import { Link, useParams } from "react-router-dom";
 import classNames from "classnames";
-import { startCase } from "lodash";
 import { useSnapshot } from "valtio";
 import { playCaption, playerTime } from "@/components/Player";
 import Textarea from "@/components/Textarea";
@@ -57,7 +56,7 @@ function Row({ caption }: Props) {
   const maxOriginalLength = caption.startingOriginal.length * 1.2;
 
   /** issue url params */
-  const title = `${startCase(slug)} - ${startCase(language)}`;
+  const title = `${slug}/${language}`;
   const body = [
     `**Line**:\n`,
     `${caption.startingOriginal.slice(0, 100)}...\n`,

@@ -43,7 +43,7 @@ function Search() {
         /** if every term is present in combined string */
         return (
           nameTerms.every((term) => combinedName.includes(term)) &&
-          language.toLowerCase().includes(languageSearch)
+          language.toLowerCase().includes(languageSearch.toLowerCase())
         );
       }),
       /** sort lowest completion % first */
@@ -91,10 +91,12 @@ function Search() {
         )}
       </div>
 
-      <button onClick={() => setShowAll(!showAll)}>
-        {showAll ? <FaAngleUp /> : <FaAngleDown />}
-        {showAll && results.length > limit ? "Show less" : "Show all results"}
-      </button>
+      {results.length > limit && (
+        <button onClick={() => setShowAll(!showAll)}>
+          {showAll ? <FaAngleUp /> : <FaAngleDown />}
+          {showAll ? "Show less" : "Show all results"}
+        </button>
+      )}
     </section>
   );
 }
