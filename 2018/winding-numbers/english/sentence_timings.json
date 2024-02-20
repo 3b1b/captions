@@ -1,0 +1,837 @@
+[
+ [
+  "There's two things here, the main topic and the meta topic.",
+  3.06,
+  6.14
+ ],
+ [
+  "The main topic is going to be this really neat algorithm for solving two-dimensional equations, things that have two unknown real numbers, or also those involving a single unknown which is a complex number.",
+  6.64,
+  16.84
+ ],
+ [
+  "So for example, if you wanted to find the complex roots of a polynomial, or maybe some of those million dollar zeros of the Riemann zeta function, this algorithm would do it for you.",
+  17.44,
+  26.5
+ ],
+ [
+  "And this method is super pretty, since a lot of colors are involved.",
+  26.8,
+  30.06
+ ],
+ [
+  "And more importantly, the core underlying idea applies to all sorts of math well beyond this algorithm for solving equations, including a bit of topology, which I'll talk about afterwards.",
+  30.54,
+  40.06
+ ],
+ [
+  "But what really makes this worth 20 minutes or so of your time is that it illustrates a lesson much more generally useful throughout math, which is try to define constructs that compose nicely with each other.",
+  40.74,
+  51.98
+ ],
+ [
+  "You'll see what I mean by that as the story progresses.",
+  52.4,
+  54.48
+ ],
+ [
+  "To motivate the case with functions that have 2D inputs and 2D outputs, let's start off simpler with functions that just take in a real number and spit out a real number.",
+  55.06,
+  63.82
+ ],
+ [
+  "If you want to know when a function f of x equals some other function g of x, you might think of this as searching for when the graphs of those functions intersect, right?",
+  65.08,
+  74.52
+ ],
+ [
+  "I mean that gives you an input where both functions have the same output.",
+  75.02,
+  78.52
+ ],
+ [
+  "To take a very simple example, imagine f of x is x squared, and g of x is the constant function 2.",
+  78.52,
+  85.3
+ ],
+ [
+  "In other words, you want to find the square root of 2.",
+  85.96,
+  88.64
+ ],
+ [
+  "Even if you know almost nothing about finding square roots, you can probably see that 1 squared is less than 2, and 2 squared is bigger than 2, so you realize, ah, there's going to be some solution in between those two values.",
+  89.46,
+  101.86
+ ],
+ [
+  "And then if you wanted to narrow it down further, maybe you try squaring the halfway point, 1.5.",
+  102.58,
+  107.14
+ ],
+ [
+  "This comes out to be 2.25, a little too high, so you'd focus on the region between 1 and 1.5.",
+  107.72,
+  113.76
+ ],
+ [
+  "And so on, you can probably see how this would keep going, you'd keep computing at the midpoint and then chopping your search space in half.",
+  114.76,
+  120.92
+ ],
+ [
+  "Another way to think about this, which is going to make it easier for us once we get up to higher dimensions, is to instead focus on the equivalent question for when the difference between these two functions is zero.",
+  125.1,
+  135.52
+ ],
+ [
+  "In those terms, we found a region of inputs where that difference was negative on one end, and it was positive on another end.",
+  136.1,
+  143.34
+ ],
+ [
+  "And then we split it into two, and the half that we narrowed our attention to was the one where the outermost points had varying signs.",
+  143.84,
+  150.56
+ ],
+ [
+  "And like this, we were able to keep going forever, taking each region with varying signs on the border, finding a smaller such region among its halves, knowing that ultimately we have to be narrowing in on a point which is going to be exactly zero.",
+  151.36,
+  164.2
+ ],
+ [
+  "In short, solving equations can always be framed as finding when a certain function is equal to zero, and to do that, we have this heuristic, if f is positive at one point and negative at another point, you can find someplace in between where it's zero, at least if everything changes smoothly with no sudden jumps.",
+  165.76,
+  183.02
+ ],
+ [
+  "Now the amazing thing I want to show you is that you can extend this kind of thinking into two-dimensional equations, equations between functions whose inputs and outputs are both two-dimensional.",
+  183.88,
+  194.08
+ ],
+ [
+  "For example, complex numbers are 2D, and this tool we're developing is perfect for finding solutions to complex equations.",
+  194.74,
+  201.4
+ ],
+ [
+  "Now since we're going to be talking about these 2D functions so much, let's take a brief side step and consider how we illustrate these.",
+  202.36,
+  208.34
+ ],
+ [
+  "Graphing a function with a 2D input and a 2D output would require four dimensions, and that's not going to work so well in our 3D world on our 2D screens, but we still have a couple good options.",
+  209.06,
+  220.22
+ ],
+ [
+  "One is to just look at both the input space and the output space side by side.",
+  220.86,
+  225.44
+ ],
+ [
+  "Each point in the input space moves to a particular point in the output space, and I can show how moving around that input point corresponds to certain movements in the output space.",
+  225.54,
+  236.26
+ ],
+ [
+  "All of the functions we consider will be continuous, in the sense that small little changes to the input only correspond to small little changes in the output, there's no sudden jumps.",
+  236.94,
+  246.3
+ ],
+ [
+  "Another option we have is to imagine the arrow from the origin of the output space to that output point, and to attach a miniature version of that arrow to the input point.",
+  246.94,
+  256.58
+ ],
+ [
+  "This can give us a sense, at a glance, for where a given input point goes, or where many different input points go by drawing the full vector field.",
+  257.36,
+  265.84
+ ],
+ [
+  "And unfortunately when you do this at a lot of points it can get pretty cluttered, so here let me make all of the arrows the same size, and what this means is we can get a sense of the direction of each output point.",
+  267.6,
+  277.1
+ ],
+ [
+  "But perhaps the prettiest way to illustrate two-dimensional functions, and the one we'll be using most this video, is to associate each point in that output space with a color.",
+  277.78,
+  286.38
+ ],
+ [
+  "Here we've used hues, that is where the color falls along a rainbow or a color wheel, to correspond to the direction away from the origin, and we're using darkness or brightness to correspond to the distance from the origin.",
+  287.22,
+  299.26
+ ],
+ [
+  "For example, focusing just on this array of outputs, all of these points are red, but the ones closer to the origin are a little darker, and the ones farther away are a little brighter.",
+  299.26,
+  309.62
+ ],
+ [
+  "And focusing just on this array of outputs, all of the points are green, and again, closer to the origin means darker, farther away means lighter.",
+  310.36,
+  317.98
+ ],
+ [
+  "And so on, all we're doing here is assigning a specific color to each direction, all changing continuously.",
+  318.78,
+  324.84
+ ],
+ [
+  "You might notice the darkness and brightness differences here are pretty subtle, but for this video, all we care about is the direction of outputs, not the magnitudes, the hues, not the brightness.",
+  325.36,
+  334.56
+ ],
+ [
+  "The one important thing about brightness for you to notice is that near the origin, which has no particular direction, all of the colors fade to black.",
+  335.3,
+  343.12
+ ],
+ [
+  "So for thinking about functions, now that we've decided on a color for each output, we can visualize 2D functions by coloring each point in the input space based on the color of the point where it lands in the output space.",
+  344.44,
+  357.1
+ ],
+ [
+  "I like to imagine many different points from that input space hopping over to their corresponding outputs in the output space, then getting painted based on the color of the point where they land, and then hopping back to where they came from in the input space.",
+  357.84,
+  370.36
+ ],
+ [
+  "Doing this for every point in the input space, you can get a sense just by looking at that input space for roughly where the function takes each point.",
+  371.64,
+  378.42
+ ],
+ [
+  "For example, this stripe of pink points on the left tells us that all of those points get mapped in the pink direction, that lower left of the output space.",
+  379.12,
+  388.28
+ ],
+ [
+  "Also those three points which are black with lots of colors around them are the ones that go to zero.",
+  389.78,
+  394.9
+ ],
+ [
+  "Alright, so just like the 1D case, solving equations of 2D functions can always be reframed by asking when a certain function is equal to zero.",
+  399.34,
+  408.88
+ ],
+ [
+  "So that's our challenge right now, create an algorithm that finds which input points of a given 2D function go to zero.",
+  409.58,
+  417.06
+ ],
+ [
+  "Now you might point out that if you're looking at a color map like this by seeing those black dots, you already know where the zeros of the function are.",
+  420.86,
+  428.3
+ ],
+ [
+  "So does that count?",
+  428.62,
+  430.0
+ ],
+ [
+  "Well keep in mind that to create a diagram like this, we've had the computer compute the function at all of the pixels on the plane, but our goal is to find a more efficient algorithm that only requires computing the function at as few points as possible, only having a limited view of the colors, so to speak.",
+  430.92,
+  447.86
+ ],
+ [
+  "And also from a more theoretical standpoint, it'd be nice to have a general construct that tells us the conditions for whether or not a zero exists inside a given region.",
+  449.36,
+  457.64
+ ],
+ [
+  "Now remember, in one dimension the main insight was that if a continuous function is positive at one point and negative at another, then somewhere in between it must be zero.",
+  459.0,
+  467.92
+ ],
+ [
+  "So how do we extend that into two dimensions?",
+  468.84,
+  470.58
+ ],
+ [
+  "We need some sort of analog of talking about signs.",
+  470.94,
+  473.58
+ ],
+ [
+  "One way to think about what signs even are is directions.",
+  474.7,
+  478.14
+ ],
+ [
+  "Positive means you're pointing to the right along the number line, and negative means you're pointing to the left.",
+  478.8,
+  483.5
+ ],
+ [
+  "Two dimensional quantities also have direction, but for them the options are much wider, they can point anywhere along a whole circle of possibilities.",
+  484.2,
+  491.8
+ ],
+ [
+  "So the same way that in one dimension we were asking whether a given function is positive or negative on the boundary of a range, which is just two points, for 2D functions we're going to be looking at the boundary of a region, which is a loop, and ask about the direction of the function's output along that boundary.",
+  492.53,
+  510.86
+ ],
+ [
+  "For example, we see that along this loop around this zero, the output goes through every possible direction, all the colors of the rainbow, red, yellow, green, blue, back to red, and everything in between along the way.",
+  513.64,
+  525.06
+ ],
+ [
+  "But along this loop over here, with no zeros inside of it, the output doesn't go through every color, it goes through some of the orangish ones, but never, say, green or blue.",
+  525.7,
+  534.64
+ ],
+ [
+  "And this is promising, it looks a lot like how things worked in one dimension.",
+  535.3,
+  538.46
+ ],
+ [
+  "Maybe in the same way that if a 1D function takes both possible signs on the boundary of a 1D region, there was a zero somewhere inside, we might hypothesize that if a 2D function hits outputs of all possible directions, all possible colors, along the boundary of a 2D region, then somewhere inside that region it must go to zero.",
+  539.34,
+  559.86
+ ],
+ [
+  "So that's our guess, and take a moment to think about if this should be true, and if so, why?",
+  560.96,
+  566.12
+ ],
+ [
+  "If we start thinking about a tiny loop around some input point, we know that since everything is continuous, our function takes it to some tiny loop near the corresponding output.",
+  567.42,
+  576.28
+ ],
+ [
+  "But look, for most tiny loops, the output varies in color.",
+  577.14,
+  580.52
+ ],
+ [
+  "If you pick any output point other than zero, and draw a sufficiently tight loop near it, the loop's colors are all going to be about the same color as that point.",
+  580.98,
+  589.42
+ ],
+ [
+  "A tight loop over here is all bluish, a tight loop over here is all yellowish, you certainly aren't going to get every color of the rainbow.",
+  589.84,
+  597.68
+ ],
+ [
+  "The only point where you can tighten loops around it while still getting all the colors is the colorless origin, zero itself.",
+  598.22,
+  606.32
+ ],
+ [
+  "So it is indeed the case that if you have loops going through every color of the rainbow, tightening and tightening, narrowing in on a point, then that point must in fact be a zero.",
+  607.1,
+  616.38
+ ],
+ [
+  "And so, let's set up a 2D equation solver just like our one-dimensional equation solver.",
+  617.32,
+  621.86
+ ],
+ [
+  "When we find a large region whose border goes through every color, split it into two, and then look at the colors on the boundary of each half.",
+  622.26,
+  629.9
+ ],
+ [
+  "In the example shown here, the border on the left half doesn't go through all colors, there are no points that map to the orangish-yellowish directions, for example.",
+  630.54,
+  638.6
+ ],
+ [
+  "So I'll grey out this area as a way of saying we don't want to search it any further.",
+  639.06,
+  642.62
+ ],
+ [
+  "The right half does go through all the colors, spends a lot of time in the green direction, then passes through yellow-orange-red, as well as blue-violet-pink.",
+  643.38,
+  650.7
+ ],
+ [
+  "Now remember, what that means is that points of this boundary get mapped to outputs of all possible directions.",
+  651.56,
+  657.36
+ ],
+ [
+  "So we'll explore it further, subdividing again and checking the boundary for each region.",
+  657.84,
+  661.86
+ ],
+ [
+  "The boundary of the top is all green, so we'll stop searching there.",
+  662.88,
+  666.56
+ ],
+ [
+  "But the bottom is colorful enough to deserve a subdivision.",
+  666.86,
+  669.52
+ ],
+ [
+  "And just continue like this.",
+  670.34,
+  672.02
+ ],
+ [
+  "Check which subregion has a boundary covering all possible colors, meaning points of that boundary get mapped to all possible directions, and keep chopping those regions in half like we did for the one-dimensional case, eventually leading us to a zero over the func- Well, hang on a second.",
+  672.36,
+  687.48
+ ],
+ [
+  "What happened here?",
+  688.88,
+  689.92
+ ],
+ [
+  "Neither of those last subdivisions on the bottom right passed through all the colors, so our algorithm stopped because it didn't want to search through either of those, but it also didn't find a zero.",
+  690.38,
+  699.92
+ ],
+ [
+  "Okay, clearly something's wrong here.",
+  701.06,
+  703.3
+ ],
+ [
+  "And that's okay, being wrong is a regular part of doing math.",
+  703.54,
+  706.52
+ ],
+ [
+  "If we look back, we had this hypothesis, and it led us to this proposed algorithm, so we were mistaken somewhere.",
+  706.52,
+  712.98
+ ],
+ [
+  "And being good at math isn't about being right the first time, it's about having the resilience to carefully look back and understand the mistakes, and understand how to fix them.",
+  713.66,
+  721.8
+ ],
+ [
+  "Now the problem here is that we had a region whose border went through every color, but when we split it in the middle, neither subregion's border went through every color, we had no options for where to keep searching next, and that broke the zero finder.",
+  722.48,
+  734.74
+ ],
+ [
+  "Now in one dimension, this sort of thing never happened.",
+  734.74,
+  737.56
+ ],
+ [
+  "Any time you had an interval whose endpoints have different signs, if you split it up, you know that you're guaranteed to get some subinterval whose endpoints also have different signs.",
+  737.98,
+  748.46
+ ],
+ [
+  "Or, put another way, any time you have two intervals whose endpoints don't change signs, if you combine them, you'll get a bigger interval whose endpoints also don't change sign.",
+  749.02,
+  758.38
+ ],
+ [
+  "But in two dimensions, it's possible to find two regions whose borders don't go through every color, but whose boundaries combine to give a region whose border does go through every color.",
+  759.08,
+  769.1
+ ],
+ [
+  "And in just this way, our proposed zero-finding algorithm broke.",
+  769.84,
+  773.5
+ ],
+ [
+  "In fact, if you think about it, you can find a big loop whose border goes through every possible color without there being a zero inside of it.",
+  774.38,
+  782.38
+ ],
+ [
+  "Now that's not to say that we were wrong in our claims about tiny loops when we said that a forever narrowing loop going through every color has to be narrowing in on a zero.",
+  783.08,
+  792.16
+ ],
+ [
+  "But what made a mess of things for us is that this does-my-border-go-through-every-color-or-not property doesn't combine in a nice, predictable way when you combine regions.",
+  792.8,
+  802.14
+ ],
+ [
+  "But don't worry, it turns out we can modify this slightly to a more sophisticated property that does combine to give us what we want.",
+  803.0,
+  810.74
+ ],
+ [
+  "The idea is that instead of simply asking whether we can find a color at some point along the loop, let's keep more careful track of how these colors change as we walk around that loop.",
+  818.18,
+  827.86
+ ],
+ [
+  "Let me show you what I mean with an example.",
+  828.58,
+  829.96
+ ],
+ [
+  "I'll keep a little color wheel up here in the corner to help us keep track.",
+  830.4,
+  833.26
+ ],
+ [
+  "When the colors along a path of inputs move through the rainbow in a specific direction, from red to yellow, yellow to green, green to blue, or blue to red, the output is swinging clockwise.",
+  833.94,
+  844.96
+ ],
+ [
+  "But on the other hand, if the colors move the other way through the rainbow, from blue to green, green to yellow, yellow to red, or red to blue, the output is swinging counterclockwise.",
+  845.7,
+  856.32
+ ],
+ [
+  "So walking along this short path here, the colors wind a fifth of the way clockwise through the color wheel.",
+  857.16,
+  863.62
+ ],
+ [
+  "And walking along this path here, the colors wind another fifth of the way clockwise through the color wheel.",
+  864.26,
+  870.36
+ ],
+ [
+  "And of course that means that if you go through both paths, one after the other, the colors wind a total of two-fifths of a full turn clockwise.",
+  871.16,
+  878.64
+ ],
+ [
+  "The total amount of winding just adds up, and this is going to be key, this is the kind of straightforward combining that will be useful to us.",
+  879.28,
+  886.3
+ ],
+ [
+  "Now when I say total amount of winding, I want you to imagine an old-fashioned odometer that ticks forward as the arrow spins clockwise, but backwards as the arrow spins counterclockwise.",
+  886.98,
+  897.9
+ ],
+ [
+  "So counterclockwise winding counts as negative clockwise winding.",
+  898.74,
+  902.46
+ ],
+ [
+  "The outputs may turn a lot, but if some of that turning is in the opposite direction, it cancels out.",
+  903.0,
+  908.26
+ ],
+ [
+  "For example, if you move forward along this path, and then move backwards along that same path, the total amount of winding ends up being zero.",
+  908.92,
+  916.26
+ ],
+ [
+  "The backwards movement literally rewinds through the previously seen colors, reversing all the previous winding, and returning the odometer back to where it started.",
+  916.26,
+  925.08
+ ],
+ [
+  "For our purposes, we'll care most about looking at the winding along loops.",
+  926.28,
+  929.9
+ ],
+ [
+  "For example, let's say we walk around this entire loop clockwise.",
+  930.44,
+  933.68
+ ],
+ [
+  "The outputs that we come across wind around a total of three full clockwise turns.",
+  934.24,
+  938.92
+ ],
+ [
+  "The colors swung through the rainbow, ROYGBIV, in order, from red to red again, and then again, and again.",
+  939.36,
+  946.18
+ ],
+ [
+  "In the jargon mathematicians use, we say that along this loop, the total winding number is three.",
+  946.92,
+  952.72
+ ],
+ [
+  "Now for other loops, it could be any other whole number, maybe a larger one if the output swings around many times as the input walks around a single loop, or it could be a smaller number if the output only swings around once or twice, or that winding number could even be a negative integer if the output was swinging counterclockwise as we walk clockwise around the loop.",
+  953.82,
+  974.32
+ ],
+ [
+  "But along any loop, this total amount of winding has to be a whole number.",
+  975.18,
+  978.86
+ ],
+ [
+  "I mean, by the time you get back to where you started, you'll have the same output that you started with.",
+  980.88,
+  985.0
+ ],
+ [
+  "Incidentally, if a path actually contains a point where the output is precisely zero, then technically you can't define a winding number along that, since the output has no particular direction.",
+  986.18,
+  996.66
+ ],
+ [
+  "Now this isn't going to be a problem for us, because our whole goal is to find zeros, so if this ever comes up, we just lucked out early.",
+  997.4,
+  1004.04
+ ],
+ [
+  "Alright, so the main thing to notice about these winding numbers is that they add up nicely when you combine paths into bigger paths.",
+  1004.98,
+  1010.68
+ ],
+ [
+  "But what we really want is for the winding numbers along the borders of regions to add up nicely when we combine regions to make bigger regions.",
+  1014.8,
+  1022.44
+ ],
+ [
+  "So do we have that property?",
+  1022.98,
+  1024.52
+ ],
+ [
+  "Well, take a look.",
+  1027.76,
+  1029.06
+ ],
+ [
+  "The winding number as we go clockwise around this region on the left is the sum of the winding numbers from these four paths, and the winding as we go clockwise around this region on the right is the sum of the winding numbers from these four paths.",
+  1029.54,
+  1044.36
+ ],
+ [
+  "And when we combine those two regions into a bigger one, most of those paths become part of the clockwise border of the bigger region.",
+  1045.34,
+  1052.5
+ ],
+ [
+  "And as for those two paths that don't?",
+  1053.26,
+  1055.16
+ ],
+ [
+  "Well, they cancel out perfectly.",
+  1055.68,
+  1057.1
+ ],
+ [
+  "One of them is just the reverse, the rewinding of the other one, like we saw before.",
+  1057.52,
+  1061.76
+ ],
+ [
+  "So the winding numbers along borders of regions add up in just the way we want them to.",
+  1062.56,
+  1067.9
+ ],
+ [
+  "Also side note, this reasoning about oriented borders adding up nicely like this comes up a lot in mathematics, and it often goes under the name Stokes' theorem.",
+  1068.64,
+  1076.68
+ ],
+ [
+  "Those of you who've studied multivariable calculus might recognize it from that context.",
+  1077.06,
+  1081.02
+ ],
+ [
+  "So now, finally, with winding numbers in hand, we can get back to our equation solving goals.",
+  1082.36,
+  1087.44
+ ],
+ [
+  "The problem with the region we saw earlier is that even though its border passed through all possible colors, the winding number was actually zero.",
+  1088.0,
+  1095.94
+ ],
+ [
+  "The outputs wound around halfway, through yellow to red, and then started going counterclockwise back the other direction, then continued going through blue and hitting red from the other way, all in such a way that the total winding netted out to be zero.",
+  1096.5,
+  1110.86
+ ],
+ [
+  "But if you find a loop which not only hits every color, but has the stronger condition of a non-zero winding number, then if you were to split it in half, you're guaranteed that at least one of those halves has a non-zero winding number as well, since things add up nicely in the way we want them to.",
+  1111.84,
+  1128.04
+ ],
+ [
+  "So in this way, you can keep going, narrowing in further and further onto one point.",
+  1128.44,
+  1133.5
+ ],
+ [
+  "And as you narrow in onto a point, you'll be doing so with tiny loops that have non-zero winding numbers, which implies they go through all possible colors, and therefore, like I said before, the point they're narrowing in on must be a zero.",
+  1134.05,
+  1146.4
+ ],
+ [
+  "And that's it!",
+  1147.42,
+  1148.36
+ ],
+ [
+  "We have now created a two-dimensional equation solver, and this time, I promise, there are no bugs.",
+  1148.6,
+  1153.86
+ ],
+ [
+  "Winding numbers are precisely the tool we need to make this work.",
+  1154.56,
+  1157.54
+ ],
+ [
+  "We can now solve equations that look like where does f of x equal g of x in two dimensions just by considering how the difference between f and g winds around.",
+  1158.1,
+  1166.82
+ ],
+ [
+  "Whenever we have a loop whose winding number isn't zero, we can run this algorithm on it and we're guaranteed to find a solution somewhere within it.",
+  1167.6,
+  1175.1
+ ],
+ [
+  "And what's more, just like in one dimension, this algorithm is incredibly efficient.",
+  1175.66,
+  1179.84
+ ],
+ [
+  "We keep narrowing in on half the size of our region each round, thus quickly narrowing in on the zeros, and all the while, we only have to check the value of the function along points of these loops, rather than checking it on the many points of the interior.",
+  1180.24,
+  1194.4
+ ],
+ [
+  "So in some sense, the overall work done is proportional only to the search space's perimeter, not the full area, which is amazing.",
+  1195.16,
+  1203.74
+ ],
+ [
+  "Now once you understand what's going on, it's weirdly mesmerizing to just watch this in action, giving it some function and letting it search for zeros.",
+  1204.92,
+  1212.96
+ ],
+ [
+  "Like I said before, complex numbers are two-dimensional, so let's apply it to some equation with complex numbers.",
+  1213.62,
+  1219.56
+ ],
+ [
+  "For example, here's the algorithm finding the zeros of the function x to the fifth minus x minus one over the complex plane.",
+  1220.3,
+  1228.1
+ ],
+ [
+  "It started by considering a very large region around the origin, which ended up having a winding number of five.",
+  1228.9,
+  1234.48
+ ],
+ [
+  "Each time you find a loop with a non-zero winding number, you split it in half and figure out the winding number of the two smaller loops.",
+  1235.28,
+  1242.12
+ ],
+ [
+  "Either one or both of them is guaranteed to have a non-zero winding number, and when you see this, you know there's a zero somewhere inside that smaller loop, so you keep going in the same way, searching the smaller space.",
+  1242.7,
+  1253.4
+ ],
+ [
+  "We also stop exploring a region if the path we're computing along happens to stumble across a zero, which actually happened once for this example on the right half here.",
+  1254.18,
+  1262.9
+ ],
+ [
+  "Those rare occurrences interfere with our ability to compute winding numbers, but hey, we got a zero.",
+  1263.28,
+  1268.14
+ ],
+ [
+  "And as for loops whose winding number is zero, you just don't explore those further.",
+  1269.22,
+  1272.92
+ ],
+ [
+  "Maybe they have a solution inside, maybe they don't, we have no guarantees.",
+  1272.92,
+  1276.2
+ ],
+ [
+  "And letting our equation solver continue in the same way, it eventually converges to lots of zeros for this polynomial.",
+  1278.4,
+  1284.02
+ ],
+ [
+  "By the way, it is no coincidence that the total winding number in this example happened to be five.",
+  1285.84,
+  1291.0
+ ],
+ [
+  "With complex numbers, the operation x to the n directly corresponds to walking around the output's origin n times as you walk around the input's origin once.",
+  1291.58,
+  1302.24
+ ],
+ [
+  "So with the polynomial, for large enough inputs, every term other than the leading term becomes insignificant in comparison.",
+  1304.68,
+  1311.98
+ ],
+ [
+  "So any complex polynomial whose leading term is x to the n has a winding number of n around a large enough loop.",
+  1312.48,
+  1319.78
+ ],
+ [
+  "And in that way, our winding number technology actually guarantees that every complex polynomial has a zero.",
+  1320.54,
+  1326.82
+ ],
+ [
+  "This is such an important fact that mathematicians call it the fundamental theorem of algebra.",
+  1327.48,
+  1332.0
+ ],
+ [
+  "Having an algorithm for finding numerical solutions to equations like this is extremely practical, but the fundamental theorem of algebra is a good example of how these winding numbers are also quite useful on a theoretical level, guaranteeing the existence of a solution to a broad class of equations for suitable conditions, which is much more the kind of thing mathematicians like thinking about.",
+  1333.8,
+  1353.94
+ ],
+ [
+  "I'll show you a couple more amazing applications of this in the context of topology in a follow-up video, which includes correcting a mistake from an old 3blue1brown video.",
+  1353.94,
+  1363.44
+ ],
+ [
+  "Which one?",
+  1364.06,
+  1364.44
+ ],
+ [
+  "Well, watch all of the videos, everything on this channel, and see if you can spot the error first.",
+  1364.94,
+  1369.6
+ ],
+ [
+  "The primary author of this video is one of the newest 3blue1brown team members, Sridhar Ramesh.",
+  1371.3,
+  1376.72
+ ],
+ [
+  "Thank you for watching.",
+  1383.94,
+  1390.06
+ ]
+]

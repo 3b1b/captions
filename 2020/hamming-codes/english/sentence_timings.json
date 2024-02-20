@@ -1,0 +1,792 @@
+[
+ [
+  "Have you ever wondered how it's possible to scratch a CD or a DVD and still have it play back whatever it's storing?",
+  3.62,
+  10.1
+ ],
+ [
+  "The scratch really does affect the 1s and 0s on the disk, so it reads off different data from what was stored, but unless it's really scratched up, the bits it reads off are decoded into precisely the same file that was encoded onto it, a bit for bit copy, despite all those errors.",
+  10.9,
+  27.44
+ ],
+ [
+  "There is a whole pile of mathematical cleverness that allows us to store data, and just as importantly to transmit data, in a way that's resilient to errors.",
+  27.44,
+  36.66
+ ],
+ [
+  "Well, actually it doesn't take that much cleverness to come up with a way to do this.",
+  37.52,
+  41.6
+ ],
+ [
+  "Any file, whether it's a video, sound, text, code, image, whatever, is ultimately some sequence of 1s and 0s.",
+  42.06,
+  50.38
+ ],
+ [
+  "And a simple strategy to correct any bit that gets flipped would be to store three copies of each bit.",
+  50.68,
+  56.0
+ ],
+ [
+  "Then the machine reading this file could compare these three copies and always take the best 2 out of 3 whenever there's a discrepancy.",
+  57.58,
+  64.06
+ ],
+ [
+  "But what that means is using two thirds of your space for redundancy.",
+  67.16,
+  70.86
+ ],
+ [
+  "And even then, for all of that space given up, there's no strong guarantee about what happens if more than one bit gets flipped.",
+  71.48,
+  77.24
+ ],
+ [
+  "The much more interesting question is how to make it so that errors can be corrected while giving up as little space as possible.",
+  77.98,
+  84.02
+ ],
+ [
+  "For example, using the method you'll learn about this video, you could store your data in 256-bit blocks, where each block uses 9 bits, 9!",
+  84.52,
+  93.36
+ ],
+ [
+  "to act as a kind of redundancy, and the other 247 bits are free to carry whatever meaningful message or data you want.",
+  93.76,
+  100.3
+ ],
+ [
+  "And it will still be the case that if any bit gets flipped here, just by looking at this block and nothing more, a machine will be able to identify that there was an error and precisely where it was so that it knows how to correct it.",
+  100.9,
+  112.66
+ ],
+ [
+  "And honestly, that feels like magic.",
+  112.66,
+  114.62
+ ],
+ [
+  "And for this particular scheme, if two bits get flipped, the machine will at least be able to detect that there were two errors, though it won't know how to fix them.",
+  115.44,
+  122.86
+ ],
+ [
+  "We'll talk a little bit later about how this scales for blocks with different sizes.",
+  123.52,
+  126.9
+ ],
+ [
+  "Methods that let you correct errors like this are known, reasonably enough, as error correction codes.",
+  127.86,
+  132.9
+ ],
+ [
+  "For the better part of the last century, this field has been a really rich source of surprisingly deep math that gets incorporated into devices we use every day.",
+  133.66,
+  141.94
+ ],
+ [
+  "The goal here is to give you a very thorough understanding of one of the earliest examples, known as a Hamming code.",
+  142.84,
+  148.66
+ ],
+ [
+  "And by the way, the way I'm thinking about the structure of this video is less about explaining it as directly as possible, and more a matter of prompting you to invent it for yourself, with a little gentle guidance here and there.",
+  149.52,
+  159.82
+ ],
+ [
+  "So when you feel like you see where it's going at some point, take that moment to pause, actively predict what the scheme is going to be before I tell you.",
+  160.12,
+  166.72
+ ],
+ [
+  "Also, if you want your understanding to get down to the hardware level, Ben Eater has made a video in conjunction with this one showing you how to actually implement Hamming codes on breadboards, which is extremely satisfying.",
+  167.24,
+  178.24
+ ],
+ [
+  "You should know, Hamming codes are not as widely used as more modern codes, like the Reed-Solomon algorithm, but there is a certain magic to the contrast between just how impossible this task feels at the start, and how utterly reasonable it seems once you learn about Hamming.",
+  179.3,
+  193.0
+ ],
+ [
+  "The basic principle of error correction is that in a vast space of all possible messages, only some subset are going to be considered valid messages.",
+  193.72,
+  202.18
+ ],
+ [
+  "As an analogy, think about correctly spelled words versus incorrectly spelled words.",
+  202.8,
+  206.94
+ ],
+ [
+  "Whenever a valid message gets altered, the receiver is responsible for correcting what they see back to the nearest valid neighbor, as you might do with a typo.",
+  208.9,
+  217.34
+ ],
+ [
+  "Coming up with a concrete algorithm to efficiently categorize messages like this, though, take a certain cleverness.",
+  218.22,
+  224.06
+ ],
+ [
+  "The story begins in the 1940s, when a young Richard Hamming was working for Bell Labs, and some of his work involved using a very big expensive punch card computer that he had only limited access to.",
+  226.78,
+  237.42
+ ],
+ [
+  "And the programs he kept putting through it kept failing, because every now and then a bit would get misread.",
+  237.8,
+  242.4
+ ],
+ [
+  "Frustration being the crucible of invention, he got so fed up that he invented the world's first error correction code.",
+  243.12,
+  248.42
+ ],
+ [
+  "There are many different ways to frame Hamming codes, but as a first pass we're going to go through it the way Hamming himself thought about them.",
+  249.06,
+  255.38
+ ],
+ [
+  "Let's use an example that's simple, but not too simple, a block of 16 bits.",
+  256.52,
+  260.94
+ ],
+ [
+  "We'll number the positions of these bits from 0 up to 15.",
+  261.82,
+  264.74
+ ],
+ [
+  "The actual data we want to store is only going to make up 12 of these bits, while 4 of the positions are going to be reserved as a kind of redundancy.",
+  265.62,
+  273.0
+ ],
+ [
+  "The word redundant here doesn't simply mean copy, after all, those 4 bits don't give us enough room to blindly copy the data.",
+  273.9,
+  280.04
+ ],
+ [
+  "Instead, they'll need to be a much more nuanced and clever kind of redundancy, not adding any new information, but adding resilience.",
+  280.72,
+  287.28
+ ],
+ [
+  "You might expect these 4 special bits to come nicely packaged together, maybe at the end or something like that, but as you'll see, having them sit in positions which are powers of 2 allows for something that's really elegant by the end.",
+  288.6,
+  299.62
+ ],
+ [
+  "It also might give you a little hint about how this scales for larger blocks.",
+  300.2,
+  303.54
+ ],
+ [
+  "Also, technically it ends up being only 11 bits of data, you'll find there's a mild nuance for what goes on at position 0, but don't worry about that for now.",
+  304.9,
+  313.26
+ ],
+ [
+  "Like any error correction algorithm, this will involve two players, a sender, who's responsible for setting these 4 special bits, and then a receiver, who's responsible for performing some kind of check and then correcting the errors.",
+  314.14,
+  325.54
+ ],
+ [
+  "Of course, the words sender and receiver really refer to machines or software that's doing checks, and the idea of a message is meant really broadly, to include things like storage.",
+  326.3,
+  334.74
+ ],
+ [
+  "After all, storing data is the same thing as sending a message, just from the past to the future, instead of from one place to another.",
+  335.34,
+  341.68
+ ],
+ [
+  "So that's the setup, but before we can dive in, we need to talk about a related idea which was fresh on Hamming's mind in the time of his discovery, a method which lets you detect any single bit errors, but not to correct them, known in the business as a parity check.",
+  342.56,
+  356.3
+ ],
+ [
+  "For a parity check, we separate out only one single bit that the sender is responsible for tuning, and the rest are free to carry a message.",
+  356.88,
+  363.82
+ ],
+ [
+  "The only job of this special bit is to make sure that the total number of 1s in the message is an even number.",
+  364.88,
+  371.28
+ ],
+ [
+  "So for example right now, that total number of 1s is 7, that's odd, so the sender needs to flip that special bit to be a 1, making the count even.",
+  372.08,
+  379.96
+ ],
+ [
+  "But if the block had already started off with an even number of 1s, then this special bit would have been kept at a 0.",
+  380.8,
+  386.42
+ ],
+ [
+  "This is pretty simple, deceptively simple, but it's an incredibly elegant way to distill the idea of change anywhere in a message to be reflected in a single bit of information.",
+  387.34,
+  396.78
+ ],
+ [
+  "Notice if any bit of this message gets flipped, either from 0 to 1 or 1 to 0, it changes the total count of 1s from being even to being odd.",
+  397.5,
+  406.54
+ ],
+ [
+  "So if you're the receiver, you look at this message, and you see an odd number of 1s, you can know for sure that some error has occurred, even though you might have no idea where it was.",
+  407.98,
+  417.46
+ ],
+ [
+  "In the jargon, whether a group of bits has an even or an odd number of 1s is known as its parity.",
+  418.5,
+  423.34
+ ],
+ [
+  "You could also use numbers and say the parity is 0 or 1, which is typically more helpful once you start doing math with the idea, and this special bit that the sender uses to control the parity is called the parity bit.",
+  424.86,
+  435.52
+ ],
+ [
+  "And actually, we should be clear, if the receiver sees an odd parity, it doesn't necessarily mean there was just one error, there might have been 3 errors or 5 or any other odd number, but they can know for sure that it wasn't 0.",
+  437.56,
+  449.26
+ ],
+ [
+  "On the other hand, if there had been 2 errors, or any even number of errors, that final count of 1s would still be even, so the receiver can't have full confidence that an even count necessarily means the message is error-free.",
+  449.98,
+  462.3
+ ],
+ [
+  "You might complain that a message which gets messed up by only 2 bit flips is pretty weak, and you would be absolutely right.",
+  462.84,
+  469.08
+ ],
+ [
+  "Keep in mind, though, there is no method for error detection or correction that could give you 100% confidence that the message you receive is the one the sender intended.",
+  469.7,
+  478.9
+ ],
+ [
+  "After all, enough random noise could always change one valid message into another valid message just by pure chance.",
+  479.58,
+  485.44
+ ],
+ [
+  "Instead, the goal is to come up with a scheme that's robust up to a certain maximum number of errors, or maybe to reduce the probability of a false positive like this.",
+  486.24,
+  495.38
+ ],
+ [
+  "Parity checks on their own are pretty weak, but by distilling the idea of change across a full message down to a single bit, what they give us is a powerful building block for more sophisticated schemes.",
+  496.26,
+  507.16
+ ],
+ [
+  "For example, as Hamming was searching for a way to identify where an error happened, not just that it happened, his key insight was that if you apply some parity checks not to the full message, but to certain carefully selected subsets, you can ask a more refined series of questions that pin down the location of any single bit error.",
+  507.94,
+  525.94
+ ],
+ [
+  "The overall feeling is a bit like playing a game of 20 questions, asking yes or no queries that chop the space of possibilities in half.",
+  526.68,
+  533.38
+ ],
+ [
+  "For example, let's say we do a parity check just on these 8 bits, all of the odd numbered positions.",
+  534.16,
+  539.38
+ ],
+ [
+  "Then, if an error is detected, it gives the receiver a little more information about where specifically the error is, namely that it's in an odd position.",
+  540.1,
+  548.24
+ ],
+ [
+  "If no error is detected among those 8 bits, it either means there's no error at all, or it sits somewhere in the even positions.",
+  548.94,
+  556.24
+ ],
+ [
+  "You might think that limiting a parity check to half the bits makes it less effective, but when it's done in conjunction with other well-chosen checks, it counter-intuitively gives us something a lot more powerful.",
+  557.18,
+  567.2
+ ],
+ [
+  "To actually set up that parity check, remember, it requires earmarking some special bit that has control for the parity of that full group.",
+  569.24,
+  576.62
+ ],
+ [
+  "Here let's just choose position 1.",
+  577.48,
+  579.18
+ ],
+ [
+  "For the example shown, the parity of these 8 bits is currently odd, so the sender is responsible for toggling that parity bit, and now it's even.",
+  579.72,
+  586.98
+ ],
+ [
+  "This is only 1 out of 4 parity checks that we'll do.",
+  587.94,
+  590.68
+ ],
+ [
+  "The second check is among the 8 bits on the right half of the grid, at least as we've drawn it here.",
+  590.92,
+  596.3
+ ],
+ [
+  "This time we might use position 2 as a parity bit.",
+  596.68,
+  599.58
+ ],
+ [
+  "So these 8 bits already have an even parity, and the sender can feel good leaving that bit number 2 unchanged.",
+  600.02,
+  606.06
+ ],
+ [
+  "Then on the other end, if the receiver checks the parity of this group and they find that it's odd, they'll know that the error is somewhere among these 8 bits on the right.",
+  607.02,
+  615.38
+ ],
+ [
+  "Otherwise, it means either there's no error, or the error is somewhere on the left half.",
+  615.82,
+  620.58
+ ],
+ [
+  "Or I guess there could have been two errors, but for right now we're going to assume that there's at most one error in the entire block.",
+  621.12,
+  626.5
+ ],
+ [
+  "Things break down completely for more than that.",
+  626.94,
+  628.74
+ ],
+ [
+  "Here, before we look at the next two checks, take a moment to think about what these first two allow us to do when you consider them together.",
+  629.16,
+  635.1
+ ],
+ [
+  "Let's say you detect an error among the odd columns and among the right half.",
+  635.8,
+  639.66
+ ],
+ [
+  "It necessarily means the error is somewhere in the last column.",
+  640.2,
+  643.04
+ ],
+ [
+  "If there was no error in the odd column but there was one in the right half, that tells you it's in the second to last column.",
+  643.82,
+  649.7
+ ],
+ [
+  "Likewise, if there is an error in the odd columns but not in the right half, you know that it's somewhere in the second column.",
+  650.44,
+  656.02
+ ],
+ [
+  "And then if neither of those two parity checks detects anything, it means the only place that an error could be is in that leftmost column.",
+  656.02,
+  663.12
+ ],
+ [
+  "But it also might simply mean there's no error at all.",
+  663.34,
+  666.12
+ ],
+ [
+  "Which is all a rather belabored way to say that two parity checks let us pin down the column.",
+  666.3,
+  670.84
+ ],
+ [
+  "From here, you can probably guess what follows.",
+  671.48,
+  673.64
+ ],
+ [
+  "We do basically the same thing but for the rows.",
+  673.8,
+  676.14
+ ],
+ [
+  "There's going to be a parity check on the odd rows, using position 4 as a parity bit.",
+  676.44,
+  680.9
+ ],
+ [
+  "So in this example, that group already has an even parity, so bit 4 would be set to a 0.",
+  681.38,
+  685.82
+ ],
+ [
+  "And finally, there's a parity check on the bottom two rows, using position 8 as a parity bit.",
+  686.56,
+  691.58
+ ],
+ [
+  "In this case, it looks like the sender needs to turn that bit 8 on in order to give the group even parity.",
+  692.12,
+  696.82
+ ],
+ [
+  "Just as the first two checks let us pin down the column, these next two let you pin down the row.",
+  697.7,
+  701.84
+ ],
+ [
+  "As an example, imagine that during the transmission there's an error at, say, position 3.",
+  702.88,
+  707.54
+ ],
+ [
+  "Well, this affects the first parity group, and it also affects the second parity group, so the receiver knows that there's an error somewhere in that right column.",
+  708.18,
+  715.56
+ ],
+ [
+  "But it doesn't affect the third group, and it doesn't affect the fourth group.",
+  716.1,
+  720.54
+ ],
+ [
+  "And that lets the receiver pinpoint the error up to the first row, which necessarily means position 3, so they can fix the error.",
+  721.24,
+  727.52
+ ],
+ [
+  "You might enjoy taking a moment to convince yourself that the answers to these four questions really will always let you pin down a specific location, no matter where they turn out to be.",
+  728.58,
+  737.1
+ ],
+ [
+  "In fact, the astute among you might even notice a connection between these questions and binary counting.",
+  737.72,
+  743.06
+ ],
+ [
+  "And if you do, again let me emphasize, pause, try for yourself to draw the connection before I spoil it.",
+  743.5,
+  748.92
+ ],
+ [
+  "If you're wondering what happens if a parity bit itself gets affected, well, you can just try it.",
+  750.5,
+  756.06
+ ],
+ [
+  "Take a moment to think about how any error among these four special bits is going to be tracked down just like any other, with the same group of four questions.",
+  756.44,
+  764.18
+ ],
+ [
+  "It doesn't really matter, since at the end of the day what we want is to protect the message bits, the error correction bits are just riding along.",
+  767.06,
+  773.1
+ ],
+ [
+  "But protecting those bits as well is something that naturally falls out of the scheme as a byproduct.",
+  773.6,
+  777.82
+ ],
+ [
+  "You might also enjoy anticipating how this scales.",
+  779.2,
+  781.76
+ ],
+ [
+  "If we used a block of size 256 bits, for example, in order to pin down a location, you need only eight yes or no questions to binary search your way down to some specific spot.",
+  782.3,
+  792.78
+ ],
+ [
+  "And remember, each question requires giving up only a single bit to set the appropriate parity check.",
+  795.64,
+  800.5
+ ],
+ [
+  "Some of you may already see it, but we'll talk later about the systematic way to find what these questions are in just a minute or two.",
+  803.16,
+  809.36
+ ],
+ [
+  "Hopefully this sketch is enough to appreciate the efficiency of what we're developing here.",
+  809.88,
+  813.66
+ ],
+ [
+  "Everything except for those eight highlighted parity bits can be whatever you want it to be, carrying whatever message or data you want.",
+  813.66,
+  821.0
+ ],
+ [
+  "The eight bits are redundant in the sense that they're completely determined by the rest of the message, but it's in a much smarter way than simply copying the message as a whole.",
+  821.72,
+  830.02
+ ],
+ [
+  "And still, for so little given up, you would be able to identify and fix any single bit error.",
+  833.6,
+  838.38
+ ],
+ [
+  "Well, almost.",
+  839.2,
+  840.4
+ ],
+ [
+  "Okay, so the one problem here is that if none of the four parity checks detect an error, meaning that the specially selected subsets of eight bits all have even parities, just like the sender intended, then it either means there was no error at all, or it narrows us down into position zero.",
+  840.96,
+  856.86
+ ],
+ [
+  "You see, with four yes or no questions, we have 16 possible outcomes for our parity checks, and at first that feels perfect for pinpointing one out of 16 positions in the block, but you also need to communicate a 17th outcome, the no error condition.",
+  857.74,
+  871.9
+ ],
+ [
+  "The solution here is actually pretty simple.",
+  873.02,
+  874.86
+ ],
+ [
+  "Just forget about that zeroth bit entirely.",
+  875.28,
+  877.3
+ ],
+ [
+  "So when we do our four parity checks and we see that they're all even, it unambiguously means that there is no error.",
+  877.84,
+  883.46
+ ],
+ [
+  "What that means is rather than working with a 16-bit block, we work with a 15-bit block, where 11 of the bits are free to carry a message and four of them are there for redundancy.",
+  884.24,
+  893.22
+ ],
+ [
+  "And with that, we now have what people in the business would refer to as a 15-11 Hamming code.",
+  893.78,
+  898.8
+ ],
+ [
+  "That said, it is nice to have a block size that's a clean power of two, and there's a clever way that we can keep that zeroth bit around and get it to do a little extra work for us.",
+  899.86,
+  908.14
+ ],
+ [
+  "If we use it as a parity bit across the whole block, it lets us actually detect, even though we can't correct, two-bit errors.",
+  908.7,
+  915.54
+ ],
+ [
+  "Here's how it works.",
+  916.16,
+  916.82
+ ],
+ [
+  "After setting those four special error correcting bits, we set that zeroth one so that the parity of the full block is even, just like a normal parity check.",
+  917.18,
+  924.94
+ ],
+ [
+  "Now, if there's a single bit error, then the parity of the full block toggles to be odd, but we would catch that anyway, thanks to the four error correcting checks.",
+  925.7,
+  933.6
+ ],
+ [
+  "However, if there's two errors, then the overall parity is going to toggle back to being even, but the receiver would still see that there's been at least some error because of what's going on with those four usual parity checks.",
+  934.16,
+  945.18
+ ],
+ [
+  "So if they notice an even parity overall, but something non-zero happening with the other checks, it tells them there were at least two errors.",
+  945.18,
+  952.7
+ ],
+ [
+  "Isn't that clever?",
+  953.52,
+  954.0
+ ],
+ [
+  "Even though we can't correct those two-bit errors, just by putting that one little bothersome zeroth bit back to work, it lets us detect them.",
+  954.3,
+  961.26
+ ],
+ [
+  "This is pretty standard, it's known as an extended Hamming code.",
+  962.26,
+  965.22
+ ],
+ [
+  "Technically speaking, you now have a full description of what a Hamming code does, at least for the example of a 16-bit block, but I think you'll find it more satisfying to check your understanding and solidify everything up to this point by doing one full example from start to finish yourself.",
+  966.54,
+  981.32
+ ],
+ [
+  "I'll step through it with you though so you can check yourself.",
+  982.08,
+  984.3
+ ],
+ [
+  "To set up a message, whether that's a literal message that you're translating over space, or some data that you want to store over time, the first step is to divide it up into 11-bit chunks.",
+  985.12,
+  994.66
+ ],
+ [
+  "Each chunk is going to get packaged into an error-resistant 16-bit block.",
+  995.58,
+  999.76
+ ],
+ [
+  "So let's take this one as an example and actually work it out.",
+  999.76,
+  1003.22
+ ],
+ [
+  "Go ahead, actually do it!",
+  1003.74,
+  1004.94
+ ],
+ [
+  "Pause and try putting together this block.",
+  1005.22,
+  1007.02
+ ],
+ [
+  "Okay, you ready?",
+  1012.72,
+  1013.68
+ ],
+ [
+  "Remember, position 0 along with the other powers of 2 are reserved for error correction duty, so you start by placing the message bits in all of the remaining spots, in order.",
+  1014.24,
+  1023.32
+ ],
+ [
+  "You need this group to have an even parity, which it already does, so you should have set that parity bit in position 1 to be a 0.",
+  1025.34,
+  1032.34
+ ],
+ [
+  "The next group starts off with an odd parity, so you should have set its parity bit to be 1.",
+  1033.02,
+  1037.88
+ ],
+ [
+  "The group after that starts with an odd parity, so again you should have set its parity bit to 1.",
+  1039.16,
+  1044.24
+ ],
+ [
+  "And the final group also has an odd parity, meaning we set that bit in position 8 to be a 1.",
+  1044.78,
+  1050.06
+ ],
+ [
+  "And then as the final step, the full block now has an even parity, meaning that you can set that bit number 0, the overarching parity bit, to be 0.",
+  1051.3,
+  1060.32
+ ],
+ [
+  "So as this block is sent off, the parity of the four special subsets and the block as a whole will all be even, or 0.",
+  1061.34,
+  1068.14
+ ],
+ [
+  "As the second part of the exercise, let's have you play the role of the receiver.",
+  1068.82,
+  1072.18
+ ],
+ [
+  "Of course, that would mean you don't already know what this message is.",
+  1073.48,
+  1076.82
+ ],
+ [
+  "Maybe some of you memorized it, but let's assume that you haven't.",
+  1077.08,
+  1079.78
+ ],
+ [
+  "What I'm going to do is change either 0, 1, or 2 of the bits in that block, and then ask you to figure out what it is that I did.",
+  1080.02,
+  1087.74
+ ],
+ [
+  "So again, pause and try working it out.",
+  1088.26,
+  1090.81
+ ],
+ [
+  "Okay, so you as the receiver now check the first parity group, and you can see that it's even, so any error that exists would have to be in an even column.",
+  1098.79,
+  1107.91
+ ],
+ [
+  "The next check gives us an odd number, telling us both that there's at least one error, and narrowing us down into this specific column.",
+  1109.69,
+  1117.03
+ ],
+ [
+  "The third check is even, chopping down the possibilities even further.",
+  1118.55,
+  1121.79
+ ],
+ [
+  "And the last parity check is odd, telling us there's an error somewhere in the bottom, which by now we can see must be in position number 10.",
+  1122.65,
+  1129.65
+ ],
+ [
+  "What's more, the parity of the whole block is odd, giving us confidence that there was one flip and not two.",
+  1131.49,
+  1137.53
+ ],
+ [
+  "If it's three or more, all bets are off.",
+  1138.07,
+  1139.97
+ ],
+ [
+  "After correcting that bit number 10, pulling out the 11 bits that were not used for correction gives us the relevant segment of the original message, which if you rewind and compare is indeed exactly what we started the example with.",
+  1141.31,
+  1154.39
+ ],
+ [
+  "And now that you know how to do all this by hand, I'd like to show you how you can carry out the core part of all of this logic with a single line of Python code.",
+  1155.71,
+  1163.17
+ ],
+ [
+  "You see, what I haven't told you yet is just how elegant this algorithm really is, how simple it is to get a machine to point to the position of an error, how to systematically scale it, and how we can frame all of this as one single operation rather than multiple separate parity checks.",
+  1163.87,
+  1178.75
+ ],
+ [
+  "To see what I mean, come join me in part two.",
+  1179.43,
+  1181.31
+ ]
+]

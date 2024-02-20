@@ -1,0 +1,457 @@
+[
+ [
+  "You're buying a product online, and you see three different sellers.",
+  0.0,
+  2.9
+ ],
+ [
+  "They're all offering that same product at essentially the same price.",
+  3.46,
+  6.2
+ ],
+ [
+  "One of them has a 100% positive rating, but with only 10 reviews.",
+  6.72,
+  10.64
+ ],
+ [
+  "Another has a 96% positive rating, with 50 total reviews.",
+  11.18,
+  14.74
+ ],
+ [
+  "And yet another has a 93% positive rating, but with 200 total reviews.",
+  15.22,
+  19.56
+ ],
+ [
+  "Which one should you buy from?",
+  20.3,
+  21.36
+ ],
+ [
+  "I think we all have this instinct that the more data we see, it gives us more confidence in a given rating.",
+  28.12,
+  33.24
+ ],
+ [
+  "We're a little suspicious of seeing 100% ratings, since more often than not they come from a tiny number of reviews, which makes it feel more plausible that things could have gone another way and given a lower rating.",
+  33.76,
+  43.44
+ ],
+ [
+  "But how do you make that intuition quantitative?",
+  43.92,
+  45.84
+ ],
+ [
+  "What's the rational way to reason about the trade-off here between the confidence gained from more data versus the lower absolute percentage?",
+  46.42,
+  53.26
+ ],
+ [
+  "This particular example is a slight modification from one that John Cook gave in his excellent blog post, A Bayesian Review of Amazon Resellers.",
+  54.54,
+  62.16
+ ],
+ [
+  "For you and me, it's a wonderful excuse to dig into a few core topics in probability and statistics.",
+  62.62,
+  67.6
+ ],
+ [
+  "And to really cover these topics properly, it takes time.",
+  68.32,
+  71.0
+ ],
+ [
+  "So what I'm going to do is break this down into three videos, where in this first one we'll set up a model for the situation, and start by talking about the binomial distribution.",
+  71.56,
+  79.86
+ ],
+ [
+  "The second is going to bring in ideas of Bayesian updating, and how to work with probabilities over continuous values.",
+  79.98,
+  86.38
+ ],
+ [
+  "And in the third, we'll look at something known as a beta distribution, and pull up a little python to analyze the data we have, and come to various different answers depending on what it is you want to optimize.",
+  87.04,
+  96.98
+ ],
+ [
+  "Now, to throw you a bone before we dive into all the math, let me just show you what one of the answers turns out to be, since it's delightfully simple.",
+  99.66,
+  106.24
+ ],
+ [
+  "When you see an online rating, something like this 10 out of 10, you pretend that there were two more reviews, one that was positive and one that's negative.",
+  106.88,
+  115.2
+ ],
+ [
+  "In this case, that means you pretend that it's 11 out of 12, which would give 91.7%.",
+  115.86,
+  120.48
+ ],
+ [
+  "This number is your probability of having a good experience with that seller.",
+  121.5,
+  126.08
+ ],
+ [
+  "So in the case of 50 reviews, where you have 48 positive and 2 negative, you pretend that it's 49 positive and 3 negative, which would give you 49 out of 52, or 94.2%.",
+  128.14,
+  139.36
+ ],
+ [
+  "That's your probability of having a good experience with the second seller.",
+  140.5,
+  143.84
+ ],
+ [
+  "Playing the same game with our third seller who had 200 reviews, you get 187 out of 202, or 92.6%.",
+  145.32,
+  153.44
+ ],
+ [
+  "So according to this rule, it would mean your best bet is to go with seller number 2.",
+  154.64,
+  158.66
+ ],
+ [
+  "This is something known as Laplace's rule of succession, and to understand what assumptions are underlying this, and how changing either those assumptions or your underlying goal can change the choice you make, we really do need to go through all the math.",
+  159.3,
+  174.14
+ ],
+ [
+  "So without further ado, let's dive in.",
+  174.66,
+  176.36
+ ],
+ [
+  "Step 1, how exactly are we modeling the situation, and what exactly is it that you want to optimize?",
+  180.84,
+  186.08
+ ],
+ [
+  "One option is to think of each seller as producing random experiences that are either positive or negative, and that each seller has some kind of constant underlying probability of giving a good experience, what we're going to call the success rate, or S for short.",
+  186.7,
+  201.48
+ ],
+ [
+  "The whole challenge is that we don't know S.",
+  201.9,
+  204.1
+ ],
+ [
+  "When you see that first rating of 100% with 10 reviews, that doesn't mean the underlying success rate is 100%.",
+  205.64,
+  211.12
+ ],
+ [
+  "It could very well be something like 95%.",
+  211.64,
+  213.92
+ ],
+ [
+  "And just to illustrate, let me run a little simulation, where I choose a random number between 0 and 1, and if it's less than 0.95, I'll record it as a positive review, otherwise record it as a negative review.",
+  213.92,
+  227.66
+ ],
+ [
+  "Now do this 10 times in a row, and then make 10 more, and 10 more, and 10 more, and so on, to get a sense of what sequences of 10 reviews for a seller with this success rate, would tend to look like.",
+  228.76,
+  245.22
+ ],
+ [
+  "Quite a few of those, around 60% actually, give 10 out of 10.",
+  245.74,
+  249.52
+ ],
+ [
+  "So the data we see seems perfectly plausible if the seller's true success rate was 95%.",
+  250.02,
+  254.46
+ ],
+ [
+  "Or maybe it's really 90%, or 99%.",
+  255.58,
+  258.04
+ ],
+ [
+  "The whole challenge is that we just don't know.",
+  258.7,
+  260.68
+ ],
+ [
+  "As to the goal, let's say you simply want to maximize your probability of having a positive experience, despite not being sure of this success rate.",
+  261.6,
+  268.96
+ ],
+ [
+  "So think about this here, we've got many different possible success rates for each seller, any number from 0 up to 1, and we need to say something about how likely each one of these success rates is, a kind of probability of probabilities.",
+  269.86,
+  283.92
+ ],
+ [
+  "Unlike the more gamified examples like coin flips and die tosses and the sort of things you see in an intro probability class, where you go in assuming a long run frequency, like 1.5 or 1.6, what we have here is uncertainty about the long run frequency itself, which is a much more potent kind of doubt.",
+  285.12,
+  302.04
+ ],
+ [
+  "I should also emphasize that this kind of setup is relevant to many many situations in the real world where you need to make a judgment about a random process from limited data.",
+  303.16,
+  311.72
+ ],
+ [
+  "For example, let's say that you're setting up a factory producing cars, and in an initial test of 100 cars, two of them come out with some kind of problem.",
+  312.86,
+  320.84
+ ],
+ [
+  "If you plan to spin things up to produce a million cars, what are you willing to confidently say about how many total cars will have problems that need addressing?",
+  321.4,
+  330.46
+ ],
+ [
+  "It's not like the test guarantees that the true error rate is 2%, but what exactly does it say?",
+  331.24,
+  336.66
+ ],
+ [
+  "As your first challenge, let me ask you this.",
+  338.62,
+  340.56
+ ],
+ [
+  "If you did magically know the true success rate for a given seller, say it was 95%, how would you compute the probability of seeing 10 positive reviews and 0 negative reviews, or 48 and 2, or 186 and 14?",
+  340.84,
+  356.2
+ ],
+ [
+  "In other words, what's the probability of seeing the data given an assumed success rate?",
+  357.12,
+  362.16
+ ],
+ [
+  "A moment ago I showed you something like this with a simulation, generating 10 random reviews, and with a little programming you could just do that many times, building up a histogram to get some sense of what this distribution looks like.",
+  363.06,
+  375.08
+ ],
+ [
+  "Likewise, you could simulate sets of 50 reviews, and get some sense for how probable it would be to see 48 positive and 2 negative.",
+  381.66,
+  389.08
+ ],
+ [
+  "You see, this is the nice thing about probability.",
+  389.9,
+  391.58
+ ],
+ [
+  "A little programming can almost always let you cheat a little and see what the answer is ahead of time by simulating it.",
+  391.96,
+  397.48
+ ],
+ [
+  "For example, after a few hundred thousand samples of 50 reviews, assuming the success rate is 95%, it looks like about 26.1% of them would give us this 48 out of 50 review.",
+  397.84,
+  408.16
+ ],
+ [
+  "Luckily, in this case, an exact formula is not bad at all.",
+  409.2,
+  412.44
+ ],
+ [
+  "The probability of seeing exactly 48 out of 50 looks like this.",
+  412.98,
+  416.82
+ ],
+ [
+  "This first term is pronounced 50 choose 48, and it represents the total number of ways that you could take 50 slots and fill out 48 of them.",
+  417.74,
+  428.04
+ ],
+ [
+  "For example, maybe you start with 48 good reviews and end with 2 bad reviews, or maybe you start with 47 good reviews and then it goes bad good bad, and so on.",
+  429.1,
+  438.66
+ ],
+ [
+  "In principle, if you were to enumerate every possible way of filling 48 out of 50 slots like this, the total number of these patterns is 50 choose 48, which in this case works out to be 1225.",
+  439.1,
+  451.86
+ ],
+ [
+  "What do we multiply by this count?",
+  452.68,
+  454.0
+ ],
+ [
+  "Well, it's the probability of any one of these patterns, which is the probability of a single positive review raised to the 48th times the probability of a single negative review squared.",
+  454.0,
+  464.82
+ ],
+ [
+  "Crucial is that we assume each review is independent of the last, so we can multiply all the probabilities together like this, and with the numbers we have, when you evaluate it, it works out to be 0.261, which matches what we just saw empirically with the simulation.",
+  465.64,
+  480.22
+ ],
+ [
+  "You could also replace this 48 with some other value, and compute the probability of seeing any other number of positive reviews, again assuming a given success rate.",
+  481.38,
+  491.5
+ ],
+ [
+  "What you're looking at right now, by the way, is known in the business as a binomial distribution, one of the most fundamental distributions in probability.",
+  494.76,
+  503.16
+ ],
+ [
+  "It comes up whenever you have something like a coin flip, a random event that can go one of two ways, and you repeat it some number of times, and what you want to know is the probability of getting various different totals.",
+  503.86,
+  515.2
+ ],
+ [
+  "For our purposes, this formula gives us the probability of seeing the data given an assumed success rate, which ultimately we want to somehow use to make judgments about the opposite, the probability of a success rate given the fixed data we see.",
+  516.72,
+  530.86
+ ],
+ [
+  "These are related, but definitely distinct.",
+  531.32,
+  533.44
+ ],
+ [
+  "To get more in that direction, let's play around with this value of s and see what happens as we change it to different numbers between 0 and 1.",
+  534.06,
+  542.58
+ ],
+ [
+  "The binomial distribution that it produces kind of looks like this pile that's centered around whatever s times 50 is.",
+  544.56,
+  550.86
+ ],
+ [
+  "The value we care about, the probability of seeing 48 out of 50 reviews, is represented by this highlighted 48th bar.",
+  551.46,
+  558.68
+ ],
+ [
+  "Let's draw a second plot on the bottom, representing how that value depends on s.",
+  559.4,
+  564.6
+ ],
+ [
+  "When s is equal to 0.96, that value is as high as it's ever going to get.",
+  565.48,
+  570.32
+ ],
+ [
+  "And this should kind of make sense, because when you look at that review of 96%, it should be most likely if the true underlying success rate was 96%.",
+  570.84,
+  579.32
+ ],
+ [
+  "As s increases, it kind of peters out, going to 0 as s approaches 1, since someone with a perfect success rate would never have those two negative reviews.",
+  581.0,
+  590.48
+ ],
+ [
+  "Also, as you move to the left, it approaches 0 pretty quickly.",
+  591.42,
+  594.56
+ ],
+ [
+  "By the time you get to s equals 0.8, getting 48 out of 50 reviews by chance is exceedingly rare, it would happen 1 in 1000 times.",
+  596.9,
+  605.2
+ ],
+ [
+  "This plot we have on the bottom is a great start to getting a more quantitative description for which values of s feel more or less plausible.",
+  606.24,
+  613.38
+ ],
+ [
+  "Written down as a formula, what I want you to remember is that as a function of the success rate s, the curve looks like some constant times s to the number of positive reviews times 1 minus s to the number of negative reviews.",
+  614.2,
+  628.08
+ ],
+ [
+  "In principle, if we had more data, like 480 positive reviews and 20 negative reviews, the resulting plot would still be centered around 0.96, but it would be smaller and more concentrated.",
+  629.1,
+  639.48
+ ],
+ [
+  "A good exercise right now would be to see if you could explain why that's the case.",
+  639.93,
+  644.22
+ ],
+ [
+  "There is a lingering question, though, of what to actually do with these curves.",
+  645.48,
+  649.48
+ ],
+ [
+  "I mean, our goal is to compute the probability that you have a good experience with this seller, so what do you do?",
+  650.22,
+  656.02
+ ],
+ [
+  "Naively, you might think that probability is 96%, since that's where the peak of the graph is, which in a sense is the most likely success rate.",
+  657.0,
+  665.16
+ ],
+ [
+  "But think of the example with 10 out of 10 positives.",
+  665.62,
+  667.86
+ ],
+ [
+  "In that case, the whole binomial formula simplifies to be s to the power 10.",
+  667.86,
+  673.26
+ ],
+ [
+  "The probability of seeing 10 consecutive good reviews is the probability of seeing one of them raised to the 10th.",
+  675.08,
+  680.65
+ ],
+ [
+  "The closer the true success rate is to 1, the higher the probability of seeing a 10 out of 10.",
+  681.32,
+  686.66
+ ],
+ [
+  "Our plot on the bottom only ever increases as s approaches 1.",
+  687.22,
+  690.98
+ ],
+ [
+  "But even if s equals 1 is the value that maximizes this probability, surely you wouldn't feel comfortable saying that you personally have a 100% probability of a good experience with this seller.",
+  692.4,
+  702.52
+ ],
+ [
+  "Maybe you think that instead we should look for some kind of center of mass of this graph, and that would absolutely be on the right track.",
+  703.46,
+  710.4
+ ],
+ [
+  "First, though, we need to explain how to take this expression for the probability of the data we're seeing given a value of s, and get the probability for a value of s, the thing we actually don't know, given the data, the thing we actually know.",
+  711.3,
+  724.88
+ ],
+ [
+  "And that requires us to talk about Bayes' rule, and also probability density functions.",
+  725.38,
+  729.98
+ ],
+ [
+  "For those, I'll see you in part 2.",
+  730.62,
+  732.06
+ ]
+]
