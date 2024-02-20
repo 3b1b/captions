@@ -1,0 +1,447 @@
+[
+ [
+  "As you can probably tell by now, the bulk of this series is on understanding matrix and vector operations through that more visual lens of linear transformations.",
+  10.24,
+  19.34
+ ],
+ [
+  "This video is no exception, describing the concepts of inverse matrices, column space, rank, and null space through that lens.",
+  19.98,
+  27.52
+ ],
+ [
+  "A forewarning though, I'm not going to talk about the methods for actually computing these things, and some would argue that that's pretty important.",
+  27.52,
+  34.24
+ ],
+ [
+  "There are a lot of very good resources for learning those methods outside this series, keywords Gaussian elimination and row echelon form.",
+  34.84,
+  42.0
+ ],
+ [
+  "I think most of the value that I actually have to add here is on the intuition half.",
+  42.54,
+  46.34
+ ],
+ [
+  "Plus, in practice, we usually get software to compute this stuff for us anyway.",
+  46.9,
+  50.48
+ ],
+ [
+  "First, a few words on the usefulness of linear algebra.",
+  51.5,
+  53.92
+ ],
+ [
+  "By now, you already have a hint for how it's used in describing the manipulation of space, which is useful for things like computer graphics and robotics.",
+  54.3,
+  61.04
+ ],
+ [
+  "But one of the main reasons that linear algebra is more broadly applicable and required for just about any technical discipline is that it lets us solve certain systems of equations.",
+  61.5,
+  70.46
+ ],
+ [
+  "When I say system of equations, I mean you have a list of variables, things you don't know, and a list of equations relating them.",
+  71.38,
+  77.76
+ ],
+ [
+  "In a lot of situations, those equations can get very complicated.",
+  78.34,
+  81.6
+ ],
+ [
+  "But, if you're lucky, they might take on a certain special form.",
+  82.12,
+  85.3
+ ],
+ [
+  "Within each equation, the only thing happening to each variable is that it's scaled by some constant, and the only thing happening to each of those scaled variables is that they're added to each other.",
+  86.44,
+  96.88
+ ],
+ [
+  "So no exponents or fancy functions or multiplying two variables together, things like that.",
+  97.54,
+  102.28
+ ],
+ [
+  "The typical way to organize this sort of special system of equations is to throw all the variables on the left and put any lingering constants on the right.",
+  103.42,
+  112.14
+ ],
+ [
+  "It's also nice to vertically line up the common variables, and to do that, you might need to throw in some zero coefficients whenever the variable doesn't show up in one of the equations.",
+  113.6,
+  121.94
+ ],
+ [
+  "This is called a linear system of equations.",
+  124.54,
+  127.24
+ ],
+ [
+  "You might notice that this looks a lot like matrix-vector multiplication.",
+  128.1,
+  131.18
+ ],
+ [
+  "In fact, you can package all of the equations together into a single vector equation where you have the matrix containing all of the constant coefficients and a vector containing all of the variables, and their matrix-vector product equals some different constant vector.",
+  131.82,
+  146.78
+ ],
+ [
+  "Let's name that constant matrix A, denote the vector holding the variables with a bold-faced X, and call the constant vector on the right-hand side V.",
+  148.64,
+  157.48
+ ],
+ [
+  "This is more than just a notational trick to get our system of equations written on one line.",
+  158.86,
+  162.98
+ ],
+ [
+  "It sheds light on a pretty cool geometric interpretation for the problem.",
+  163.34,
+  166.78
+ ],
+ [
+  "The matrix A corresponds with some linear transformation, so solving Ax equals V means we're looking for a vector X, which, after applying the transformation, lands on V.",
+  167.62,
+  177.92
+ ],
+ [
+  "Think about what's happening here for a moment.",
+  179.94,
+  181.78
+ ],
+ [
+  "You can hold in your head this really complicated idea of multiple variables all intermingling with each other just by thinking about squishing and morphing space and trying to figure out which vector lands on another.",
+  182.06,
+  192.6
+ ],
+ [
+  "Cool, right?",
+  193.16,
+  193.76
+ ],
+ [
+  "To start simple, let's say you have a system with two equations and two unknowns.",
+  194.6,
+  198.68
+ ],
+ [
+  "This means the matrix A is a 2x2 matrix, and V and X are each two-dimensional vectors.",
+  199.0,
+  203.96
+ ],
+ [
+  "Now, how we think about the solutions to this equation depends on whether the transformation associated with A squishes all of space into a lower dimension, like a line or a point, or if it leaves everything spanning the full two dimensions where it started.",
+  205.6,
+  218.9
+ ],
+ [
+  "In the language of the last video, we subdivide into the cases where A has zero determinant and the case where A has non-zero determinant.",
+  220.32,
+  228.04
+ ],
+ [
+  "Let's start with the most likely case, where the determinant is non-zero, meaning space does not get squished into a zero-area region.",
+  231.3,
+  237.72
+ ],
+ [
+  "In this case, there will always be one and only one vector that lands on V, and you can find it by playing the transformation in reverse.",
+  238.6,
+  246.16
+ ],
+ [
+  "Following where V goes as we rewind the tape like this, you'll find the vector x such that A times x equals V.",
+  246.7,
+  253.46
+ ],
+ [
+  "When you play the transformation in reverse, it actually corresponds to a separate linear transformation, commonly called the inverse of A, denoted A to the negative one.",
+  255.4,
+  264.68
+ ],
+ [
+  "For example, if A was a counterclockwise rotation by 90 degrees, then the inverse of A would be a clockwise rotation by 90 degrees.",
+  265.36,
+  272.76
+ ],
+ [
+  "If A was a rightward shear that pushes j-hat one unit to the right, the inverse of A would be a leftward shear that pushes j-hat one unit to the left.",
+  274.32,
+  282.48
+ ],
+ [
+  "In general, A inverse is the unique transformation with the property that if you first apply A, then follow it with the transformation A inverse, you end up back where you started.",
+  284.1,
+  293.48
+ ],
+ [
+  "Applying one transformation after another is captured algebraically with matrix multiplication, so the core property of this transformation A inverse is that A inverse times A equals the matrix that corresponds to doing nothing.",
+  294.54,
+  307.34
+ ],
+ [
+  "The transformation that does nothing is called the identity transformation.",
+  308.2,
+  311.32
+ ],
+ [
+  "It leaves i-hat and j-hat each where they are, unmoved, so its columns are 1,0 and 0,1.",
+  311.78,
+  318.08
+ ],
+ [
+  "Once you find this inverse, which in practice you'd do with a computer, you can solve your equation by multiplying this inverse matrix by v.",
+  319.98,
+  327.72
+ ],
+ [
+  "And again, what this means geometrically is that you're playing the transformation in reverse and following v.",
+  329.96,
+  336.44
+ ],
+ [
+  "This non-zero determinant case, which for a random choice of matrix is by far the most likely one, corresponds with the idea that if you have two unknowns and two equations, it's almost certainly the case that there's a single unique solution.",
+  340.2,
+  352.4
+ ],
+ [
+  "This idea also makes sense in higher dimensions, when the number of equations equals the number of unknowns.",
+  353.68,
+  359.2
+ ],
+ [
+  "Again, the system of equations can be translated to the geometric interpretation where you have some transformation A and some vector v, and you're looking for the vector x that lands on v.",
+  359.38,
+  372.74
+ ],
+ [
+  "As long as the transformation A doesn't squish all of space into a lower dimension, meaning its determinant is non-zero, there will be an inverse transformation A inverse, with the property that if you first do A, then you do A inverse, it's the same as doing nothing.",
+  375.74,
+  391.04
+ ],
+ [
+  "And to solve your equation, you just have to multiply that reverse transformation matrix by the vector v.",
+  393.54,
+  399.44
+ ],
+ [
+  "But when the determinant is zero, and the transformation associated with the system of equations squishes space into a smaller dimension, there is no inverse.",
+  403.5,
+  412.06
+ ],
+ [
+  "You cannot unsquish a line to turn it into a plane.",
+  412.48,
+  415.46
+ ],
+ [
+  "At least that's not something that a function can do.",
+  415.98,
+  418.06
+ ],
+ [
+  "That would require transforming each individual vector into a whole line full of vectors.",
+  418.36,
+  422.98
+ ],
+ [
+  "But functions can only take a single input to a single output.",
+  423.74,
+  426.74
+ ],
+ [
+  "Similarly, for three equations and three unknowns, there will be no inverse if the corresponding transformation squishes 3D space onto the plane, or even if it squishes it onto a line or a point.",
+  428.4,
+  439.14
+ ],
+ [
+  "Those all correspond to a determinant of zero, since any region is squished into something with zero volume.",
+  439.92,
+  445.16
+ ],
+ [
+  "It's still possible that a solution exists even when there is no inverse.",
+  446.7,
+  450.64
+ ],
+ [
+  "It's just that when your transformation squishes space onto, say, a line, you have to be lucky enough that the vector v lives somewhere on that line.",
+  450.72,
+  459.38
+ ],
+ [
+  "You might notice that some of these zero determinant cases feel a lot more restrictive than others.",
+  463.3,
+  468.3
+ ],
+ [
+  "Given a 3x3 matrix, for example, it seems a lot harder for a solution to exist when it squishes space onto a line compared to when it squishes things onto a plane, even though both of those are zero determinant.",
+  468.84,
+  480.24
+ ],
+ [
+  "We have some language that's a bit more specific than just saying zero determinant.",
+  482.6,
+  486.1
+ ],
+ [
+  "When the output of a transformation is a line, meaning it's one-dimensional, we say the transformation has a rank of one.",
+  486.52,
+  493.5
+ ],
+ [
+  "If all the vectors land on some two-dimensional plane, we say the transformation has a rank of two.",
+  495.14,
+  500.42
+ ],
+ [
+  "So the word rank means the number of dimensions in the output of a transformation.",
+  502.92,
+  507.48
+ ],
+ [
+  "For instance, in the case of 2x2 matrices, rank two is the best that it can be.",
+  508.4,
+  512.72
+ ],
+ [
+  "It means the basis vectors continue to span the full two dimensions of space, and the determinant is not zero.",
+  513.08,
+  519.02
+ ],
+ [
+  "But for 3x3 matrices, rank two means that we've collapsed, but not as much as they would have collapsed for a rank one situation.",
+  519.42,
+  526.46
+ ],
+ [
+  "If a 3D transformation has a non-zero determinant and its output fills all of 3D space, it has a rank of three.",
+  527.24,
+  533.34
+ ],
+ [
+  "This set of all possible outputs for your matrix, whether it's a line, a plane, 3D space, whatever, is called the column space of your matrix.",
+  534.52,
+  542.72
+ ],
+ [
+  "You can probably guess where that name comes from.",
+  544.14,
+  546.28
+ ],
+ [
+  "The columns of your matrix tell you where the basis vectors land, and the span of those transformed basis vectors gives you all possible outputs.",
+  546.56,
+  555.84
+ ],
+ [
+  "In other words, the column space is the span of the columns of your matrix.",
+  556.36,
+  561.14
+ ],
+ [
+  "So a more precise definition of rank would be that it's the number of dimensions in the column space.",
+  563.3,
+  568.94
+ ],
+ [
+  "When this rank is as high as it can be, meaning it equals the number of columns, we call the matrix full rank.",
+  569.94,
+  576.12
+ ],
+ [
+  "Notice the zero vector will always be included in the column space, since linear transformations must keep the origin fixed in place.",
+  578.54,
+  585.84
+ ],
+ [
+  "For a full rank transformation, the only vector that lands at the origin is the zero vector itself.",
+  586.9,
+  591.96
+ ],
+ [
+  "But for matrices that aren't full rank, which squish to a smaller dimension, you can have a whole bunch of vectors that land on zero.",
+  592.46,
+  598.76
+ ],
+ [
+  "If a 2D transformation squishes space onto a line, for example, there is a separate line in a different direction full of vectors that get squished onto the origin.",
+  601.64,
+  610.58
+ ],
+ [
+  "If a 3D transformation squishes space onto a plane, there's also a full line of vectors that land on the origin.",
+  611.78,
+  617.62
+ ],
+ [
+  "If a 3D transformation squishes all of space onto a line, then there's a whole plane full of vectors that land on the origin.",
+  620.52,
+  627.46
+ ],
+ [
+  "This set of vectors that lands on the origin is called the null space, or the kernel of your matrix.",
+  632.8,
+  638.78
+ ],
+ [
+  "It's the space of all vectors that become null, in the sense that they land on the zero vector.",
+  639.36,
+  644.18
+ ],
+ [
+  "In terms of the linear system of equations, when v happens to be the zero vector, the null space gives you all of the possible solutions to the equation.",
+  645.68,
+  653.64
+ ],
+ [
+  "So that's a very high level overview of how to think about linear systems of equations geometrically.",
+  656.42,
+  661.72
+ ],
+ [
+  "Each system has some kind of linear transformation associated with it, and when that transformation has an inverse, you can use that inverse to solve your system.",
+  662.3,
+  670.74
+ ],
+ [
+  "Otherwise, the idea of column space lets us understand when a solution even exists, and the idea of a null space helps us to understand what the set of all possible solutions can look like.",
+  672.28,
+  683.44
+ ],
+ [
+  "Again, there's a lot that I haven't covered here, most notably how to compute these things.",
+  684.98,
+  689.38
+ ],
+ [
+  "I also had to limit my scope to examples where the number of equations equals the number of unknowns.",
+  689.8,
+  694.76
+ ],
+ [
+  "But the goal here is not to try to teach everything, it's that you come away with a strong intuition for inverse matrices, column space, and null space, and that those intuitions make any future learning that you do more fruitful.",
+  694.88,
+  706.5
+ ],
+ [
+  "Next video, by popular request, will be a brief footnote about non-square matrices.",
+  707.66,
+  711.88
+ ],
+ [
+  "Then after that, I'm going to give you my take on dot products, and something pretty cool that happens when you view them under the light of linear transformations.",
+  711.88,
+  719.66
+ ]
+]
