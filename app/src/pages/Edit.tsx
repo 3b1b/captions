@@ -36,6 +36,7 @@ type _Caption = {
   translatedText: string;
   time_range?: [number, number];
   n_reviews?: number;
+  from_community_srt?: string;
 };
 
 /** page data loader */
@@ -73,22 +74,24 @@ export const loader: LoaderFunction = async ({ params }) => {
     video.value = "";
   }
 
+  /** map raw format to format needed for app */
+  function convert(caption: _Caption): Caption {
+    return {
+      reviews: caption.n_reviews || 0,
+      upvoted: false,
+      startingTranslation: caption.translatedText,
+      currentTranslation: caption.translatedText,
+      startingOriginal: caption.input,
+      currentOriginal: caption.input,
+      legacyTranslation: caption.from_community_srt,
+    };
+  }
+
   /** load title */
   try {
     const url = `${base}/${meta.value.path}/${language}/title.json`;
-    const { input, translatedText, n_reviews } = (await (
-      await fetch(url)
-    ).json()) as _Caption;
-
-    /** map raw format to format needed for app */
-    title.value = {
-      reviewed: false,
-      reviews: n_reviews || 0,
-      startingTranslation: translatedText,
-      currentTranslation: translatedText,
-      startingOriginal: input,
-      currentOriginal: input,
-    };
+    const data = (await (await fetch(url)).json()) as _Caption;
+    title.value = convert(data);
   } catch (error) {
     console.error("Couldn't load title data");
     title.value = null;
@@ -100,14 +103,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     const data = (await (await fetch(url)).json()) as _Caption[];
 
     /** map raw format to format needed for app */
-    description.value = data.map(({ input, translatedText, n_reviews }) => ({
-      reviewed: false,
-      reviews: n_reviews || 0,
-      startingTranslation: translatedText,
-      currentTranslation: translatedText,
-      startingOriginal: input,
-      currentOriginal: input,
-    }));
+    description.value = data.map(convert);
   } catch (error) {
     console.error("Couldn't load description data");
     description.value = [];
@@ -119,14 +115,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     const data = (await (await fetch(url)).json()) as _Caption[];
 
     /** map raw format to format needed for app */
-    captions.value = data.map(({ input, translatedText, n_reviews }) => ({
-      reviews: n_reviews || 0,
-      reviewed: false,
-      startingTranslation: translatedText,
-      currentTranslation: translatedText,
-      startingOriginal: input,
-      currentOriginal: input,
-    }));
+    captions.value = data.map(convert);
   } catch (error) {
     console.error("Couldn't load caption data");
     captions.value = [];
@@ -142,10 +131,10 @@ export const loader: LoaderFunction = async ({ params }) => {
     ][];
 
     /** map raw format to format needed for app */
-    data.forEach(
-      ([, start, end], index) =>
-        (captions.value[index]!.timeRange = [start, end]),
-    );
+    data.forEach(([, start, end], index) => {
+      if (captions.value[index])
+        captions.value[index]!.timeRange = [start, end];
+    });
   } catch (error) {
     console.error("Couldn't load caption timings");
   }
@@ -179,7 +168,8 @@ export const filterFuncs: Record<Filter, FilterFunc> = {
   human: (caption) => caption.reviews > 0,
   my: (caption) =>
     caption.currentTranslation !== caption.startingTranslation ||
-    caption.currentOriginal !== caption.startingOriginal,
+    caption.currentOriginal !== caption.startingOriginal ||
+    caption.upvoted,
 };
 
 /** whether header/footer are sticky */
@@ -203,8 +193,8 @@ export const description = proxy<{ value: Caption[] }>({ value: [] });
 export type Caption = {
   /** number of reviews (upvotes/edits) */
   reviews: number;
-  /** reviewed state */
-  reviewed: boolean;
+  /** upvoted state */
+  upvoted: boolean;
   /** starting translation state */
   startingTranslation: string;
   /** translation edit state */
@@ -215,6 +205,8 @@ export type Caption = {
   currentOriginal: string;
   /** timestamp range */
   timeRange?: [number, number];
+  /** old built-in youtube community translation */
+  legacyTranslation?: string;
 };
 
 /** caption, but deeply readonly (when using snapshot) */
@@ -226,16 +218,12 @@ export const captions = proxy<{ value: Caption[] }>({ value: [] });
 /** clean data for export */
 export function exportData() {
   /** map entries back to raw format */
-  function revert({
-    reviews,
-    reviewed,
-    currentTranslation,
-    currentOriginal,
-  }: Caption): _Caption {
+  function revert(caption: Caption): _Caption {
+    const edited = filterFuncs.my(caption);
     return {
-      translatedText: currentTranslation,
-      input: currentOriginal,
-      n_reviews: reviews + Number(reviewed),
+      translatedText: caption.currentTranslation,
+      input: caption.currentOriginal,
+      n_reviews: edited ? 1 : caption.reviews + Number(caption.upvoted),
     };
   }
 

@@ -96,7 +96,7 @@ for (const { full, slug, language } of paths) {
   if (index + 1 < topic.lessons.length)
     lessons[id].nextLesson = topic.lessons[index + 1];
 
-  /** get completion */
+  /** get caption translation data */
   let translation: { n_reviews: number }[] = [];
   try {
     const captionsFile = `../${full}/${language}/sentence_translations.json`;
@@ -104,13 +104,15 @@ for (const { full, slug, language } of paths) {
   } catch (error) {
     console.warn(`No completion info for ${full}/${language}`);
   }
+
+  /** get completion % from number of lines reviewed by human */
   const completion =
     translation.filter((entry) => entry.n_reviews > 0).length /
     (translation.length || 1);
 
   /** tally completion */
   lessonCompletion[slug] ??= {};
-  lessonCompletion[slug][language] = completion;
+  lessonCompletion[slug][language] ??= completion;
   languageCompletion[language] ??= [];
   languageCompletion[language].push(completion);
 }
@@ -128,5 +130,5 @@ function average(array) {
 }
 
 function writeFile(filename, data) {
-  writeFileSync(filename, JSON.stringify(data, null, 2));
+  writeFileSync(filename, JSON.stringify(data));
 }
