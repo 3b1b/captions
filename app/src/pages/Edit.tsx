@@ -2,7 +2,7 @@ import { LoaderFunction, useBlocker } from "react-router";
 import { atom } from "jotai";
 import { branchExists, repoRaw, request } from "@/api";
 import { getAtom, setAtom } from "@/App";
-import { calcCompletion, convert, revert } from "@/data/data";
+import { calcCompletion, convert, isEdited, revert } from "@/data/data";
 import lessons from "@/data/lessons.json";
 import { _Entry, _Timings, Entry } from "@/data/types";
 import Footer from "@/pages/edit/Footer";
@@ -83,10 +83,7 @@ export const filterFuncs: Record<Filter, FilterFunc> = {
   all: () => true,
   original: (entry) => entry.reviews === 0,
   human: (entry) => entry.reviews > 0,
-  my: (entry) =>
-    entry.currentTranslation !== entry.startingTranslation ||
-    entry.currentOriginal !== entry.startingOriginal ||
-    entry.upvoted,
+  my: (entry) => isEdited(entry) || entry.upvoted,
 };
 
 /** page data loader */

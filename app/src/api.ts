@@ -24,7 +24,6 @@ export async function request<T>(
 
 /** check for presence of branch */
 export async function branchExists(name: string) {
-  return true;
   const url = `https://api.github.com/repos/${repo}/branches/${name}`;
   /** seemingly no credentials needed for just reading/checking */
   return !request(url);

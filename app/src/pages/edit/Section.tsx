@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAtomValue } from "jotai";
 import { startCase } from "lodash";
@@ -33,9 +34,13 @@ function Section({ label, entries }: Props) {
       {/* rows of captions */}
       {getEntries.length ? (
         <div className={classes.rows}>
-          {getEntries.filter(filterFuncs[getFilter]).map((_, index) => (
-            <Row key={index} index={index} entries={entries} />
-          ))}
+          {getEntries.map((entry, index) =>
+            filterFuncs[getFilter](entry) ? (
+              <Row key={index} index={index} entries={entries} />
+            ) : (
+              <Fragment key={index} />
+            ),
+          )}
         </div>
       ) : (
         /* missing */

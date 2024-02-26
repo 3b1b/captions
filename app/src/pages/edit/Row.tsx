@@ -14,13 +14,12 @@ import { cloneDeep } from "lodash";
 import { issueLink } from "@/api";
 import { playing, playSegment, stopVideo, time } from "@/components/Player";
 import Textarea from "@/components/Textarea";
-import { originalMax, translationMax } from "@/data/data";
+import { isEdited, originalMax, translationMax } from "@/data/data";
 import { Entry } from "@/data/types";
 import {
   captions,
   completion,
   description,
-  filterFuncs,
   showLegacy,
   title,
 } from "@/pages/Edit";
@@ -79,7 +78,7 @@ function Row({ index, entries }: Props) {
   }, [getTime, start, end]);
 
   /** whether this row has been edited */
-  const edited = filterFuncs.my(entry);
+  const edited = isEdited(entry);
 
   const translationWarning =
     currentTranslation.length >= translationMax(entry, language);

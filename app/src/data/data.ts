@@ -36,12 +36,19 @@ export function convert(entry: _Entry): Entry {
 
 /** revert format needed for app back to "raw" format */
 export function revert(entry: Entry): _Entry {
-  const edited = filterFuncs.my(entry);
   return {
     translatedText: entry.currentTranslation,
     input: entry.currentOriginal,
-    n_reviews: edited ? 1 : entry.reviews + Number(entry.upvoted),
+    n_reviews: isEdited(entry) ? 1 : entry.reviews + Number(entry.upvoted),
   };
+}
+
+/** has entry text been edited by user */
+export function isEdited(entry: Entry) {
+  return (
+    entry.currentTranslation !== entry.startingTranslation ||
+    entry.currentOriginal !== entry.startingOriginal
+  );
 }
 
 /** get chars per sec for language */
