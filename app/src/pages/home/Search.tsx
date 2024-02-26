@@ -1,58 +1,49 @@
 import { useMemo, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import { useAtom } from "jotai";
 import { sortBy, startCase } from "lodash";
+import Badge from "@/components/Badge";
 import Input from "@/components/Input";
-import lessonCompletion from "@/data/lesson-completion.json";
-import lessonMeta from "@/data/lesson-meta.json";
-import Badge from "@/pages/home/Badge";
+import { flatLessons } from "@/data/data";
+import { languageSearch, titleSearch, topicSearch } from "@/pages/Home";
 import classes from "./Search.module.css";
 
-type Slug = keyof typeof lessonCompletion;
-type Language = keyof (typeof lessonCompletion)[Slug];
-
-/** flatten lesson languages */
-const flatLessonMeta = lessonMeta
-  .map(({ slug, name, topic, languages }) =>
-    languages.map((language) => ({
-      slug,
-      name,
-      topic,
-      language,
-      completion: lessonCompletion[slug as Slug][language as Language] || 0,
-    })),
-  )
-  .flat();
-
 function Search() {
-  /** local state */
-  const [nameSearch, setNameSearch] = useState("");
-  const [languageSearch, setLanguageSearch] = useState("");
+  /** page state */
+  const [getTitleSearch, setTitleSearch] = useAtom(titleSearch);
+  const [getTopicSearch, setTopicSearch] = useAtom(topicSearch);
+  const [getLanguageSearch, setLanguageSearch] = useAtom(languageSearch);
   const [showAll, setShowAll] = useState(false);
 
   /** filtered search results */
   const results = useMemo(() => {
     /** split search text into separate terms */
-    const nameTerms = nameSearch.toLowerCase().split(/\s+/);
+    const nameTerms = getTitleSearch.toLowerCase().split(/\s+/);
+    const topicSearch = getTopicSearch.toLowerCase();
+    const languageSearch = getLanguageSearch.toLowerCase();
 
-    return sortBy(
-      flatLessonMeta.filter(({ slug, name, topic, language }) => {
-        /** combined name string to search */
-        const combinedName = [slug, name, topic].join(" ").toLowerCase();
-
-        /** if every term is present in combined string */
-        return (
-          nameTerms.every((term) => combinedName.includes(term)) &&
-          language.toLowerCase().includes(languageSearch.toLowerCase())
-        );
-      }),
-      /** sort lowest completion % first */
-      "completion",
+    /** filter by search terms */
+    const filtered = flatLessons.filter(
+      ({ lesson, title, topic, language }) =>
+        nameTerms.every(
+          (term) => title.includes(term) || lesson.toLowerCase().includes(term),
+        ) &&
+        (topic === "" || topic.toLowerCase().includes(topicSearch)) &&
+        language.toLowerCase().includes(languageSearch),
     );
-  }, [nameSearch, languageSearch]);
+
+    /** sort lowest completion % */
+    return sortBy(filtered, ["completion"]);
+  }, [getTitleSearch, getTopicSearch, getLanguageSearch]);
 
   /** limit results */
   const limit = 10;
+
+  /** slice results */
+  let slice = Infinity;
+  if (!showAll) slice = limit;
+  if (!getTitleSearch && !getTopicSearch && !getLanguageSearch) slice = 0;
 
   return (
     <section>
@@ -61,40 +52,40 @@ function Search() {
       {/* input controls */}
       <div className={classes.controls}>
         <Input
-          value={nameSearch}
-          onChange={(value) => {
-            setNameSearch(value);
-            setShowAll(false);
-          }}
-          placeholder="Search video name or topic"
+          value={getTitleSearch}
+          onChange={(value) => setTitleSearch(value)}
+          placeholder="Search lesson title"
         />
         <Input
-          value={languageSearch}
-          onChange={(value) => {
-            setLanguageSearch(value);
-            setShowAll(false);
-          }}
+          value={getTopicSearch}
+          onChange={(value) => setTopicSearch(value)}
+          placeholder="Search topic"
+        />
+        <Input
+          value={getLanguageSearch}
+          onChange={(value) => setLanguageSearch(value)}
           placeholder="Search language"
         />
       </div>
 
       {/* results */}
       <div className={classes.results}>
-        {(showAll ? results : results.slice(0, limit)).map(
-          ({ name, slug, language, completion }, index) => (
-            <Badge key={index} completion={completion}>
-              <Link to={`/edit/${slug}/${language}`}>
-                {name} ({startCase(language)})
+        {results
+          .slice(0, slice)
+          .map(({ lesson, title, language, completion }, index) => (
+            <div key={index} className={classes.result}>
+              <Badge completion={completion} />
+              <Link to={`/edit/${lesson}/${language}`}>
+                {title} ({startCase(language)})
               </Link>
-            </Badge>
-          ),
-        )}
+            </div>
+          ))}
       </div>
 
-      {results.length > limit && (
+      {!!slice && results.length > limit && (
         <button onClick={() => setShowAll(!showAll)}>
           {showAll ? <FaAngleUp /> : <FaAngleDown />}
-          {showAll ? "Show less" : "Show all results"}
+          {showAll ? "Show less" : "Show all"}
         </button>
       )}
     </section>

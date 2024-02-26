@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import ByLanguage from "@/pages/home/ByLanguage";
+import { atom } from "jotai";
+import Completion from "@/pages/home/Completion";
 import Header from "@/pages/home/Header";
 import Search from "@/pages/home/Search";
 
@@ -15,10 +16,17 @@ function Home() {
       <Header />
       <main>
         <Search />
-        <ByLanguage />
+        <Completion />
       </main>
     </>
   );
 }
 
 export default Home;
+
+/** page-wide state */
+
+export const titleSearch = atom("");
+export const topicSearch = atom("");
+export const languageSearch = atom("");
+export const showAll = atom(false);

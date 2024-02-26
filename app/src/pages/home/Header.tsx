@@ -1,6 +1,7 @@
 import { FaGithub, FaScaleBalanced } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { shuffle } from "lodash";
+import { repoFull, website } from "@/api";
 import logo from "@/assets/Logo.svg";
 import classes from "./Header.module.css";
 
@@ -54,7 +55,7 @@ function Header() {
         {/* hero description */}
         <div>
           Contribute, edit, and review translations of{" "}
-          <Link to="https://3blue1brown.com" target="_blank">
+          <Link to={website} target="_blank">
             3Blue1Brown
           </Link>{" "}
           content
@@ -63,14 +64,14 @@ function Header() {
         {/* important links */}
         <nav className={classes.nav}>
           <Link
-            to="https://github.com/3b1b/captions?tab=readme-ov-file#3blue1brown-captions"
+            to={`${repoFull}?tab=readme-ov-file#3blue1brown-captions`}
             target="_blank"
           >
             <FaScaleBalanced />
             Contribution Guidelines
           </Link>
 
-          <Link to="https://github.com/3b1b/captions/issues" target="_blank">
+          <Link to={`${repoFull}/issues`} target="_blank">
             <FaGithub />
             Help/Issues
           </Link>

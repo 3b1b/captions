@@ -1,91 +1,93 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   FaArrowsRotate,
   FaFlag,
   FaPlay,
   FaRegThumbsUp,
+  FaStop,
   FaThumbsUp,
 } from "react-icons/fa6";
 import { Link, useParams } from "react-router-dom";
 import classNames from "classnames";
-import { useSnapshot } from "valtio";
-import { playCaption, playerTime } from "@/components/Player";
+import { useAtom, useAtomValue } from "jotai";
+import { cloneDeep } from "lodash";
+import { issueLink } from "@/api";
+import { playing, playSegment, stopVideo, time } from "@/components/Player";
 import Textarea from "@/components/Textarea";
-import charsPerSecData from "@/data/avg_char_per_sec.json";
-import { Caption, filterFuncs } from "@/pages/Edit";
-import { scrollIntoView } from "@/util/dom";
-import { issueLink } from "@/util/github";
+import { originalMax, translationMax } from "@/data/data";
+import { Entry } from "@/data/types";
+import {
+  captions,
+  completion,
+  description,
+  filterFuncs,
+  showLegacy,
+  title,
+} from "@/pages/Edit";
+import { glow, scrollIntoView } from "@/util/dom";
 import { formatTime } from "@/util/string";
 import classes from "./Row.module.css";
 
-/** avg chars spoken per sec for each language */
-const charsPerSec: Record<string, number> = charsPerSecData;
-/** fallback max avg chars per sec */
-const maxCharsPerSec = Math.max(...Object.values(charsPerSec));
-
 type Props = {
-  caption: Caption;
+  index: number;
+  entries: typeof title | typeof captions | typeof description;
 };
 
-/** editable caption/title/description row */
-function Row({ caption }: Props) {
+/** editable entry row */
+function Row({ index, entries }: Props) {
+  /** get/set entry from list of entries and index */
+  const [getEntries, setEntries] = useAtom(entries);
+  const entry = getEntries[index]!;
+  function setEntry(entry: Partial<Entry>) {
+    const entries = cloneDeep(getEntries);
+    entries[index] = { ...entries[index]!, ...entry };
+    setEntries(entries);
+  }
+
+  /** extract entry props */
   const {
     reviews,
+    upvoted,
     startingTranslation,
     currentTranslation,
     startingOriginal,
-    timeRange = [],
+    currentOriginal,
+    timeRange,
     legacyTranslation,
-  } = useSnapshot(caption);
-  const [start = 0, end = 0] = timeRange;
+  } = entry;
+  const [start = 0, end = 0] = timeRange || [];
 
   const ref = useRef<HTMLDivElement>(null);
 
   /** url params */
-  const { slug = "", language = "" } = useParams();
+  const { lesson = "", language = "" } = useParams();
 
-  /** reactive state */
-  const timeSnap = useSnapshot(playerTime);
+  /** page state */
+  const getTime = useAtomValue(time);
+  const getPlaying = useAtomValue(playing);
+  const getShowLegacy = useAtomValue(showLegacy);
+  const getCompletion = useAtomValue(completion);
 
   /** when user seeks youtube player */
   useEffect(() => {
     /** find first row that falls in seeked time range */
-    if (ref.current && timeSnap.value > start && timeSnap.value < end) {
+    if (ref.current && getTime > start && getTime < end) {
       scrollIntoView(ref.current);
+      glow(ref.current);
       return;
     }
-  }, [timeSnap.value, start, end]);
+  }, [getTime, start, end]);
 
   /** whether this row has been edited */
-  const edited = filterFuncs.my(caption);
+  const edited = filterFuncs.my(entry);
 
-  /** whether this row is upvoted */
-  const [upvoted, setUpvoted] = useState(false);
-
-  useEffect(() => {
-    caption.upvoted = upvoted;
-  }, [caption, upvoted]);
-
-  /** avg chars spoken per sec for lang */
-  const perSec =
-    (charsPerSec[language] || maxCharsPerSec) *
-    /** allow for some variance around avg */
-    1.5;
-
-  /** max allowed chars for translation edit box */
-  const maxTranslationLength =
-    start && end
-      ? /** for entries with time range, i.e. captions */
-        perSec * (end - start)
-      : /** for entries without a time range, i.e. title and description */
-        startingTranslation.length * 1.5 || startingOriginal.length * 2;
-
-  /** max allowed chars for original edit box */
-  const maxOriginalLength = startingOriginal.length * 1.2;
+  const translationWarning =
+    currentTranslation.length >= translationMax(entry, language);
+  const originalWarning = currentOriginal.length >= originalMax(entry);
 
   /** issue url params */
-  const title = `${slug}/${language}`;
-  const body = [
+  const issueTitle = `${lesson}/${language}`;
+  const issueBody = [
     `**Line**:\n`,
     `${startingOriginal.slice(0, 100)}...\n`,
     "\n",
@@ -101,7 +103,7 @@ function Row({ caption }: Props) {
       {/* actions */}
       <div className={classes.actions}>
         <button
-          onClick={() => setUpvoted(!upvoted)}
+          onClick={() => setEntry({ upvoted: !upvoted })}
           data-tooltip="Number of upvotes for latest edit"
         >
           {edited || upvoted ? <FaThumbsUp /> : <FaRegThumbsUp />}
@@ -112,19 +114,23 @@ function Row({ caption }: Props) {
           <button
             className={classes.action}
             onClick={() => {
-              /** play */
-              playCaption(caption);
+              const header = document.querySelector("header")!;
 
-              /** expand header */
-              const header = document.querySelector("header");
-              const expand = innerHeight / 3;
-              if (header)
+              if (getPlaying) {
+                stopVideo();
+                header.style.height = "";
+              } else {
+                playSegment(start, end);
+
+                /** expand header */
+                const expand = innerHeight / 3;
                 if (parseFloat(window.getComputedStyle(header).height) < expand)
                   header.style.height = expand + "px";
+              }
             }}
             data-tooltip={`Play video at this timestamp<br/>(${formatTime(start)} - ${formatTime(end)})`}
           >
-            <FaPlay />
+            {getPlaying ? <FaStop /> : <FaPlay />}
           </button>
         )}
       </div>
@@ -133,16 +139,13 @@ function Row({ caption }: Props) {
       <Textarea
         className={classNames(
           classes.edit,
-          maxTranslationLength &&
-            currentTranslation.length >= maxTranslationLength &&
-            classes.limit,
+          translationWarning && classes.warning,
         )}
         value={currentTranslation}
-        onChange={(value) => (caption.currentTranslation = value)}
-        maxLength={Math.ceil(maxTranslationLength * 1.5)}
+        onChange={(value) => setEntry({ currentTranslation: value })}
         data-tooltip={
-          currentTranslation.length >= maxTranslationLength
-            ? "This translation is starting to become too long too fit in the time slot"
+          translationWarning
+            ? "This translation is starting to become too long to fit in the time slot"
             : "Edit translated text"
         }
       />
@@ -151,23 +154,26 @@ function Row({ caption }: Props) {
       <Textarea
         className={classNames(
           classes.original,
-          maxOriginalLength &&
-            caption.currentOriginal.length >= maxOriginalLength &&
-            classes.limit,
+          originalWarning && classes.warning,
         )}
-        maxLength={Math.ceil(maxOriginalLength * 1.5)}
-        value={caption.currentOriginal}
-        onChange={(value) => (caption.currentOriginal = value)}
-        data-tooltip="Original English text. If you see a significant problem, click to edit."
+        value={entry.currentOriginal}
+        onChange={(value) => setEntry({ currentOriginal: value })}
+        data-tooltip={
+          translationWarning
+            ? "This text is starting to become too long to fit in the time slot"
+            : "Original English text. If you see a significant problem, click to edit."
+        }
       />
 
       {/* secondary actions */}
       <div className={classes.actions}>
         <button
           onClick={() => {
-            caption.currentTranslation = startingTranslation;
-            caption.currentOriginal = startingOriginal;
-            caption.upvoted = false;
+            setEntry({
+              currentTranslation: startingTranslation,
+              currentOriginal: startingOriginal,
+              upvoted: false,
+            });
           }}
           data-tooltip="Reset entry"
         >
@@ -175,7 +181,7 @@ function Row({ caption }: Props) {
         </button>
 
         <Link
-          to={issueLink(title, body)}
+          to={issueLink(issueTitle, issueBody)}
           target="_blank"
           data-tooltip="Create an issue about this translation"
         >
@@ -184,12 +190,9 @@ function Row({ caption }: Props) {
       </div>
 
       {/* legacy translation */}
-      {legacyTranslation && (
+      {legacyTranslation && getShowLegacy && getCompletion < 1 && (
         <div className={classes.legacy}>
-          <strong data-tooltip="A community contributed translation from back when YouTube had that feature built-in. For reference or copying/pasting. It may apply to one or more adjacent entries.">
-            Legacy translation
-          </strong>
-          : {legacyTranslation}
+          <strong>Legacy translation</strong>: {legacyTranslation}
         </div>
       )}
     </div>

@@ -1,7 +1,7 @@
 import YouTube from "react-youtube";
-import { proxy } from "valtio";
+import { atom } from "jotai";
 import type { YouTubePlayer } from "youtube-player/dist/types";
-import { ReadonlyCaption } from "@/pages/Edit";
+import { setAtom } from "@/App";
 import classes from "./Player.module.css";
 
 type Props = {
@@ -18,9 +18,14 @@ function Player({ video }: Props) {
         /** update internal player object */
         player = event.target;
       }}
-      onStateChange={(event) => {
+      onStateChange={async (event) => {
         /** when user seeks and releases */
-        if (event.data === 1) updatePlayerTime();
+        if (event.data === 1) {
+          setAtom(time, (await player?.getCurrentTime()) || 0);
+          setAtom(playing, true);
+        }
+        /** when user pauses/stops */
+        if (event.data === 0 || event.data === 2) setAtom(playing, false);
       }}
       className={classes.player}
       iframeClassName={classes.iframe}
@@ -34,30 +39,28 @@ export default Player;
 let player: YouTubePlayer | null = null;
 
 /** timer to pause playing at end of caption */
-let pausetimer = 0;
+let pauseTimer = 0;
 
-export function playCaption(caption: ReadonlyCaption) {
-  /** get time range */
-  const { timeRange } = caption;
-  if (!timeRange) return;
-  const [start, end] = timeRange;
-
+/** play video for certain time segment */
+export function playSegment(start: number, end: number) {
   /** play from start */
   player?.seekTo(start || 0, true);
   player?.playVideo();
+  setAtom(playing, true);
 
   /** pause after end */
-  window.clearTimeout(pausetimer);
-  pausetimer = window.setTimeout(
-    () => player?.pauseVideo(),
-    (end - start) * 1000,
-  );
+  window.clearTimeout(pauseTimer);
+  pauseTimer = window.setTimeout(stopVideo, (end - start) * 1000);
+}
+
+/** pause/stop video */
+export function stopVideo() {
+  player?.pauseVideo();
+  setAtom(playing, false);
 }
 
 /** current play time in seconds */
-export const playerTime = proxy({ value: 0 });
+export const time = atom(0);
 
-/** update play time */
-async function updatePlayerTime() {
-  playerTime.value = (await player?.getCurrentTime()) || 0;
-}
+/** playing state */
+export const playing = atom(false);

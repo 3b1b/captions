@@ -1,14 +1,19 @@
 import { LoaderFunction, useBlocker } from "react-router";
-import { proxy, useSnapshot } from "valtio";
-import lessonMeta from "@/data/lesson-meta.json";
-import Captions from "@/pages/edit/Captions";
-import Description from "@/pages/edit/Description";
+import { atom } from "jotai";
+import { branchExists, repoRaw, request } from "@/api";
+import { getAtom, setAtom } from "@/App";
+import { calcCompletion, convert, revert } from "@/data/data";
+import lessons from "@/data/lessons.json";
+import { _Entry, _Timings, Entry } from "@/data/types";
 import Footer from "@/pages/edit/Footer";
 import Header from "@/pages/edit/Header";
-import Title from "@/pages/edit/Title";
+import Section from "@/pages/edit/Section";
 
 const navWarning =
-  "Are you sure you want to navigate away from this page? Unsaved changes will be lost.";
+  "Are you sure you want to navigate away from this page? Unsaved edits will be lost.";
+
+const lockedWarning =
+  "This lesson/language is already being edited by someone. Click the lock for more info. You may want to work on something else for now.";
 
 /** translation edit page */
 function Edit() {
@@ -19,9 +24,9 @@ function Edit() {
     <>
       <Header />
       <main>
-        <Title />
-        <Captions />
-        <Description />
+        <Section label="title" entries={title} />
+        <Section label="captions" entries={captions} />
+        <Section label="description" entries={description} />
       </main>
       <Footer />
     </>
@@ -30,117 +35,32 @@ function Edit() {
 
 export default Edit;
 
-/** caption format on github */
-type _Caption = {
-  input: string;
-  translatedText: string;
-  time_range?: [number, number];
-  n_reviews?: number;
-  from_community_srt?: string;
-};
+/** page-wide state */
 
-/** page data loader */
-export const loader: LoaderFunction = async ({ params }) => {
-  /** get lesson and language slug from url */
-  const { slug = "", language = "" } = params;
-
-  /** lookup lesson metadata */
-  meta.value =
-    lessonMeta.find(
-      (lesson) => lesson.slug === slug && lesson.languages.includes(language),
-    ) || null;
-
-  if (!meta.value) {
-    video.value = "";
-    title.value = null;
-    description.value = [];
-    captions.value = [];
-    console.error("Couldn't load lesson meta");
-    return null;
-  }
-
-  /** base raw folder containing json files */
-  const base = `https://raw.githubusercontent.com/3b1b/captions/main`;
-
-  /** load video id */
-  try {
-    const url = `${base}/${meta.value.path}/video_url.txt`;
-    const data = (await (await fetch(url)).text()) as string;
-
-    /** map raw format to format needed for app */
-    video.value = data.split("/").pop() || "";
-  } catch (error) {
-    console.error("Couldn't load video data");
-    video.value = "";
-  }
-
-  /** map raw format to format needed for app */
-  function convert(caption: _Caption): Caption {
-    return {
-      reviews: caption.n_reviews || 0,
-      upvoted: false,
-      startingTranslation: caption.translatedText,
-      currentTranslation: caption.translatedText,
-      startingOriginal: caption.input,
-      currentOriginal: caption.input,
-      legacyTranslation: caption.from_community_srt,
-    };
-  }
-
-  /** load title */
-  try {
-    const url = `${base}/${meta.value.path}/${language}/title.json`;
-    const data = (await (await fetch(url)).json()) as _Caption;
-    title.value = convert(data);
-  } catch (error) {
-    console.error("Couldn't load title data");
-    title.value = null;
-  }
-
-  /** load description */
-  try {
-    const url = `${base}/${meta.value.path}/${language}/description.json`;
-    const data = (await (await fetch(url)).json()) as _Caption[];
-
-    /** map raw format to format needed for app */
-    description.value = data.map(convert);
-  } catch (error) {
-    console.error("Couldn't load description data");
-    description.value = [];
-  }
-
-  /** load captions */
-  try {
-    const url = `${base}/${meta.value.path}/${language}/sentence_translations.json`;
-    const data = (await (await fetch(url)).json()) as _Caption[];
-
-    /** map raw format to format needed for app */
-    captions.value = data.map(convert);
-  } catch (error) {
-    console.error("Couldn't load caption data");
-    captions.value = [];
-  }
-
-  /** load caption timings */
-  try {
-    const url = `${base}/${meta.value.path}/english/sentence_timings.json`;
-    const data = (await (await fetch(url)).json()) as [
-      string,
-      number,
-      number,
-    ][];
-
-    /** map raw format to format needed for app */
-    data.forEach(([, start, end], index) => {
-      if (captions.value[index])
-        captions.value[index]!.timeRange = [start, end];
-    });
-  } catch (error) {
-    console.error("Couldn't load caption timings");
-  }
-
-  return null;
-};
+/** whether lesson is locked */
+export const locked = atom(false);
+/** video id */
+export const video = atom("");
+/** lesson metadata */
+export const meta = atom<(typeof lessons)[number] | null>(null);
+/** lesson language */
+let language = "";
+/** lesson title */
+export const title = atom<Entry[]>([]);
+/** lesson captions */
+export const captions = atom<Entry[]>([]);
+/** lesson description */
+export const description = atom<Entry[]>([]);
+/** selected filter id */
+export const filter = atom<Filter>("all");
+/** whether header/footer are sticky */
+export const sticky = atom(true);
+/** whether to show legacy translations */
+export const showLegacy = atom(true);
+/** completion of current lesson */
+export const completion = atom((get) =>
+  calcCompletion(get(captions), language),
+);
 
 /** filter options */
 export const filters = [
@@ -155,81 +75,100 @@ export const filters = [
 /** filter option id enum */
 type Filter = (typeof filters)[number]["id"];
 
-/** selected filter id */
-export const filter = proxy<{ value: Filter }>({ value: "all" });
-
-/** take in a caption and return whether it should be kept */
-type FilterFunc = (value: ReadonlyCaption) => boolean;
+/** take in a entry and return whether it should be kept */
+type FilterFunc = (value: Entry) => boolean;
 
 /** filter function for each filter option */
 export const filterFuncs: Record<Filter, FilterFunc> = {
   all: () => true,
-  original: (caption) => caption.reviews === 0,
-  human: (caption) => caption.reviews > 0,
-  my: (caption) =>
-    caption.currentTranslation !== caption.startingTranslation ||
-    caption.currentOriginal !== caption.startingOriginal ||
-    caption.upvoted,
+  original: (entry) => entry.reviews === 0,
+  human: (entry) => entry.reviews > 0,
+  my: (entry) =>
+    entry.currentTranslation !== entry.startingTranslation ||
+    entry.currentOriginal !== entry.startingOriginal ||
+    entry.upvoted,
 };
 
-/** whether header/footer are sticky */
-export const sticky = proxy({ value: true });
+/** page data loader */
+export const loader: LoaderFunction = async ({ params }) => {
+  /** get lesson and language slug from url */
+  const { lesson = "" } = params;
+  language = params.language || "";
 
-/** lesson metadata */
-export const meta = proxy<{ value: (typeof lessonMeta)[number] | null }>({
-  value: null,
-});
+  /** set language */
 
-/** video id */
-export const video = proxy({ value: "" });
+  /** lookup lesson metadata */
+  setAtom(meta, lessons.find((l) => l.lesson === lesson) || null);
+  const { path = "" } = getAtom(meta) || {};
 
-/** lesson title */
-export const title = proxy<{ value: Caption | null }>({ value: null });
+  /** reset */
+  setAtom(video, "");
+  setAtom(title, []);
+  setAtom(description, []);
+  setAtom(captions, []);
 
-/** lesson description */
-export const description = proxy<{ value: Caption[] }>({ value: [] });
+  if (!getAtom(meta)) {
+    console.error("Couldn't load lesson meta");
+    return null;
+  }
 
-/** caption data */
-export type Caption = {
-  /** number of reviews (upvotes/edits) */
-  reviews: number;
-  /** upvoted state */
-  upvoted: boolean;
-  /** starting translation state */
-  startingTranslation: string;
-  /** translation edit state */
-  currentTranslation: string;
-  /** starting original english state  */
-  startingOriginal: string;
-  /** original english edit state */
-  currentOriginal: string;
-  /** timestamp range */
-  timeRange?: [number, number];
-  /** old built-in youtube community translation */
-  legacyTranslation?: string;
+  /** check if edit already open for lesson/language */
+  setAtom(locked, await branchExists(`${lesson}-${language}`));
+  if (getAtom(locked))
+    window.setTimeout(() => {
+      window.alert(lockedWarning);
+    }, 1000);
+
+  /** base raw folder containing json files */
+  const base = `${repoRaw}/main`;
+
+  /** load video id */
+  {
+    const url = `${base}/${getAtom(meta)?.path}/video_url.txt`;
+    const data = await request<string>(url, {}, "text");
+    if (data) setAtom(video, data.split("/").pop() || "");
+  }
+
+  /** load title entry */
+  {
+    const url = `${base}/${path}/${language}/title.json`;
+    const data = await request<_Entry>(url);
+    if (data) setAtom(title, [data].map(convert));
+  }
+
+  /** load description entries */
+  {
+    const url = `${base}/${path}/${language}/description.json`;
+    const data = await request<_Entry[]>(url);
+    if (data) setAtom(description, data.map(convert));
+  }
+
+  /** load caption entries */
+  {
+    const url = `${base}/${path}/${language}/sentence_translations.json`;
+    const data = await request<_Entry[]>(url);
+    if (data) setAtom(captions, data.map(convert));
+  }
+
+  /** load caption timings */
+  {
+    const url = `${base}/${path}/english/sentence_timings.json`;
+    const data = await request<_Timings>(url);
+    if (data)
+      data.forEach(([, start, end], index) => {
+        if (getAtom(captions)[index])
+          getAtom(captions)[index]!.timeRange = [start, end];
+      });
+  }
+
+  return null;
 };
-
-/** caption, but deeply readonly (when using snapshot) */
-export type ReadonlyCaption = ReturnType<typeof useSnapshot<Caption>>;
-
-/** editable captions state */
-export const captions = proxy<{ value: Caption[] }>({ value: [] });
 
 /** clean data for export */
 export function exportData() {
-  /** map entries back to raw format */
-  function revert(caption: Caption): _Caption {
-    const edited = filterFuncs.my(caption);
-    return {
-      translatedText: caption.currentTranslation,
-      input: caption.currentOriginal,
-      n_reviews: edited ? 1 : caption.reviews + Number(caption.upvoted),
-    };
-  }
-
   return {
-    title: title.value ? revert(title.value) : {},
-    description: description.value.map(revert),
-    sentence_translations: captions.value.map(revert),
+    title: getAtom(description).map(revert),
+    description: getAtom(description).map(revert),
+    sentence_translations: getAtom(captions).map(revert),
   };
 }

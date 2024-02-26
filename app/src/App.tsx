@@ -6,6 +6,7 @@ import {
   RouteObject,
   RouterProvider,
 } from "react-router-dom";
+import { Atom, getDefaultStore, PrimitiveAtom } from "jotai";
 import { QueryParamProvider } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
 import Edit, { loader as editLoader } from "@/pages/Edit";
@@ -48,7 +49,7 @@ const routes: RouteObject[] = [
       },
 
       {
-        path: "edit/:slug/:language",
+        path: "edit/:lesson/:language",
         element: <Edit />,
         loader: editLoader,
       },
@@ -79,4 +80,15 @@ async function spaRedirect() {
     window.sessionStorage.removeItem("redirect");
     return redirect(url);
   } else return null;
+}
+
+/** get jotai atom (outside of component) */
+export function getAtom<T>(atom: Atom<T>) {
+  return getDefaultStore().get(atom);
+}
+
+/** set jotai atom (outside of component) */
+export function setAtom<T>(atom: PrimitiveAtom<T>, value: T) {
+  getDefaultStore().set(atom, value);
+  return value;
 }

@@ -9,6 +9,7 @@ type Props = {
 function Textarea({ className, value, onChange, ...props }: Props) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
+  /** fit height to content */
   useEffect(() => {
     if (!ref.current) return;
     if (ref.current.scrollHeight > ref.current.clientHeight)

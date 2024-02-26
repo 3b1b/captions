@@ -1,18 +1,20 @@
 import { FaDownload, FaPaperPlane } from "react-icons/fa6";
 import { useParams } from "react-router";
 import { useLocalStorage } from "react-use";
-import { useSnapshot } from "valtio";
+import { useAtom, useAtomValue } from "jotai";
 import Button from "@/components/Button";
 import Checkbox from "@/components/Checkbox";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
 import {
   captions,
+  completion,
   description,
   exportData,
   filter,
   filterFuncs,
   filters,
+  showLegacy,
   sticky,
   title,
 } from "@/pages/Edit";
@@ -21,23 +23,25 @@ import classes from "./Footer.module.css";
 
 function Footer() {
   /** url params */
-  const { slug = "", language = "" } = useParams();
+  const { lesson = "", language = "" } = useParams();
 
   /** local state */
   const [user, setUser] = useLocalStorage("3b1b-captions", "");
 
-  /** reactive state */
-  const filterSnap = useSnapshot(filter);
-  const stickySnap = useSnapshot(sticky);
-  const titleSnap = useSnapshot(title);
-  const descriptionSnap = useSnapshot(description);
-  const captionsSnap = useSnapshot(captions);
+  /** page state */
+  const [getFilter, setFilter] = useAtom(filter);
+  const [getSticky, setSticky] = useAtom(sticky);
+  const [getShowLegacy, setShowLegacy] = useAtom(showLegacy);
+  const getTitle = useAtomValue(title);
+  const getCaptions = useAtomValue(captions);
+  const getDescription = useAtomValue(description);
+  const getCompletion = useAtomValue(completion);
 
   /** full list of all entries */
-  const list = descriptionSnap.value.concat(captionsSnap.value);
+  const list = getDescription.concat(getCaptions);
 
   /** add title entry */
-  if (titleSnap.value) list.unshift(titleSnap.value);
+  if (getTitle) list.unshift(...getTitle);
 
   /** filter options, with counts */
   const filterOptions = filters.map((filter) => ({
@@ -51,29 +55,40 @@ function Footer() {
   return (
     <footer
       className={classes.footer}
-      style={{ position: stickySnap.value ? "sticky" : undefined }}
+      style={{ position: getSticky ? "sticky" : undefined }}
     >
       <div className={classes.row}>
         <Select
           label="Show"
           options={filterOptions}
-          value={filterSnap.value}
-          onChange={(value) => (filter.value = value)}
+          value={getFilter}
+          onChange={setFilter}
           data-tooltip="Show only certain entries"
         />
+
         <Checkbox
           label="Sticky header/footer"
-          value={stickySnap.value}
-          onChange={(value) => (sticky.value = value)}
+          value={getSticky}
+          onChange={setSticky}
           data-tooltip="Keep the header/footer at the top/bottom of the screen"
         />
+
+        {getCaptions.some((caption) => caption.legacyTranslation) &&
+          getCompletion < 1 && (
+            <Checkbox
+              label="Show legacy translations"
+              value={getShowLegacy}
+              onChange={setShowLegacy}
+              data-tooltip="Show community contributed translations from back when YouTube had that feature built-in. For reference or copy/pasting.<br/><br/><b>Note:</b> The way they are split is different and they may apply to one or more adjacent entries."
+            />
+          )}
       </div>
 
       <div className={classes.row}>
         <Button
           icon={<FaDownload />}
-          data-tooltip="Download your changes as a backup or to submit a pull request manually."
-          onClick={() => downloadZip(exportData(), `${slug} ${language}`)}
+          data-tooltip="Download your edits as a backup or to submit a pull request manually."
+          onClick={() => downloadZip(exportData(), `${lesson} ${language}`)}
         />
 
         <Input
@@ -87,7 +102,7 @@ function Footer() {
           disabled={edits === 0}
           text={`Submit ${edits.toLocaleString()} Edit(s)`}
           icon={<FaPaperPlane />}
-          data-tooltip="Submit your changes to be reviewed. Opens a public a pull request on GitHub."
+          data-tooltip="(NOT ACTIVE YET) Submit your edits to be reviewed. Opens a public pull request on GitHub."
         />
       </div>
     </footer>

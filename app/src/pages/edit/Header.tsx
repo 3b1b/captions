@@ -4,28 +4,33 @@ import {
   FaAngleRight,
   FaClockRotateLeft,
   FaHouse,
+  FaLock,
   FaRegCircleQuestion,
 } from "react-icons/fa6";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { useAtomValue } from "jotai";
 import { startCase } from "lodash";
-import { useSnapshot } from "valtio";
+import { repoFull } from "@/api";
+import Badge from "@/components/Badge";
 import Player from "@/components/Player";
-import { meta, sticky, title, video } from "@/pages/Edit";
+import { completion, locked, meta, sticky, title, video } from "@/pages/Edit";
 import classes from "./Header.module.css";
 
 function Header() {
   /** url params */
-  const { slug = "", language = "" } = useParams();
+  const { lesson = "", language = "" } = useParams();
 
-  /** reactive state */
-  const metaSnap = useSnapshot(meta);
-  const videoSnap = useSnapshot(video);
-  const titleSnap = useSnapshot(title);
-  const stickySnap = useSnapshot(sticky);
+  /** page state */
+  const getLocked = useAtomValue(locked);
+  const getMeta = useAtomValue(meta);
+  const getVideo = useAtomValue(video);
+  const getTitle = useAtomValue(title);
+  const getSticky = useAtomValue(sticky);
+  const getCompletion = useAtomValue(completion);
 
   /** title, with fallback */
-  const _title = titleSnap.value?.startingOriginal || startCase(slug);
+  const _title = getTitle[0]?.startingOriginal || startCase(lesson);
 
   /** set browser tab title */
   useEffect(() => {
@@ -35,10 +40,12 @@ function Header() {
   return (
     <header
       className={classes.header}
-      style={{ position: stickySnap.value ? "sticky" : undefined }}
+      style={{
+        position: getSticky ? "sticky" : undefined,
+      }}
     >
       {/* video */}
-      <Player video={videoSnap.value} />
+      <Player video={getVideo} />
 
       {/* text and nav */}
       <div className={classes.text}>
@@ -50,7 +57,7 @@ function Header() {
           </Link>
 
           <Link
-            to="https://github.com/3b1b/captions/issues"
+            to={`${repoFull}/issues`}
             target="_blank"
             data-tooltip="Get help or report an issue"
           >
@@ -58,9 +65,9 @@ function Header() {
             Help
           </Link>
 
-          {metaSnap.value?.path && (
+          {getMeta?.path && (
             <Link
-              to={`https://github.com/3b1b/captions/commits/main/${metaSnap.value?.path}`}
+              to={`${repoFull}/commits/main/${getMeta?.path}`}
               target="_blank"
               data-tooltip="See full edit history of this lesson and language on GitHub"
             >
@@ -69,9 +76,9 @@ function Header() {
             </Link>
           )}
 
-          {metaSnap.value?.previousLesson && (
+          {getMeta?.previousLesson && (
             <Link
-              to={`/edit/${metaSnap.value?.previousLesson}/${language}`}
+              to={`/edit/${getMeta?.previousLesson}/${language}`}
               data-tooltip="Previous video in series or topic"
             >
               <FaAngleLeft />
@@ -79,9 +86,9 @@ function Header() {
             </Link>
           )}
 
-          {metaSnap.value?.nextLesson && (
+          {getMeta?.nextLesson && (
             <Link
-              to={`/edit/${metaSnap.value?.nextLesson}/${language}`}
+              to={`/edit/${getMeta?.nextLesson}/${language}`}
               data-tooltip="Next video in series or topic"
             >
               <FaAngleRight />
@@ -93,6 +100,16 @@ function Header() {
         {/* lesson info */}
         <h1>{_title}</h1>
         <div>{startCase(language)}</div>
+
+        <div className={classes.icons}>
+          {getLocked && (
+            <Link to={`${repoFull}/tree/${lesson}-${language}`} target="_blank">
+              <FaLock style={{ transform: "scale(1.5)" }} />
+            </Link>
+          )}
+
+          <Badge completion={getCompletion} />
+        </div>
       </div>
     </header>
   );

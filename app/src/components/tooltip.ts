@@ -9,6 +9,7 @@ const options: Partial<Props> = {
   allowHTML: true,
   appendTo: document.body,
   plugins: [followCursor],
+  /** for debugging */
   // onHide: () => false,
 };
 
@@ -41,7 +42,7 @@ new MutationObserver((mutations) => {
 type _Element = Element & { _tippy?: Instance };
 
 /** create or update tippy instance */
-const update = (element: Element) => {
+function update(element: Element) {
   /** get tooltip content from attribute */
   const content = element.getAttribute("data-tooltip")?.trim() || "";
 
@@ -58,8 +59,6 @@ const update = (element: Element) => {
   instance.setProps({
     /** only make interactive if content includes link to click on */
     interactive: content.includes("<a"),
-    /** follow cursor on map */
-    followCursor: element.closest("#map") ? "horizontal" : false,
   });
 
   /** set aria label to content */
@@ -71,19 +70,24 @@ const update = (element: Element) => {
   /** force re-position after rendering updates */
   if (instance.popperInstance)
     window.setTimeout(instance.popperInstance.update, 20);
-};
+}
 
 /** remove tippy instance */
-const remove = (element: Element) => (element as _Element)._tippy?.destroy();
+function remove(element: Element) {
+  (element as _Element)._tippy?.destroy();
+}
 
 /** make aria label from html string */
-export const makeLabel = (string: string) =>
-  (
+function makeLabel(string: string) {
+  return (
     new DOMParser().parseFromString(string, "text/html").body.textContent || ""
   ).replaceAll(/\s+/g, " ");
+}
 
 /** query select all, including self */
-const selectAll = <T extends Element>(element: Element, selector: string) => [
-  ...(element.matches(selector) ? [element] : []),
-  ...element.querySelectorAll<T>(selector),
-];
+function selectAll<T extends Element>(element: Element, selector: string) {
+  return [
+    ...(element.matches(selector) ? [element] : []),
+    ...element.querySelectorAll<T>(selector),
+  ];
+}
