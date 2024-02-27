@@ -3,7 +3,6 @@ import completionData from "@/data/completion.json";
 import languages from "@/data/languages.json";
 import lessons from "@/data/lessons.json";
 import { _Entry, Completion, Entry } from "@/data/types";
-import { filterFuncs } from "@/pages/Edit";
 
 /** completion data */
 export const completion = completionData as unknown as Completion;
@@ -89,7 +88,7 @@ export function isComplete(entry: Entry, language: string) {
     entry.currentTranslation.length < translationMax(entry, language) &&
     entry.currentOriginal.length < originalMax(entry);
 
-  const reviewed = entry.reviews > 0 || filterFuncs.my(entry);
+  const reviewed = entry.reviews > 0 || isEdited(entry) || entry.upvoted;
 
   return goodLength && reviewed;
 }

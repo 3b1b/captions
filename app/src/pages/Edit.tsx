@@ -84,9 +84,9 @@ export const filterFuncs: Record<Filter, FilterFunc> = {
 export const loader: LoaderFunction = async ({ params }) => {
   /** get lesson and language slug from url */
   const { lesson = "" } = params;
-  language = params.language || "";
 
   /** set language */
+  language = params.language || "";
 
   /** lookup lesson metadata */
   setAtom(meta, lessons.find((l) => l.lesson === lesson) || null);
