@@ -56,9 +56,15 @@ export function charsPerSec(language: string) {
   const perSec =
     data[language] ||
     /** fallback to max avg */
-    Math.max(...Object.values(charsPerSec));
-  /** allow for some variance around avg */
+    Math.max(...Object.values(data));
   return perSec;
+}
+
+/** Estimate how many characters would cause an overflow of narration time */
+export function maxCharsAllowed(language: string, start: number, end: number): number {
+  const mult_const: number = 1.1;
+  const time_buff: number = 0.5;
+  return mult_const * (charsPerSec(language) * (end - start + time_buff));
 }
 
 /** get max length for entry translation text */
@@ -68,7 +74,7 @@ export function translationMax(
 ) {
   const [start = 0, end = 0] = timeRange || [];
   /** for entries with time range, i.e. captions */
-  if (start && end) return charsPerSec(language) * (end - start);
+  if (start && end) return maxCharsAllowed(language, start, end);
   /** for entries without a time range, i.e. title and description */ else
     return (
       startingTranslation.length * 1.5 ||
