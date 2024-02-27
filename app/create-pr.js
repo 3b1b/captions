@@ -3,11 +3,6 @@
 const functions = require("@google-cloud/functions-framework");
 const { Octokit } = require("octokit");
 
-/**
- * github fine-grained personal access token
- * single repo
- * read/write permissions for contents and pull requests
- */
 const auth = process.env.GITHUB_API_KEY;
 const owner = "3b1b";
 const repo = "captions";

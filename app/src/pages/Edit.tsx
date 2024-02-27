@@ -1,10 +1,10 @@
-import { LoaderFunction, useBlocker } from "react-router";
+import { LoaderFunction, redirect, useBlocker } from "react-router";
 import { atom } from "jotai";
 import { branchExists, createPr, repoRaw, request } from "@/api";
 import { getAtom, setAtom } from "@/App";
 import { calcCompletion, convert, isEdited, revert } from "@/data/data";
 import lessons from "@/data/lessons.json";
-import { _Entry, _Timings, Entry } from "@/data/types";
+import { _Entry, Entry } from "@/data/types";
 import Footer from "@/pages/edit/Footer";
 import Header from "@/pages/edit/Header";
 import Section from "@/pages/edit/Section";
@@ -84,9 +84,14 @@ export const filterFuncs: Record<Filter, FilterFunc> = {
 export const loader: LoaderFunction = async ({ params }) => {
   /** get lesson and language slug from url */
   const { lesson = "" } = params;
-
-  /** set language */
   language = params.language || "";
+
+  /** check if edit already open for lesson/language */
+  setAtom(locked, await branchExists(`${lesson}-${language}`));
+  if (getAtom(locked)) {
+    window.alert(lockedMessage);
+    return redirect("/");
+  }
 
   /** lookup lesson metadata */
   setAtom(meta, lessons.find((l) => l.lesson === lesson) || null);
@@ -136,12 +141,6 @@ export const loader: LoaderFunction = async ({ params }) => {
     const data = await request<_Entry[]>(url);
     if (data) setAtom(captions, data.map(convert));
   }
-
-  /** alert about locked status */
-  if (getAtom(locked))
-    window.setTimeout(() => {
-      window.alert(lockedMessage);
-    }, 1000);
 
   return null;
 };
@@ -199,7 +198,7 @@ const navMessage =
   "Are you sure you want to navigate away from this page? Unsaved edits will be lost.";
 
 const lockedMessage =
-  "This lesson/language is already being edited by someone. Click the lock for more info. You may want to work on something else for now.";
+  "This lesson/language is already being edited by someone, see github.com/3b1b/captions/pulls. Please work on something else for now.";
 
 const submitMessage = (error: string) =>
   `There was an error submitting: ${error.replace(/\.$/, "")}. Please save your edits as a backup, then try again later or report this issue.`;
