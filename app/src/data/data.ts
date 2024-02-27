@@ -58,7 +58,7 @@ export function charsPerSec(language: string) {
     /** fallback to max avg */
     Math.max(...Object.values(charsPerSec));
   /** allow for some variance around avg */
-  return perSec * 1.2;
+  return perSec;
 }
 
 /** get max length for entry translation text */
