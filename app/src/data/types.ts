@@ -34,30 +34,35 @@ export type _Timings = [string, number, number][];
 export type _Entry = {
   input: string;
   translatedText: string;
+  model?: string;
   from_community_srt?: string;
-  n_reviews?: number;
-  start?: number;
-  end?: number;
+  n_reviews: number;
+  start: number;
+  end: number;
 };
 
 /** translation entry (title/description/entry) */
 export type Entry = {
-  /** number of reviews (upvotes/edits) */
-  reviews: number;
-  /** upvoted state */
-  upvoted: boolean;
-  /** starting translation state */
-  startingTranslation: string;
-  /** translation edit state */
-  currentTranslation: string;
   /** starting original english state  */
   startingOriginal: string;
   /** original english edit state */
   currentOriginal: string;
-  /** timestamp range */
-  timeRange?: [number, number];
+  /** starting translation state */
+  startingTranslation: string;
+  /** translation edit state */
+  currentTranslation: string;
+  /** translation model */
+  model?: string;
   /** old built-in youtube community translation */
   legacyTranslation?: string;
+  /** number of reviews (upvotes/edits) */
+  reviews: number;
+  /** upvoted state */
+  upvoted: boolean;
+  /** start time */
+  start: number;
+  /** end time */
+  end: number;
 };
 
 /** language/topic/lesson completion format */

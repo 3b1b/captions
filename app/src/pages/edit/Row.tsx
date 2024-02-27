@@ -45,17 +45,16 @@ function Row({ index, entries }: Props) {
 
   /** extract entry props */
   const {
-    reviews,
-    upvoted,
-    startingTranslation,
-    currentTranslation,
     startingOriginal,
     currentOriginal,
-    timeRange,
+    startingTranslation,
+    currentTranslation,
     legacyTranslation,
+    reviews,
+    upvoted,
+    start,
+    end,
   } = entry;
-  const [start = 0, end = 0] = timeRange || [];
-
   const ref = useRef<HTMLDivElement>(null);
 
   /** url params */
@@ -109,7 +108,7 @@ function Row({ index, entries }: Props) {
           <span>{edited ? 1 : reviews + Number(upvoted)}</span>
         </button>
 
-        {timeRange && (
+        {(start && end) && (
           <button
             className={classes.action}
             onClick={() => {

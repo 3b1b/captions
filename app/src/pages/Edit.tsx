@@ -137,17 +137,6 @@ export const loader: LoaderFunction = async ({ params }) => {
     if (data) setAtom(captions, data.map(convert));
   }
 
-  /** load caption timings */
-  {
-    const url = `${base}/${path}/english/sentence_timings.json`;
-    const data = await request<_Timings>(url);
-    if (data)
-      data.forEach(([, start, end], index) => {
-        if (getAtom(captions)[index])
-          getAtom(captions)[index]!.timeRange = [start, end];
-      });
-  }
-
   /** alert about locked status */
   if (getAtom(locked))
     window.setTimeout(() => {

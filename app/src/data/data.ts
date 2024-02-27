@@ -76,10 +76,9 @@ export function maxCharsAllowed(language: string, start: number, end: number): n
 
 /** get max length for entry translation text */
 export function translationMax(
-  { startingTranslation, startingOriginal, timeRange }: Entry,
+  { startingTranslation, startingOriginal, start, end }: Entry,
   language: string,
 ) {
-  const [start = 0, end = 0] = timeRange || [];
   /** for entries with time range, i.e. captions */
   if (start && end) return maxCharsAllowed(language, start, end);
   /** for entries without a time range, i.e. title and description */ else
