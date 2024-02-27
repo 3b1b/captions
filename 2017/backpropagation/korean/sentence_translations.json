@@ -1,0 +1,585 @@
+[
+ {
+  "input": "Here, we tackle backpropagation, the core algorithm behind how neural networks learn.",
+  "translatedText": "",
+  "n_reviews": 0,
+  "start": 4.06,
+  "end": 8.88
+ },
+ {
+  "input": "After a quick recap for where we are, the first thing I'll do is an intuitive walkthrough for what the algorithm is actually doing, without any reference to the formulas.",
+  "translatedText": "",
+  "from_community_srt": "여기서 우리는 신경망이 학습을 하는지에 대한 핵심 알고리즘인 역전파에 대해 알아볼 겁니다 우리가 알고있는 부분을 간략히 요약 하고, 첫 번째로 알고리즘이 실제로 무엇을 하는지 어떠한 공식도 사용하지 않고 직관적으로 살펴보겠습니다.",
+  "n_reviews": 0,
+  "start": 9.4,
+  "end": 17.0
+ },
+ {
+  "input": "Then, for those of you who do want to dive into the math, the next video goes into the calculus underlying all this.",
+  "translatedText": "",
+  "from_community_srt": "수학적인 공식에 대해 더욱 알고 싶어 하는 사람들을 위해 다음 비디오는이 모든 것을 설명해주는 미적분학에 들어갑니다 ㅎㅎ.",
+  "n_reviews": 0,
+  "start": 17.66,
+  "end": 23.02
+ },
+ {
+  "input": "If you watched the last two videos, or if you're just jumping in with the appropriate background, you know what a neural network is, and how it feeds forward information.",
+  "translatedText": "",
+  "from_community_srt": "마지막 두 개의 동영상을 본 경우 또는 적당한 배경지식을 가지고 이 영상을 본다면 당신은 신경망이 무엇인지, 그것이 어떻게 정보를 전달 하는지를 알고있을겁니다.",
+  "n_reviews": 0,
+  "start": 23.82,
+  "end": 31.0
+ },
+ {
+  "input": "Here, we're doing the classic example of recognizing handwritten digits whose pixel values get fed into the first layer of the network with 784 neurons, and I've been showing a network with two hidden layers having just 16 neurons each, and an output layer of 10 neurons, indicating which digit the network is choosing as its answer.",
+  "translatedText": "",
+  "from_community_srt": "여기서 우리는 손으로 쓴 숫자를 인식하는 신경망의 예를 들겠습니다. 이 신경망은 입력층이 784개이고, 은닉층은 각각 16개의 신경을 가지고 있으며, 어떤 숫자인지 표시해줄 10개의 출력층이 있습니다.",
+  "n_reviews": 0,
+  "start": 31.68,
+  "end": 49.04
+ },
+ {
+  "input": "I'm also expecting you to understand gradient descent, as described in the last video, and how what we mean by learning is that we want to find which weights and biases minimize a certain cost function.",
+  "translatedText": "",
+  "from_community_srt": "저는 여러분들이 저번 영상에서 설명한 경사 하강법에 대해서 이해하고 있고 신경망이 배운다는 것이 오차 함수를 최소화 시키는 가중치와 편향을 구하는 것이라는 것을 알고 있다고 가정하겠습니다.",
+  "n_reviews": 0,
+  "start": 50.04,
+  "end": 61.26
+ },
+ {
+  "input": "As a quick reminder, for the cost of a single training example, you take the output the network gives, along with the output you wanted it to give, and add up the squares of the differences between each component.",
+  "translatedText": "",
+  "from_community_srt": "오차에 관한 한가지 학습데이터를 살펴봅시다. 우리가 해야할 것은 신경망이 출력한것과 신경망이 출력하기를 바랬던 값들을 가져와 차이를 구한후 모두 더합니다.",
+  "n_reviews": 0,
+  "start": 62.04,
+  "end": 74.6
+ },
+ {
+  "input": "Doing this for all of your tens of thousands of training examples and averaging the results, this gives you the total cost of the network.",
+  "translatedText": "",
+  "from_community_srt": "이걸 수천가지의 학습 데이터에 대해 수행하고 평균을 얻으면 당신은 신경망의 모든 오차를 구할수 있습니다.",
+  "n_reviews": 0,
+  "start": 75.38,
+  "end": 82.2
+ },
+ {
+  "input": "And as if that's not enough to think about, as described in the last video, the thing that we're looking for is the negative gradient of this cost function, which tells you how you need to change all of the weights and biases, all of these connections, so as to most efficiently decrease the cost.",
+  "translatedText": "",
+  "from_community_srt": "그리고 저번 영상에서 설명한것 처럼 우리가 찾고있는 것은 이 오차 함수의 음의 기울기입니다. 이것은 모든 가중치와 편향,이 모든 연결을 어떻게 변경해야 하는지를 알려줍니다. 이러한 방식으로 가장 효율적으로 오차함수를 줄일 수 있습니다.",
+  "n_reviews": 0,
+  "start": 82.2,
+  "end": 98.32
+ },
+ {
+  "input": "Backpropagation, the topic of this video, is an algorithm for computing that crazy complicated gradient.",
+  "translatedText": "",
+  "from_community_srt": "이 영상의 주제인 역전파는 그 많은 복잡한 기울기를 계산하기위한 알고리즘입니다.",
+  "n_reviews": 0,
+  "start": 103.26,
+  "end": 108.58
+ },
+ {
+  "input": "And the one idea from the last video that I really want you to hold firmly in your mind right now is that because thinking of the gradient vector as a direction in 13,000 dimensions is, to put it lightly, beyond the scope of our imaginations, there's another way you can think about it.",
+  "translatedText": "",
+  "from_community_srt": "그리고 저번 영상에서 설명한 것을 지금 잘 기억하기를 바랍니다. 왜냐하면 기울기 벡터를 13000차원의 방향으로 생각하는것은 우리가 상상 할 수 있는 범위를 넘어서는 것이기 때문입니다. 그것에 대해 생각할 수있는 또 다른 방법이 있습니다.",
+  "n_reviews": 0,
+  "start": 109.14,
+  "end": 123.58
+ },
+ {
+  "input": "The magnitude of each component here is telling you how sensitive the cost function is to each weight and bias.",
+  "translatedText": "",
+  "from_community_srt": "각 오차는 오차함수가 각 가중치 및 편차에 얼마나 민감한지를 나타낸다고 생각하는 것입니다.",
+  "n_reviews": 0,
+  "start": 124.6,
+  "end": 130.94
+ },
+ {
+  "input": "For example, let's say you go through the process I'm about to describe, and you compute the negative gradient, and the component associated with the weight on this edge here comes out to be 3.2, while the component associated with this edge here comes out as 0.1.",
+  "translatedText": "",
+  "from_community_srt": "예를 들어, 제가 설명하려고하는 과정을 거쳐서 음의 기울기를 계산하면, 이 가중치에 대한 기울기 계산값은 3.2로 나오고, 이 가중치에 대한 기울기 계산값은 0.1로 나옵니다.",
+  "n_reviews": 0,
+  "start": 131.8,
+  "end": 146.26
+ },
+ {
+  "input": "The way you would interpret that is that the cost of the function is 32 times more sensitive to changes in that first weight, so if you were to wiggle that value just a little bit, it's going to cause some change to the cost, and that change is 32 times greater than what the same wiggle to that second weight would give.",
+  "translatedText": "",
+  "from_community_srt": "당신이 해석 할 수있는 방법은 오차함수의 출력은 기울기가 0.1인 가중치 보다 기울기가 3.2인 가중치가 32배 더 민감하다고 해석할 수 있습니다. 그래서 만약 기울기가 3.2인 가중치의 값을 조금 조정한다면 오차함수의 출력에 변화를 줄 것입니다. 그리고 그 변화는두 번째 가중치의 조정이주는 것보다 32배 더 클것입니다.",
+  "n_reviews": 0,
+  "start": 146.82,
+  "end": 163.06
+ },
+ {
+  "input": "Personally, when I was first learning about backpropagation, I think the most confusing aspect was just the notation and the index chasing of it all.",
+  "translatedText": "",
+  "from_community_srt": "개인적으로, 제가 처음으로 역전파에 대해 배울 때 가장 혼란스러운 부분은 표기법과 그 모든것을  나타내는 지수였다고 생각합니다.",
+  "n_reviews": 0,
+  "start": 168.42,
+  "end": 175.74
+ },
+ {
+  "input": "But once you unwrap what each part of this algorithm is really doing, each individual effect it's having is actually pretty intuitive, it's just that there's a lot of little adjustments getting layered on top of each other.",
+  "translatedText": "",
+  "from_community_srt": "하지만 일단이 알고리즘의 각 부분이 실제로하고있는 것을 알면 각 개별 효과는 실제로 꽤 직관적입니다. 단지, 수많은 작은 조정들이 서로 겹쳐져 있을 뿐입니다.",
+  "n_reviews": 0,
+  "start": 176.22,
+  "end": 186.64
+ },
+ {
+  "input": "So I'm going to start things off here with a complete disregard for the notation, and just step through the effects each training example has on the weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "그래서 저는 표기법을 완전히 무시하고 시작할 것입니다. 그리고 각각의 훈련 예제가 가중치와 편향에 미치는 영향을 살펴보겠습니다.",
+  "n_reviews": 0,
+  "start": 187.74,
+  "end": 196.12
+ },
+ {
+  "input": "Because the cost function involves averaging a certain cost per example over all the tens of thousands of training examples, the way we adjust the weights and biases for a single gradient descent step also depends on every single example.",
+  "translatedText": "",
+  "from_community_srt": "왜냐하면 오차함수는 수만 가지의 훈련예제 대해 예제당 특정 오차를 평균화하기 때문에, 단일 경사하강법 단계에서 가중치와 편향를 조정하는 방식",
+  "n_reviews": 0,
+  "start": 197.02,
+  "end": 211.04
+ },
+ {
+  "input": "Or rather, in principle it should, but for computational efficiency we'll do a little trick later to keep you from needing to hit every single example for every step.",
+  "translatedText": "",
+  "from_community_srt": "또한 모든 예제에 따라 다르며 오히려 원칙적으로 그래야 합니다만 계산 효율성을 위해 각 단계마다 모든 예를 볼 필요가 없도록 약간의 방법을 쓸 것입니다.",
+  "n_reviews": 0,
+  "start": 211.68,
+  "end": 219.2
+ },
+ {
+  "input": "In other cases, right now, all we're going to do is focus our attention on one single example, this image of a 2.",
+  "translatedText": "",
+  "from_community_srt": "또 다른 방법으로, 우리가 지금 하려는 것은 한 가지 예에 집중하는 것입니다.바로 이 2의 이미지 입니다.",
+  "n_reviews": 0,
+  "start": 219.2,
+  "end": 225.96
+ },
+ {
+  "input": "What effect should this one training example have on how the weights and biases get adjusted?",
+  "translatedText": "",
+  "from_community_srt": "이 한 가지 훈련 사례가 가중치와 편향을 조정하는 방법에 어떻게 영향을 미칠까요? 우리가 아직 네트워크가 잘 훈련되지 않은 시점에 있다고 가정 해 보겠습니다.",
+  "n_reviews": 0,
+  "start": 226.72,
+  "end": 231.48
+ },
+ {
+  "input": "Let's say we're at a point where the network is not well trained yet, so the activations in the output are going to look pretty random, maybe something like 0.5, 0.8, 0.2, on and on.",
+  "translatedText": "",
+  "from_community_srt": "결과물은 꽤 무작위 처럼 보일 것입니다. 0.5, 0.8, 0.2와 같은 값일 수 있습니다.",
+  "n_reviews": 0,
+  "start": 232.68,
+  "end": 242.0
+ },
+ {
+  "input": "We can't directly change those activations, we only have influence on the weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "이제 우리는 이러한 출력 자체를 변화시킬수는 없으며, 가중치 및 편향에만 변화를 줄 수 있습니다.",
+  "n_reviews": 0,
+  "start": 242.52,
+  "end": 247.16
+ },
+ {
+  "input": "But it's helpful to keep track of which adjustments we wish should take place to that output layer.",
+  "translatedText": "",
+  "from_community_srt": "하지만 여기서 출력층의 어떤 값이 조정되어야 될지 아는것은 유용합니다.",
+  "n_reviews": 0,
+  "start": 247.16,
+  "end": 252.58
+ },
+ {
+  "input": "And since we want it to classify the image as a 2, we want that third value to get nudged up while all the others get nudged down.",
+  "translatedText": "",
+  "from_community_srt": "우리는 이 이미지를 2로 분류하기를 원하기 때문에, 우리는 세 번째 값이 출력되기를 원하고 다른 모든 것은 내립니다.",
+  "n_reviews": 0,
+  "start": 253.36,
+  "end": 261.26
+ },
+ {
+  "input": "Moreover, the sizes of these nudges should be proportional to how far away each current value is from its target value.",
+  "translatedText": "",
+  "from_community_srt": "또한 이러한 조정의 크기는 다음과 비례해야합니다. 각 현재 값이 목표 값에서 얼마나 떨어져 있는지.",
+  "n_reviews": 0,
+  "start": 262.06,
+  "end": 269.52
+ },
+ {
+  "input": "For example, the increase to that number 2 neuron's activation is in a sense more important than the decrease to the number 8 neuron, which is already pretty close to where it should be.",
+  "translatedText": "",
+  "from_community_srt": "예를 들어, 그 숫자 2 뉴런 활성화에 대한 증가는, 숫자 8 뉴런에 대한 증가 보다는 중요합니다. 그것은 이미 있어야 할 곳에 아주 가깝습니다.",
+  "n_reviews": 0,
+  "start": 270.22,
+  "end": 280.9
+ },
+ {
+  "input": "So zooming in further, let's focus just on this one neuron, the one whose activation we wish to increase.",
+  "translatedText": "",
+  "from_community_srt": "그러니깐 더 자세히 보면서 우리가 활성화를 원하는 이 뉴런에 초점을 맞추어 봅시다.",
+  "n_reviews": 0,
+  "start": 282.04,
+  "end": 287.28
+ },
+ {
+  "input": "Remember, that activation is defined as a certain weighted sum of all the activations in the previous layer, plus a bias, which is all then plugged into something like the sigmoid squishification function, or a ReLU.",
+  "translatedText": "",
+  "from_community_srt": "그 활성화는 다음과 같이 정의됩니다. 이전 계층의 모든 활성화에 대한 특정 가중치 합계와 편향 은 시그모이드 함수나 다른 ReLU와 같은 함수와 연결되어 있습니다.",
+  "n_reviews": 0,
+  "start": 288.18,
+  "end": 301.04
+ },
+ {
+  "input": "So there are three different avenues that can team up together to help increase that activation.",
+  "translatedText": "",
+  "from_community_srt": "따라서 활성화를 높이기 위해 함께 조화을 이룰 수있는 세 가지 방법이 있습니다.",
+  "n_reviews": 0,
+  "start": 301.64,
+  "end": 307.02
+ },
+ {
+  "input": "You can increase the bias, you can increase the weights, and you can change the activations from the previous layer.",
+  "translatedText": "",
+  "from_community_srt": "편향을 증가시키거나, 가중치를 증가시키거나, 또는 이전 레이어의 활성도를 변경할 수 있습니다.",
+  "n_reviews": 0,
+  "start": 307.44,
+  "end": 314.04
+ },
+ {
+  "input": "Focusing on how the weights should be adjusted, notice how the weights actually have differing levels of influence.",
+  "translatedText": "",
+  "from_community_srt": "가중치를 조정하는 방법에만 초점을 맞추고, 가중치의 실제 영향 수준이 다른지 확인하십시오.",
+  "n_reviews": 0,
+  "start": 314.94,
+  "end": 320.86
+ },
+ {
+  "input": "The connections with the brightest neurons from the preceding layer have the biggest effect since those weights are multiplied by larger activation values.",
+  "translatedText": "",
+  "from_community_srt": "앞의 레이어에서 가장 밝은 뉴런과의 연결이 가장 큰 효과를 냅니다. 가중치에는 더 큰 활성 값이 곱해지기 때문입니다.",
+  "n_reviews": 0,
+  "start": 321.44,
+  "end": 329.1
+ },
+ {
+  "input": "So if you were to increase one of those weights, it actually has a stronger influence on the ultimate cost function than increasing the weights of connections with dimmer neurons, at least as far as this one training example is concerned.",
+  "translatedText": "",
+  "from_community_srt": "그래서 만약 당신이 그 중 하나의 가중치를 늘린다면, 어두운 뉴런과의 연결 가중치를 높이는 것보다 오차함수에 실제로 더 강한 영향을 미칩니다. 적어도이 한 가지 훈련 예를들 수 있습니다.",
+  "n_reviews": 0,
+  "start": 331.46,
+  "end": 343.48
+ },
+ {
+  "input": "Remember, when we talk about gradient descent, we don't just care about whether each component should get nudged up or down, we care about which ones give you the most bang for your buck.",
+  "translatedText": "",
+  "from_community_srt": "경사 하강법에 대해서 이야기했을 때 기억하십시오. 우리는 각 구성 요소가 어떻게 조정되어야하는지, 우리는 오차함수의 값을 줄이는것에 관심을 둡니다.",
+  "n_reviews": 0,
+  "start": 344.42,
+  "end": 353.22
+ },
+ {
+  "input": "This, by the way, is at least somewhat reminiscent of a theory in neuroscience for how biological networks of neurons learn, Hebbian theory, often summed up in the phrase, neurons that fire together wire together.",
+  "translatedText": "",
+  "from_community_srt": "그건 그렇고, 적어도 신경 과학의 이론을 연상케합니다 생물의 신경망이 어떻게 학습되는지 Hebbian theory - 종종 \"함께 연결되는 뉴런\"이라는 구에서 요약됩니다.",
+  "n_reviews": 0,
+  "start": 355.02,
+  "end": 366.46
+ },
+ {
+  "input": "Here, the biggest increases to weights, the biggest strengthening of connections, happens between neurons which are the most active, and the ones which we wish to become more active.",
+  "translatedText": "",
+  "from_community_srt": "여기에서 가장 큰 가중치 증가, 가장 큰 연결 강화, 가장 활동적인 뉴런 사이에서 발생하며, 우리는 더 활성화 되기를 바랍니다.",
+  "n_reviews": 0,
+  "start": 367.26,
+  "end": 377.28
+ },
+ {
+  "input": "In a sense, the neurons that are firing while seeing a 2 get more strongly linked to those are the ones firing when thinking about a 2.",
+  "translatedText": "",
+  "from_community_srt": "어떤 의미에서 볼 때, 2가 보일때 켜지는 뉴런들은 2에 대해 생각할 때 더 밝아집니다.",
+  "n_reviews": 0,
+  "start": 377.94,
+  "end": 384.48
+ },
+ {
+  "input": "To be clear, I'm not in a position to make statements one way or another about whether artificial networks of neurons behave anything like biological brains, and this fires together wire together idea comes with a couple meaningful asterisks, but taken as a very loose analogy, I find it interesting to note.",
+  "translatedText": "",
+  "from_community_srt": "분명히 말하자면, 저는 인공신경망의 네트워크가  생물학적인 뇌와 같은 방식으로 움직이는 것과 뉴런들이 서로 연관 되고 자극할 수 있다라는 이 문장에 대하여 뭐라고 할 수 있는 위치에 있지는 않습니다. 그러나 저는 아주 흥미로운 점을 발견했습니다.",
+  "n_reviews": 0,
+  "start": 385.4,
+  "end": 401.02
+ },
+ {
+  "input": "Anyway, the third way we can help increase this neuron's activation is by changing all the activations in the previous layer.",
+  "translatedText": "",
+  "from_community_srt": "어쨌든,이 뉴런의 활성화를 증가시킬 수있는 방법 중 세 번째 방법입니다. 이전 계층의 모든 활성화를 변경하는 것입니다.",
+  "n_reviews": 0,
+  "start": 401.94,
+  "end": 409.04
+ },
+ {
+  "input": "Namely, if everything connected to that digit 2 neuron with a positive weight got brighter, and if everything connected with a negative weight got dimmer, then that digit 2 neuron would become more active.",
+  "translatedText": "",
+  "from_community_srt": "즉 2와 연결된 모든 양의 가중치 신경은 밝아집니다. 음의 가중치와 관련된 모든 신경이 더 밝아지면, 그 자리 2 뉴런은 더 활동적이 될 것입니다.",
+  "n_reviews": 0,
+  "start": 409.04,
+  "end": 420.68
+ },
+ {
+  "input": "And similar to the weight changes, you're going to get the most bang for your buck by seeking changes that are proportional to the size of the corresponding weights.",
+  "translatedText": "",
+  "from_community_srt": "그리고 가중치 변화와 유사하게, 당신은 당신의 돈을 위해 가장 많은 것을 얻을 것입니다. 해당 가중치의 크기에 비례하는 변경 사항을 찾습니다.",
+  "n_reviews": 0,
+  "start": 422.54,
+  "end": 430.28
+ },
+ {
+  "input": "Now of course, we cannot directly influence those activations, we only have control over the weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "물론 우리는 이러한 활성화에 직접적으로 영향을 줄 수는 없지만, 우리는 단지 가중치와 편견을 제어 할 수 있습니다.",
+  "n_reviews": 0,
+  "start": 432.14,
+  "end": 437.48
+ },
+ {
+  "input": "But just as with the last layer, it's helpful to keep a note of what those desired changes are.",
+  "translatedText": "",
+  "from_community_srt": "그러나 마지막 레이어와 마찬가지로 원하는 변경 사항이 무엇인지 메모하는 것이 좋습니다.",
+  "n_reviews": 0,
+  "start": 437.48,
+  "end": 444.12
+ },
+ {
+  "input": "But keep in mind, zooming out one step here, this is only what that digit 2 output neuron wants.",
+  "translatedText": "",
+  "from_community_srt": "하지만 여기서 한 걸음 더 자세히 살펴보면, 이것은 숫자 2 출력 뉴런이 원하는 것일뿐입니다.",
+  "n_reviews": 0,
+  "start": 444.58,
+  "end": 449.2
+ },
+ {
+  "input": "Remember, we also want all the other neurons in the last layer to become less active, and each of those other output neurons has its own thoughts about what should happen to that second to last layer.",
+  "translatedText": "",
+  "from_community_srt": "우리는 또한 마지막 레이어의 다른 모든 뉴런들이 덜 활동적이되기를 바랍니다. 그 각각의 출력 뉴런들 그 두 번째 - 마지막 층에서 일어날 일에 대한 생각을 가지고 있습니다.",
+  "n_reviews": 0,
+  "start": 449.76,
+  "end": 459.6
+ },
+ {
+  "input": "So, the desire of this digit 2 neuron is added together with the desires of all the other output neurons for what should happen to this second to last layer, again in proportion to the corresponding weights, and in proportion to how much each of those neurons needs to change.",
+  "translatedText": "",
+  "from_community_srt": "그래서,이 자리의 욕망은 2 뉴런 다른 모든 출력 뉴런의 욕구와 함께 추가됩니다. 마지막 두 번째 레이어에서 일어날 일에 대해 다시, 대응하는 가중치에 비례하여, 그리고 각각의 신경 세포가 변화 할 필요가있는 양에 비례하여.",
+  "n_reviews": 0,
+  "start": 462.7,
+  "end": 480.72
+ },
+ {
+  "input": "This right here is where the idea of propagating backwards comes in.",
+  "translatedText": "",
+  "from_community_srt": "바로 여기가 거꾸로 전파하려는 아이디어가 나오는 곳입니다.",
+  "n_reviews": 0,
+  "start": 481.6,
+  "end": 485.48
+ },
+ {
+  "input": "By adding together all these desired effects, you basically get a list of nudges that you want to happen to this second to last layer.",
+  "translatedText": "",
+  "from_community_srt": "이러한 모든 원하는 효과를 모두 합하면, 당신은 근본적으로 당신이 두 번째에서 마지막 층으로 일어나기를 원하는 뉘앙스 목록을 얻습니다.",
+  "n_reviews": 0,
+  "start": 485.82,
+  "end": 493.36
+ },
+ {
+  "input": "And once you have those, you can recursively apply the same process to the relevant weights and biases that determine those values, repeating the same process I just walked through and moving backwards through the network.",
+  "translatedText": "",
+  "from_community_srt": "그리고 일단 당신이 그것들을 가지고 있으면, 재귀 적으로 동일한 프로세스를 적용 할 수 있습니다. 그 값들을 결정하는 관련 가중치들과 편향들, 방금 걸어서 돌아가서 네트워크를 통해 뒤로 이동하는 동일한 프로세스를 반복합니다.",
+  "n_reviews": 0,
+  "start": 494.22,
+  "end": 505.1
+ },
+ {
+  "input": "And zooming out a bit further, remember that this is all just how a single training example wishes to nudge each one of those weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "그리고 조금 더 축소하면, 이것이 단지 모든 것임을 기억하십시오. 어떻게 하나의 훈련 예가 그 무게와 편견의 각각을 조금씩 움직이기를 바랄 것인가.",
+  "n_reviews": 0,
+  "start": 508.96,
+  "end": 517.0
+ },
+ {
+  "input": "If we only listened to what that 2 wanted, the network would ultimately be incentivized just to classify all images as a 2.",
+  "translatedText": "",
+  "from_community_srt": "우리가 원하는 것만 듣는다면, 네트워크는 궁극적으로 모든 이미지를 2로 분류하기 위해 인센티브가 부여됩니다.",
+  "n_reviews": 0,
+  "start": 517.48,
+  "end": 523.22
+ },
+ {
+  "input": "So what you do is go through this same backprop routine for every other training example, recording how each of them would like to change the weights and biases, and average together those desired changes.",
+  "translatedText": "",
+  "from_community_srt": "그래서 당신이하는 일은 다른 모든 트레이닝 예제에 대해 동일한 백 드롭 루틴을 수행하는 것입니다. 각자가 가중치와 편견을 어떻게 바꾸고 싶은지 기록하고, 원하는 변화를 함께 평균했습니다.",
+  "n_reviews": 0,
+  "start": 524.06,
+  "end": 536.0
+ },
+ {
+  "input": "This collection here of the averaged nudges to each weight and bias is, loosely speaking, the negative gradient of the cost function referenced in the last video, or at least something proportional to it.",
+  "translatedText": "",
+  "from_community_srt": "각 체중과 편견에 대한 평균 nudges의 여기 수집은, 느슨하게 말하면, 마지막 비디오에서 참조 된 비용 함수의 음의 기울기, 적어도 그것에 비례하는 어떤 것.",
+  "n_reviews": 0,
+  "start": 541.72,
+  "end": 553.68
+ },
+ {
+  "input": "I say loosely speaking only because I have yet to get quantitatively precise about those nudges, but if you understood every change I just referenced, why some are proportionally bigger than others, and how they all need to be added together, you understand the mechanics for what backpropagation is actually doing.",
+  "translatedText": "",
+  "from_community_srt": "나는 \"느슨하게 말하면서\"말합니다. 왜냐하면 나는 아직 그 찌름에 대해 정량적으로 정확한 것을 얻지 못했기 때문입니다. 그러나 제가 방금 언급 한 모든 변화를 이해한다면, 왜 일부는 다른 것보다 비례 적으로 더 큽니다. 그들 모두를 어떻게 함께 추가해야하는지, 당신은 backpropagation이 실제로하고있는 것에 대한 메 커닉을 이해합니다.",
+  "n_reviews": 0,
+  "start": 554.38,
+  "end": 571.0
+ },
+ {
+  "input": "By the way, in practice, it takes computers an extremely long time to add up the influence of every training example every gradient descent step.",
+  "translatedText": "",
+  "from_community_srt": "그건 그렇고, 실제로 그것은 컴퓨터를 매우 오랜 시간이 걸립니다. 모든 단일 교육 예, 모든 단일 그래디언트 디센트 단계의 영향을 추가합니다.",
+  "n_reviews": 0,
+  "start": 573.96,
+  "end": 582.44
+ },
+ {
+  "input": "So here's what's commonly done instead.",
+  "translatedText": "",
+  "from_community_srt": "여기에 일반적으로 수행되는 작업이 있습니다.",
+  "n_reviews": 0,
+  "start": 583.14,
+  "end": 584.82
+ },
+ {
+  "input": "You randomly shuffle your training data and then divide it into a whole bunch of mini-batches, let's say each one having 100 training examples.",
+  "translatedText": "",
+  "from_community_srt": "학습 데이터를 무작위로 섞은 다음이를 전체 배치로 나눕니다. 각자 100 개의 훈련 예를 가지고 있다고 가정 해 봅시다.",
+  "n_reviews": 0,
+  "start": 585.48,
+  "end": 592.42
+ },
+ {
+  "input": "Then you compute a step according to the mini-batch.",
+  "translatedText": "",
+  "from_community_srt": "그런 다음 미니 배치에 따라 단계를 계산합니다.",
+  "n_reviews": 0,
+  "start": 592.94,
+  "end": 596.2
+ },
+ {
+  "input": "It's not going to be the actual gradient of the cost function, which depends on all of the training data, not this tiny subset, so it's not the most efficient step downhill, but each mini-batch does give you a pretty good approximation, and more importantly, it gives you a significant computational speedup.",
+  "translatedText": "",
+  "from_community_srt": "비용 함수의 실제 그래디언트가 될 수는 없습니다. 이 작은 부분 집합이 아닌 모든 훈련 데이터에 의존합니다. 따라서 내리막 길이 가장 효율적인 단계는 아닙니다. 하지만 각 미니 배치는 꽤 좋은 근사값을 제공하지만, 더욱 중요한 것은 계산 속도가 현저히 빠름을 의미합니다.",
+  "n_reviews": 0,
+  "start": 596.96,
+  "end": 612.12
+ },
+ {
+  "input": "If you were to plot the trajectory of your network under the relevant cost surface, it would be a little more like a drunk man stumbling aimlessly down a hill but taking quick steps, rather than a carefully calculating man determining the exact downhill direction of each step before taking a very slow and careful step in that direction.",
+  "translatedText": "",
+  "from_community_srt": "관련 비용면에서 네트워크의 궤적을 그리려면, 술 취하는 남자가 언덕을 목적없이 우연히 마주 치는 것과 조금 더 비슷하지만 빠른 발걸음을 내딛을 것입니다. 각 단계의 정확한 내리막 방향을 결정하는 신중하게 계산하는 사람이 아니라 그 방향으로 매우 천천히 조심스럽게 걸음.",
+  "n_reviews": 0,
+  "start": 612.82,
+  "end": 630.16
+ },
+ {
+  "input": "This technique is referred to as stochastic gradient descent.",
+  "translatedText": "",
+  "from_community_srt": "이 기법을 \"확률 적 구배 강하\"라고합니다.",
+  "n_reviews": 0,
+  "start": 631.54,
+  "end": 634.66
+ },
+ {
+  "input": "There's a lot going on here, so let's just sum it up for ourselves, shall we?",
+  "translatedText": "",
+  "from_community_srt": "여기에 많은 일이 일어나고 있습니다. 그래서 우리 자신을 위해 요약 해 보겠습니다.",
+  "n_reviews": 0,
+  "start": 635.96,
+  "end": 639.62
+ },
+ {
+  "input": "Backpropagation is the algorithm for determining how a single training example would like to nudge the weights and biases, not just in terms of whether they should go up or down, but in terms of what relative proportions to those changes cause the most rapid decrease to the cost.",
+  "translatedText": "",
+  "from_community_srt": "역 전파는 알고리즘입니다. 하나의 훈련 예가 가중치와 편향을 조금씩 움직이기를 원하는지를 결정하기 위해, 그들이 위 또는 아래로 가야하는지에 관해서뿐만 아니라, 그러나 그 변화에 대한 상대적인 비율이 비용을 가장 빠르게 감소시키는 측면에서 볼 때.",
+  "n_reviews": 0,
+  "start": 640.44,
+  "end": 655.56
+ },
+ {
+  "input": "A true gradient descent step would involve doing this for all your tens of thousands of training examples and averaging the desired changes you get.",
+  "translatedText": "",
+  "from_community_srt": "진정한 그래디언트 디센트 단계 수십, 수천 건의 교육 사례에 대해이 작업을 수행해야합니다. 당신이 얻는 원하는 변화를 평균화하는 것입니다.",
+  "n_reviews": 0,
+  "start": 656.26,
+  "end": 664.2
+ },
+ {
+  "input": "But that's computationally slow, so instead you randomly subdivide the data into mini-batches and compute each step with respect to a mini-batch.",
+  "translatedText": "",
+  "from_community_srt": "하지만 계산 속도가 느립니다. 그래서 대신에 데이터를 이러한 작은 배치로 무작위로 세분합니다. 미니 배치와 관련하여 각 단계를 계산할 수 있습니다.",
+  "n_reviews": 0,
+  "start": 664.86,
+  "end": 673.24
+ },
+ {
+  "input": "Repeatedly going through all of the mini-batches and making these adjustments, you will converge towards a local minimum of the cost function, which is to say your network will end up doing a really good job on the training examples.",
+  "translatedText": "",
+  "from_community_srt": "반복적으로 모든 미니 배치를 검토하고 이러한 조정을 수행하면, 당신은 비용 함수의 지역 최소값으로 수렴 할 것이며, 말하자면 네트워크가 교육 사례에서 실제로 잘 수행 될 것입니다.",
+  "n_reviews": 0,
+  "start": 674.0,
+  "end": 685.54
+ },
+ {
+  "input": "So with all of that said, every line of code that would go into implementing backprop actually corresponds with something you have now seen, at least in informal terms.",
+  "translatedText": "",
+  "from_community_srt": "그래서 모든 말로는, 역행을 구현할 코드의 모든 라인이 적어도 비공식적 인면에서 지금 본 내용과 일치합니다.",
+  "n_reviews": 0,
+  "start": 687.24,
+  "end": 696.72
+ },
+ {
+  "input": "But sometimes knowing what the math does is only half the battle, and just representing the damn thing is where it gets all muddled and confusing.",
+  "translatedText": "",
+  "from_community_srt": "그러나 때때로 수학이하는 것이 전투의 절반에 불과하다는 것을 알기 때문에, 그리고 그 빌어 먹을 일을 나타내는 것은 그것이 혼란스럽고 혼란스러워지는 곳입니다.",
+  "n_reviews": 0,
+  "start": 697.56,
+  "end": 704.12
+ },
+ {
+  "input": "So for those of you who do want to go deeper, the next video goes through the same ideas that were just presented here, but in terms of the underlying calculus, which should hopefully make it a little more familiar as you see the topic in other resources.",
+  "translatedText": "",
+  "from_community_srt": "그래서 더 깊은 곳으로 가고 싶은 당신들에게는, 다음 비디오는 방금 여기에 제시된 것과 동일한 아이디어를 거칩니다. 그러나 밑에있는 미적분학의 관점에서, 다른 리소스에서이 주제를 보면서 좀 더 익숙해 져야합니다.",
+  "n_reviews": 0,
+  "start": 704.86,
+  "end": 716.42
+ },
+ {
+  "input": "Before that, one thing worth emphasizing is that for this algorithm to work, and this goes for all sorts of machine learning beyond just neural networks, you need a lot of training data.",
+  "translatedText": "",
+  "from_community_srt": "그 전에 강조 할 가치가있는 것은 이 알고리즘이 작동하려면, 이것은 모든 종류의 기계가 단지 신경 네트워크를 넘어서서 배우는 것, 당신은 많은 훈련 데이터가 필요합니다.",
+  "n_reviews": 0,
+  "start": 717.34,
+  "end": 725.9
+ },
+ {
+  "input": "In our case, one thing that makes handwritten digits such a nice example is that there exists the MNIST database, with so many examples that have been labeled by humans.",
+  "translatedText": "",
+  "from_community_srt": "우리의 경우, 자필 자국을 만드는 좋은 예가 좋은 예입니다. MNIST 데이터베이스가 존재한다는 것입니다. 인간에 의해 분류 된 수많은 사례가 있습니다.",
+  "n_reviews": 0,
+  "start": 726.42,
+  "end": 734.74
+ },
+ {
+  "input": "So a common challenge that those of you working in machine learning will be familiar with is just getting the labeled training data you actually need, whether that's having people label tens of thousands of images, or whatever other data type you might be dealing with.",
+  "translatedText": "",
+  "from_community_srt": "따라서 기계 학습 분야에서 일하고있는 사람들이 당신이 실제로 필요로하는 분류 된 훈련 자료를 얻는 것뿐입니다. 사람들이 수만 장의 이미지를 표시하는지 여부 또는 다른 데이터 유형을 처리 할 수 ​​있습니다.",
+  "n_reviews": 0,
+  "start": 735.3,
+  "end": 747.1
+ }
+]

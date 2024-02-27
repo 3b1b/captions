@@ -1,0 +1,585 @@
+[
+ {
+  "input": "Here, we tackle backpropagation, the core algorithm behind how neural networks learn.",
+  "translatedText": "",
+  "from_community_srt": "Burada geri yayılımla mücadele ediyoruz. sinir ağlarının nasıl öğrendiğinin arkasındaki temel algoritma.",
+  "n_reviews": 0,
+  "start": 4.06,
+  "end": 8.88
+ },
+ {
+  "input": "After a quick recap for where we are, the first thing I'll do is an intuitive walkthrough for what the algorithm is actually doing, without any reference to the formulas.",
+  "translatedText": "",
+  "from_community_srt": "Bulunduğumuz yerin kısa bir özetinden sonra, Yapacağım ilk şey, algoritmanın gerçekte ne yaptığını anlatan sezgisel bir adım formüllere referans olmadan, O zaman matematiğe dalmak isteyenler için,",
+  "n_reviews": 0,
+  "start": 9.4,
+  "end": 17.0
+ },
+ {
+  "input": "Then, for those of you who do want to dive into the math, the next video goes into the calculus underlying all this.",
+  "translatedText": "",
+  "from_community_srt": "Bir sonraki video tüm bunların altında yatan hesabın içine giriyor.",
+  "n_reviews": 0,
+  "start": 17.66,
+  "end": 23.02
+ },
+ {
+  "input": "If you watched the last two videos, or if you're just jumping in with the appropriate background, you know what a neural network is, and how it feeds forward information.",
+  "translatedText": "",
+  "from_community_srt": "Son iki videoyu izlediyseniz ya da sadece uygun arka plana atlıyorsanız, Bir sinir ağının ne olduğunu ve bilgiyi nasıl beslediğini biliyorsunuz.",
+  "n_reviews": 0,
+  "start": 23.82,
+  "end": 31.0
+ },
+ {
+  "input": "Here, we're doing the classic example of recognizing handwritten digits whose pixel values get fed into the first layer of the network with 784 neurons, and I've been showing a network with two hidden layers having just 16 neurons each, and an output layer of 10 neurons, indicating which digit the network is choosing as its answer.",
+  "translatedText": "",
+  "from_community_srt": "Burada el yazısı rakamları tanımanın klasik örneğini yapıyoruz, piksel değerleri 784 nöronla ağın ilk katmanına beslenir. Ve her biri sadece 16 nörondan oluşan iki gizli katmanı olan bir ağ gösteriyorum. ve 10 nörondan oluşan bir çıkış katmanı olup, ağın cevabı olarak hangi haneyi seçtiğini gösterir.",
+  "n_reviews": 0,
+  "start": 31.68,
+  "end": 49.04
+ },
+ {
+  "input": "I'm also expecting you to understand gradient descent, as described in the last video, and how what we mean by learning is that we want to find which weights and biases minimize a certain cost function.",
+  "translatedText": "",
+  "from_community_srt": "Son videoda anlatıldığı gibi, gradyan inişini anlamanızı da bekliyorum. ve öğrenerek ne demek istediğimizi Hangi ağırlıkların ve önyargıların belirli bir maliyet fonksiyonunu en aza indirdiğini bulmak istiyoruz.",
+  "n_reviews": 0,
+  "start": 50.04,
+  "end": 61.26
+ },
+ {
+  "input": "As a quick reminder, for the cost of a single training example, you take the output the network gives, along with the output you wanted it to give, and add up the squares of the differences between each component.",
+  "translatedText": "",
+  "from_community_srt": "Hızlı bir hatırlatma olarak, tek bir eğitim örneğinin maliyeti için, Yaptığınız şey ağın verdiği çıktıyı almak. vermesini istediğiniz çıktıyla birlikte, ve her bileşen arasındaki farkların karelerini toplarsınız.",
+  "n_reviews": 0,
+  "start": 62.04,
+  "end": 74.6
+ },
+ {
+  "input": "Doing this for all of your tens of thousands of training examples and averaging the results, this gives you the total cost of the network.",
+  "translatedText": "",
+  "from_community_srt": "On binlerce eğitim örneğiniz için bunu yaparak ve sonuçların ortalamasını alarak, bu size ağın toplam maliyetini verir.",
+  "n_reviews": 0,
+  "start": 75.38,
+  "end": 82.2
+ },
+ {
+  "input": "And as if that's not enough to think about, as described in the last video, the thing that we're looking for is the negative gradient of this cost function, which tells you how you need to change all of the weights and biases, all of these connections, so as to most efficiently decrease the cost.",
+  "translatedText": "",
+  "from_community_srt": "Ve sanki düşünmek için yeterli değil, son videoda açıklandığı gibi, aradığımız şey, bu maliyet fonksiyonunun negatif gradyanı, Bu, tüm bu bağlantıları, bütün ağırlıkları ve önyargıları nasıl değiştirmeniz gerektiğini söyler. Böylece maliyeti en verimli şekilde düşürürsünüz.",
+  "n_reviews": 0,
+  "start": 82.2,
+  "end": 98.32
+ },
+ {
+  "input": "Backpropagation, the topic of this video, is an algorithm for computing that crazy complicated gradient.",
+  "translatedText": "",
+  "from_community_srt": "Geri yayılım, bu videonun konusu, Bu çılgın karmaşık gradyanı hesaplamak için kullanılan bir algoritma.",
+  "n_reviews": 0,
+  "start": 103.26,
+  "end": 108.58
+ },
+ {
+  "input": "And the one idea from the last video that I really want you to hold firmly in your mind right now is that because thinking of the gradient vector as a direction in 13,000 dimensions is, to put it lightly, beyond the scope of our imaginations, there's another way you can think about it.",
+  "translatedText": "",
+  "from_community_srt": "Ve son videodan aldığım fikir, şu anda zihninizde sıkıca tutmanızı istiyorum. çünkü gradyan vektörünün 13000 boyutunda bir yön olarak düşünülmesi, hayal gücümüzün kapsamı dışına hafifçe koymak,",
+  "n_reviews": 0,
+  "start": 109.14,
+  "end": 123.58
+ },
+ {
+  "input": "The magnitude of each component here is telling you how sensitive the cost function is to each weight and bias.",
+  "translatedText": "",
+  "from_community_srt": "düşünebileceğiniz başka bir yol var: Buradaki her bir bileşenin büyüklüğü size söylüyor Maliyet fonksiyonunun her ağırlık ve önyargı için ne kadar hassas olduğu.",
+  "n_reviews": 0,
+  "start": 124.6,
+  "end": 130.94
+ },
+ {
+  "input": "For example, let's say you go through the process I'm about to describe, and you compute the negative gradient, and the component associated with the weight on this edge here comes out to be 3.2, while the component associated with this edge here comes out as 0.1.",
+  "translatedText": "",
+  "from_community_srt": "Örneğin, anlatacağım süreçten geçtiğinizi varsayalım. ve negatif degradeyi hesaplarsınız ve bu kenardaki ağırlıkla ilişkili bileşen 3.2 olarak ortaya çıkıyor, bu kenar ile ilişkili bileşen burada 0.1 olarak ortaya çıkar.",
+  "n_reviews": 0,
+  "start": 131.8,
+  "end": 146.26
+ },
+ {
+  "input": "The way you would interpret that is that the cost of the function is 32 times more sensitive to changes in that first weight, so if you were to wiggle that value just a little bit, it's going to cause some change to the cost, and that change is 32 times greater than what the same wiggle to that second weight would give.",
+  "translatedText": "",
+  "from_community_srt": "Bunu yorumlama şekliniz bu işlevin maliyeti, bu ilk ağırlıktaki değişikliklere karşı 32 kat daha hassastır. Öyleyse, bu değeri biraz kıpırdatmak isteseydiniz, maliyetinde bir miktar değişikliğe neden olacak, ve bu değişim, aynı ikinci kelebeğin aynı kıvrımının verdiğinden 32 kat daha fazladır.",
+  "n_reviews": 0,
+  "start": 146.82,
+  "end": 163.06
+ },
+ {
+  "input": "Personally, when I was first learning about backpropagation, I think the most confusing aspect was just the notation and the index chasing of it all.",
+  "translatedText": "",
+  "from_community_srt": "Şahsen, geri yayılmayı ilk öğrendiğimde, En kafa karıştırıcı yön, sadece gösterimde ve hepsini takip eden endeks olduğunu düşünüyorum.",
+  "n_reviews": 0,
+  "start": 168.42,
+  "end": 175.74
+ },
+ {
+  "input": "But once you unwrap what each part of this algorithm is really doing, each individual effect it's having is actually pretty intuitive, it's just that there's a lot of little adjustments getting layered on top of each other.",
+  "translatedText": "",
+  "from_community_srt": "Fakat bu algoritmanın her bir parçasının gerçekte ne yaptığını çözdüğünüzde, Sahip olduğu her bireysel etki aslında oldukça sezgiseldir. Sadece üst üste dizilmiş birçok küçük ayar var.",
+  "n_reviews": 0,
+  "start": 176.22,
+  "end": 186.64
+ },
+ {
+  "input": "So I'm going to start things off here with a complete disregard for the notation, and just step through the effects each training example has on the weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "Bu yüzden burada gösterime tam bir ihmalle başlayacağım. ve sadece o etkileri Her eğitim örneğinde ağırlıklar ve önyargılar var.",
+  "n_reviews": 0,
+  "start": 187.74,
+  "end": 196.12
+ },
+ {
+  "input": "Because the cost function involves averaging a certain cost per example over all the tens of thousands of training examples, the way we adjust the weights and biases for a single gradient descent step also depends on every single example.",
+  "translatedText": "",
+  "from_community_srt": "Çünkü maliyet fonksiyonu onbinlerce eğitim örneğinin tamamında belirli bir maliyetin ortalama olarak alınması, Tek bir degrade iniş adımı için ağırlıkları ve önyargıları ayarlama şeklimiz ayrıca her örneğe bağlı",
+  "n_reviews": 0,
+  "start": 197.02,
+  "end": 211.04
+ },
+ {
+  "input": "Or rather, in principle it should, but for computational efficiency we'll do a little trick later to keep you from needing to hit every single example for every step.",
+  "translatedText": "",
+  "from_community_srt": "veya daha doğrusu prensipte olması gereken, Fakat hesaplama verimliliği için daha sonra küçük bir numara yapacağız. Her adım için her bir örneğe ulaşmanıza gerek kalmaması için.",
+  "n_reviews": 0,
+  "start": 211.68,
+  "end": 219.2
+ },
+ {
+  "input": "In other cases, right now, all we're going to do is focus our attention on one single example, this image of a 2.",
+  "translatedText": "",
+  "from_community_srt": "Şu anda başka bir dava, Yapacağımız tek şey dikkatimizi tek bir örnek üzerinde yoğunlaştırmak: Bu 2'nin görüntüsü.",
+  "n_reviews": 0,
+  "start": 219.2,
+  "end": 225.96
+ },
+ {
+  "input": "What effect should this one training example have on how the weights and biases get adjusted?",
+  "translatedText": "",
+  "from_community_srt": "Bu eğitim örneğinin, ağırlıkların ve önyargıların nasıl düzeltildiği üzerinde ne gibi bir etkisi olmalı? Ağın henüz iyi eğitilmediği bir noktada olduğumuzu varsayalım,",
+  "n_reviews": 0,
+  "start": 226.72,
+  "end": 231.48
+ },
+ {
+  "input": "Let's say we're at a point where the network is not well trained yet, so the activations in the output are going to look pretty random, maybe something like 0.5, 0.8, 0.2, on and on.",
+  "translatedText": "",
+  "from_community_srt": "bu yüzden çıktıdaki aktivasyonlar oldukça rastgele görünecek. belki 0,5, 0,8, 0,2, gibi ve üstünde bir şey.",
+  "n_reviews": 0,
+  "start": 232.68,
+  "end": 242.0
+ },
+ {
+  "input": "We can't directly change those activations, we only have influence on the weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "Şimdi bu aktivasyonları doğrudan değiştiremiyoruz,",
+  "n_reviews": 0,
+  "start": 242.52,
+  "end": 247.16
+ },
+ {
+  "input": "But it's helpful to keep track of which adjustments we wish should take place to that output layer.",
+  "translatedText": "",
+  "from_community_srt": "sadece ağırlıklar ve önyargılar üzerinde etkimiz var, ancak bu çıktı katmanında hangi ayarlamalar yapılması gerektiğini takip etmek faydalı olacaktır,",
+  "n_reviews": 0,
+  "start": 247.16,
+  "end": 252.58
+ },
+ {
+  "input": "And since we want it to classify the image as a 2, we want that third value to get nudged up while all the others get nudged down.",
+  "translatedText": "",
+  "from_community_srt": "ve görüntüyü 2 olarak sınıflandırmasını istediğimizden, üçüncü değerin dürtülmesini, diğerlerinin dürtülmesini istiyoruz.",
+  "n_reviews": 0,
+  "start": 253.36,
+  "end": 261.26
+ },
+ {
+  "input": "Moreover, the sizes of these nudges should be proportional to how far away each current value is from its target value.",
+  "translatedText": "",
+  "from_community_srt": "Ayrıca, bu dürtüklerin büyüklükleri ile orantılı olmalıdır Her bir mevcut değerin hedef değerinden ne kadar uzakta olduğu.",
+  "n_reviews": 0,
+  "start": 262.06,
+  "end": 269.52
+ },
+ {
+  "input": "For example, the increase to that number 2 neuron's activation is in a sense more important than the decrease to the number 8 neuron, which is already pretty close to where it should be.",
+  "translatedText": "",
+  "from_community_srt": "Örneğin, bu 2 numaralı nöron aktivasyonundaki artış, Bir anlamda, 8 numaralı nöronun azalmasından daha önemli, olması gereken yere zaten oldukça yakın.",
+  "n_reviews": 0,
+  "start": 270.22,
+  "end": 280.9
+ },
+ {
+  "input": "So zooming in further, let's focus just on this one neuron, the one whose activation we wish to increase.",
+  "translatedText": "",
+  "from_community_srt": "Bu yüzden daha fazla yakınlaştırıp, sadece bu nörona odaklanalım, aktivasyonunu artırmak istediğimiz kişi.",
+  "n_reviews": 0,
+  "start": 282.04,
+  "end": 287.28
+ },
+ {
+  "input": "Remember, that activation is defined as a certain weighted sum of all the activations in the previous layer, plus a bias, which is all then plugged into something like the sigmoid squishification function, or a ReLU.",
+  "translatedText": "",
+  "from_community_srt": "Unutmayın, bu aktivasyon olarak tanımlanır. önceki katmandaki tüm aktivasyonların belirli bir ağırlıklı toplamı, artı bir önyargı, bunların hepsi sigmoid cisimleşme işlevi veya bir ReLU gibi bir şeye bağlanmış,",
+  "n_reviews": 0,
+  "start": 288.18,
+  "end": 301.04
+ },
+ {
+  "input": "So there are three different avenues that can team up together to help increase that activation.",
+  "translatedText": "",
+  "from_community_srt": "Dolayısıyla, bu aktivasyonu arttırmaya yardımcı olmak için bir araya getirilebilecek üç farklı yol var: önyargıyı artırabilir,",
+  "n_reviews": 0,
+  "start": 301.64,
+  "end": 307.02
+ },
+ {
+  "input": "You can increase the bias, you can increase the weights, and you can change the activations from the previous layer.",
+  "translatedText": "",
+  "from_community_srt": "ağırlıkları artırabilirsin, ve aktivasyonları önceki katmandan değiştirebilirsiniz.",
+  "n_reviews": 0,
+  "start": 307.44,
+  "end": 314.04
+ },
+ {
+  "input": "Focusing on how the weights should be adjusted, notice how the weights actually have differing levels of influence.",
+  "translatedText": "",
+  "from_community_srt": "Sadece ağırlıkların nasıl ayarlanması gerektiğine odaklanarak, ağırlıkların gerçekte farklı etki seviyelerine sahip olduğunu görün:",
+  "n_reviews": 0,
+  "start": 314.94,
+  "end": 320.86
+ },
+ {
+  "input": "The connections with the brightest neurons from the preceding layer have the biggest effect since those weights are multiplied by larger activation values.",
+  "translatedText": "",
+  "from_community_srt": "önceki katmandaki en parlak nöronlarla olan bağlantıların en büyük etkiye sahip olması, çünkü bu ağırlıklar daha büyük aktivasyon değerleri ile çarpılır.",
+  "n_reviews": 0,
+  "start": 321.44,
+  "end": 329.1
+ },
+ {
+  "input": "So if you were to increase one of those weights, it actually has a stronger influence on the ultimate cost function than increasing the weights of connections with dimmer neurons, at least as far as this one training example is concerned.",
+  "translatedText": "",
+  "from_community_srt": "Yani eğer bu ağırlıklardan birini arttırırsanız, Aslında nihai maliyet fonksiyonu üzerinde daha güçlü bir etkiye sahiptir dimmer nöronlarla bağlantı ağırlıklarını artırmaktan, en azından bu eğitim örneğine gelince.",
+  "n_reviews": 0,
+  "start": 331.46,
+  "end": 343.48
+ },
+ {
+  "input": "Remember, when we talk about gradient descent, we don't just care about whether each component should get nudged up or down, we care about which ones give you the most bang for your buck.",
+  "translatedText": "",
+  "from_community_srt": "Degrade inişinden bahsettiğimizi hatırla. Biz sadece her bir parçanın aşağı yukarı dürtülüp kalkmamasını önemsemiyoruz, hangilerinin paranın karşılığını en çok verdiğini umursuyoruz.",
+  "n_reviews": 0,
+  "start": 344.42,
+  "end": 353.22
+ },
+ {
+  "input": "This, by the way, is at least somewhat reminiscent of a theory in neuroscience for how biological networks of neurons learn, Hebbian theory, often summed up in the phrase, neurons that fire together wire together.",
+  "translatedText": "",
+  "from_community_srt": "Bu, bu arada, en azından sinirbilim alanındaki bir teoriyi andırıyor. nöronların biyolojik ağlarının nasıl öğrendiği için Hebbian teorisi - genellikle “bir araya ateş eden nöronlar” ifadesinde özetlendi.",
+  "n_reviews": 0,
+  "start": 355.02,
+  "end": 366.46
+ },
+ {
+  "input": "Here, the biggest increases to weights, the biggest strengthening of connections, happens between neurons which are the most active, and the ones which we wish to become more active.",
+  "translatedText": "",
+  "from_community_srt": "Burada, ağırlıklarda en büyük artışlar, bağlantılarda en büyük güçlenme, en aktif olan nöronlar arasında gerçekleşir, ve daha aktif olmak istediklerimiz.",
+  "n_reviews": 0,
+  "start": 367.26,
+  "end": 377.28
+ },
+ {
+  "input": "In a sense, the neurons that are firing while seeing a 2 get more strongly linked to those are the ones firing when thinking about a 2.",
+  "translatedText": "",
+  "from_community_srt": "Bir anlamda, 2'yi görürken ateşleyen nöronlar, 2 hakkında düşünürken ateş edenlerle daha güçlü bağlantı kurun.",
+  "n_reviews": 0,
+  "start": 377.94,
+  "end": 384.48
+ },
+ {
+  "input": "To be clear, I'm not in a position to make statements one way or another about whether artificial networks of neurons behave anything like biological brains, and this fires together wire together idea comes with a couple meaningful asterisks, but taken as a very loose analogy, I find it interesting to note.",
+  "translatedText": "",
+  "from_community_srt": "Açık olmak gerekirse, ifadeleri bir şekilde veya başka bir şekilde yapacak bir konumda değilim. Yapay nöron ağlarının biyolojik beyin gibi bir şey yapıp yapmadığı hakkında, ve bu birlikte-beraber-beraberce beraberce bir fikir, birkaç anlamlı yıldızla birlikte gelir. Ama çok gevşek bir benzetme olarak alındığında, not etmeyi ilginç buluyorum.",
+  "n_reviews": 0,
+  "start": 385.4,
+  "end": 401.02
+ },
+ {
+  "input": "Anyway, the third way we can help increase this neuron's activation is by changing all the activations in the previous layer.",
+  "translatedText": "",
+  "from_community_srt": "Her neyse, bu nöronun aktivasyonunu arttırmaya yardımcı olmamızın üçüncü yolu önceki katmandaki tüm aktivasyonları değiştirerek,",
+  "n_reviews": 0,
+  "start": 401.94,
+  "end": 409.04
+ },
+ {
+  "input": "Namely, if everything connected to that digit 2 neuron with a positive weight got brighter, and if everything connected with a negative weight got dimmer, then that digit 2 neuron would become more active.",
+  "translatedText": "",
+  "from_community_srt": "yani, bu basamak 2 nöronuna pozitif ağırlığı olan her şey daha parlak hale gelirse, ve negatif bir ağırlığa bağlı olan her şey kararırsa, o zaman bu 2. basamak nöron daha aktif hale gelirdi.",
+  "n_reviews": 0,
+  "start": 409.04,
+  "end": 420.68
+ },
+ {
+  "input": "And similar to the weight changes, you're going to get the most bang for your buck by seeking changes that are proportional to the size of the corresponding weights.",
+  "translatedText": "",
+  "from_community_srt": "Ve ağırlık değişimlerine benzer şekilde paranın karşılığını en iyi şekilde alacaksın karşılık gelen ağırlıkların büyüklüğü ile orantılı olan değişiklikler arayarak.",
+  "n_reviews": 0,
+  "start": 422.54,
+  "end": 430.28
+ },
+ {
+  "input": "Now of course, we cannot directly influence those activations, we only have control over the weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "Şimdi, elbette, bu aktivasyonları doğrudan etkileyemiyoruz. sadece ağırlıklar ve önyargılar üzerinde kontrolümüz var.",
+  "n_reviews": 0,
+  "start": 432.14,
+  "end": 437.48
+ },
+ {
+  "input": "But just as with the last layer, it's helpful to keep a note of what those desired changes are.",
+  "translatedText": "",
+  "from_community_srt": "Ancak, son katmanda olduğu gibi, istenen değişikliklerin neler olduğuna dair bir not tutmanız yararlı olacaktır.",
+  "n_reviews": 0,
+  "start": 437.48,
+  "end": 444.12
+ },
+ {
+  "input": "But keep in mind, zooming out one step here, this is only what that digit 2 output neuron wants.",
+  "translatedText": "",
+  "from_community_srt": "Fakat burada bir adımı uzaklaştırırken, bu sadece 2. basamak nöronun istediği şey budur.",
+  "n_reviews": 0,
+  "start": 444.58,
+  "end": 449.2
+ },
+ {
+  "input": "Remember, we also want all the other neurons in the last layer to become less active, and each of those other output neurons has its own thoughts about what should happen to that second to last layer.",
+  "translatedText": "",
+  "from_community_srt": "Unutma, son katmandaki tüm diğer nöronların daha az aktif olmasını istiyoruz. ve diğer çıkış nöronlarının her biri bu ikinci-son katmana ne olması gerektiği hakkında kendi düşünceleri vardır.",
+  "n_reviews": 0,
+  "start": 449.76,
+  "end": 459.6
+ },
+ {
+  "input": "So, the desire of this digit 2 neuron is added together with the desires of all the other output neurons for what should happen to this second to last layer, again in proportion to the corresponding weights, and in proportion to how much each of those neurons needs to change.",
+  "translatedText": "",
+  "from_community_srt": "Yani, bu rakam 2 nöronun arzusu diğer tüm çıkış nöronlarının arzularıyla birlikte eklenir Çünkü bu ikinci-son katmana ne olmalı. Yine, karşılık gelen ağırlıklarla orantılı olarak, ve bu nöronların her birinin ne kadar değişmesi gerektiği ile orantılı olarak.",
+  "n_reviews": 0,
+  "start": 462.7,
+  "end": 480.72
+ },
+ {
+  "input": "This right here is where the idea of propagating backwards comes in.",
+  "translatedText": "",
+  "from_community_srt": "Buradaki, geriye doğru yayılma fikrinin geldiği yerdir.",
+  "n_reviews": 0,
+  "start": 481.6,
+  "end": 485.48
+ },
+ {
+  "input": "By adding together all these desired effects, you basically get a list of nudges that you want to happen to this second to last layer.",
+  "translatedText": "",
+  "from_community_srt": "İstenilen tüm bu efektleri bir araya getirerek, Temelde, ikinci-son katmanın başına gelmek istediğiniz dürtmelerin bir listesini alırsınız.",
+  "n_reviews": 0,
+  "start": 485.82,
+  "end": 493.36
+ },
+ {
+  "input": "And once you have those, you can recursively apply the same process to the relevant weights and biases that determine those values, repeating the same process I just walked through and moving backwards through the network.",
+  "translatedText": "",
+  "from_community_srt": "Ve bunlara sahip olduktan sonra, aynı işlemi tekrarlı olarak uygulayabilirsiniz bu değerleri belirleyen ilgili ağırlık ve önyargılara, aynı işlemi tekrarlayarak sadece ağ üzerinden yürüdüm ve geriye doğru yürüdüm.",
+  "n_reviews": 0,
+  "start": 494.22,
+  "end": 505.1
+ },
+ {
+  "input": "And zooming out a bit further, remember that this is all just how a single training example wishes to nudge each one of those weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "Ve biraz daha uzaklaştırarak, bunların sadece adil olduğunu hatırla Tek bir eğitim örneğinin, bu ağırlıkların ve önyargıların her birini dürtmek istemesi.",
+  "n_reviews": 0,
+  "start": 508.96,
+  "end": 517.0
+ },
+ {
+  "input": "If we only listened to what that 2 wanted, the network would ultimately be incentivized just to classify all images as a 2.",
+  "translatedText": "",
+  "from_community_srt": "Sadece 2'nin ne istediğini dinlersek, Ağ, sonuçta sadece tüm görüntüleri 2 olarak sınıflandırmak için teşvik edilecektir.",
+  "n_reviews": 0,
+  "start": 517.48,
+  "end": 523.22
+ },
+ {
+  "input": "So what you do is go through this same backprop routine for every other training example, recording how each of them would like to change the weights and biases, and average together those desired changes.",
+  "translatedText": "",
+  "from_community_srt": "Öyleyse, yaptığınız diğer her eğitim örneği için aynı backprop rutini geçiyorsunuz. her birinin ağırlıkları ve önyargıları nasıl değiştirmek istediklerini kaydetmek, ve birlikte bu istenen değişikliklerin ortalamasını aldınız.",
+  "n_reviews": 0,
+  "start": 524.06,
+  "end": 536.0
+ },
+ {
+  "input": "This collection here of the averaged nudges to each weight and bias is, loosely speaking, the negative gradient of the cost function referenced in the last video, or at least something proportional to it.",
+  "translatedText": "",
+  "from_community_srt": "Bu toplama burada her ağırlık ve önyargı için ortalama dürtmeler, gevşekçe konuşursak, son videoda belirtilen maliyet işlevinin negatif gradyanı, veya en azından bununla orantılı bir şey.",
+  "n_reviews": 0,
+  "start": 541.72,
+  "end": 553.68
+ },
+ {
+  "input": "I say loosely speaking only because I have yet to get quantitatively precise about those nudges, but if you understood every change I just referenced, why some are proportionally bigger than others, and how they all need to be added together, you understand the mechanics for what backpropagation is actually doing.",
+  "translatedText": "",
+  "from_community_srt": "“Gevşek konuşuyorum” diyorum, çünkü henüz bu dürtüler hakkında niceliksel olarak kesinleşemedim. Ama az önce başvuruda bulunduğum her değişikliği anladıysanız, neden bazılarının orantılı olarak diğerlerinden daha büyük olduğu, ve hepsinin nasıl bir araya getirilmesi gerektiğine, geri yayılımın gerçekte ne yaptığının mekaniğini anlıyorsun.",
+  "n_reviews": 0,
+  "start": 554.38,
+  "end": 571.0
+ },
+ {
+  "input": "By the way, in practice, it takes computers an extremely long time to add up the influence of every training example every gradient descent step.",
+  "translatedText": "",
+  "from_community_srt": "Bu arada, pratikte bilgisayarları çok uzun zaman alıyor Her bir eğitim örneğinin, her bir degrade iniş adımının etkisini eklemek.",
+  "n_reviews": 0,
+  "start": 573.96,
+  "end": 582.44
+ },
+ {
+  "input": "So here's what's commonly done instead.",
+  "translatedText": "",
+  "n_reviews": 0,
+  "start": 583.14,
+  "end": 584.82
+ },
+ {
+  "input": "You randomly shuffle your training data and then divide it into a whole bunch of mini-batches, let's say each one having 100 training examples.",
+  "translatedText": "",
+  "from_community_srt": "Yani burada yaygın olarak ne yapılır: Antrenman verilerinizi rastgele karıştırırsınız ve daha sonra bunları bir dizi küçük gruba bölersiniz, Diyelim ki her biri 100 eğitim örneğine sahip.",
+  "n_reviews": 0,
+  "start": 585.48,
+  "end": 592.42
+ },
+ {
+  "input": "Then you compute a step according to the mini-batch.",
+  "translatedText": "",
+  "from_community_srt": "Sonra mini partiye göre bir adım hesaplarsınız.",
+  "n_reviews": 0,
+  "start": 592.94,
+  "end": 596.2
+ },
+ {
+  "input": "It's not going to be the actual gradient of the cost function, which depends on all of the training data, not this tiny subset, so it's not the most efficient step downhill, but each mini-batch does give you a pretty good approximation, and more importantly, it gives you a significant computational speedup.",
+  "translatedText": "",
+  "from_community_srt": "Maliyet fonksiyonunun gerçek degradesi olmayacak, Bu, bu küçük altküme değil, tüm eğitim verilerine bağlı. Bu yüzden yokuş aşağı en etkili adım değil. Ancak her mini parti size oldukça iyi bir yaklaşım sunuyor. ve daha da önemlisi, size önemli bir hesaplama hızı verir.",
+  "n_reviews": 0,
+  "start": 596.96,
+  "end": 612.12
+ },
+ {
+  "input": "If you were to plot the trajectory of your network under the relevant cost surface, it would be a little more like a drunk man stumbling aimlessly down a hill but taking quick steps, rather than a carefully calculating man determining the exact downhill direction of each step before taking a very slow and careful step in that direction.",
+  "translatedText": "",
+  "from_community_srt": "Ağınızın yörüngesini ilgili maliyet yüzeyinin altına yerleştirecekseniz, biraz daha tepeden aşağı tökezleyen, ancak hızlı adımlar atan sarhoş bir adam gibi olurdu; Her adımın tam yokuş aşağı yönünü belirleyen dikkatli bir şekilde hesaplanan bir adam yerine bu yönde çok yavaş ve dikkatli bir adım atmadan önce.",
+  "n_reviews": 0,
+  "start": 612.82,
+  "end": 630.16
+ },
+ {
+  "input": "This technique is referred to as stochastic gradient descent.",
+  "translatedText": "",
+  "from_community_srt": "Bu teknik “stokastik gradyan iniş” olarak adlandırılır.",
+  "n_reviews": 0,
+  "start": 631.54,
+  "end": 634.66
+ },
+ {
+  "input": "There's a lot going on here, so let's just sum it up for ourselves, shall we?",
+  "translatedText": "",
+  "from_community_srt": "Burada bir sürü şey oluyor,",
+  "n_reviews": 0,
+  "start": 635.96,
+  "end": 639.62
+ },
+ {
+  "input": "Backpropagation is the algorithm for determining how a single training example would like to nudge the weights and biases, not just in terms of whether they should go up or down, but in terms of what relative proportions to those changes cause the most rapid decrease to the cost.",
+  "translatedText": "",
+  "from_community_srt": "o yüzden hadi kendimiz için özetleyelim mi? Geri yayılım algoritması Tek bir eğitim örneğinin ağırlıkları ve önyargıları nasıl dürtmek istediğini belirlemek için, Sadece aşağı mı yukarı mı çıkmaları gerektiği konusunda değil, ancak bu değişikliklere göreceli oranların ne kadar olması maliyette en hızlı düşüşe neden olur.",
+  "n_reviews": 0,
+  "start": 640.44,
+  "end": 655.56
+ },
+ {
+  "input": "A true gradient descent step would involve doing this for all your tens of thousands of training examples and averaging the desired changes you get.",
+  "translatedText": "",
+  "from_community_srt": "Gerçek bir degrade iniş adımı bunu onlarca ve binlerce eğitim örneğiniz için yapmayı içerir. ve aldığınız istenen değişikliklerin ortalamasının alınması.",
+  "n_reviews": 0,
+  "start": 656.26,
+  "end": 664.2
+ },
+ {
+  "input": "But that's computationally slow, so instead you randomly subdivide the data into mini-batches and compute each step with respect to a mini-batch.",
+  "translatedText": "",
+  "from_community_srt": "Ancak bu hesaplama yavaş. Bunun yerine verileri rastgele olarak bu mini gruplara bölersiniz ve her adımı bir mini partiye göre hesaplayın.",
+  "n_reviews": 0,
+  "start": 664.86,
+  "end": 673.24
+ },
+ {
+  "input": "Repeatedly going through all of the mini-batches and making these adjustments, you will converge towards a local minimum of the cost function, which is to say your network will end up doing a really good job on the training examples.",
+  "translatedText": "",
+  "from_community_srt": "Mini partilerin hepsinden tekrar tekrar geçerek bu ayarlamaları yapmak, Maliyet fonksiyonunun yerel bir minimumuna yakınlaşacaksınız, Yani, ağınız eğitim örneklerinde gerçekten iyi bir iş çıkarmaya başlayacak.",
+  "n_reviews": 0,
+  "start": 674.0,
+  "end": 685.54
+ },
+ {
+  "input": "So with all of that said, every line of code that would go into implementing backprop actually corresponds with something you have now seen, at least in informal terms.",
+  "translatedText": "",
+  "from_community_srt": "Tüm bunlarla birlikte, backprop uygulamasına girecek olan her kod satırı Aslında şimdiye kadar gördüğünüz bir şeye karşılık gelir, en azından gayrı resmi terimlerle.",
+  "n_reviews": 0,
+  "start": 687.24,
+  "end": 696.72
+ },
+ {
+  "input": "But sometimes knowing what the math does is only half the battle, and just representing the damn thing is where it gets all muddled and confusing.",
+  "translatedText": "",
+  "from_community_srt": "Ama bazen matematiğin ne yaptığını bilmek savaşın sadece yarısıdır. ve sadece kahrolası şeyi temsil etmek, her şeyin karışıp karıştığı yerdir.",
+  "n_reviews": 0,
+  "start": 697.56,
+  "end": 704.12
+ },
+ {
+  "input": "So for those of you who do want to go deeper, the next video goes through the same ideas that were just presented here, but in terms of the underlying calculus, which should hopefully make it a little more familiar as you see the topic in other resources.",
+  "translatedText": "",
+  "from_community_srt": "Yani daha derine gitmek isteyenler için, Bir sonraki video, burada sunulan fikirlerin aynısını anlatıyor fakat temel hesap açısından, umarım konuyu diğer kaynaklarda gördüğünüz gibi biraz daha aşina yapmalısınız.",
+  "n_reviews": 0,
+  "start": 704.86,
+  "end": 716.42
+ },
+ {
+  "input": "Before that, one thing worth emphasizing is that for this algorithm to work, and this goes for all sorts of machine learning beyond just neural networks, you need a lot of training data.",
+  "translatedText": "",
+  "from_community_srt": "Ondan önce, vurgulamaya değer bir şey Bu algoritmanın çalışması için ve bu sadece sinir ağlarının ötesinde her türlü makine öğrenmesi için geçerlidir. Çok fazla eğitim verilerine ihtiyacınız var.",
+  "n_reviews": 0,
+  "start": 717.34,
+  "end": 725.9
+ },
+ {
+  "input": "In our case, one thing that makes handwritten digits such a nice example is that there exists the MNIST database, with so many examples that have been labeled by humans.",
+  "translatedText": "",
+  "from_community_srt": "Bizim durumumuzda, el yazısı rakamları böyle güzel bir örnek yapan bir şey MNIST veritabanının var olduğu insanlar tarafından etiketlenmiş pek çok örnekle.",
+  "n_reviews": 0,
+  "start": 726.42,
+  "end": 734.74
+ },
+ {
+  "input": "So a common challenge that those of you working in machine learning will be familiar with is just getting the labeled training data you actually need, whether that's having people label tens of thousands of images, or whatever other data type you might be dealing with.",
+  "translatedText": "",
+  "from_community_srt": "Makine öğreniminde çalışanlarınızın aşina olacağı ortak bir zorluk Sadece ihtiyacınız olan etiketli eğitim verilerini alıyorsanız, İnsanlara on binlerce görüntüyü etiketleyip etiketlemediği ya da ne tür başka bir veri türü ile uğraşıyorsanız.",
+  "n_reviews": 0,
+  "start": 735.3,
+  "end": 747.1
+ }
+]
