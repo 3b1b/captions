@@ -1,0 +1,586 @@
+[
+ {
+  "input": "Here, we tackle backpropagation, the core algorithm behind how neural networks learn.",
+  "translatedText": "",
+  "from_community_srt": "Aqui vamos abordar a retropropagação, o algoritmo central por trás de como redes neurais aprendem.",
+  "n_reviews": 0,
+  "start": 4.06,
+  "end": 8.88
+ },
+ {
+  "input": "After a quick recap for where we are, the first thing I'll do is an intuitive walkthrough for what the algorithm is actually doing, without any reference to the formulas.",
+  "translatedText": "",
+  "from_community_srt": "Após uma rápida recapitulação sobre onde estamos, a primeira coisa que farei é uma explicação intuitiva passo a passo do que o algoritmo faz sem nenhuma referência às fórmulas.",
+  "n_reviews": 0,
+  "start": 9.4,
+  "end": 17.0
+ },
+ {
+  "input": "Then, for those of you who do want to dive into the math, the next video goes into the calculus underlying all this.",
+  "translatedText": "",
+  "from_community_srt": "Então, para aqueles que desejam mergulhar na matemática, o próximo vídeo vai tratar do cálculo por trás de tudo isso.",
+  "n_reviews": 0,
+  "start": 17.66,
+  "end": 23.02
+ },
+ {
+  "input": "If you watched the last two videos, or if you're just jumping in with the appropriate background, you know what a neural network is, and how it feeds forward information.",
+  "translatedText": "",
+  "from_community_srt": "Se você viu os últimos dois vídeos ou se você está chegando com a base adequada, você sabe o que é uma rede neural e como ela transmite informação por antecipação.",
+  "n_reviews": 0,
+  "start": 23.82,
+  "end": 31.0
+ },
+ {
+  "input": "Here, we're doing the classic example of recognizing handwritten digits whose pixel values get fed into the first layer of the network with 784 neurons, and I've been showing a network with two hidden layers having just 16 neurons each, and an output layer of 10 neurons, indicating which digit the network is choosing as its answer.",
+  "translatedText": "",
+  "from_community_srt": "Aqui estamos trabalhando com o clássico exemplo do reconhecimento de dígitos manuscritos, cujos valores de pixels são inseridos na primeira camada da rede com 784 neurônios. E venho mostrando uma rede com duas camadas ocultas, cada qual com só 16 neurônios, e uma camada de saída de 10 neurônios, que indica qual dígito a rede neural escolhe como resposta.",
+  "n_reviews": 0,
+  "start": 31.68,
+  "end": 49.04
+ },
+ {
+  "input": "I'm also expecting you to understand gradient descent, as described in the last video, and how what we mean by learning is that we want to find which weights and biases minimize a certain cost function.",
+  "translatedText": "",
+  "from_community_srt": "Também espero que você entenda a descida do gradiente, como descrevi no último vídeo, e que, quando falamos de aprendizado, queremos dizer que desejamos descobrir quais pesos e vieses minimizam certa função custo.",
+  "n_reviews": 0,
+  "start": 50.04,
+  "end": 61.26
+ },
+ {
+  "input": "As a quick reminder, for the cost of a single training example, you take the output the network gives, along with the output you wanted it to give, and add up the squares of the differences between each component.",
+  "translatedText": "",
+  "from_community_srt": "Lembrando rápido, para ter o custo de um simples exemplo de treinamento, você pega a saída que a rede emite, junto com a saída que você queria que ela emitisse, e você soma os quadrados das diferenças entre cada componente.",
+  "n_reviews": 0,
+  "start": 62.04,
+  "end": 74.6
+ },
+ {
+  "input": "Doing this for all of your tens of thousands of training examples and averaging the results, this gives you the total cost of the network.",
+  "translatedText": "",
+  "from_community_srt": "Fazendo isso para todas as suas dezenas de milhares de exemplos de treinamento e calculando a média dos resultados, isso lhe dá o custo total da rede.",
+  "n_reviews": 0,
+  "start": 75.38,
+  "end": 82.2
+ },
+ {
+  "input": "And as if that's not enough to think about, as described in the last video, the thing that we're looking for is the negative gradient of this cost function, which tells you how you need to change all of the weights and biases, all of these connections, so as to most efficiently decrease the cost.",
+  "translatedText": "",
+  "from_community_srt": "E como se isso não fosse muita coisa para pensar, como descrevi no último vídeo, estamos procurando o gradiente negativo dessa função de custo, que lhe diz como você precisa alterar todos os pesos e vieses, todas essas conexões, para reduzir o custo da forma mais eficiente.",
+  "n_reviews": 0,
+  "start": 82.2,
+  "end": 98.32
+ },
+ {
+  "input": "Backpropagation, the topic of this video, is an algorithm for computing that crazy complicated gradient.",
+  "translatedText": "",
+  "from_community_srt": "A retropropagação, o tema deste vídeo, é um algoritmo para calcular esse gradiente doido de complicado.",
+  "n_reviews": 0,
+  "start": 103.26,
+  "end": 108.58
+ },
+ {
+  "input": "And the one idea from the last video that I really want you to hold firmly in your mind right now is that because thinking of the gradient vector as a direction in 13,000 dimensions is, to put it lightly, beyond the scope of our imaginations, there's another way you can think about it.",
+  "translatedText": "",
+  "from_community_srt": "E uma idéia do último vídeo que eu quero muito que você fixe bem na cabeça agora é que, porque pensar no vetor de gradiente como uma direção em 13 mil dimensões está além da nossa imaginação, para dizer o mínimo, há outra maneira para você pensar sobre isso.",
+  "n_reviews": 0,
+  "start": 109.14,
+  "end": 123.58
+ },
+ {
+  "input": "The magnitude of each component here is telling you how sensitive the cost function is to each weight and bias.",
+  "translatedText": "",
+  "from_community_srt": "A magnitude de cada componente aqui está lhe dizendo quão sensível a função de custo é a cada peso e viés.",
+  "n_reviews": 0,
+  "start": 124.6,
+  "end": 130.94
+ },
+ {
+  "input": "For example, let's say you go through the process I'm about to describe, and you compute the negative gradient, and the component associated with the weight on this edge here comes out to be 3.2, while the component associated with this edge here comes out as 0.1.",
+  "translatedText": "",
+  "from_community_srt": "Por exemplo, digamos que você passe pelo processo que estou prestes a descrever, e calcule o gradiente negativo, e o componente associado com o peso nesta aresta aqui sai como 3,2, enquanto o componente associado com esta aresta aqui sai como 0,1.",
+  "n_reviews": 0,
+  "start": 131.8,
+  "end": 146.26
+ },
+ {
+  "input": "The way you would interpret that is that the cost of the function is 32 times more sensitive to changes in that first weight, so if you were to wiggle that value just a little bit, it's going to cause some change to the cost, and that change is 32 times greater than what the same wiggle to that second weight would give.",
+  "translatedText": "",
+  "from_community_srt": "Você interpreta isso assim: o custo da função é 32 vezes mais sensível a mudanças naquele primeiro peso. Então, se você mexer nesse valor só um pouquinho, vai causar alguma mudança no custo, e essa mudança é 32 vezes maior do que o resultado da mesma mexida naquele segundo peso.",
+  "n_reviews": 0,
+  "start": 146.82,
+  "end": 163.06
+ },
+ {
+  "input": "Personally, when I was first learning about backpropagation, I think the most confusing aspect was just the notation and the index chasing of it all.",
+  "translatedText": "",
+  "from_community_srt": "Pessoalmente, quando estava aprendendo sobre retropropagação, acho que o aspecto mais confuso era só a notação e a indexação de tudo.",
+  "n_reviews": 0,
+  "start": 168.42,
+  "end": 175.74
+ },
+ {
+  "input": "But once you unwrap what each part of this algorithm is really doing, each individual effect it's having is actually pretty intuitive, it's just that there's a lot of little adjustments getting layered on top of each other.",
+  "translatedText": "",
+  "from_community_srt": "Mas quando você desvenda o que cada parte desse algoritmo faz, cada efeito individual que ele tem é muito intuitivo. É só que há muitos ajustezinhos sendo colocados uns sobre os outros.",
+  "n_reviews": 0,
+  "start": 176.22,
+  "end": 186.64
+ },
+ {
+  "input": "So I'm going to start things off here with a complete disregard for the notation, and just step through the effects each training example has on the weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "Então, vou começar aqui com uma completa desconsideração pela notação e só percorrer os efeitos que cada exemplo de treinamento tem sobre os pesos e vieses.",
+  "n_reviews": 0,
+  "start": 187.74,
+  "end": 196.12
+ },
+ {
+  "input": "Because the cost function involves averaging a certain cost per example over all the tens of thousands of training examples, the way we adjust the weights and biases for a single gradient descent step also depends on every single example.",
+  "translatedText": "",
+  "from_community_srt": "Porque a função de custo envolve calcular a média de um determinado custo por exemplo em todas as dezenas de milhares de exemplos de treinamento, o modo como ajustamos os pesos e vieses para um único passo de descida do gradiente também depende de cada exemplo.",
+  "n_reviews": 0,
+  "start": 197.02,
+  "end": 211.04
+ },
+ {
+  "input": "Or rather, in principle it should, but for computational efficiency we'll do a little trick later to keep you from needing to hit every single example for every step.",
+  "translatedText": "",
+  "from_community_srt": "Ou melhor, em princípio, deveria, mas em prol da eficiência computacional, vamos fazer um truquezinho depois para você não precisar acertar todo exemplo para todo passo.",
+  "n_reviews": 0,
+  "start": 211.68,
+  "end": 219.2
+ },
+ {
+  "input": "In other cases, right now, all we're going to do is focus our attention on one single example, this image of a 2.",
+  "translatedText": "",
+  "from_community_srt": "Em outro caso, agora só vamos focar nossa atenção num único exemplo: esta imagem de um 2.",
+  "n_reviews": 0,
+  "start": 219.2,
+  "end": 225.96
+ },
+ {
+  "input": "What effect should this one training example have on how the weights and biases get adjusted?",
+  "translatedText": "",
+  "from_community_srt": "Que efeito este exemplo de treinamento deve ter sobre como os pesos e vieses são ajustados?",
+  "n_reviews": 0,
+  "start": 226.72,
+  "end": 231.48
+ },
+ {
+  "input": "Let's say we're at a point where the network is not well trained yet, so the activations in the output are going to look pretty random, maybe something like 0.5, 0.8, 0.2, on and on.",
+  "translatedText": "",
+  "from_community_srt": "Digamos que estejamos num ponto em que a rede ainda não está bem treinada; então as ativações na saída vão parecer bem aleatórias, talvez algo como 0,5; 0,8; 0,2; e assim por diante.",
+  "n_reviews": 0,
+  "start": 232.68,
+  "end": 242.0
+ },
+ {
+  "input": "We can't directly change those activations, we only have influence on the weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "Ora, não podemos alterar diretamente essas ativações - só temos influência sobre os pesos e vieses -,",
+  "n_reviews": 0,
+  "start": 242.52,
+  "end": 247.16
+ },
+ {
+  "input": "But it's helpful to keep track of which adjustments we wish should take place to that output layer.",
+  "translatedText": "",
+  "from_community_srt": "mas é útil saber quais ajustes queremos que aconteçam na camada de saída.",
+  "n_reviews": 0,
+  "start": 247.16,
+  "end": 252.58
+ },
+ {
+  "input": "And since we want it to classify the image as a 2, we want that third value to get nudged up while all the others get nudged down.",
+  "translatedText": "",
+  "from_community_srt": "E como queremos classificar a imagem como 2, queremos que o terceiro valor seja deslocado para cima, enquanto todos os outros são deslocados para baixo.",
+  "n_reviews": 0,
+  "start": 253.36,
+  "end": 261.26
+ },
+ {
+  "input": "Moreover, the sizes of these nudges should be proportional to how far away each current value is from its target value.",
+  "translatedText": "",
+  "from_community_srt": "Além disso, os tamanhos desses deslocamentos devem ser proporcionais a quão longe cada valor atual está do seu valor-alvo.",
+  "n_reviews": 0,
+  "start": 262.06,
+  "end": 269.52
+ },
+ {
+  "input": "For example, the increase to that number 2 neuron's activation is in a sense more important than the decrease to the number 8 neuron, which is already pretty close to where it should be.",
+  "translatedText": "",
+  "from_community_srt": "Por exemplo, o aumento para a ativação daquele neurônio número 2 é, em certo sentido, mais importante que a diminuição para o neurônio número 8, que já está bem perto de onde deveria estar.",
+  "n_reviews": 0,
+  "start": 270.22,
+  "end": 280.9
+ },
+ {
+  "input": "So zooming in further, let's focus just on this one neuron, the one whose activation we wish to increase.",
+  "translatedText": "",
+  "from_community_srt": "Então, chegando mais perto, vamos focar só neste neurônio, este cuja ativação queremos aumentar.",
+  "n_reviews": 0,
+  "start": 282.04,
+  "end": 287.28
+ },
+ {
+  "input": "Remember, that activation is defined as a certain weighted sum of all the activations in the previous layer, plus a bias, which is all then plugged into something like the sigmoid squishification function, or a ReLU.",
+  "translatedText": "",
+  "from_community_srt": "Lembre-se, essa ativação é definida como certa soma ponderada de todas as ativações na camada anterior, além de um viés, que são então inseridos em algo como a função sigmoide, ou uma ReLU.",
+  "n_reviews": 0,
+  "start": 288.18,
+  "end": 301.04
+ },
+ {
+  "input": "So there are three different avenues that can team up together to help increase that activation.",
+  "translatedText": "",
+  "from_community_srt": "Então, há três caminhos diferentes que podem se unir para ajudar a aumentar essa ativação.",
+  "n_reviews": 0,
+  "start": 301.64,
+  "end": 307.02
+ },
+ {
+  "input": "You can increase the bias, you can increase the weights, and you can change the activations from the previous layer.",
+  "translatedText": "",
+  "from_community_srt": "Você pode aumentar o viés, pode aumentar os pesos e pode alterar as ativações da camada anterior.",
+  "n_reviews": 0,
+  "start": 307.44,
+  "end": 314.04
+ },
+ {
+  "input": "Focusing on how the weights should be adjusted, notice how the weights actually have differing levels of influence.",
+  "translatedText": "",
+  "from_community_srt": "Focando só em como os pesos devem ser ajustados, observe como os pesos, na verdade, têm diferentes níveis de influência.",
+  "n_reviews": 0,
+  "start": 314.94,
+  "end": 320.86
+ },
+ {
+  "input": "The connections with the brightest neurons from the preceding layer have the biggest effect since those weights are multiplied by larger activation values.",
+  "translatedText": "",
+  "from_community_srt": "As conexões com os neurônios mais brilhantes da camada anterior têm o maior efeito, já que esses pesos são multiplicados por valores de ativação maiores.",
+  "n_reviews": 0,
+  "start": 321.44,
+  "end": 329.1
+ },
+ {
+  "input": "So if you were to increase one of those weights, it actually has a stronger influence on the ultimate cost function than increasing the weights of connections with dimmer neurons, at least as far as this one training example is concerned.",
+  "translatedText": "",
+  "from_community_srt": "Então, se você fosse aumentar um desses pesos, ele, na verdade, tem uma influência mais forte na função de custo final do que aumentar os pesos de conexões com neurônios mais escuros, pelo menos em se tratando deste exemplo de treinamento.",
+  "n_reviews": 0,
+  "start": 331.46,
+  "end": 343.48
+ },
+ {
+  "input": "Remember, when we talk about gradient descent, we don't just care about whether each component should get nudged up or down, we care about which ones give you the most bang for your buck.",
+  "translatedText": "",
+  "from_community_srt": "Lembre-se, quando falamos de descida do gradiente, não nos importa só se cada componente deve ser deslocado para cima ou para baixo; nos importa qual é mais rentável.",
+  "n_reviews": 0,
+  "start": 344.42,
+  "end": 353.22
+ },
+ {
+  "input": "This, by the way, is at least somewhat reminiscent of a theory in neuroscience for how biological networks of neurons learn, Hebbian theory, often summed up in the phrase, neurons that fire together wire together.",
+  "translatedText": "",
+  "from_community_srt": "Isso, aliás, lembra um pouco uma teoria neurocientífica de como redes biológicas de neurônios aprendem, a teoria de hebbiana, muitas vezes resumida com a frase: “Neurônios que disparam juntos se conectam juntos.” Aqui,",
+  "n_reviews": 0,
+  "start": 355.02,
+  "end": 366.46
+ },
+ {
+  "input": "Here, the biggest increases to weights, the biggest strengthening of connections, happens between neurons which are the most active, and the ones which we wish to become more active.",
+  "translatedText": "",
+  "from_community_srt": "o maior aumento nos pesos, o maior fortalecimento das conexões, acontece entre os neurônios que são os mais ativos, e os que queremos que se tornem mais ativos.",
+  "n_reviews": 0,
+  "start": 367.26,
+  "end": 377.28
+ },
+ {
+  "input": "In a sense, the neurons that are firing while seeing a 2 get more strongly linked to those are the ones firing when thinking about a 2.",
+  "translatedText": "",
+  "from_community_srt": "Em certo sentido, os neurônios que estão disparando ao verem um 2 ficam mais fortemente ligados aos que disparam ao pensarem num 2.",
+  "n_reviews": 0,
+  "start": 377.94,
+  "end": 384.48
+ },
+ {
+  "input": "To be clear, I'm not in a position to make statements one way or another about whether artificial networks of neurons behave anything like biological brains, and this fires together wire together idea comes with a couple meaningful asterisks, but taken as a very loose analogy, I find it interesting to note.",
+  "translatedText": "",
+  "from_community_srt": "Esclarecendo, eu realmente não estou em posição de afirmar que sim ou são sobre se redes de neurônios artificiais se comportam como cérebros biológicos, e esta ideia de \"disparam juntos conectam-se juntos\" vêm com algumas ressalvas. Mas considerada como uma analogia muito aproximada, acho interessante observá-la.",
+  "n_reviews": 0,
+  "start": 385.4,
+  "end": 401.02
+ },
+ {
+  "input": "Anyway, the third way we can help increase this neuron's activation is by changing all the activations in the previous layer.",
+  "translatedText": "",
+  "from_community_srt": "Enfim, o terceiro modo como podemos ajudar a aumentar a ativação deste neurônio é mudando todas as ativações na camada anterior, ou seja,",
+  "n_reviews": 0,
+  "start": 401.94,
+  "end": 409.04
+ },
+ {
+  "input": "Namely, if everything connected to that digit 2 neuron with a positive weight got brighter, and if everything connected with a negative weight got dimmer, then that digit 2 neuron would become more active.",
+  "translatedText": "",
+  "from_community_srt": "se tudo conectado a esse neurônio de dígito 2 com um peso positivo ficasse mais brilhante, e se tudo conectado com um peso negativo ficasse mais escuro, então esse neurônio de dígito 2 ficaria mais ativo.",
+  "n_reviews": 0,
+  "start": 409.04,
+  "end": 420.68
+ },
+ {
+  "input": "And similar to the weight changes, you're going to get the most bang for your buck by seeking changes that are proportional to the size of the corresponding weights.",
+  "translatedText": "",
+  "from_community_srt": "E como as mudanças de peso, será mais rentável buscar mudanças que sejam proporcionais ao tamanho dos pesos correspondentes.",
+  "n_reviews": 0,
+  "start": 422.54,
+  "end": 430.28
+ },
+ {
+  "input": "Now of course, we cannot directly influence those activations, we only have control over the weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "Ora, claro que não podemos influenciar diretamente essas ativações; só temos controle sobre os pesos e vieses.",
+  "n_reviews": 0,
+  "start": 432.14,
+  "end": 437.48
+ },
+ {
+  "input": "But just as with the last layer, it's helpful to keep a note of what those desired changes are.",
+  "translatedText": "",
+  "from_community_srt": "Mas, assim como na última camada, é útil só anotar quais são essas alterações desejadas.",
+  "n_reviews": 0,
+  "start": 437.48,
+  "end": 444.12
+ },
+ {
+  "input": "But keep in mind, zooming out one step here, this is only what that digit 2 output neuron wants.",
+  "translatedText": "",
+  "from_community_srt": "Mas lembre-se, dando um passo atrás aqui, isso é só o que aquele neurônio de saída de dígito 2 quer.",
+  "n_reviews": 0,
+  "start": 444.58,
+  "end": 449.2
+ },
+ {
+  "input": "Remember, we also want all the other neurons in the last layer to become less active, and each of those other output neurons has its own thoughts about what should happen to that second to last layer.",
+  "translatedText": "",
+  "from_community_srt": "Lembre-se, também queremos que todos os outros neurônios da última camada fiquem menos ativos. E cada um desses outros neurônios de saída tem a sua própria opinião sobre o que deve acontecer com aquela penúltima camada.",
+  "n_reviews": 0,
+  "start": 449.76,
+  "end": 459.6
+ },
+ {
+  "input": "So, the desire of this digit 2 neuron is added together with the desires of all the other output neurons for what should happen to this second to last layer, again in proportion to the corresponding weights, and in proportion to how much each of those neurons needs to change.",
+  "translatedText": "",
+  "from_community_srt": "Então, o desejo deste neurônio de dígito 2 é somado aos desejos de todos os outros neurônios de saída do que deveria acontecer com essa penúltima camada. De novo, proporcionalmente aos pesos correspondentes e proporcionalmente o quanto cada um desses neurônios precisa mudar.",
+  "n_reviews": 0,
+  "start": 462.7,
+  "end": 480.72
+ },
+ {
+  "input": "This right here is where the idea of propagating backwards comes in.",
+  "translatedText": "",
+  "from_community_srt": "É bem aqui que entra a ideia da propagação para trás.",
+  "n_reviews": 0,
+  "start": 481.6,
+  "end": 485.48
+ },
+ {
+  "input": "By adding together all these desired effects, you basically get a list of nudges that you want to happen to this second to last layer.",
+  "translatedText": "",
+  "from_community_srt": "Somando todos esses efeitos desejados, você basicamente dá uma lista de deslocamentos que você quer que aconteçam na penúltima camada.",
+  "n_reviews": 0,
+  "start": 485.82,
+  "end": 493.36
+ },
+ {
+  "input": "And once you have those, you can recursively apply the same process to the relevant weights and biases that determine those values, repeating the same process I just walked through and moving backwards through the network.",
+  "translatedText": "",
+  "from_community_srt": "E quando você tem isso, você pode aplicar recursivamente o mesmo processo aos pesos e vieses relevantes que determinam esses valores, repetindo o mesmo processo que acabei de mostrar e voltando pela rede.",
+  "n_reviews": 0,
+  "start": 494.22,
+  "end": 505.1
+ },
+ {
+  "input": "And zooming out a bit further, remember that this is all just how a single training example wishes to nudge each one of those weights and biases.",
+  "translatedText": "",
+  "from_community_srt": "E dando mais um passo para trás, lembre-se que tudo isso é como um só exemplo de treinamento deseja deslocar cada um desses pesos e vieses.",
+  "n_reviews": 0,
+  "start": 508.96,
+  "end": 517.0
+ },
+ {
+  "input": "If we only listened to what that 2 wanted, the network would ultimately be incentivized just to classify all images as a 2.",
+  "translatedText": "",
+  "from_community_srt": "Se escutássemos só o que aquele 2 queria, a rede, em última análise, seria incentivada só a classificar todas as imagens como 2.",
+  "n_reviews": 0,
+  "start": 517.48,
+  "end": 523.22
+ },
+ {
+  "input": "So what you do is go through this same backprop routine for every other training example, recording how each of them would like to change the weights and biases, and average together those desired changes.",
+  "translatedText": "",
+  "from_community_srt": "Então, você deve passar por essa mesma rotina propagação para todos os outros exemplos de treinamento, registrando como cada um deles gostaria de alterar os pesos e os vieses. E então você deve calcular a média dessas mudanças desejadas.",
+  "n_reviews": 0,
+  "start": 524.06,
+  "end": 536.0
+ },
+ {
+  "input": "This collection here of the averaged nudges to each weight and bias is, loosely speaking, the negative gradient of the cost function referenced in the last video, or at least something proportional to it.",
+  "translatedText": "",
+  "from_community_srt": "Esta coleção aqui dos deslocamentos médios para cada peso e viés é, grosso modo, o gradiente negativo da função de custo, referenciada no último vídeo, ou ao menos algo proporcional a isso.",
+  "n_reviews": 0,
+  "start": 541.72,
+  "end": 553.68
+ },
+ {
+  "input": "I say loosely speaking only because I have yet to get quantitatively precise about those nudges, but if you understood every change I just referenced, why some are proportionally bigger than others, and how they all need to be added together, you understand the mechanics for what backpropagation is actually doing.",
+  "translatedText": "",
+  "from_community_srt": "Digo \"grosso modo\", só porque ainda preciso dar uma precisão quantitativa a esses deslocamentos. Mas se você entendeu todas as mudanças que acabei de referenciar, por que algumas são proporcionalmente maiores que outras, e como todas elas precisam ser somadas, Você entende a mecânica do que a retropropagação realmente faz.",
+  "n_reviews": 0,
+  "start": 554.38,
+  "end": 571.0
+ },
+ {
+  "input": "By the way, in practice, it takes computers an extremely long time to add up the influence of every training example every gradient descent step.",
+  "translatedText": "",
+  "from_community_srt": "À propósito, na prática, os computadores levam muito, muito tempo para somar a influência de cada exemplo de treinamento, cada passo da descida do gradiente.",
+  "n_reviews": 0,
+  "start": 573.96,
+  "end": 582.44
+ },
+ {
+  "input": "So here's what's commonly done instead.",
+  "translatedText": "",
+  "from_community_srt": "Então é isso aqui o que fazem geralmente.",
+  "n_reviews": 0,
+  "start": 583.14,
+  "end": 584.82
+ },
+ {
+  "input": "You randomly shuffle your training data and then divide it into a whole bunch of mini-batches, let's say each one having 100 training examples.",
+  "translatedText": "",
+  "from_community_srt": "Você embaralha aleatoriamente os seus dados de treinamento e os divide em um monte de minilotes, digamos, cada um com 100 exemplos de treinamento.",
+  "n_reviews": 0,
+  "start": 585.48,
+  "end": 592.42
+ },
+ {
+  "input": "Then you compute a step according to the mini-batch.",
+  "translatedText": "",
+  "from_community_srt": "Então, você calcula um passo de acordo com o minilote.",
+  "n_reviews": 0,
+  "start": 592.94,
+  "end": 596.2
+ },
+ {
+  "input": "It's not going to be the actual gradient of the cost function, which depends on all of the training data, not this tiny subset, so it's not the most efficient step downhill, but each mini-batch does give you a pretty good approximation, and more importantly, it gives you a significant computational speedup.",
+  "translatedText": "",
+  "from_community_srt": "Não vai ser o gradiente real da função de custo, que depende de todos os dados de treinamento, não deste minúsculo subconjunto. Então, não é o passo mais eficiente morro abaixo. Mas cada minilote lhe dá uma boa aproximação, e o mais importante, lhe dá uma considerável aceleração computacional.",
+  "n_reviews": 0,
+  "start": 596.96,
+  "end": 612.12
+ },
+ {
+  "input": "If you were to plot the trajectory of your network under the relevant cost surface, it would be a little more like a drunk man stumbling aimlessly down a hill but taking quick steps, rather than a carefully calculating man determining the exact downhill direction of each step before taking a very slow and careful step in that direction.",
+  "translatedText": "",
+  "from_community_srt": "Se você fosse traçar a trajetória da sua rede sob a superfície de custo relevante, seria mais como um bêbado tropeçando sem rumo colina abaixo, mas dando passos rápidos, em vez de um calculista que determina a direção exata de descida de cada degrau antes de dar um passo muito lento e cuidadoso nessa direção.",
+  "n_reviews": 0,
+  "start": 612.82,
+  "end": 630.16
+ },
+ {
+  "input": "This technique is referred to as stochastic gradient descent.",
+  "translatedText": "",
+  "from_community_srt": "Essa técnica se chama “descida do gradiente estocástico”.",
+  "n_reviews": 0,
+  "start": 631.54,
+  "end": 634.66
+ },
+ {
+  "input": "There's a lot going on here, so let's just sum it up for ourselves, shall we?",
+  "translatedText": "",
+  "from_community_srt": "Há muita coisa acontecendo aqui; então, vamos fazer um resumo para a gente,",
+  "n_reviews": 0,
+  "start": 635.96,
+  "end": 639.62
+ },
+ {
+  "input": "Backpropagation is the algorithm for determining how a single training example would like to nudge the weights and biases, not just in terms of whether they should go up or down, but in terms of what relative proportions to those changes cause the most rapid decrease to the cost.",
+  "translatedText": "",
+  "from_community_srt": "que tal? A retropropagação é o algoritmo para determinar como um único exemplo de treinamento gostaria de deslocar os pesos e vieses, não só em termos de se eles devem subir ou descer, mas em termos de quais proporções relativas dessas mudanças causam a redução mais rápida do custo.",
+  "n_reviews": 0,
+  "start": 640.44,
+  "end": 655.56
+ },
+ {
+  "input": "A true gradient descent step would involve doing this for all your tens of thousands of training examples and averaging the desired changes you get.",
+  "translatedText": "",
+  "from_community_srt": "Um verdadeiro passo na descida do gradiente envolveria fazer isso para todas as suas dezenas de milhares de exemplos de treinamento e calcular a média das mudanças desejadas que você obtém.",
+  "n_reviews": 0,
+  "start": 656.26,
+  "end": 664.2
+ },
+ {
+  "input": "But that's computationally slow, so instead you randomly subdivide the data into mini-batches and compute each step with respect to a mini-batch.",
+  "translatedText": "",
+  "from_community_srt": "Mas isso é lento em termos computacionais. Então, ao invés disso, você subdivide aleatoriamente os dados nestes minilotes e calcula cada passo em relação a um minilote.",
+  "n_reviews": 0,
+  "start": 664.86,
+  "end": 673.24
+ },
+ {
+  "input": "Repeatedly going through all of the mini-batches and making these adjustments, you will converge towards a local minimum of the cost function, which is to say your network will end up doing a really good job on the training examples.",
+  "translatedText": "",
+  "from_community_srt": "Passando repetidamente por todos os minilotes e fazendo esses ajustes, você convergirá para um mínimo local da função de custo, ou seja, a sua rede vai acabar fazendo um bom trabalho nos exemplos de treinamento.",
+  "n_reviews": 0,
+  "start": 674.0,
+  "end": 685.54
+ },
+ {
+  "input": "So with all of that said, every line of code that would go into implementing backprop actually corresponds with something you have now seen, at least in informal terms.",
+  "translatedText": "",
+  "from_community_srt": "Então, tendo dito tudo isso, cada linha de código usada na implementação da retropropagação de fato corresponde a algo que você viu aqui, pelo menos em termos informais.",
+  "n_reviews": 0,
+  "start": 687.24,
+  "end": 696.72
+ },
+ {
+  "input": "But sometimes knowing what the math does is only half the battle, and just representing the damn thing is where it gets all muddled and confusing.",
+  "translatedText": "",
+  "from_community_srt": "Mas, às vezes, saber a matemática só é metade da batalha, e ao representar o negócio que tudo fica complicado.",
+  "n_reviews": 0,
+  "start": 697.56,
+  "end": 704.12
+ },
+ {
+  "input": "So for those of you who do want to go deeper, the next video goes through the same ideas that were just presented here, but in terms of the underlying calculus, which should hopefully make it a little more familiar as you see the topic in other resources.",
+  "translatedText": "",
+  "from_community_srt": "Então, para aqueles que querem ir mais fundo, o próximo vídeo passa pelas mesmas ideias que acabamos de apresentar aqui, mas em termos do cálculo por trás, o que, espero, vai deixar as coisas mais familiares conforme você vê o tema em outros recursos.",
+  "n_reviews": 0,
+  "start": 704.86,
+  "end": 716.42
+ },
+ {
+  "input": "Before that, one thing worth emphasizing is that for this algorithm to work, and this goes for all sorts of machine learning beyond just neural networks, you need a lot of training data.",
+  "translatedText": "",
+  "from_community_srt": "Antes disso, vale a pena enfatizar que, para este algoritmo funcionar (e isto se aplica a todo tipo de aprendizado de máquina além de redes neurais), você precisa de muitos dados de treinamento.",
+  "n_reviews": 0,
+  "start": 717.34,
+  "end": 725.9
+ },
+ {
+  "input": "In our case, one thing that makes handwritten digits such a nice example is that there exists the MNIST database, with so many examples that have been labeled by humans.",
+  "translatedText": "",
+  "from_community_srt": "No nosso caso, uma coisa que torna os dígitos manuscritos um exemplo tão bom é que existe o banco de dados MNIST, com tantos exemplos que foram rotulados por humanos.",
+  "n_reviews": 0,
+  "start": 726.42,
+  "end": 734.74
+ },
+ {
+  "input": "So a common challenge that those of you working in machine learning will be familiar with is just getting the labeled training data you actually need, whether that's having people label tens of thousands of images, or whatever other data type you might be dealing with.",
+  "translatedText": "",
+  "from_community_srt": "Então, um desafio comum que vocês que trabalham com aprendizado de máquina conhecem é simplesmente conseguir os dados de treinamento rotulados necessários, seja por meio de pessoas que rotulam dezenas de milhares de imagens, seja por qualquer outro tipo de dados com que você esteja lidando.",
+  "n_reviews": 0,
+  "start": 735.3,
+  "end": 747.1
+ }
+]
