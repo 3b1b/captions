@@ -34,9 +34,10 @@ export type _Timings = [string, number, number][];
 export type _Entry = {
   input: string;
   translatedText: string;
-  time_range?: [number, number];
-  n_reviews?: number;
   from_community_srt?: string;
+  n_reviews?: number;
+  start?: number;
+  end?: number;
 };
 
 /** translation entry (title/description/entry) */

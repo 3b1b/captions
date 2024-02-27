@@ -23,13 +23,16 @@ export const flatLessons = lessons
 /** convert "raw" format to format needed for app */
 export function convert(entry: _Entry): Entry {
   return {
-    reviews: entry.n_reviews || 0,
-    upvoted: false,
-    startingTranslation: entry.translatedText,
-    currentTranslation: entry.translatedText,
     startingOriginal: entry.input,
     currentOriginal: entry.input,
+    startingTranslation: entry.translatedText,
+    currentTranslation: entry.translatedText,
+    model: entry.model || null,
     legacyTranslation: entry.from_community_srt,
+    reviews: entry.n_reviews || 0,
+    upvoted: false,
+    start: entry.start,
+    end: entry.end,
   };
 }
 
@@ -38,7 +41,11 @@ export function revert(entry: Entry): _Entry {
   return {
     input: entry.currentOriginal,
     translatedText: entry.currentTranslation,
+    ...(entry.model ? { model: entry.model } : {}),
+    ...(entry.legacyTranslation ? { from_community_srt: entry.legacyTranslation } : {}),
     n_reviews: isEdited(entry) ? 1 : entry.reviews + Number(entry.upvoted),
+    start: entry.start,
+    end: entry.end,
   };
 }
 
