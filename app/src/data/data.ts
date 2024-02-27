@@ -84,7 +84,6 @@ export function translationMax(
   /** for entries without a time range, i.e. title and description */ else
     return (
       startingTranslation.length * 1.5 ||
-      startingOriginal.length * 2 ||
       Infinity
     );
 }
