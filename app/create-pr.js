@@ -59,36 +59,36 @@ async function createPr(params, debug = false) {
     throw Error(`Couldn't get main branch: ${error?.response?.data?.message}`);
   }
 
-  /** get existing branch */
+  // /** get existing branch */
+  // let newBranch;
+  // try {
+  //   newBranch = await octokit.rest.git.getRef({
+  //     owner,
+  //     repo,
+  //     ref: `heads/${branch}`,
+  //   });
+  // } catch (error) {
+  //   if (debug) console.warn(error);
+  //   console.warn(
+  //     `Couldn't get existing branch ${branch}: ${error?.response?.data?.message}`,
+  //   );
+  // }
   let newBranch;
+
+  /** create new branch */
   try {
-    newBranch = await octokit.rest.git.getRef({
+    newBranch = await octokit.rest.git.createRef({
       owner,
       repo,
-      ref: `heads/${branch}`,
+      ref: `refs/heads/${branch}`,
+      sha: main,
     });
   } catch (error) {
     if (debug) console.warn(error);
-    console.warn(
-      `Couldn't get existing branch ${branch}: ${error?.response?.data?.message}`,
+    throw Error(
+      `Couldn't create new branch ${branch}: ${error?.response?.data?.message}`,
     );
   }
-
-  if (!newBranch)
-    /** create new branch */
-    try {
-      newBranch = await octokit.rest.git.createRef({
-        owner,
-        repo,
-        ref: `refs/heads/${branch}`,
-        sha: main,
-      });
-    } catch (error) {
-      if (debug) console.warn(error);
-      throw Error(
-        `Couldn't create new branch ${branch}: ${error?.response?.data?.message}`,
-      );
-    }
 
   /** update files */
   for (const [index, { path, content }] of Object.entries(files)) {
