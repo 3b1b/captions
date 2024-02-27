@@ -37,8 +37,8 @@ export function convert(entry: _Entry): Entry {
 /** revert format needed for app back to "raw" format */
 export function revert(entry: Entry): _Entry {
   return {
-    translatedText: entry.currentTranslation,
     input: entry.currentOriginal,
+    translatedText: entry.currentTranslation,
     n_reviews: isEdited(entry) ? 1 : entry.reviews + Number(entry.upvoted),
   };
 }

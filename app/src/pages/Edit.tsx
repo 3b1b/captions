@@ -1,6 +1,6 @@
 import { LoaderFunction, useBlocker } from "react-router";
 import { atom } from "jotai";
-import { branchExists, repoRaw, request } from "@/api";
+import { branchExists, createPr, repoRaw, request } from "@/api";
 import { getAtom, setAtom } from "@/App";
 import { calcCompletion, convert, isEdited, revert } from "@/data/data";
 import lessons from "@/data/lessons.json";
@@ -9,16 +9,10 @@ import Footer from "@/pages/edit/Footer";
 import Header from "@/pages/edit/Header";
 import Section from "@/pages/edit/Section";
 
-const navWarning =
-  "Are you sure you want to navigate away from this page? Unsaved edits will be lost.";
-
-const lockedWarning =
-  "This lesson/language is already being edited by someone. Click the lock for more info. You may want to work on something else for now.";
-
 /** translation edit page */
 function Edit() {
   /** protect users from losing work */
-  useBlocker(() => !window.confirm(navWarning));
+  useBlocker(() => !window.confirm(navMessage));
 
   return (
     <>
@@ -113,7 +107,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   setAtom(locked, await branchExists(`${lesson}-${language}`));
   if (getAtom(locked))
     window.setTimeout(() => {
-      window.alert(lockedWarning);
+      window.alert(lockedMessage);
     }, 1000);
 
   /** base raw folder containing json files */
@@ -164,8 +158,57 @@ export const loader: LoaderFunction = async ({ params }) => {
 /** clean data for export */
 export function exportData() {
   return {
-    title: getAtom(description).map(revert),
+    title: getAtom(title).map(revert)[0],
     description: getAtom(description).map(revert),
     sentence_translations: getAtom(captions).map(revert),
   };
 }
+
+/** submit pr */
+export async function submitPr(
+  lesson: string,
+  language: string,
+  author: string,
+) {
+  const path = `${getAtom(meta)?.path}/${language}`;
+
+  /** make request */
+  const pr = await createPr({
+    branch: `${lesson}-${language}`,
+    title: `Edit "${lesson} (${language})"`,
+    body: [`Author: ${author}`].join("\n"),
+    files: [
+      {
+        path: `${path}/title.json`,
+        content: getAtom(title).map(revert)[0],
+      },
+      {
+        path: `${path}/sentence_translations.json`,
+        content: getAtom(captions).map(revert),
+      },
+      {
+        path: `${path}/description.json`,
+        content: getAtom(description).map(revert),
+      },
+    ],
+  });
+
+  console.info(pr);
+
+  /** handle errors */
+  if (typeof pr === "string") {
+    window.alert(submitMessage(pr));
+    return;
+  }
+
+  return { link: pr.data.html_url, number: pr.data.number };
+}
+
+const navMessage =
+  "Are you sure you want to navigate away from this page? Unsaved edits will be lost.";
+
+const lockedMessage =
+  "This lesson/language is already being edited by someone. Click the lock for more info. You may want to work on something else for now.";
+
+const submitMessage = (error: string) =>
+  `There was an error submitting: ${error.replace(/\.$/, "")}. Please save your edits as a backup, then try again later or report this issue.`;

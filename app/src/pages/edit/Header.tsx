@@ -104,7 +104,7 @@ function Header() {
         <div className={classes.icons}>
           {getLocked && (
             <Link to={`${repoFull}/tree/${lesson}-${language}`} target="_blank">
-              <FaLock style={{ transform: "scale(1.5)" }} />
+              <FaLock />
             </Link>
           )}
 

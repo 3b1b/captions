@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { FaDownload, FaPaperPlane } from "react-icons/fa6";
+import { ImSpinner8 } from "react-icons/im";
 import { useParams } from "react-router";
 import { useLocalStorage } from "react-use";
 import { useAtom, useAtomValue } from "jotai";
@@ -16,6 +18,7 @@ import {
   filters,
   showLegacy,
   sticky,
+  submitPr,
   title,
 } from "@/pages/Edit";
 import { downloadZip } from "@/util/download";
@@ -26,7 +29,8 @@ function Footer() {
   const { lesson = "", language = "" } = useParams();
 
   /** local state */
-  const [user, setUser] = useLocalStorage("3b1b-captions", "");
+  const [submitting, setSubmitting] = useState(false);
+  const [author, setAuthor] = useLocalStorage("3b1b-translations-author", "");
 
   /** page state */
   const [getFilter, setFilter] = useAtom(filter);
@@ -51,6 +55,8 @@ function Footer() {
 
   /** edit filter count */
   const edits = filterOptions.find((filter) => filter.id === "my")?.count || 0;
+
+  /** when page submitted */
 
   return (
     <footer
@@ -92,17 +98,28 @@ function Footer() {
         />
 
         <Input
-          value={user}
-          onChange={setUser}
+          value={author}
+          onChange={setAuthor}
           placeholder="@github-user or name"
           data-tooltip="So we can tag you on GitHub and/or attribute these edits to you"
         />
 
         <Button
-          disabled={edits === 0}
-          text={`Submit ${edits.toLocaleString()} Edit(s)`}
-          icon={<FaPaperPlane />}
-          data-tooltip="(NOT ACTIVE YET) Submit your edits to be reviewed. Opens a public pull request on GitHub."
+          onClick={async () => {
+            setSubmitting(true);
+            const pr = await submitPr(lesson, language, author || "");
+            setSubmitting(false);
+            if (pr && window.confirm(successMessage(pr.link)))
+              window.location.href = pr.link;
+          }}
+          disabled={edits === 0 || submitting}
+          text={
+            submitting
+              ? "Submitting"
+              : `Submit ${edits.toLocaleString()} Edit(s)`
+          }
+          icon={submitting ? <ImSpinner8 className="spin" /> : <FaPaperPlane />}
+          data-tooltip="Submit your edits to be reviewed. Opens a public pull request on GitHub."
         />
       </div>
     </footer>
@@ -110,3 +127,6 @@ function Footer() {
 }
 
 export default Footer;
+
+const successMessage = (link: string) =>
+  `Edits submitted successfully at ${link}! Would you like to go there now? This is where you can make further edits, make comments, and watch for reviews.`;
