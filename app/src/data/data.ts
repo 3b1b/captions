@@ -69,8 +69,8 @@ export function charsPerSec(language: string) {
 
 /** Estimate how many characters would cause an overflow of narration time */
 export function maxCharsAllowed(language: string, start: number, end: number): number {
-  const mult_const: number = 1.1;
-  const time_buff: number = 0.5;
+  const mult_const: number = 1.05;
+  const time_buff: number = 1.0;
   return mult_const * (charsPerSec(language) * (end - start + time_buff));
 }
 
