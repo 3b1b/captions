@@ -33,8 +33,7 @@ function Search() {
         language.toLowerCase().includes(languageSearch),
     );
 
-    /** sort lowest completion % */
-    return sortBy(filtered, ["completion"]);
+    return filtered;
   }, [getTitleSearch, getTopicSearch, getLanguageSearch]);
 
   /** limit results */
