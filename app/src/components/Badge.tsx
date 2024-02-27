@@ -18,7 +18,7 @@ function Badge({ completion, className }: Props) {
       className={classNames(classes.badge, className)}
       viewBox={[-radius, -radius, radius * 2, radius * 2].join(" ")}
       style={{ "--completion": percent + "%" } as CSSProperties}
-      data-tooltip={`${percent.toFixed(2)}% reviewed or edited by a human`}
+      data-tooltip={`${percent.toFixed(2)}% reviewed or edited`}
     >
       <circle className={classes.back} r={radius} opacity={completion} />
       <text
