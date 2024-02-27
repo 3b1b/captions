@@ -7,7 +7,7 @@ export const website = "https://3blue1brown.com";
 export const websiteRaw =
   "https://raw.githubusercontent.com/3b1b/3Blue1Brown.com";
 export const cloudFuncBase =
-  "https://us-central1-mystic-fountain-606.cloudfunctions.net/test-function";
+  "https://us-central1-captionsapp-415616.cloudfunctions.net/captions";
 
 /** generic request */
 export async function request<T>(
