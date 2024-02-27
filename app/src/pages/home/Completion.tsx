@@ -20,7 +20,7 @@ function Completion() {
 
       <p className="narrow">
         <strong>A high-level overview of what we need help with</strong>.
-        Measured as a % of lines that have been reviewed or edited by a human,
+        Measured as a % of lines that have been reviewed or edited,
         fall within a certain length, and{" "}
         <Link
           to={`${repoFull}?tab=readme-ov-file#3blue1brown-captions`}
