@@ -84,7 +84,8 @@ export function originalMax({ startingOriginal }: Entry) {
 
 /** is entry complete */
 export function isComplete(entry: Entry, language: string) {
-  const goodLength = entry.currentTranslation.length < translationMax(entry, language);
+  const goodLength =
+    entry.currentTranslation.length < translationMax(entry, language);
 
   const reviewed = entry.reviews > 0 || isEdited(entry) || entry.upvoted;
 
