@@ -105,10 +105,6 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   /** check if edit already open for lesson/language */
   setAtom(locked, await branchExists(`${lesson}-${language}`));
-  if (getAtom(locked))
-    window.setTimeout(() => {
-      window.alert(lockedMessage);
-    }, 1000);
 
   /** base raw folder containing json files */
   const base = `${repoRaw}/main`;
@@ -151,6 +147,12 @@ export const loader: LoaderFunction = async ({ params }) => {
           getAtom(captions)[index]!.timeRange = [start, end];
       });
   }
+
+  /** alert about locked status */
+  if (getAtom(locked))
+    window.setTimeout(() => {
+      window.alert(lockedMessage);
+    }, 1000);
 
   return null;
 };
