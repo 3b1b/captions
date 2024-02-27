@@ -59,23 +59,8 @@ async function createPr(params, debug = false) {
     throw Error(`Couldn't get main branch: ${error?.response?.data?.message}`);
   }
 
-  // /** get existing branch */
-  // let newBranch;
-  // try {
-  //   newBranch = await octokit.rest.git.getRef({
-  //     owner,
-  //     repo,
-  //     ref: `heads/${branch}`,
-  //   });
-  // } catch (error) {
-  //   if (debug) console.warn(error);
-  //   console.warn(
-  //     `Couldn't get existing branch ${branch}: ${error?.response?.data?.message}`,
-  //   );
-  // }
-  let newBranch;
-
   /** create new branch */
+  let newBranch;
   try {
     newBranch = await octokit.rest.git.createRef({
       owner,
