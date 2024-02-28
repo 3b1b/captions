@@ -12,8 +12,8 @@ We are currently running an early test for an interface to review translations. 
 
 - Go to [translate.3blue1brown.com](https://translate.3blue1brown.com/).
 - Navigate to a particular video and language you would like to edit.
-- For each sentence, you can either edit the translation, or if it looks good as is, click the thumbs up to indicate it's been reviewed.
-    - If a sentence is highlighted red, its estimated to be too long to fit within the time constraint. If it's possible to abbreviate it, e.g. by removing unnecessary filler words, it will make the auto-dubbing much smoother.
+- For each sentence, you can either edit the translation or if it looks good as is, click the thumbs up to indicate it's been reviewed.
+    - If a sentence is highlighted in red, it's estimated to be too long to fit within the time constraint. If it's possible to abbreviate it, e.g. by removing unnecessary filler words, it will make the auto-dubbing much smoother.
     - If you see a "legacy translation" below a line, this comes from community contributions back in the days when YouTube allowed people to submit subtitles. The timings often don't align perfectly, but hopefully, they offer helpful suggestions.
 - When you've finished with the edits you wanted to make, enter your name, and click submit.
 
