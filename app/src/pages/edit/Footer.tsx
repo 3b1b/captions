@@ -56,7 +56,8 @@ function Footer() {
   /** edit filter count */
   const edits = filterOptions.find((filter) => filter.id === "my")?.count || 0;
 
-  /** when page submitted */
+  /** whether to disable submitting */
+  const disabled = edits === 0 || submitting;
 
   return (
     <footer
@@ -107,7 +108,7 @@ function Footer() {
         />
 
         <Button
-          disabled={edits === 0 || submitting}
+          aria-disabled={disabled}
           text={
             submitting
               ? "Submitting"
@@ -121,12 +122,15 @@ function Footer() {
 
         <form
           id="submit-edits"
-          onSubmit={async () => {
+          onSubmit={async (event) => {
+            /** prevent page from nav'ing away before submitting finished */
+            event.preventDefault();
+
+            if (disabled) return;
+
             setSubmitting(true);
-            const pr = await submitPr(lesson, language, author || "");
+            await submitPr(lesson, language, author || "");
             setSubmitting(false);
-            if (pr && window.confirm(successMessage(pr.link)))
-              window.location.href = pr.link;
           }}
         />
       </div>
@@ -135,6 +139,3 @@ function Footer() {
 }
 
 export default Footer;
-
-const successMessage = (link: string) =>
-  `Edits submitted successfully at ${link}! Would you like to go there now? This is where you can make further edits, make comments, and watch for reviews.`;

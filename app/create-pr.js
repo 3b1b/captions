@@ -10,7 +10,7 @@ const repo = "captions";
 /** endpoint */
 functions.http("create-pr", async (request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
-  response.set("Access-Control-Allow-Methods", "POST");
+  response.set("Access-Control-Allow-Methods", "OPTIONS, POST");
   response.set("Access-Control-Allow-Headers", "Accept, Content-Type");
 
   if (request.method == "OPTIONS") return response.status(200).send();
@@ -55,9 +55,8 @@ async function createPr(params, debug = false) {
   }
 
   /** create new branch */
-  let newBranch;
   try {
-    newBranch = await octokit.rest.git.createRef({
+    await octokit.rest.git.createRef({
       owner,
       repo,
       ref: `refs/heads/${branch}`,

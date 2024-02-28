@@ -194,20 +194,20 @@ export async function submitPr(
 
   console.info(pr);
 
-  /** handle errors */
-  if (typeof pr === "string") {
-    window.alert(submitMessage(pr));
-    return;
-  }
-
-  return { link: pr.data.html_url, number: pr.data.number };
+  /** error */
+  if (typeof pr === "string") window.alert(submitMessage(pr));
+  /** success */ else if (window.confirm(successMessage(pr.data.html_url)))
+    window.location.href = pr.data.html_url;
 }
-
-const navMessage =
-  "Are you sure you want to navigate away from this page? Unsaved edits will be lost.";
 
 const lockedMessage =
   "This lesson/language is already being edited by someone, see github.com/3b1b/captions/pulls. Please work on something else for now.";
 
+const navMessage =
+  "Are you sure you want to navigate away from this page? Unsaved edits will be lost.";
+
 const submitMessage = (error: string) =>
   `There was an error submitting: ${error.replace(/\.$/, "")}. Please save your edits as a backup, then try again later or report this issue.`;
+
+const successMessage = (link: string) =>
+  `Edits submitted successfully at ${link}! Would you like to go there now? This is where you can make further edits, make comments, and watch for reviews.`;

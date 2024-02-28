@@ -73,17 +73,8 @@ export async function createPr(params: CreatePR) {
       body: JSON.stringify(params),
     });
 
-    try {
-      return (await response.json()) as PR;
-    } catch {
-      //
-    }
-    try {
-      return await response.text();
-    } catch {
-      //
-    }
-    throw Error("Couldn't parse");
+    if (!response.ok) return await response.text();
+    else return (await response.json()) as PR;
   } catch (error) {
     console.error(error);
     return "Request or parsing error";
