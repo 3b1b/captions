@@ -118,7 +118,8 @@ function Row({ index, entries }: Props) {
                 stopVideo();
                 header.style.height = "";
               } else {
-                playSegment(start, end);
+                // Add a little breathing room at the end
+                playSegment(start, end + 0.5);
 
                 /** expand header */
                 const expand = innerHeight / 3;
