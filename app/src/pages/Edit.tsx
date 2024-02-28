@@ -1,7 +1,7 @@
 import { LoaderFunction, redirect, useBlocker } from "react-router";
 import { atom } from "jotai";
 import { branchExists, createPr, repoRaw, request } from "@/api";
-import { getAtom, setAtom } from "@/App";
+import { getAtom, loading, setAtom } from "@/App";
 import { calcCompletion, convert, isEdited, revert } from "@/data/data";
 import lessons from "@/data/lessons.json";
 import { _Entry, Entry } from "@/data/types";
@@ -86,12 +86,16 @@ export const loader: LoaderFunction = async ({ params }) => {
   const { lesson = "" } = params;
   language = params.language || "";
 
+  setAtom(loading, 0);
+
   /** check if edit already open for lesson/language */
   setAtom(locked, await branchExists(`${lesson}-${language}`));
   if (getAtom(locked)) {
     window.alert(lockedMessage);
     return redirect("/");
   }
+
+  setAtom(loading, 0.2);
 
   /** lookup lesson metadata */
   setAtom(meta, lessons.find((l) => l.lesson === lesson) || null);
@@ -108,9 +112,6 @@ export const loader: LoaderFunction = async ({ params }) => {
     return null;
   }
 
-  /** check if edit already open for lesson/language */
-  setAtom(locked, await branchExists(`${lesson}-${language}`));
-
   /** base raw folder containing json files */
   const base = `${repoRaw}/main`;
 
@@ -121,12 +122,16 @@ export const loader: LoaderFunction = async ({ params }) => {
     if (data) setAtom(video, data.split("/").pop() || "");
   }
 
+  setAtom(loading, 0.4);
+
   /** load title entry */
   {
     const url = `${base}/${path}/${language}/title.json`;
     const data = await request<_Entry>(url);
     if (data) setAtom(title, [data].map(convert));
   }
+
+  setAtom(loading, 0.6);
 
   /** load description entries */
   {
@@ -135,12 +140,16 @@ export const loader: LoaderFunction = async ({ params }) => {
     if (data) setAtom(description, data.map(convert));
   }
 
+  setAtom(loading, 0.8);
+
   /** load caption entries */
   {
     const url = `${base}/${path}/${language}/sentence_translations.json`;
     const data = await request<_Entry[]>(url);
     if (data) setAtom(captions, data.map(convert));
   }
+
+  setAtom(loading, 1);
 
   return null;
 };

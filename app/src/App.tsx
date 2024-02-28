@@ -5,10 +5,18 @@ import {
   redirect,
   RouteObject,
   RouterProvider,
+  useNavigation,
 } from "react-router-dom";
-import { Atom, getDefaultStore, PrimitiveAtom } from "jotai";
+import {
+  atom,
+  Atom,
+  getDefaultStore,
+  PrimitiveAtom,
+  useAtomValue,
+} from "jotai";
 import { QueryParamProvider } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
+import ProgressBar from "@/components/ProgressBar";
 import Edit, { loader as editLoader } from "@/pages/Edit";
 import Home from "@/pages/Home";
 import "@/components/tooltip";
@@ -20,8 +28,14 @@ function App() {
 
 export default App;
 
+/** global loading state */
+export const loading = atom(0);
+
 /** route layout */
 const Layout = () => {
+  const { state } = useNavigation();
+  const getLoading = useAtomValue(loading);
+
   return (
     <IconContext.Provider
       value={{ className: "icon", attr: { "aria-hidden": true } }}
@@ -31,6 +45,7 @@ const Layout = () => {
         options={{ updateType: "replaceIn" }}
       >
         <Outlet />
+        {state === "loading" && <ProgressBar progress={getLoading || 1} />}
       </QueryParamProvider>
     </IconContext.Provider>
   );
