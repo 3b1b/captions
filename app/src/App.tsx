@@ -45,7 +45,7 @@ const Layout = () => {
         options={{ updateType: "replaceIn" }}
       >
         <Outlet />
-        {state === "loading" && <ProgressBar progress={getLoading || 1} />}
+        {state === "loading" && <ProgressBar progress={getLoading} />}
       </QueryParamProvider>
     </IconContext.Provider>
   );
