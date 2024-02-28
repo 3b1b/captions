@@ -1,0 +1,1007 @@
+[
+ [
+  "Let's kick things off with a quiz.",
+  0.0,
+  1.62
+ ],
+ [
+  "Suppose I take a normal distribution with this familiar bell curve shape, and I have a random variable x that's drawn from that distribution.",
+  2.36,
+  9.7
+ ],
+ [
+  "So what you're looking at right now are repeated samples of that random variable.",
+  10.52,
+  14.54
+ ],
+ [
+  "And as a quick reminder, the way that you interpret this curve, what the function actually means, is that if you want the probability that your sample falls within a given range of values, say the probability that it ends up between negative one and two, well that would equal the area under this curve in that range of values.",
+  14.96,
+  32.8
+ ],
+ [
+  "That's what the curve actually means.",
+  32.84,
+  34.7
+ ],
+ [
+  "I'll also pull up a second random variable, also following a normal distribution, but maybe this time a little more spread out, a slightly bigger standard deviation.",
+  35.26,
+  42.98
+ ],
+ [
+  "And here's the quiz for you.",
+  43.28,
+  44.44
+ ],
+ [
+  "If you repeatedly sample both of these variables, and at each iteration you add up the two results, well then that sum behaves like its own random variable.",
+  44.6,
+  53.42
+ ],
+ [
+  "And the question is what distribution describes that sum that you're looking at?",
+  53.96,
+  58.88
+ ],
+ [
+  "You think about it for a little moment, maybe you have a guess, maybe you think, I don't know, it's another normal distribution, or something with a different shape.",
+  59.38,
+  66.5
+ ],
+ [
+  "Needless to say, guessing is not enough.",
+  67.2,
+  69.12
+ ],
+ [
+  "The real quiz is to be able to explain why you get the answer that you do.",
+  69.56,
+  74.26
+ ],
+ [
+  "In this case, if you have that deep to your bones visceral level of understanding for why the answer is what it is, you'll be a long way towards understanding why normal distributions serve the special function that they do in probability.",
+  74.8,
+  87.26
+ ],
+ [
+  "Zooming out though, this is actually meant to be a much more general lesson about how you add two different random variables, regardless of their distribution, not necessarily just the normally distributed ones.",
+  87.86,
+  98.36
+ ],
+ [
+  "This amounts to a special operation that you apply to the distributions underlying those variables.",
+  99.1,
+  104.44
+ ],
+ [
+  "The operation has a special name, it's called a convolution, and the primary thing you and I will do today is motivate and build up two distinct ways to visualize what a convolution looks like for continuous functions, and then to talk about how these two different visualizations can each be helpful in different ways, with a special focus on the central limit theorem.",
+  104.66,
+  124.1
+ ],
+ [
+  "After we do the general lesson, I want to return to the opening quiz and offer an unusually satisfying way to answer it.",
+  124.88,
+  131.66
+ ],
+ [
+  "As a quick side note, regular viewers among you might know there's already a video about convolutions on this channel, but that one had a pretty different focus.",
+  131.66,
+  139.58
+ ],
+ [
+  "We were only doing the discrete case, and I wanted to show not just probability, but the ways that it comes up in a wide variety of contexts.",
+  139.76,
+  146.1
+ ],
+ [
+  "I'm in a slightly awkward spot because it doesn't really make sense for that to be a prerequisite to this video, but I think the best way to warm up today is to cover essentially one of the same examples used in that video, so if you are coming straight from that one, you can probably skip safely ahead, otherwise, let's dive right in.",
+  146.78,
+  163.9
+ ],
+ [
+  "For this opening quiz question, each of the random variables can take on a value in a continuous infinite range of values, all possible real numbers.",
+  166.86,
+  174.78
+ ],
+ [
+  "It'll be a lot easier if we warm up in a setting that's more discrete and finite, like maybe rolling a pair of weighted dice.",
+  175.3,
+  181.78
+ ],
+ [
+  "Here, the animation you're looking at is simulating two weighted dice, and you can probably tell what's going on, but just to spell it out explicitly, the blue die is following a distribution that seems to be biased towards lower values, the red die has a distinct distribution, and I'm repeatedly sampling from each one and recording the sum of the two values at each iteration.",
+  182.56,
+  203.14
+ ],
+ [
+  "Repeating samples like this many many different times can give you a heuristic sense of the final distribution, but our real task today is to compute that distribution precisely.",
+  203.74,
+  212.6
+ ],
+ [
+  "What is the precise probability of rolling a 2, or a 3, or a 4, or a 5, on and on for all possibilities?",
+  212.6,
+  219.36
+ ],
+ [
+  "It's not too hard a question, I'd actually encourage you to pause and try working it out for yourself.",
+  219.84,
+  224.14
+ ],
+ [
+  "The main goal in this warm-up section will be to walk through two distinct ways that you could visualize the underlying computation.",
+  224.98,
+  231.64
+ ],
+ [
+  "For example, one way you could start to think about it is that there are 36 distinct possible outcomes, and we could organize those outcomes in a little 6x6 grid.",
+  232.92,
+  242.36
+ ],
+ [
+  "Now if I was to ask you, what is the probability of seeing any one of these specific outcomes, say the probability of seeing a blue 4 and a red 2, what would you say?",
+  243.04,
+  252.5
+ ],
+ [
+  "We might say it should be the probability of that blue 4 multiplied by the probability of the red 2, and that would be correct assuming that the die rolls are independent from each other.",
+  253.04,
+  263.08
+ ],
+ [
+  "You might say that's kind of pedantic, of course the die rolls should be independent from each other, but it's a point worth emphasizing because everything that we're going to do from here moving forward, from this simple example all the way up to the central limit theorem, assumes that the random variables are independent.",
+  263.54,
+  278.08
+ ],
+ [
+  "In the real world, you want to keep a sharp eye out for if this assumption actually holds.",
+  278.66,
+  282.72
+ ],
+ [
+  "Now what I'm going to do is take this grid of all possible outcomes, but start filling it in with some numbers.",
+  283.64,
+  288.82
+ ],
+ [
+  "Maybe we'll put the numbers for all the probabilities of the blue die down on the bottom, all the probabilities for the red die over here on the left, and then we will fill in the grid where the probability for every outcome inside the grid looks like some product between one number from the blue distribution and one number from the red distribution.",
+  289.18,
+  306.18
+ ],
+ [
+  "Another way to think about it is we're basically constructing a multiplication table.",
+  306.68,
+  310.34
+ ],
+ [
+  "To be a little more visual about all of this, we could plot each one of these probabilities as the height of a bar above the square in this sort of three-dimensional plot.",
+  310.7,
+  319.68
+ ],
+ [
+  "In some sense, this three-dimensional plot carries all the data that we would need to know about rolling a pair of dice.",
+  320.12,
+  325.6
+ ],
+ [
+  "And so the question is how do we extract the thing that we want to know, the probabilities for various different sums?",
+  325.74,
+  332.16
+ ],
+ [
+  "Well, if you highlight all of the outcomes with a certain sum, say a sum of six, notice how all of those end up on a certain diagonal.",
+  333.66,
+  341.26
+ ],
+ [
+  "Same deal if I highlight all the pairs where the sum is seven, they sit along a different diagonal.",
+  341.74,
+  346.76
+ ],
+ [
+  "So to compute the probability of each possible sum, what you do is you add together all of the entries that sit on one of these diagonals.",
+  347.24,
+  354.8
+ ],
+ [
+  "Pulling up the 3D plot, we can better foreshadow where we'll go with this later by saying that the distribution of possible sums looks like combining all of the heights of this plot along one of these diagonal slices.",
+  358.28,
+  370.4
+ ],
+ [
+  "It's as if we've taken this full distribution for all possible outcomes and we've kind of collapsed it along one of the directions.",
+  372.08,
+  378.98
+ ],
+ [
+  "And admittedly, I'm just having a bit of fun with the animations at this point.",
+  380.96,
+  384.14
+ ],
+ [
+  "It's not like if you were working this out with pencil and paper you would be drawing some three-dimensional plot.",
+  384.14,
+  388.9
+ ],
+ [
+  "But it's fun when you collapse it on this direction, you actually do get the same distribution, which I knew you should, but it's still fun to see.",
+  389.32,
+  396.38
+ ],
+ [
+  "Also, even though all of this might just seem a little bit playful or even unnecessarily complicated, I can promise you this intuition about diagonal slices will come back to us later for a genuinely satisfying proof.",
+  396.96,
+  408.54
+ ],
+ [
+  "But staying focused on the simple dice case a little bit longer, here's the second way that we could think about it.",
+  408.86,
+  414.28
+ ],
+ [
+  "Take that bottom distribution and flip it around horizontally so that the die values increase as you go from right to left.",
+  414.78,
+  421.34
+ ],
+ [
+  "Why do this, you might ask?",
+  422.48,
+  424.04
+ ],
+ [
+  "Well, notice now which of the pairs of dice values line up with each other.",
+  424.6,
+  428.48
+ ],
+ [
+  "As it's positioned right now, we have 1 and 6, 2 and 5, 3 and 4, and so on.",
+  428.86,
+  434.72
+ ],
+ [
+  "It is all of the pairs of values that add up to 7.",
+  434.9,
+  438.1
+ ],
+ [
+  "So if you want to think about the probability of rolling a 7, a way to hold that computation in your mind is to take all of the pairs of probabilities that line up with each other, multiply together those pairs, and then add up all of the results.",
+  438.1,
+  452.2
+ ],
+ [
+  "Some of you might like to think of this as a kind of dot product.",
+  452.94,
+  455.64
+ ],
+ [
+  "But the operation as a whole is not just one dot product, but many.",
+  456.18,
+  459.92
+ ],
+ [
+  "If we were to slide that bottom distribution a little more to the left, so in this case it looks like the die values which line up are 1 and 4, 2 and 3, 3 and 2, 4 and 1, in other words all the ones that add up to a 5, well, now if we take the dot product, we multiply the pairs of probabilities that line up and add them together, that would give us the total probability of rolling a 5.",
+  460.36,
+  482.54
+ ],
+ [
+  "In general, from this point of view, computing the full distribution for the sum looks like sliding that bottom distribution into various different positions and computing this dot product along the way.",
+  483.2,
+  493.28
+ ],
+ [
+  "It is precisely the same operation as the diagonal slices we were looking at earlier.",
+  494.6,
+  499.82
+ ],
+ [
+  "They're just two different ways to visualize the same underlying operation.",
+  500.38,
+  503.8
+ ],
+ [
+  "And however you choose to visualize it, this operation that takes in two different distributions and spits out a new one describing the sum of the relevant random variables is called a convolution, and we often denote it with this asterisk.",
+  507.24,
+  520.88
+ ],
+ [
+  "Really the way you want to think about it, especially as we set up for the continuous case, is to think of it as combining two different functions and spitting out a new function.",
+  520.88,
+  529.24
+ ],
+ [
+  "For example, in this case, maybe I give the function for the first distribution the name p sub x.",
+  530.32,
+  535.48
+ ],
+ [
+  "This would be a function that takes in a possible value for the die, like a 3, and it spits out the corresponding probability.",
+  535.82,
+  542.98
+ ],
+ [
+  "Similarly, let's let p sub y be the function for our second distribution, and p sub x plus y be the function describing the distribution for the sum.",
+  544.44,
+  553.06
+ ],
+ [
+  "In the lingo, what you would say is that p sub x plus y is equal to a convolution between p sub x and p sub y.",
+  553.96,
+  561.08
+ ],
+ [
+  "And what I want you to think about now is what the formula for this operation should look like.",
+  561.68,
+  566.14
+ ],
+ [
+  "You've seen two different ways to visualize it, but how do we actually write it down in symbols?",
+  566.44,
+  570.46
+ ],
+ [
+  "To get your bearings, maybe it's helpful to write down a specific example, like the case of plugging in a 4, where you add up over all the different pairwise products corresponding to pairs of inputs that add up to a 4.",
+  570.96,
+  581.66
+ ],
+ [
+  "And more generally, here's how it might look.",
+  582.46,
+  584.54
+ ],
+ [
+  "This new function takes as an input a possible sum for your random variables, which I'll call s, and what it outputs looks like a sum over a bunch of pairs of values for x and y.",
+  584.98,
+  595.82
+ ],
+ [
+  "Except the usual way it's written is not to write with x and y, but instead we just focus on one of those variables, in this case x, letting it range over all of its possible values, which here just means going from 1 all the way up to 6.",
+  595.82,
+  608.36
+ ],
+ [
+  "And instead of writing y, you write s minus x, essentially whatever the number has to be to make sure the sum is s.",
+  608.84,
+  615.72
+ ],
+ [
+  "Now the astute among you might notice a slightly weird quirk with the formula as it's written.",
+  617.3,
+  621.68
+ ],
+ [
+  "For example, if you plug in a given value like s equals 4, and you unpack this sum, letting x range over all the possible values going from 1 up to 6, then sometimes that corresponding y value drops below the domain of what we've explicitly defined.",
+  622.22,
+  636.96
+ ],
+ [
+  "For example, you plug in 0 and negative 1 and negative 2.",
+  637.4,
+  640.54
+ ],
+ [
+  "It's not actually that big a deal.",
+  641.2,
+  642.88
+ ],
+ [
+  "Essentially, you would just say all of these values are 0, so all these later terms don't get counted.",
+  643.0,
+  648.16
+ ],
+ [
+  "And that should kind of make sense.",
+  648.64,
+  649.74
+ ],
+ [
+  "What is the probability that the red die rolls to become a negative 1?",
+  649.9,
+  653.28
+ ],
+ [
+  "Well, it's 0.",
+  653.82,
+  654.82
+ ],
+ [
+  "That is an impossible outcome.",
+  654.86,
+  656.4
+ ],
+ [
+  "As a next step, let's turn our attention towards continuous distributions, where your random variable can take on values anywhere in an infinite continuum, like all possible real numbers.",
+  661.04,
+  671.04
+ ],
+ [
+  "Maybe you're doing weather modeling and trying to predict the temperature tomorrow at noon, or you're doing some financial projections, or maybe you're modeling the typical wait times before a bus arrives.",
+  671.52,
+  680.62
+ ],
+ [
+  "There are all sorts of things where you need to handle continuity.",
+  680.84,
+  683.36
+ ],
+ [
+  "In all the graphs that we draw, the x value still represents a possible number that the random variable can take on, but the interpretation of the y-axis is a little bit different, because no longer does this represent probability.",
+  683.9,
+  695.7
+ ],
+ [
+  "Instead, the thing that we're graphing is what's called probability density.",
+  696.28,
+  699.84
+ ],
+ [
+  "This is something we've talked about before, so you know the deal.",
+  700.32,
+  703.02
+ ],
+ [
+  "Essentially, the probability that a sample of your variable falls within a given range looks like the area under the curve in that range.",
+  703.44,
+  711.16
+ ],
+ [
+  "The function describing this curve is commonly called a probability density function, a common enough phrase that it's frequently just given the abbreviation PDF, and so the proper way to write all of this down would be to say that the probability that your sample falls within a given range looks like the integral of your PDF, the probability density function, in that range.",
+  711.62,
+  732.02
+ ],
+ [
+  "As a general rule of thumb, anytime that you see a sum in the discrete case, you would use an integral in the continuous case.",
+  732.88,
+  739.6
+ ],
+ [
+  "So let's think about what that means for our main example.",
+  740.42,
+  743.3
+ ],
+ [
+  "Let's say we have two different random variables, but this time each one will follow a continuous distribution, and we want to understand their sum and the new distribution that describes that sum.",
+  743.86,
+  754.1
+ ],
+ [
+  "You can probably already guess what the formula will be just by analogy.",
+  755.42,
+  758.92
+ ],
+ [
+  "Remember, in the formula that we just wrote down, where p sub x is the function for the first variable, and p sub y is the function for the second variable, the convolution between them, the thing describing a sum of those variables, itself looks like a sum where we combine a bunch of pairwise products.",
+  759.4,
+  775.84
+ ],
+ [
+  "The expression in the continuous case really does look 100% analogous.",
+  776.48,
+  780.16
+ ],
+ [
+  "It's just that we swap out that sum for an integral.",
+  780.6,
+  782.98
+ ],
+ [
+  "Sometimes when students see this definition of a convolution out of context, it can seem a little intimidating.",
+  783.76,
+  788.62
+ ],
+ [
+  "Hopefully the analogy is enough to make it clear, but the continuous nature really does give it a different flavor, and it's worth taking a couple minutes to think through what it means on its own terms.",
+  789.1,
+  798.34
+ ],
+ [
+  "And so I put together a little interactive demo that helps unpack each part of the expression and what it's really saying.",
+  798.34,
+  805.2
+ ],
+ [
+  "For example, the first term in this integral is f of x, which represents the density function for the first of the two random variables.",
+  805.8,
+  813.56
+ ],
+ [
+  "And in this case, I'm choosing this sort of wedge-shaped function for that distribution, but it could be anything.",
+  813.94,
+  818.82
+ ],
+ [
+  "Similarly, g represents the density function for the second random variable, for which I'm choosing this sort of double lump-shaped distribution.",
+  819.66,
+  826.82
+ ],
+ [
+  "And in the same way that earlier we went over all possible pairs of dice values with a given sum, the way you want to think about this integral is that what it wants to do is iterate over all possible pairs of values x and y that are constrained to a given sum, s.",
+  826.82,
+  842.8
+ ],
+ [
+  "We don't really have great notation for doing that symmetrically, so instead the way we commonly write it down gives this artificial emphasis to one of the variables, in this case x, where we let that value x range over all possible real numbers, negative infinity up to infinity, and the thing we plug into the function g is s minus x, essentially whatever it has to be to make sure that this sum is constrained to be s.",
+  843.34,
+  867.86
+ ],
+ [
+  "So for the demo, instead of graphing g directly, I want to graph g of s minus x.",
+  869.38,
+  874.6
+ ],
+ [
+  "You might ask yourself, what does that look like?",
+  875.1,
+  877.14
+ ],
+ [
+  "Well, if you plug in negative x as the input, that has the effect of flipping around the graph horizontally.",
+  877.68,
+  883.9
+ ],
+ [
+  "And then if we throw in this parameter s, treat it as some kind of constant, that has the effect of shifting the graph either left or right, depending on if s is positive or negative.",
+  884.76,
+  894.1
+ ],
+ [
+  "In the demo, s is a parameter that I'll just grab and shift around a little bit.",
+  894.64,
+  898.32
+ ],
+ [
+  "The real fun comes from graphing the entire contents of the integral, the product between these two graphs.",
+  898.7,
+  904.24
+ ],
+ [
+  "This is analogous to the list of pairwise products that we saw earlier, but in this case instead of adding up all of those pairwise products, we want to integrate them together, which you would interpret as the area underneath this product graph.",
+  904.78,
+  917.48
+ ],
+ [
+  "As I shift around this value of s, the shape of that product graph changes and so does the corresponding area.",
+  918.2,
+  924.26
+ ],
+ [
+  "Keep in mind for all three graphs on the left, the input is x and the number s is just a parameter.",
+  926.92,
+  933.3
+ ],
+ [
+  "But for the final graph on the right, for the resulting convolution itself, this number s is the input to that function, and the corresponding output is whatever the area of the lower left graph is, whatever the integral between this combination of f and g turns out to be.",
+  933.3,
+  949.82
+ ],
+ [
+  "Here, it might be helpful if we do a simple example, say where each of our two random variables follows a uniform distribution between the values negative one half and positive one half.",
+  953.28,
+  963.76
+ ],
+ [
+  "So what that looks like is that our density functions each have this kind of top hat shape, where the graph equals one for all inputs between negative one half and positive one half, and it equals zero everywhere else.",
+  964.46,
+  976.46
+ ],
+ [
+  "The question, as always, is what should the distribution for the sum look like?",
+  977.04,
+  981.44
+ ],
+ [
+  "Well, let me show you how it looks inside our demo.",
+  981.96,
+  984.4
+ ],
+ [
+  "In this case, the product between the two graphs has a really easy interpretation.",
+  985.22,
+  989.18
+ ],
+ [
+  "It is one wherever the graphs overlap with each other, but zero everywhere else.",
+  989.18,
+  994.06
+ ],
+ [
+  "So if I slide this parameter s far enough to the left that our top graphs don't overlap at all, then the product graph is zero everywhere, and that's a way of saying this is an impossible sum to achieve.",
+  994.56,
+  1006.54
+ ],
+ [
+  "That should make sense.",
+  1007.22,
+  1008.06
+ ],
+ [
+  "Each of the two variables can only get as low as negative one half, so the sum could never get below negative one.",
+  1008.2,
+  1014.34
+ ],
+ [
+  "As I start to slide s to the right and the graphs overlap with each other, the area increases linearly until the graphs overlap entirely and it reaches a maximum.",
+  1014.34,
+  1025.3
+ ],
+ [
+  "And then after that point it starts to decrease linearly again, which means that the distribution for the sum takes on this kind of wedge shape.",
+  1026.2,
+  1033.88
+ ],
+ [
+  "And I imagine this actually feels somewhat familiar for anyone who's thought about a pair of dice, that is unweighted dice.",
+  1035.34,
+  1041.3
+ ],
+ [
+  "There, if you add up two different uniformly distributed variables, then the distribution for the sum has a certain wedge shape.",
+  1041.86,
+  1049.72
+ ],
+ [
+  "Probabilities increase until they max out at a seven and then they decrease back down again.",
+  1050.04,
+  1054.54
+ ],
+ [
+  "Where this gets a lot more fun is if instead of asking for a sum of two uniformly distributed variables, I ask you what it looks like if we add up three different uniformly distributed variables.",
+  1056.26,
+  1066.8
+ ],
+ [
+  "At first you might say, I don't know, we need some new way to visualize combining three things instead of two.",
+  1066.8,
+  1072.58
+ ],
+ [
+  "But really what you can do here is think about the sum of the first two as their own variable, which we just figured out follows this wedge shape distribution, and then take a convolution between that and the top hat function.",
+  1073.42,
+  1084.6
+ ],
+ [
+  "Pulling up the demo, here's what that would look like.",
+  1085.1,
+  1087.36
+ ],
+ [
+  "Once again, what makes the top hat function really nice is that multiplying by it sort of has the effect of filtering out values from the top graph.",
+  1087.84,
+  1096.16
+ ],
+ [
+  "The product on the bottom looks just like a copy of the top graph, but limited to a certain window.",
+  1096.16,
+  1101.76
+ ],
+ [
+  "Again, as I slide this around left and right and the area gets bigger and smaller, the result maxes out in the middle, but tapers out to either side, except this time it does so more smoothly.",
+  1102.62,
+  1112.02
+ ],
+ [
+  "It's kind of like we're taking a moving average of that top left graph.",
+  1112.6,
+  1116.12
+ ],
+ [
+  "Actually, it's more than just kind of, this literally is a moving average of the top left graph.",
+  1116.94,
+  1121.84
+ ],
+ [
+  "One thing you might think to do is take this even further.",
+  1122.4,
+  1125.0
+ ],
+ [
+  "The way we started was combining two top hat functions and we got this wedge.",
+  1125.5,
+  1128.96
+ ],
+ [
+  "Then we replaced the first function with that wedge, and then when we took the convolution, we got this smoother shape describing a sum of three distinct uniform variables.",
+  1129.46,
+  1138.68
+ ],
+ [
+  "But we could just repeat.",
+  1139.38,
+  1140.5
+ ],
+ [
+  "Swap that out for the top function and then convolve that with the flat rectangular function.",
+  1141.22,
+  1146.44
+ ],
+ [
+  "And whatever result we see should describe a sum of four uniformly distributed random variables.",
+  1146.44,
+  1152.38
+ ],
+ [
+  "Any of you who watched the video about the central limit theorem should know what to expect.",
+  1153.66,
+  1157.32
+ ],
+ [
+  "As we repeat this process over and over, the shape looks more and more like a bell curve.",
+  1157.82,
+  1162.4
+ ],
+ [
+  "Or to be more precise, at each iteration we should rescale the x-axis to make sure that the standard deviation is one, because the dominant effect of this repeated convolution, the kind of repeated moving average process, is to flatten out the function over time.",
+  1162.86,
+  1177.26
+ ],
+ [
+  "So in the limit it just flattens out towards zero.",
+  1177.62,
+  1179.84
+ ],
+ [
+  "But rescaling is a way of saying yeah, yeah, yeah, I know that it gets flatter, but what's the actual shape underlying it all?",
+  1180.24,
+  1186.04
+ ],
+ [
+  "The statement of the central limit theorem, one of the coolest facts from probability, is that you could have started with essentially any distribution and this still would have been true.",
+  1188.06,
+  1197.94
+ ],
+ [
+  "That as you take repeated convolutions like this, representing bigger and bigger sums of a given random variable, then the distribution describing that sum, which might start off looking very different from a normal distribution, over time smooths out more and more until it gets arbitrarily close to a normal distribution.",
+  1198.54,
+  1217.42
+ ],
+ [
+  "It's as if a bell curve is, in some loose manner of speaking, the smoothest possible distribution, an attractive fixed point in the space of all possible functions, as we apply this process of repeated smoothing through the convolution.",
+  1218.08,
+  1230.88
+ ],
+ [
+  "Naturally you might wonder why normal distributions?",
+  1235.4,
+  1238.52
+ ],
+ [
+  "Why this function and not some other one?",
+  1238.98,
+  1240.92
+ ],
+ [
+  "That's a very good answer, and I think the most fun way to show the answer is in the light of the last visualization that we'll show for convolutions.",
+  1241.68,
+  1249.16
+ ],
+ [
+  "Remember how in the discrete case the first of our two visualizations involved forming this kind of multiplication table, showing the probabilities for all possible outcomes and adding up along the diagonals?",
+  1250.28,
+  1261.42
+ ],
+ [
+  "You've probably guessed it by now, but our last step is to generalize this to the continuous case.",
+  1262.96,
+  1267.62
+ ],
+ [
+  "And it is beautiful, but you have to be a little bit careful.",
+  1268.56,
+  1270.86
+ ],
+ [
+  "Pulling up the same two functions we had before, f of x and g of y, what in this case would be analogous to the grid of possible pairs that we were looking at earlier?",
+  1271.98,
+  1281.46
+ ],
+ [
+  "Well in this case each of the variables can take on any real number, so we want to think about all possible pairs of real numbers and the xy plane comes to mind.",
+  1282.48,
+  1291.5
+ ],
+ [
+  "Every point corresponds to a possible outcome when we sample from both distributions.",
+  1292.64,
+  1297.04
+ ],
+ [
+  "Now the probability of any one of these outcomes xy, or rather the probability density around that point, will look like f of x times g of y, again assuming that the two are independent.",
+  1298.14,
+  1309.58
+ ],
+ [
+  "So a natural thing to do is to graph this function f of x times g of y as a two variable function, which would give something that looks like a surface above the xy plane.",
+  1309.58,
+  1319.92
+ ],
+ [
+  "Notice in this example how if we look at it from one angle where we see the x values changing, it has the shape of our first graph, but if we look at it from another angle emphasizing the change in the y direction, it takes on the shape of our second graph.",
+  1320.56,
+  1333.84
+ ],
+ [
+  "This three-dimensional graph encodes all of the information we need.",
+  1334.22,
+  1337.8
+ ],
+ [
+  "It shows all the probability densities for every possible outcome.",
+  1337.8,
+  1341.12
+ ],
+ [
+  "And if you want to limit your view just to those outcomes where x plus y is constrained to be a given sum, what that looks like is limiting our view to a diagonal slice, specifically a slice over the line x plus y equals some constant.",
+  1341.9,
+  1355.4
+ ],
+ [
+  "All of the possible probability densities for the outcome subject to this constraint look sort of like a slice under this graph, and as we change around what specific sum we're constraining to, it shifts around which specific diagonal slice we're looking at.",
+  1355.98,
+  1370.48
+ ],
+ [
+  "Now what you might predict is that the way to combine all of the probability densities along one of these slices, the way to integrate them together, can be interpreted as the area under this curve, which is a slice of the surface.",
+  1373.94,
+  1387.14
+ ],
+ [
+  "And that is almost correct.",
+  1387.94,
+  1389.42
+ ],
+ [
+  "There's a subtle detail regarding a factor of the square root of two that we need to talk about, but up to a constant factor, the areas of these slices give us the values of the convolution.",
+  1389.74,
+  1400.68
+ ],
+ [
+  "In fact, all of these slices that we're looking at are precisely the same as the product graph that we were looking at earlier.",
+  1401.5,
+  1408.24
+ ],
+ [
+  "Here, to emphasize this point, let me pull up both visualizations side by side, and I'm going to slowly decrease the value of s, which on the left means we're looking at different slices, and on the right means we're shifting around the modified graph of g.",
+  1409.44,
+  1424.3
+ ],
+ [
+  "Notice how at all points the shape of the graph on the bottom right, the product between the functions, looks exactly the same as the shape of the diagonal slice.",
+  1425.52,
+  1434.76
+ ],
+ [
+  "And this should make sense.",
+  1438.44,
+  1439.7
+ ],
+ [
+  "They are two distinct ways to visualize the same thing.",
+  1439.84,
+  1442.6
+ ],
+ [
+  "It sounds like a lot when we put it into words, but what we're looking at are all the possible products between outputs of the functions, corresponding to pairs of inputs that have a given sum.",
+  1443.04,
+  1453.94
+ ],
+ [
+  "Again, it's kind of a mouthful, but I think you see what I'm saying, and we now have two different ways to see it.",
+  1454.76,
+  1460.45
+ ],
+ [
+  "The nice thing about the diagonal slice visualization is that it makes it much more clear that it's a symmetric operation.",
+  1471.0,
+  1477.1
+ ],
+ [
+  "It's much more obvious that f convolved with g is the same thing as g convolved with f.",
+  1477.1,
+  1483.02
+ ],
+ [
+  "Technically, the diagonal slices are not exactly the same shape.",
+  1484.08,
+  1487.58
+ ],
+ [
+  "They've actually been stretched out by a factor of the square root of 2.",
+  1487.9,
+  1491.16
+ ],
+ [
+  "The basic reason is that if you imagine taking some small step along one of these lines where x plus y equals a constant, then the change in your x value, the delta x here, is not the same thing as the length of that step.",
+  1491.88,
+  1505.2
+ ],
+ [
+  "That step is actually longer by a factor of the square root of 2.",
+  1505.2,
+  1508.88
+ ],
+ [
+  "I will leave a note up on the screen for the calculus enthusiasts among you who want to pause and ponder, but the upshot is very simply that the outputs of our convolution are technically not quite the areas of these diagonal slices.",
+  1509.66,
+  1521.1
+ ],
+ [
+  "We have to divide those areas by a square root of 2.",
+  1521.6,
+  1524.34
+ ],
+ [
+  "Stepping back from all of this for a moment, I just think this is so beautiful.",
+  1526.14,
+  1529.54
+ ],
+ [
+  "We started with such a simple question, or at least such a seemingly simple question.",
+  1530.04,
+  1534.4
+ ],
+ [
+  "How do you add up two random variables?",
+  1534.4,
+  1536.68
+ ],
+ [
+  "And what we end up with is this very intricate operation for combining two different functions.",
+  1537.3,
+  1541.84
+ ],
+ [
+  "We have at least two very pretty ways to understand it, but still, some of you might be raising your hands and saying, pretty pictures are all well and good, but do they actually help you calculate something?",
+  1542.68,
+  1552.56
+ ],
+ [
+  "For example, I still have not answered the opening quiz question about adding two normally distributed random variables.",
+  1553.04,
+  1559.28
+ ],
+ [
+  "Well, the ordinary way that you would approach this kind of question, if it showed up on a homework or something like that, is that you would plug in the formula for a normal distribution into the definition of a convolution, the integral that we've been describing here.",
+  1559.88,
+  1573.96
+ ],
+ [
+  "And in that case, the visualizations would really just be there to clarify what the expression is saying, but they sit in the back seat.",
+  1575.08,
+  1581.42
+ ],
+ [
+  "In this case, the integral is not prohibitively difficult.",
+  1581.92,
+  1584.62
+ ],
+ [
+  "There are analytical methods.",
+  1584.86,
+  1586.28
+ ],
+ [
+  "But for this example, I want to show you a more fun method where the visualizations, specifically the diagonal slices, will play a much more front and center role in the proof itself.",
+  1586.28,
+  1597.04
+ ],
+ [
+  "I think many of you may actually enjoy taking a moment to predict how this will look for yourself.",
+  1597.9,
+  1602.16
+ ],
+ [
+  "Think about what this 3D graph would look like in the case of two normal distributions, and what properties that it has that you might be able to take advantage of.",
+  1602.68,
+  1611.58
+ ],
+ [
+  "And it is for sure easiest if you start with the case where both distributions have the same standard deviation.",
+  1612.48,
+  1617.78
+ ],
+ [
+  "Whenever you want the details, and to see how the answer fits into the central limit theorem, come join me in the next video.",
+  1619.08,
+  1624.98
+ ]
+]

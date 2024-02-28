@@ -1,0 +1,962 @@
+[
+ [
+  "What does it mean to have a Bitcoin?",
+  3.9,
+  6.48
+ ],
+ [
+  "Many people have heard of Bitcoin, that it's a fully digital currency with no government to issue it, that no banks need to manage accounts and verify transactions, and that no one really knows who invented it.",
+  7.42,
+  19.1
+ ],
+ [
+  "And yet many people don't know the answer to this question, at least not in full.",
+  19.38,
+  23.28
+ ],
+ [
+  "To get there, and to make sure that the technical details underlying the answer actually feel motivated, we're going to walk through, step by step, how you might have invented your own version of Bitcoin.",
+  24.1,
+  35.24
+ ],
+ [
+  "We'll start with you keeping track of payments with your friends using a communal ledger, and then as you start to trust your friends and the world around you less and less, and if you're clever enough to bring in a few ideas from cryptography to help circumvent the need for trust, what you end up with is what's called a cryptocurrency.",
+  36.14,
+  52.7
+ ],
+ [
+  "Bitcoin is just the first implemented example of a cryptocurrency, and now there are thousands more on exchanges with traditional currencies.",
+  53.84,
+  62.56
+ ],
+ [
+  "Walking the path of inventing your own can help to set the foundations for understanding some of the more recent players in the game, and recognizing when and why there's room for different design choices.",
+  63.3,
+  73.22
+ ],
+ [
+  "In fact, one of the reasons I chose this topic is that in the last year there's been a huge amount of attention, investment, and hype directed at these currencies.",
+  74.1,
+  83.66
+ ],
+ [
+  "I'm not going to comment or speculate on the current or future exchange rates, but I think we'd all agree that anyone looking to buy a cryptocurrency should really know what it is.",
+  84.28,
+  93.62
+ ],
+ [
+  "And I don't just mean in terms of analogies with vague connections to gold mining, I mean an actual direct description of what the computers are doing when we send, receive, and create cryptocurrencies.",
+  93.92,
+  105.22
+ ],
+ [
+  "One thing worth stressing is that even though you and I are going to dig into the details here, and that takes meaningful time, you don't actually need to know those details if you just want to use the cryptocurrency, just like you don't need to know the details of what happens under the hood when you swipe a credit card.",
+  106.3,
+  123.16
+ ],
+ [
+  "Like any digital payment, there's lots of user-friendly applications that let you just send and receive the currencies without thinking about what's going on.",
+  123.72,
+  131.36
+ ],
+ [
+  "The difference is that the backbone underlying this is not a bank that verifies transactions, instead it's a clever system of decentralized trustless verification based on some of the math born in cryptography.",
+  131.66,
+  144.48
+ ],
+ [
+  "But to start I want you to actually set aside the thought of cryptocurrencies and all that just for a few minutes.",
+  145.9,
+  150.48
+ ],
+ [
+  "We're going to begin the story with something more down to earth, ledgers and digital signatures.",
+  151.08,
+  155.38
+ ],
+ [
+  "If you and your friends exchange money pretty frequently, paying your share of the dinner bill and such, it can be inconvenient to exchange cash all the time.",
+  156.34,
+  164.36
+ ],
+ [
+  "So you might keep a communal ledger that records all the payments you intend to make at some point in the future.",
+  164.72,
+  170.08
+ ],
+ [
+  "Alice pays Bob $20, Bob pays Charlie $40, things like that.",
+  170.62,
+  175.1
+ ],
+ [
+  "This ledger is going to be something public and accessible to everyone, like a website where anyone can go and add new lines.",
+  175.5,
+  181.74
+ ],
+ [
+  "And let's say at the end of every month you all get together, look at the list of transactions, and settle up.",
+  182.48,
+  187.94
+ ],
+ [
+  "If you spent more than you received, you put that money in the pot, and if you received more than you spent, you take that money out.",
+  188.28,
+  194.4
+ ],
+ [
+  "So the protocol for being part of this very simple system might look like this.",
+  195.46,
+  199.36
+ ],
+ [
+  "Anyone can add lines to the ledger, and at the end of every month you all get together and settle up.",
+  200.02,
+  205.36
+ ],
+ [
+  "Now one problem with a public ledger like this is that anyone can add a line.",
+  206.3,
+  210.76
+ ],
+ [
+  "So what's to prevent Bob from going and writing Alice pays Bob $100 without Alice approving?",
+  211.02,
+  216.92
+ ],
+ [
+  "How are we supposed to trust that all of these transactions are what the sender meant them to be?",
+  217.78,
+  223.2
+ ],
+ [
+  "Well this is where the first bit of cryptography comes in, digital signatures.",
+  224.58,
+  228.54
+ ],
+ [
+  "Like handwritten signatures, the idea here is that Alice should be able to add something next to that transaction that proves that she has seen it and that she's approved of it, and it should be infeasible for anyone else to forge that signature.",
+  229.48,
+  243.08
+ ],
+ [
+  "At first, it might seem like a digital signature shouldn't even be possible.",
+  244.3,
+  248.58
+ ],
+ [
+  "I mean, whatever data makes up that signature can just be read and copied by a computer.",
+  249.22,
+  253.86
+ ],
+ [
+  "So how do you prevent forgeries?",
+  254.4,
+  256.14
+ ],
+ [
+  "Well the way this works is that everyone generates what's called a public key-private key pair, each of which looks like some string of bits.",
+  257.32,
+  264.16
+ ],
+ [
+  "The private key is sometimes also called a secret key, so we can abbreviate it as SK while abbreviating the public key as PK.",
+  264.8,
+  271.3
+ ],
+ [
+  "As the name suggests, this secret key is something you want to keep to yourself.",
+  272.34,
+  276.22
+ ],
+ [
+  "In the real world, your handwritten signature looks the same no matter what document you're signing.",
+  277.06,
+  281.72
+ ],
+ [
+  "But a digital signature is actually much stronger, because it changes for different messages.",
+  282.28,
+  286.94
+ ],
+ [
+  "It looks like some string of 1s and 0s, commonly something like 256 bits, and altering the message even slightly completely changes what the signature on that message should look like.",
+  287.84,
+  299.88
+ ],
+ [
+  "Speaking a little more formally, producing a signature involves a function that depends both on the message itself and on your private key.",
+  300.84,
+  308.54
+ ],
+ [
+  "The private key ensures that only you can produce that signature, and the fact that it depends on the message means that no one can just copy one of your signatures and forge it on another message.",
+  309.2,
+  319.64
+ ],
+ [
+  "Hand-in-hand with this is a second function used to verify that a signature is valid, and this is where the public key comes into play.",
+  321.0,
+  328.22
+ ],
+ [
+  "All it does is output true or false to indicate if this was a signature produced by the private key associated with the public key you're using for verification.",
+  329.2,
+  337.76
+ ],
+ [
+  "I won't go into the details of how exactly both these functions work, but the idea is that it should be completely infeasible to find a valid signature if you don't know the secret key.",
+  338.64,
+  349.24
+ ],
+ [
+  "Specifically, there's no strategy better than just guessing and checking random signatures, which you can check using the public key that everyone knows.",
+  350.06,
+  357.82
+ ],
+ [
+  "Now think about how many signatures there are with a length of 256 bits.",
+  358.98,
+  363.2
+ ],
+ [
+  "That's 2 to the power of 256!",
+  363.84,
+  366.18
+ ],
+ [
+  "This is a stupidly large number.",
+  367.14,
+  369.56
+ ],
+ [
+  "To call it astronomically large would be giving way too much credit to astronomy.",
+  369.86,
+  373.64
+ ],
+ [
+  "In fact, I made a supplemental video devoted just to illustrating what a huge number this is.",
+  374.26,
+  379.68
+ ],
+ [
+  "Right here, let's just say that when you verify that a signature against a given message is valid, you can feel extremely confident that the only way someone could have produced it is if they knew the secret key associated with the public key you used for verification.",
+  380.38,
+  395.04
+ ],
+ [
+  "Making sure people sign transactions on the ledger is pretty good, but there's one slight loophole.",
+  397.12,
+  402.2
+ ],
+ [
+  "If Alice signs a transaction like Alice pays Bob $100, even though Bob can't forge Alice's signature on a new message, he could just copy that same line as many times as he wants.",
+  402.72,
+  413.68
+ ],
+ [
+  "That message-signature combination remains valid.",
+  414.3,
+  417.22
+ ],
+ [
+  "To get around this, we make it so that when you sign a transaction, the message has to include some sort of unique ID associated with that transaction.",
+  417.92,
+  427.1
+ ],
+ [
+  "That way, if Alice pays Bob $100 multiple times, each one of those lines on the ledger requires a completely new signature.",
+  427.84,
+  435.38
+ ],
+ [
+  "Great, digital signatures remove a huge aspect of trust in this initial protocol.",
+  436.76,
+  441.94
+ ],
+ [
+  "But even still, if you were to really do this, you would be relying on an honor system of sorts.",
+  442.38,
+  447.28
+ ],
+ [
+  "Namely, you're trusting that everyone will actually follow through and settle up in cash at the end of each month.",
+  447.72,
+  452.74
+ ],
+ [
+  "What if, for example, Charlie racks up thousands of dollars in debt and just refuses to show up?",
+  453.56,
+  459.48
+ ],
+ [
+  "The only real reason to revert back to cash to settle up is if some people owe a lot of money.",
+  460.12,
+  467.28
+ ],
+ [
+  "So maybe you have the clever idea that you never actually have to settle up in cash as long as you have some way to prevent people from spending too much more than they take in.",
+  467.86,
+  476.66
+ ],
+ [
+  "Maybe you start by having everyone pay $100 into the pot, and then have the first few lines of the ledger read Alice gets $100, Bob gets $100, Charlie gets $100, etc.",
+  477.34,
+  488.18
+ ],
+ [
+  "Now, just don't accept any transactions where someone is spending more than they already have on that ledger.",
+  489.02,
+  496.0
+ ],
+ [
+  "For example, if the first two transactions are Charlie pays Alice $50 and Charlie pays Bob $50, if he were to try to add Charlie pays you $20, that would be invalid, as invalid as if he had never signed it.",
+  496.84,
+  512.1
+ ],
+ [
+  "Notice, this means verifying a transaction requires knowing the full history of transactions up to that point.",
+  512.94,
+  519.5
+ ],
+ [
+  "This is also going to be true in cryptocurrencies, though there is a little room for optimization.",
+  520.16,
+  525.96
+ ],
+ [
+  "What's interesting here is that this step removes the connection between the ledger and actual physical US dollars.",
+  528.38,
+  535.6
+ ],
+ [
+  "In theory, if everyone in the world was using this ledger, you could live your whole life just sending and receiving money on this ledger without ever having to convert to real US dollars.",
+  536.2,
+  546.66
+ ],
+ [
+  "In fact, to emphasize this point, let's start referring to the quantities on the ledger as ledger dollars, or LD for short.",
+  547.58,
+  554.26
+ ],
+ [
+  "You are of course free to exchange ledger dollars for real US dollars.",
+  554.82,
+  558.66
+ ],
+ [
+  "For example, maybe Alice gives Bob a $10 bill in the real world in exchange for him adding and signing the transaction $10 Bob pays Alice $10 to this communal ledger.",
+  559.06,
+  569.52
+ ],
+ [
+  "But exchanges like that are not guaranteed by the protocol.",
+  570.72,
+  574.22
+ ],
+ [
+  "It's now more analogous to how you might exchange dollars for Euros or any other currency on the open market.",
+  574.72,
+  580.56
+ ],
+ [
+  "It's just its own independent thing.",
+  581.18,
+  583.8
+ ],
+ [
+  "This is the first important thing to understand about Bitcoin, or any other cryptocurrency.",
+  584.58,
+  589.78
+ ],
+ [
+  "What it is, is a ledger.",
+  589.78,
+  592.42
+ ],
+ [
+  "The history of transactions is the currency.",
+  593.18,
+  595.98
+ ],
+ [
+  "Of course, with Bitcoin, money doesn't enter the ledger with people buying in using cash.",
+  597.16,
+  601.56
+ ],
+ [
+  "I'll get to how new money enters the ledger in just a few minutes.",
+  602.0,
+  604.82
+ ],
+ [
+  "But before that, there's actually an even more significant difference between our current system of ledger dollars and how cryptocurrencies work.",
+  605.54,
+  612.38
+ ],
+ [
+  "So far, I've said that this ledger is in some public place, like a website where anyone can add new lines.",
+  613.02,
+  618.44
+ ],
+ [
+  "But that would require trusting a central location, namely, who hosts the website, who controls the rules of adding new lines.",
+  619.22,
+  626.76
+ ],
+ [
+  "To remove that bit of trust, we'll have everybody keep their own copy of the ledger.",
+  627.34,
+  631.96
+ ],
+ [
+  "Then when you want to make a transaction, like Alice pays Bob $100, you broadcast that out into the world for people to hear and to record on their own private ledgers.",
+  632.66,
+  643.42
+ ],
+ [
+  "But unless you do something more, this system is absurdly bad.",
+  644.84,
+  649.26
+ ],
+ [
+  "How could you get everyone to agree on what the right ledger is?",
+  649.82,
+  652.74
+ ],
+ [
+  "When Bob receives a transaction, like Alice pays Bob $10, how can he be sure that everyone else received and believes that same transaction?",
+  653.44,
+  661.68
+ ],
+ [
+  "That he'll be able to later on go to Charlie and use those same $10 to make a transaction?",
+  662.34,
+  667.2
+ ],
+ [
+  "Really, imagine yourself just listening to transactions being broadcast.",
+  668.24,
+  672.06
+ ],
+ [
+  "How can you be sure that everyone else is recording the same transactions and in the same order?",
+  672.76,
+  678.22
+ ],
+ [
+  "This is really the heart of the issue.",
+  679.42,
+  681.36
+ ],
+ [
+  "This is an interesting puzzle.",
+  681.6,
+  682.74
+ ],
+ [
+  "Can you come up with a protocol for how to accept or reject transactions, and in what order, so that you can feel confident that anyone else in the world who's following that same protocol has a personal ledger that looks the same as yours?",
+  683.42,
+  697.62
+ ],
+ [
+  "This is the problem addressed in the original Bitcoin paper.",
+  698.3,
+  701.58
+ ],
+ [
+  "At a high level, the solution that Bitcoin offers is to trust whichever ledger has the most computational work put into it.",
+  704.06,
+  712.16
+ ],
+ [
+  "I'll take a moment to explain exactly what that means.",
+  712.54,
+  714.86
+ ],
+ [
+  "It involves a cryptographic hash function.",
+  715.32,
+  718.12
+ ],
+ [
+  "The general idea that we'll build to is that if you use computational work as a basis for what to trust, you can make it so that fraudulent transactions and conflicting ledgers require an infeasible amount of computation to bring about.",
+  718.46,
+  732.28
+ ],
+ [
+  "Again, I'll remind you that this is getting well into the weeds beyond what anyone would need to know just to use a currency like this.",
+  733.04,
+  739.58
+ ],
+ [
+  "But it's a really cool idea, and if you understand it, you understand the heart of Bitcoin and other cryptocurrencies.",
+  740.12,
+  746.16
+ ],
+ [
+  "So first things first, what's a hash function?",
+  748.1,
+  749.94
+ ],
+ [
+  "The inputs for one of these functions can be any kind of message or file, it really looks like 256 bits.",
+  750.8,
+  760.62
+ ],
+ [
+  "This output is called the hash or digest of the message, and the intent is that it looks random.",
+  761.18,
+  767.66
+ ],
+ [
+  "It's not random, it always gives the same output for a given input.",
+  768.0,
+  771.66
+ ],
+ [
+  "But the idea is that if you slightly change the input, maybe editing just one of the characters, the resulting hash changes completely.",
+  772.2,
+  780.1
+ ],
+ [
+  "In fact, for the hash function I'm showing here, called SHA256, the way the output changes as you slightly change that input is entirely unpredictable.",
+  780.82,
+  791.44
+ ],
+ [
+  "You see, this is not just any hash function, it's a cryptographic hash function.",
+  792.44,
+  797.06
+ ],
+ [
+  "That means it's infeasible to compute in the reverse direction.",
+  797.34,
+  800.66
+ ],
+ [
+  "If I show you some string of 1s and 0s and ask you to find an input to the SHA256 hash, you'll have no better method than to just guess and check.",
+  801.26,
+  814.64
+ ],
+ [
+  "And again, if you want to feel for how much computation would be needed to go through 256 guesses, just take a look at the supplement video.",
+  815.7,
+  823.9
+ ],
+ [
+  "I actually had way too much fun writing that thing.",
+  824.38,
+  826.66
+ ],
+ [
+  "You might think that if you just really dig into the details of how exactly this function works, you could reverse engineer the appropriate input without having to guess and check.",
+  828.56,
+  837.52
+ ],
+ [
+  "But no one has ever figured out a way to do that.",
+  838.24,
+  840.84
+ ],
+ [
+  "Interestingly, there's no cold hard rigorous proof that it's hard to compute in the reverse direction.",
+  841.6,
+  846.96
+ ],
+ [
+  "And yet, a huge amount of modern security depends on cryptographic hash functions and the idea that they have this property.",
+  847.62,
+  854.2
+ ],
+ [
+  "If you were to look at what algorithms underlie the secure connection that your browser is making with YouTube right now, or that it makes with your bank, you'll likely see the name SHA256 show up in there.",
+  854.94,
+  865.84
+ ],
+ [
+  "For right now, our focus will be on how such a function can prove that a particular list of transactions is associated with a large amount of computational effort.",
+  867.34,
+  877.0
+ ],
+ [
+  "Imagine someone shows you a list of transactions, and they say, hey, I found a special number so that when you put that number at the end of this list of transactions, and apply SHA256 to the entire thing, the first 30 bits of that output are all zeros.",
+  878.04,
+  893.12
+ ],
+ [
+  "How hard do you think it was for them to find that number?",
+  894.1,
+  896.7
+ ],
+ [
+  "Well, for a random message, the probability that a hash happens to start with 30 successive zeros is 1 in 2 to the 30, which is about 1 in a billion.",
+  898.06,
+  907.18
+ ],
+ [
+  "And because SHA256 is a cryptographic hash function, the only way to find a special number like that is just guessing and checking.",
+  908.2,
+  915.84
+ ],
+ [
+  "So this person almost certainly had to go through about a billion different numbers before finding this special one.",
+  916.66,
+  922.38
+ ],
+ [
+  "And once you know that number, it's really quick to verify, you just run the hash and see that there are 30 zeros.",
+  923.38,
+  928.84
+ ],
+ [
+  "So in other words, you can verify that they went through a large amount of work, but without having to go through that same effort yourself.",
+  929.8,
+  936.4
+ ],
+ [
+  "This is called a proof of work.",
+  937.2,
+  938.8
+ ],
+ [
+  "And importantly, all of this work is intrinsically tied to the list of transactions.",
+  939.46,
+  944.22
+ ],
+ [
+  "If you change one of those transactions, even slightly, it would completely change the hash.",
+  944.9,
+  949.64
+ ],
+ [
+  "So you'd have to go through another billion guesses to find a new proof of work, a new number that makes it so that the hash of the altered list together with this new number starts with 30 zeros.",
+  950.08,
+  960.6
+ ],
+ [
+  "So now think back to our distributed ledger situation.",
+  961.5,
+  964.1
+ ],
+ [
+  "Everyone is there broadcasting transactions and we want a way for them to agree on what the correct ledger is.",
+  964.68,
+  970.84
+ ],
+ [
+  "As I mentioned, the idea behind the original Bitcoin paper is to have everyone trust whichever ledger has the most work put into it.",
+  972.1,
+  978.66
+ ],
+ [
+  "The way this works is to first organize a given ledger into blocks, where each block consists of a list of transactions together with a proof of work.",
+  979.28,
+  987.28
+ ],
+ [
+  "That is, a special number so that the hash of the whole block starts with a bunch of zeros.",
+  987.72,
+  992.3
+ ],
+ [
+  "For the moment, let's say it has to start with 60 zeros, but later we'll return back to a more systematic way you might want to change.",
+  993.14,
+  1005.5
+ ],
+ [
+  "A block is only considered valid if it has a proof of work.",
+  1005.9,
+  1010.04
+ ],
+ [
+  "Also, to make sure there's a standard order to these blocks, we'll make it so that a block has to contain the hash of the previous block at its header.",
+  1010.96,
+  1019.46
+ ],
+ [
+  "That way, if you were to go back and change any one of the blocks, or to swap the order of two blocks, it would change the block that comes after it, which changes the block's hash, which changes the one that comes after it, and so on.",
+  1020.06,
+  1033.38
+ ],
+ [
+  "That would require redoing all of the work, finding a new special number for each of these blocks that makes their hashes start with 60 zeros.",
+  1033.98,
+  1041.42
+ ],
+ [
+  "Because blocks are chained together like this, instead of calling it a ledger, it's common to call it a blockchain.",
+  1042.44,
+  1048.32
+ ],
+ [
+  "As part of our updated protocol, we'll now allow anyone in the world to be a block creator.",
+  1050.08,
+  1054.42
+ ],
+ [
+  "What that means is that they're going to listen for transactions being broadcast, collect them into some block, and then do a whole bunch of work to find a special number that makes the hash of that block start with 60 zeros.",
+  1055.24,
+  1066.16
+ ],
+ [
+  "Once they find it, they broadcast out the block they found.",
+  1066.96,
+  1069.9
+ ],
+ [
+  "To reward a block creator for all this work, when she puts together a block, we'll allow her to include a very special transaction at the top of it, in which she gets, say, 10 ledger dollars out of thin air.",
+  1070.86,
+  1082.54
+ ],
+ [
+  "This is called the block reward, and it's an exception to our usual rules about whether or not to accept transactions.",
+  1083.08,
+  1089.4
+ ],
+ [
+  "It doesn't come from anyone, so it doesn't have to be signed.",
+  1090.04,
+  1092.92
+ ],
+ [
+  "It also means that the total number of ledger dollars in our economy increases with each new block.",
+  1093.66,
+  1099.62
+ ],
+ [
+  "Creating blocks is often called mining, since it requires doing a lot of work, and it introduces new bits of currency into the economy.",
+  1100.9,
+  1108.18
+ ],
+ [
+  "But when you hear or read about miners, keep in mind that what they're really doing is listening for transactions, creating blocks, broadcasting those blocks, and getting rewarded with new money for doing so.",
+  1109.02,
+  1120.94
+ ],
+ [
+  "From the miners' perspective, each block is like a miniature lottery, where everyone is guessing numbers as fast as they can, until one lucky individual finds a special number that makes the hash of the block start with many zeros, and they get the reward.",
+  1121.78,
+  1136.14
+ ],
+ [
+  "For anyone else who just wants to use this system to make payments, instead of listening for transactions, they all start listening just for blocks being broadcast by miners, and updating their own personal copies of the blockchain.",
+  1137.62,
+  1149.6
+ ],
+ [
+  "Now the key addition to our protocol is that if you hear two distinct blockchains with conflicting transaction histories, you defer to the longest one, the one with the most work put into it.",
+  1150.56,
+  1162.3
+ ],
+ [
+  "If there's a tie, just wait until you hear an additional block that makes one of them longer.",
+  1162.86,
+  1167.72
+ ],
+ [
+  "So even though there's no central authority, and everyone is maintaining their own copy of the blockchain, if everyone agrees to give preference to whichever blockchain has the most work put into it, we have a way to arrive at decentralized consensus.",
+  1168.72,
+  1182.64
+ ],
+ [
+  "To see why this makes for a trustworthy system, and to understand at what point you should trust that a payment is legit, it's actually really helpful to walk through exactly what it would take to fool someone using this system.",
+  1183.56,
+  1194.68
+ ],
+ [
+  "Maybe Alice is trying to fool Bob with a fraudulent block, namely she tries to send him one that includes her paying him 100 Ledger dollars, but without broadcasting that block to the rest of the network, that way everyone else still thinks she has those 100 Ledger dollars.",
+  1195.6,
+  1211.24
+ ],
+ [
+  "To do this, she would have to find a valid proof of work before all the other miners, each working on their own block.",
+  1211.96,
+  1218.68
+ ],
+ [
+  "And that could definitely happen, maybe Alice just happens to win this miniature lottery before everyone else.",
+  1219.5,
+  1224.82
+ ],
+ [
+  "But Bob is still going to be hearing the broadcasts made by other miners, so to keep him believing this fraudulent block, Alice would have to do all the work herself to keep adding blocks on this special fork in Bob's blockchain that's different from what he's hearing from the rest of the miners.",
+  1225.68,
+  1241.96
+ ],
+ [
+  "Remember, as per the protocol, Bob always trusts the longest chain he knows about.",
+  1242.74,
+  1248.26
+ ],
+ [
+  "Alice might be able to keep this up for a few blocks if just by chance she finds blocks more quickly than the rest of the miners on the network all combined.",
+  1249.26,
+  1257.7
+ ],
+ [
+  "But unless she has close to 50% of the computing resources among all of the miners, the probability becomes overwhelming that the blockchain that all the other miners are working on grows faster than the single fraudulent blockchain Alice is feeding to Bob.",
+  1258.48,
+  1273.78
+ ],
+ [
+  "So after enough time, Bob will just reject what he's hearing from Alice in favor of the longer chain that everyone else is working on.",
+  1275.0,
+  1283.14
+ ],
+ [
+  "Notice, that means you shouldn't necessarily trust a new block you hear immediately.",
+  1283.96,
+  1288.92
+ ],
+ [
+  "Instead, you should wait for several new blocks to be added on top of it.",
+  1289.5,
+  1293.4
+ ],
+ [
+  "If you still haven't heard of any longer blockchains, you can trust that this block is part of the same chain that everyone else is using.",
+  1293.82,
+  1300.54
+ ],
+ [
+  "And with that, we've hit all the main ideas.",
+  1302.12,
+  1305.22
+ ],
+ [
+  "This distributed ledger system based on a proof of work is more or less how the Bitcoin protocol works, and how many other cryptocurrencies work.",
+  1305.78,
+  1313.68
+ ],
+ [
+  "There's just a few details to clear up.",
+  1314.3,
+  1316.16
+ ],
+ [
+  "Earlier I said that the proof of work might be to find a special number so that the hash of the block starts with 60 zeros.",
+  1316.3,
+  1322.58
+ ],
+ [
+  "Well, the way the actual Bitcoin protocol works is to periodically change that number of zeros so that it should take 10 minutes to find a new block.",
+  1323.22,
+  1331.9
+ ],
+ [
+  "So as there are more and more miners added to the network, the challenge gets harder and harder in such a way that this miniature lottery only has about one winner every 10 minutes.",
+  1332.78,
+  1342.96
+ ],
+ [
+  "Many newer cryptocurrencies have much shorter block times than that.",
+  1343.92,
+  1347.88
+ ],
+ [
+  "And all of the money in Bitcoin ultimately comes from some block reward.",
+  1348.58,
+  1352.46
+ ],
+ [
+  "In the beginning, these rewards were 50 Bitcoin per block.",
+  1352.92,
+  1355.74
+ ],
+ [
+  "There's a great website called Block Explorer that makes it easy to look through the Bitcoin blockchain.",
+  1356.14,
+  1361.42
+ ],
+ [
+  "And if you look at the very first few blocks on the chain, they contain no transactions other than that 50 Bitcoin reward to the miner.",
+  1361.96,
+  1369.24
+ ],
+ [
+  "But every 210,000 blocks, which is about every 4 years, that reward gets cut in half.",
+  1369.86,
+  1376.34
+ ],
+ [
+  "So right now, the reward is 12.5 Bitcoin per block.",
+  1376.86,
+  1380.14
+ ],
+ [
+  "And because this reward decreases geometrically over time, it means there will never be more than 21 million Bitcoin in existence.",
+  1380.72,
+  1389.32
+ ],
+ [
+  "However, this doesn't mean miners will stop earning money.",
+  1390.28,
+  1393.28
+ ],
+ [
+  "In addition to the block reward, miners can also pick up transaction fees.",
+  1393.82,
+  1397.94
+ ],
+ [
+  "The way this works is that whenever you make a payment, you can purely optionally include a transaction fee with it that will go to the miner of whichever block includes that payment.",
+  1398.52,
+  1408.24
+ ],
+ [
+  "The reason you might do that is to incentivize miners to actually include the transaction you broadcast into the next block.",
+  1409.02,
+  1415.92
+ ],
+ [
+  "You see, in Bitcoin, each block is limited to about 2400 transactions, which many critics argue is unnecessarily restrictive.",
+  1416.44,
+  1425.02
+ ],
+ [
+  "For comparison, Visa processes an average of about 1700 transactions per second, and they're capable of handling more than 24,000 per second.",
+  1425.86,
+  1435.32
+ ],
+ [
+  "This comparatively slow processing on Bitcoin makes for higher transaction fees, since that's what determines which transactions miners choose to include in a new block.",
+  1436.02,
+  1446.2
+ ],
+ [
+  "All of this is far from a comprehensive coverage of cryptocurrencies.",
+  1447.82,
+  1451.5
+ ],
+ [
+  "There are still many nuances and alternate design choices that I haven't even touched.",
+  1452.16,
+  1456.18
+ ],
+ [
+  "But my hope is that this can provide a stable WaitButWhy-style tree-trunk of understanding for anyone looking to add a few more branches with further reading.",
+  1456.64,
+  1464.36
+ ],
+ [
+  "Like I said at the start, one of the motives behind this is that a lot of money has started flowing towards cryptocurrencies, and even though I don't want to make any claims about whether that's a good or bad investment, I really do think it's healthy for people getting into the game to at least know the fundamentals of the technology.",
+  1465.18,
+  1480.38
+ ],
+ [
+  "As always, my sincerest thanks to those of you making this channel possible on Patreon.",
+  1481.34,
+  1485.42
+ ],
+ [
+  "I understand that not everyone is in a position to contribute, but if you're still interested in helping out, one of the best ways to do that is simply to share videos that you think might be interesting or helpful to others.",
+  1486.08,
+  1496.64
+ ],
+ [
+  "I know you know that, but it really does help.",
+  1497.28,
+  1499.32
+ ]
+]

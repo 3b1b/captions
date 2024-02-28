@@ -1,0 +1,917 @@
+[
+ [
+  "You've seen the title, so you know this is leading to a certain fractal.",
+  2.46,
+  5.58
+ ],
+ [
+  "And actually it's an infinite family of fractals.",
+  5.92,
+  7.94
+ ],
+ [
+  "And yeah, it'll be one of those mind-bogglingly intricate shapes that has infinite detail no matter how far you zoom in.",
+  8.72,
+  14.62
+ ],
+ [
+  "But this is not really a video about generating some pretty picture for us to gawk at.",
+  14.76,
+  18.94
+ ],
+ [
+  "Well, okay, maybe that's part of it, but the real story here has a much more pragmatic starting point than the story behind a lot of other fractals.",
+  19.06,
+  25.6
+ ],
+ [
+  "And more than that, the final images that we get to will become a lot more meaningful if we make an effort to understand why, given what they represent, they kind of have to look as complicated as they do, and what this complexity reflects about an algorithm that is used all over the place in engineering.",
+  26.18,
+  41.62
+ ],
+ [
+  "The starting point here will be to assume that you have some kind of polynomial, and that you want to know when it equals zero.",
+  48.0,
+  53.9
+ ],
+ [
+  "For the one graphed here, you can visually see there's three different places where it crosses the x-axis, and you can kind of eyeball what those values might be.",
+  54.32,
+  61.76
+ ],
+ [
+  "We'd call those the roots of the polynomial.",
+  61.9,
+  63.7
+ ],
+ [
+  "But how do you actually compute them exactly?",
+  64.26,
+  66.3
+ ],
+ [
+  "Now this is the kind of question where if you're already bought into math, maybe it's interesting enough in its own right to move forward.",
+  67.44,
+  72.58
+ ],
+ [
+  "But if you just pull someone on the street aside and ask them this, I mean, they're already falling asleep, because who cares?",
+  72.94,
+  78.12
+ ],
+ [
+  "But the thing is, this kind of question comes up all the time in engineering, where I'm personally most familiar with equations like this popping up is in the setting of computer graphics, where polynomials are just littered all over the place.",
+  78.82,
+  90.32
+ ],
+ [
+  "So it's not uncommon that when you're figuring out how a given pixel should be colored, that somehow involves solving an equation that uses these polynomials.",
+  90.42,
+  98.38
+ ],
+ [
+  "Here let me give you one fun example.",
+  99.48,
+  100.88
+ ],
+ [
+  "When a computer renders text on the screen, those fonts are typically not defined using pixel values.",
+  101.16,
+  107.04
+ ],
+ [
+  "They're defined as a bunch of polynomial curves, what are known in the business as Bezier curves.",
+  107.32,
+  112.52
+ ],
+ [
+  "And any of you who've messed around with vector graphics, maybe in some design software, would be well familiar with these kinds of curves.",
+  113.4,
+  119.7
+ ],
+ [
+  "But to actually display one of them on the screen, you need a way to tell each one of the pixels of your screen whether it should be colored in or not.",
+  120.42,
+  127.68
+ ],
+ [
+  "These curves can be displayed either with some kind of stroke width, or if they enclose a region, some kind of fill for that region.",
+  128.34,
+  134.6
+ ],
+ [
+  "But if you step back and you really think about it, it's an interesting puzzle to figure out how each one of the pixels knows whether it should be colored in or not, just based on the pure mathematical curve.",
+  135.32,
+  144.88
+ ],
+ [
+  "I mean, take the case of stroke width.",
+  145.64,
+  146.94
+ ],
+ [
+  "This comes down to understanding how far away a given pixel is from this pure mathematical curve, which itself is some platonic ideal, it has zero width.",
+  147.32,
+  156.14
+ ],
+ [
+  "You would think of it as a parametric curve that has some parameter t.",
+  156.7,
+  159.92
+ ],
+ [
+  "Now one thing that you could do to figure out this distance is to compute the distance between your pixel and a bunch of sample points on that curve, and then figure out the smallest.",
+  161.08,
+  169.02
+ ],
+ [
+  "But that's both inefficient and imprecise.",
+  169.82,
+  171.98
+ ],
+ [
+  "Better is to get a little mathematical and acknowledge that this distance to the curve at all the possible points is itself some smooth function of the parameter.",
+  172.46,
+  180.66
+ ],
+ [
+  "And as it happens, the square of that distance will itself be a polynomial, which makes it pretty nice to deal with.",
+  181.24,
+  187.0
+ ],
+ [
+  "And if this were meant to be a full lesson on rendering vector graphics, we could expand all that out and embrace the mess.",
+  187.82,
+  192.78
+ ],
+ [
+  "But right now, the only salient point that I want to highlight is that in principle, this function whose minimum you want to know is some polynomial.",
+  192.78,
+  200.78
+ ],
+ [
+  "Finding this minimum, and hence determining how close the pixel is to the curve and whether it should get filled in, is now just a classic calculus problem.",
+  201.58,
+  208.7
+ ],
+ [
+  "What you do is figure out the slope of this function graph, which is to say its derivative, again some polynomial, and you ask, when does that equal zero?",
+  209.34,
+  217.7
+ ],
+ [
+  "So, to actually carry out this seemingly simple task of just displaying a curve, wouldn't it be nice if you had a systematic and general way to figure out when a given polynomial equals zero?",
+  218.98,
+  229.9
+ ],
+ [
+  "Of course, we could draw 100 other examples from 100 other disciplines, I just want you to keep in mind that as we seek the roots of polynomials, even though we always display it in a way that's cleanly abstracted away from the messiness of any real-world problem, the task is hardly just an academic one.",
+  230.96,
+  246.1
+ ],
+ [
+  "But again, ask yourself, how do you actually compute one of those roots?",
+  246.1,
+  250.4
+ ],
+ [
+  "If whatever problem you're working on leads you to a quadratic function, then happy days, you can use the quadratic formula that we all know and love.",
+  252.12,
+  259.36
+ ],
+ [
+  "And as a fun side note, by the way, again relevant to root finding in computer graphics, I once had a Pixar engineer give me the estimate that considering how many lights were used in some of the scenes for the movie Coco, and given the nature of some of these per-pixel calculations when polynomially defined things like spheres are involved, the quadratic formula was easily used multiple trillions of times in the production of that film.",
+  260.18,
+  281.98
+ ],
+ [
+  "Now, when your problem leads you to a higher order polynomial, things start to get trickier.",
+  283.42,
+  287.6
+ ],
+ [
+  "For cubic polynomials, there is also a formula, which Mathologer has done a wonderful video on, and there's even a quartic formula, something that solves degree 4 polynomials, although honestly that one is such a god-awful nightmare of a formula that essentially no one actually uses it in practice.",
+  288.12,
+  302.98
+ ],
+ [
+  "But after that, and I find this one of the most fascinating results in all of math, you cannot have an analogous formula to solve polynomials that have a degree 5 or more.",
+  304.06,
+  313.22
+ ],
+ [
+  "More specifically, for a pretty extensive set of standard functions, you can prove that there is no possible way that you can combine those functions together that allows you to plug in the coefficients of a quintic polynomial and always get out a root.",
+  314.02,
+  326.5
+ ],
+ [
+  "This is known as the unsolvability of the quintic, which is a whole other can of worms, we can hopefully get into it some other time, but in practice it kind of doesn't matter, because we have algorithms to approximate solutions to these kinds of equations with whatever level of precision you want.",
+  327.36,
+  342.62
+ ],
+ [
+  "A common one, and the main topic for you and me today, is Newton's method.",
+  343.24,
+  347.1
+ ],
+ [
+  "And yes, this is what will lead us to the fractals, but I want you to pay attention to just how innocent and benign the whole procedure seems at first.",
+  347.62,
+  354.52
+ ],
+ [
+  "The algorithm begins with a random guess, let's call it x0.",
+  355.24,
+  358.86
+ ],
+ [
+  "Almost certainly, the output of your polynomial at x0 is not 0, so you haven't found a solution, it's some other value visible as the height of this graph at that point.",
+  359.66,
+  367.78
+ ],
+ [
+  "So to improve the guess, the idea is to ask, when does a linear approximation to the function around that value equal 0?",
+  368.38,
+  375.32
+ ],
+ [
+  "In other words, if you were to draw a tangent line to the graph at this point, when does that tangent line cross the x-axis?",
+  376.02,
+  381.82
+ ],
+ [
+  "Now, assuming this tangent line is a decent approximation of the function in the loose vicinity of some true root, the place where this approximation equals 0 should take you closer to that true root.",
+  383.1,
+  392.86
+ ],
+ [
+  "As long as you're able to take a derivative of this function, and with polynomials you'll always be able to do that, you can concretely compute the slope of this line.",
+  393.9,
+  401.12
+ ],
+ [
+  "So here's where the active viewers among you might want to pause and ask, how do you figure out the difference between the current guess and the improved guess?",
+  402.1,
+  408.3
+ ],
+ [
+  "What is the size of this step?",
+  408.52,
+  410.06
+ ],
+ [
+  "One way to think of it is to consider the fact that the slope of this tangent line, its rise over run, looks like the height of this graph divided by the length of that step.",
+  410.9,
+  419.76
+ ],
+ [
+  "But on the other hand, of course, the slope of the tangent line is the derivative of the polynomial at that point.",
+  420.44,
+  425.1
+ ],
+ [
+  "If we kind of rearrange this equation here, this gives you a super concrete way that you can compute that step size.",
+  425.84,
+  431.4
+ ],
+ [
+  "So the next guess, which we might call x1, is the previous guess, adjusted by this step size.",
+  432.14,
+  437.76
+ ],
+ [
+  "And after that, you can just repeat the process.",
+  438.4,
+  440.98
+ ],
+ [
+  "You compute the value of this function, and the slope, at this new guess, which gives you a new linear approximation, and then you make the next guess, x2, wherever that tangent line crosses the x-axis.",
+  441.52,
+  452.08
+ ],
+ [
+  "And then apply the same calculation to x2, and this gives you x3, and before too long you find yourself extremely close to a true root, pretty much as close as you could ever want to be.",
+  452.78,
+  462.18
+ ],
+ [
+  "It's always worth gut checking that a formula actually makes sense, and in this case, hopefully it does.",
+  464.76,
+  469.5
+ ],
+ [
+  "If p of x is large, meaning the graph is really high, you need to take a bigger step to get down to a root.",
+  469.84,
+  475.36
+ ],
+ [
+  "But if p' of x is also large, meaning the graph is quite steep, you should maybe ease off on just how big you make that step.",
+  475.98,
+  483.28
+ ],
+ [
+  "Now as the name suggests, this was a method that Newton used to solve polynomial expressions, but he sort of made it look a lot more complicated than it needed to be, and a fellow named Joseph Rafson published a much simpler version, more like what you and I are looking at now, so you also often hear this algorithm called the Newton-Rafson method.",
+  484.52,
+  501.56
+ ],
+ [
+  "These days it's a common topic in calculus classes.",
+  502.64,
+  504.92
+ ],
+ [
+  "One nice little exercise to try to get a feel for it, by the way, is to try using this method to approximate square roots by hand.",
+  505.36,
+  511.52
+ ],
+ [
+  "But what most calculus students don't see, which is unfortunate, is just how deep things can get when you let yourself play around with this seemingly simple procedure and start kind of picking at some of its scabs.",
+  513.18,
+  524.3
+ ],
+ [
+  "You see, while Newton's method works great if you start near a root, where it converges really quickly, if your initial guess is far from a root, it can have a couple foibles.",
+  525.38,
+  533.96
+ ],
+ [
+  "For example, let's take the function we were just looking at, but shift it upward, and play the same game with the same initial guess.",
+  534.92,
+  541.0
+ ],
+ [
+  "Notice, how the sequence of new guesses we're getting kind of bounces around the local minimum of this function sitting above the x-axis.",
+  547.4,
+  554.56
+ ],
+ [
+  "This should kind of make sense, I mean, a linear approximation of the function around these values all the way to the right is pretty much entirely unrelated to the nature of the function around the one true root that it has off to the left, so they're sort of giving you no useful information about that true root.",
+  555.46,
+  571.24
+ ],
+ [
+  "It's only when this process just happens to throw the new guess off far enough to the left, by chance, that the sequence of new guesses does anything productive and actually approaches that true root.",
+  571.88,
+  580.9
+ ],
+ [
+  "Where things get especially interesting is if we ask about finding roots in the complex plane.",
+  582.68,
+  587.52
+ ],
+ [
+  "Even if a polynomial like the one shown here has only a single real number root, you'll always be able to factor this polynomial into five terms like this if you allow these roots to potentially be complex numbers.",
+  588.38,
+  599.62
+ ],
+ [
+  "This is the famous fundamental theorem of algebra.",
+  600.1,
+  602.1
+ ],
+ [
+  "Now in the happy-go-lucky land of functions with real number inputs and real number outputs, where you can picture the association between inputs and outputs as a graph, Newton's method has this really nice visual meaning with tangent lines and intersecting the x-axis.",
+  602.82,
+  615.52
+ ],
+ [
+  "But if you want to allow these inputs to be any complex number, which means our corresponding outputs might also be any complex number, you can't think about tangent lines and graphs anymore.",
+  616.1,
+  625.52
+ ],
+ [
+  "But the formula doesn't really care how you visualize it.",
+  626.2,
+  629.1
+ ],
+ [
+  "You can still play the same game, starting with a random guess, and evaluating the polynomial at this point, as well as its derivative, then using this update rule to generate a new guess, and hopefully that new guess is closer to the true root.",
+  629.1,
+  643.62
+ ],
+ [
+  "But I do want to be clear, even if we can't visualize these steps with a tangent line, it really is the same logic.",
+  645.46,
+  651.18
+ ],
+ [
+  "We're figuring out where a linear approximation of the function around your guess would equal zero, and then you use that zero of the linear approximation as your next guess.",
+  651.18,
+  661.18
+ ],
+ [
+  "It's not like we're blindly applying the rule to a new context with no reason to expect it to work.",
+  661.48,
+  666.32
+ ],
+ [
+  "And indeed, with at least the one I'm showing here after a few iterations, you can see that we land on a value whose corresponding output is essentially zero.",
+  666.98,
+  674.5
+ ],
+ [
+  "Now here's the fun part.",
+  675.9,
+  677.2
+ ],
+ [
+  "Let's apply this idea to many different possible initial guesses.",
+  677.2,
+  680.86
+ ],
+ [
+  "For reference, I'll put up the five true roots of this particular polynomial in the complex plane.",
+  681.78,
+  686.54
+ ],
+ [
+  "With each iteration, each one of our little dots takes some step based on Newton's method.",
+  687.5,
+  692.0
+ ],
+ [
+  "Most of the dots will quickly converge to one of the five true roots, but there are some noticeable stragglers which seem to spend a while bouncing around.",
+  692.74,
+  700.4
+ ],
+ [
+  "In particular, notice how the ones that are trapped on the positive real number line, well, they look a little bit lost.",
+  701.0,
+  706.68
+ ],
+ [
+  "And this is exactly what we already saw before for this same polynomial when we were looking at the real number case with its graph.",
+  707.2,
+  713.14
+ ],
+ [
+  "Now what I'm going to do is color each one of these dots based on which of those five roots it ended up closest to, and then we'll kind of roll back the clock so that every dot goes back to where it started.",
+  716.44,
+  727.18
+ ],
+ [
+  "Now as I've done it here, this isn't quite enough resolution to get the full story, so let me show you what it would look like if we started with an even finer grid of initial guesses and played the same game, applying Newton's method a whole bunch of times, letting each root march forward, coloring each dot based on what root it lands on, then rolling back the clock to see where it originally came from.",
+  729.24,
+  748.76
+ ],
+ [
+  "But even this isn't really a high enough resolution to appreciate the pattern.",
+  749.4,
+  752.78
+ ],
+ [
+  "If we did this process for every single pixel on the plane, here's what you would get.",
+  753.18,
+  758.38
+ ],
+ [
+  "And at this level of detail the color scheme is a little jarring to my eye at least, so let me calm it down a little.",
+  760.16,
+  765.5
+ ],
+ [
+  "Really whatever resolution I try to use to show this to you here could never possibly be enough, because the finer details of the shape we get go on with endless complexity.",
+  766.32,
+  775.9
+ ],
+ [
+  "But take a moment to think about what this is actually saying.",
+  781.76,
+  784.58
+ ],
+ [
+  "It means that there are regions in the complex plane where if you slightly adjust that seed value, bump it to the side by 1,1 millionth or 1,1 trillionth, it can completely change which of the five true roots it ends up landing on.",
+  784.58,
+  797.58
+ ],
+ [
+  "We saw some foreshadowing of this kind of chaos with the real graph and the problematic guess shown earlier, but picturing all of this in the complex plane really shines a light on just how unpredictable this kind of root finding algorithm can be, and how there are whole swaths of initial values where this sort of unpredictability will take place.",
+  798.4,
+  815.98
+ ],
+ [
+  "Now if I grab one of these roots and change it around, meaning that we're using a different polynomial for the process, you can see how the resulting fractal pattern changes.",
+  817.08,
+  824.74
+ ],
+ [
+  "And notice for example how the regions around a given root always have the same color, since those are the points that are close enough to the root where this linear approximation scheme works as a way of finding that root with no problem.",
+  825.54,
+  837.56
+ ],
+ [
+  "All of the chaos seems to be happening at the boundaries between the regions.",
+  838.18,
+  842.2
+ ],
+ [
+  "Remember that.",
+  842.72,
+  843.32
+ ],
+ [
+  "And it seems like no matter where I place these roots, those fractal boundaries are always there.",
+  844.18,
+  848.48
+ ],
+ [
+  "It clearly wasn't just some one-off for the polynomial we happened to start with, this seems to be a general fact for any given polynomial.",
+  848.98,
+  854.96
+ ],
+ [
+  "Another facet we can tweak here just to better illustrate what's going on is how many steps of Newton's method we're using.",
+  856.8,
+  862.28
+ ],
+ [
+  "For example, if I had the computer just take zero steps, meaning it just colors each point of the plane based on whatever root it's already closest to, this is what we'd get.",
+  862.98,
+  871.28
+ ],
+ [
+  "And this kind of diagram actually has a special name, it's called a Voronoi Diagram.",
+  871.66,
+  875.06
+ ],
+ [
+  "And if we let each point of the plane take a single step of Newton's method, and then color it based on what root that single step result is closest to, here's what we would get.",
+  876.06,
+  885.2
+ ],
+ [
+  "Similarly, if we allow for two steps, we get a slightly more intricate pattern, and so on and so on, where the more steps you allow, the more intricate an image you get, bringing us closer to the original fractal.",
+  890.18,
+  901.32
+ ],
+ [
+  "And this is important, keep in mind that the true shape we're studying here is not any one of these, it's the limit as we allow for an arbitrarily large number of iterations.",
+  901.86,
+  910.12
+ ],
+ [
+  "At this point, there are so many questions we might ask.",
+  914.34,
+  917.02
+ ],
+ [
+  "Maybe you want to try this out with some other polynomials, see how general it is, or maybe you want to dig deeper into what dynamics are exactly possible with these iterated points, or see if there's connections with some other pieces of math that have a similar theme.",
+  917.46,
+  930.0
+ ],
+ [
+  "But I think the most pertinent question should be something like, what the **** is going on here?",
+  930.9,
+  935.88
+ ],
+ [
+  "I mean, all we're doing here is repeatedly solving linear approximations.",
+  936.4,
+  940.4
+ ],
+ [
+  "Why would that produce something that's so endlessly complicated?",
+  940.88,
+  943.62
+ ],
+ [
+  "It almost feels like the underlying rule here just shouldn't carry enough information to actually produce an image like this.",
+  944.16,
+  949.66
+ ],
+ [
+  "And before seeing this, don't you think a reasonable initial guess might have been that each seed value simply tends towards whichever root it's closest to?",
+  950.18,
+  957.76
+ ],
+ [
+  "And in that case, you know, if you colored each point based on the root it lands on and move it back to the original position, the final image would look like one of these Voronoi diagrams with straight-line boundaries.",
+  958.32,
+  968.16
+ ],
+ [
+  "And since I referenced earlier the unsolvability of the quintic, maybe you would wonder if the complexity here has anything to do with that.",
+  969.2,
+  975.6
+ ],
+ [
+  "That would be cool, but they're essentially unrelated ideas.",
+  975.92,
+  978.68
+ ],
+ [
+  "In fact, using only degree-5 polynomials so far might have been a little misleading.",
+  979.08,
+  983.36
+ ],
+ [
+  "Watch what happens if we play the same game, but with a cubic polynomial, with three roots somewhere in the complex plane.",
+  984.0,
+  989.84
+ ],
+ [
+  "Notice how, again, while most points nestle into a root, some of them are kind of flying all over the place more chaotically.",
+  990.86,
+  997.38
+ ],
+ [
+  "In fact, those ones are the most noticeable ones in an animation like this, with the ones going towards the roots just quietly nestled in in their ending points.",
+  998.04,
+  1004.5
+ ],
+ [
+  "And again, if we stopped this at some number of iterations and we colored all the points based on what root they're closest to and roll back the clock, the relevant picture for all possible starting points forms this fractal pattern with infinite detail.",
+  1005.16,
+  1018.72
+ ],
+ [
+  "However, quadratic polynomials with only two roots are different.",
+  1025.84,
+  1029.38
+ ],
+ [
+  "In that case, each seed value does simply tend towards whichever root it's closest to, the way you might expect.",
+  1029.82,
+  1035.36
+ ],
+ [
+  "There is a little bit of meandering behavior from all the points that are an equal distance from each root, it's kind of like they're not able to decide which one to go to, but that's just a single line of points, and when we play the game of coloring, the diagram we end up with is decidedly more boring.",
+  1036.32,
+  1050.66
+ ],
+ [
+  "So something new seems to happen when you jump from 2 to 3, and the question is what, exactly?",
+  1052.06,
+  1056.82
+ ],
+ [
+  "And if you had asked me a month ago, I probably would have shrugged and just said, you know, math is what it is, sometimes the answers look simple, sometimes not, it's not always clear what it would mean to ask why in a setting like this, but I would have been wrong, there actually is a reason that we can give for why this image has to look as complicated as it does.",
+  1057.64,
+  1075.27
+ ],
+ [
+  "You see, there's a very peculiar property that we can prove this diagram must have.",
+  1075.93,
+  1080.19
+ ],
+ [
+  "Focus your attention on just one of the colored regions, say this blue one, in other words, the set of all points that eventually tend towards just one particular root of the polynomial.",
+  1080.85,
+  1089.97
+ ],
+ [
+  "Now consider the boundary of that region, which for the example shown on screen has this kind of nice threefold symmetry.",
+  1090.51,
+  1096.43
+ ],
+ [
+  "What's surprising is that if you look at any other color and consider its boundary, you get precisely the same set.",
+  1097.33,
+  1103.61
+ ],
+ [
+  "Now when I say the word boundary, you probably have an intuitive sense of what it means, but mathematicians have a pretty clever way to formalize it, and this makes it easier to reason about in the context of more wild sets like our fractal.",
+  1105.45,
+  1115.97
+ ],
+ [
+  "We say that a point is on the boundary of a set if when you draw a small circle centered at that point, no matter how small, it will always contain points that are both inside that set and outside.",
+  1116.43,
+  1127.09
+ ],
+ [
+  "So if you have a point that's on the interior, a small enough circle would eventually only contain points inside the set, and for a point on the exterior, a small enough circle contains no points of the set at all.",
+  1127.89,
+  1138.11
+ ],
+ [
+  "But when it's on the boundary, what it means to be on the boundary is that your tiny tiny circles will always contain both.",
+  1138.61,
+  1144.55
+ ],
+ [
+  "So looking back at our property, one way to read it is to say that if you draw a circle, no matter how small that circle, it either contains all of the colors, which happens when this shared boundary of the colors is inside that circle, or it contains just one color, and this happens when it's in the interior of one of the regions.",
+  1145.41,
+  1164.03
+ ],
+ [
+  "In particular, what this implies is you should never be able to find a circle that contains just two of the colors, since that would require that you have points on the boundary between two regions, but not all of them.",
+  1167.05,
+  1177.79
+ ],
+ [
+  "And before explaining where this fact actually comes from, it's fun to try just wrapping your mind around it a little bit.",
+  1178.95,
+  1184.59
+ ],
+ [
+  "You could imagine presenting this to someone as a kind of art puzzle, completely out of context, never mentioning Newton's method or anything like that, where you say that the challenge is to construct a picture with at least three colors, maybe we say red, green, and blue, so that the boundary of one color is the boundary of all of them.",
+  1184.99,
+  1200.57
+ ],
+ [
+  "So if you started with something simple like this, that clearly doesn't work because we have this whole line of points that are on the boundary of green and red, but not touching any blue, and likewise you have these other lines of disallowed points.",
+  1200.95,
+  1212.81
+ ],
+ [
+  "So to correct that, you might go and add some blue blobs along the boundary, and then likewise add some green blobs between the red and blue, and some red blobs between the green and blue, but of course, now the boundary of those blobs are a problem, for example, touching just blue and red, but no green.",
+  1213.63,
+  1229.07
+ ],
+ [
+  "So maybe you go and try to add even smaller blobs, with the relevant third color around those smaller boundaries to help try to correct.",
+  1229.63,
+  1236.37
+ ],
+ [
+  "And likewise you have to do this for every one of the blobs that you initially added.",
+  1237.31,
+  1241.17
+ ],
+ [
+  "But then all the boundaries of those tiny blobs are problems of their own, and you would have to somehow keep doing this process forever.",
+  1244.45,
+  1251.63
+ ],
+ [
+  "And if you look at Newton's fractal itself, this sort of blobs on blobs on blobs pattern seems to be exactly what it's doing.",
+  1253.57,
+  1261.29
+ ],
+ [
+  "The main thing I want you to notice is how this property implies you could never have a boundary which is smooth, or even partially smooth on some small segment, since any smooth segment would only be touching two colors.",
+  1266.55,
+  1278.09
+ ],
+ [
+  "Instead, the boundary has to consist entirely of sharp corners, so to speak.",
+  1278.79,
+  1283.15
+ ],
+ [
+  "So if you believe the property, it explains why the boundary remains rough no matter how far you zoom in.",
+  1283.81,
+  1289.55
+ ],
+ [
+  "And for those of you who are familiar with the concept of fractal dimension, you can measure the dimension of the particular boundary I'm showing you right now to be around 1.44.",
+  1290.17,
+  1298.17
+ ],
+ [
+  "Considering what our colors actually represent, remember this isn't just a picture for pictures' sake, think about what the property is really telling us.",
+  1299.89,
+  1307.03
+ ],
+ [
+  "It says that if you're near a sensitive point where some of the seed values go to one root but other seed values nearby would go to another root, then in fact every possible root has to be accessible from within that small neighborhood.",
+  1308.31,
+  1320.79
+ ],
+ [
+  "For any tiny little circle that you draw, either all of the points in that circle tend to just one root, or they tend to all of the roots, but there's never going to be anything in between, just tending to a subset of the roots.",
+  1321.53,
+  1333.17
+ ],
+ [
+  "For a little intuition, I found it enlightening to simply watch a cluster like the one I'm showing on screen undergo this process.",
+  1334.05,
+  1339.85
+ ],
+ [
+  "It starts off mostly sticking together, but at one iteration they all kind of explode outward, and after that it feels a lot more reasonable that any root is up for grabs.",
+  1340.43,
+  1350.33
+ ],
+ [
+  "And keep in mind I'm just showing you finitely many points, but in principle you would want to think about what happens to all uncountably infinitely many points inside some small disk.",
+  1351.37,
+  1360.29
+ ],
+ [
+  "This property also kind of explains why it's okay for things to look normal in the case of quadratic polynomials, with just two roots, because there a smooth boundary is fine, there's only two colors to touch anyway.",
+  1364.61,
+  1376.07
+ ],
+ [
+  "To be clear, it doesn't guarantee that the quadratic case would have a smooth boundary, it is perfectly possible to have a fractal boundary between two colors, it just looks like our Newton's method diagram is not doing anything more complicated than it needs to under the constraint of this strange boundary condition.",
+  1376.83,
+  1392.71
+ ],
+ [
+  "But of course all of this simply raises the question of why this bizarre boundary property would have to be true in the first place, where does it even come from?",
+  1393.85,
+  1401.51
+ ],
+ [
+  "For that I'd like to tell you about a field of math which studies this kind of question, it's called holomorphic dynamics.",
+  1402.45,
+  1407.63
+ ],
+ [
+  "And I think we've covered enough ground today, and there's certainly enough left to tell, so it makes sense to pull that out as a separate video.",
+  1408.41,
+  1414.35
+ ],
+ [
+  "To close things off here, there is something sort of funny to me about the fact that we call this Newton's fractal, despite the fact that Newton had no clue about any of this, and could never have possibly played with these images the way you and I can with modern technology.",
+  1415.01,
+  1428.55
+ ],
+ [
+  "And it happens a lot through math that people's names get attached to things well beyond what they could have dreamed of.",
+  1429.05,
+  1434.37
+ ],
+ [
+  "Hamiltonians are central to quantum mechanics, despite Hamilton knowing nothing about quantum mechanics.",
+  1434.81,
+  1439.43
+ ],
+ [
+  "Fourier himself never once computed a fast Fourier transform, the list goes on.",
+  1440.01,
+  1444.69
+ ],
+ [
+  "But this overextension of nomenclature carries with it what I think is an inspiring point.",
+  1444.69,
+  1449.95
+ ],
+ [
+  "It reflects how even the simple ideas, ones that could be discovered centuries ago, often hold within them some new angle or a new domain of relevance that can sit waiting to be discovered hundreds of years later.",
+  1450.53,
+  1461.37
+ ],
+ [
+  "It's not just that Newton had no idea about Newton's fractal.",
+  1461.91,
+  1465.15
+ ],
+ [
+  "There are probably many other facts about Newton's method, or about all sorts of math that may seem like old news, that come from questions that no one has thought to ask yet.",
+  1465.33,
+  1473.87
+ ],
+ [
+  "Questions that are just sitting there, waiting for someone, like you, to ask them.",
+  1474.29,
+  1478.47
+ ],
+ [
+  "For example, if you were to ask about whether this process we've been talking about today ever gets trapped in a cycle, it leads you to a surprising connection with the Mandelbrot set, and we'll talk a bit about that in the next part.",
+  1482.87,
+  1493.77
+ ],
+ [
+  "At the time that I'm posting this, that second part by the way is available as an early release to patrons.",
+  1495.03,
+  1499.19
+ ],
+ [
+  "I always like to give new content a little bit of time there to gather feedback and catch errors.",
+  1499.59,
+  1503.47
+ ],
+ [
+  "The finalized version should be out shortly.",
+  1503.95,
+  1505.61
+ ],
+ [
+  "On the topic of patrons, I do just want to say a quick thanks to everyone whose name is on the screen.",
+  1506.47,
+  1510.33
+ ],
+ [
+  "I know that in recent history new videos have been a little slow coming.",
+  1510.75,
+  1513.97
+ ],
+ [
+  "Part of this has to do with other projects that have been in the works.",
+  1514.41,
+  1516.75
+ ],
+ [
+  "Things I'm proud of, by the way, things like the Summer of Math Exposition, which was a surprising amount of work, to be honest, but so worth it given the outcome.",
+  1517.23,
+  1524.87
+ ],
+ [
+  "I will be talking all about that and announcing winners very shortly, so stay tuned.",
+  1525.11,
+  1529.03
+ ],
+ [
+  "I just want you to know that the plan for the foreseeable future is definitely to shift gears more wholeheartedly back to making new videos, and more than anything I want to say thanks for your continued support, even during times of trying a few new things.",
+  1529.45,
+  1540.65
+ ],
+ [
+  "It means a lot to me, it's what keeps the channel going, and I'll do my best to make the new lessons in the pipeline live up to your vote of confidence there.",
+  1540.91,
+  1547.31
+ ]
+]

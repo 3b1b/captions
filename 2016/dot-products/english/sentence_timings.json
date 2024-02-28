@@ -1,0 +1,522 @@
+[
+ [
+  "Traditionally, dot products are something that's introduced really early on in a linear algebra course, typically right at the start.",
+  16.58,
+  26.3
+ ],
+ [
+  "So it might seem strange that I've pushed them back this far in the series.",
+  26.64,
+  29.58
+ ],
+ [
+  "I did this because there's a standard way to introduce the topic, which requires nothing more than a basic understanding of vectors, but a fuller understanding of the role that dot products play in math can only really be found under the light of linear transformations.",
+  29.58,
+  42.44
+ ],
+ [
+  "Before that, though, let me just briefly cover the standard way that dot products are introduced, which I'm assuming is at least partially review for a number of viewers.",
+  43.48,
+  50.62
+ ],
+ [
+  "Numerically, if you have two vectors of the same dimension, two lists of numbers with the same lengths, taking their dot product means pairing up all of the coordinates, multiplying those pairs together, and adding the result.",
+  51.44,
+  64.98
+ ],
+ [
+  "So the vector 1, 2 dotted with 3, 4 would be 1 times 3 plus 2 times 4.",
+  66.86,
+  73.18
+ ],
+ [
+  "The vector 6, 2, 8, 3 dotted with 1, 8, 5, 3 would be 6 times 1 plus 2 times 8 plus 8 times 5 plus 3 times 3.",
+  74.58,
+  83.72
+ ],
+ [
+  "Luckily, this computation has a really nice geometric interpretation.",
+  84.74,
+  88.66
+ ],
+ [
+  "To think about the dot product between two vectors, v and w, imagine projecting w onto the line that passes through the origin and the tip of v.",
+  89.34,
+  97.98
+ ],
+ [
+  "Multiplying the length of this projection by the length of v, you have the dot product v dot w.",
+  98.78,
+  104.46
+ ],
+ [
+  "Except when this projection of w is pointing in the opposite direction from v, that dot product will actually be negative.",
+  106.42,
+  112.16
+ ],
+ [
+  "So when two vectors are generally pointing in the same direction, their dot product is positive.",
+  113.72,
+  117.86
+ ],
+ [
+  "When they're perpendicular, meaning the projection of one onto the other is the zero vector, their dot product is zero.",
+  119.24,
+  125.56
+ ],
+ [
+  "And if they point in generally the opposite direction, their dot product is negative.",
+  125.98,
+  129.6
+ ],
+ [
+  "Now, this interpretation is weirdly asymmetric.",
+  131.62,
+  134.56
+ ],
+ [
+  "It treats the two vectors very differently.",
+  134.8,
+  136.5
+ ],
+ [
+  "So when I first learned this, I was surprised that order doesn't matter.",
+  136.88,
+  140.0
+ ],
+ [
+  "You could instead project v onto w, multiply the length of the projected v by the length of w, and get the same result.",
+  140.96,
+  148.22
+ ],
+ [
+  "I mean, doesn't that feel like a really different process?",
+  150.4,
+  152.84
+ ],
+ [
+  "Here's the intuition for why order doesn't matter.",
+  155.32,
+  157.76
+ ],
+ [
+  "If v and w happened to have the same length, we could leverage some symmetry.",
+  158.44,
+  162.18
+ ],
+ [
+  "Since projecting w onto v, then multiplying the length of that projection by the length of v, is a complete mirror image of projecting v onto w, then multiplying the length of that projection by the length of w.",
+  163.08,
+  175.24
+ ],
+ [
+  "Now, if you scale one of them, say v, by some constant like 2, so that they don't have equal length, the symmetry is broken.",
+  177.28,
+  184.36
+ ],
+ [
+  "But let's think through how to interpret the dot product between this new vector, 2 times v, and w.",
+  185.02,
+  190.04
+ ],
+ [
+  "If you think of w as getting projected onto v, then the dot product 2v dot w will be exactly twice the dot product v dot w.",
+  190.88,
+  199.72
+ ],
+ [
+  "This is because when you scale v by 2, it doesn't change the length of the projection of w, but it doubles the length of the vector that you're projecting onto.",
+  200.46,
+  209.52
+ ],
+ [
+  "But on the other hand, let's say you were thinking about v getting projected onto w.",
+  210.46,
+  214.2
+ ],
+ [
+  "Well, in that case, the length of the projection is the thing that gets scaled when we multiply v by 2, but the length of the vector that you're projecting onto stays constant.",
+  214.9,
+  223.0
+ ],
+ [
+  "So the overall effect is still to just double the dot product.",
+  223.0,
+  226.66
+ ],
+ [
+  "So even though symmetry is broken in this case, the effect that this scaling has on the value of the dot product is the same under both interpretations.",
+  227.28,
+  234.86
+ ],
+ [
+  "There's also one other big question that confused me when I first learned this stuff.",
+  236.64,
+  240.34
+ ],
+ [
+  "Why on earth does this numerical process of matching coordinates, multiplying pairs, and adding them together have anything to do with projection?",
+  240.84,
+  248.74
+ ],
+ [
+  "Well, to give a satisfactory answer, and also to do full justice to the significance of the dot product, we need to unearth something a little bit deeper going on here, which often goes by the name duality.",
+  250.64,
+  261.4
+ ],
+ [
+  "But before getting into that, I need to spend some time talking about linear transformations from multiple dimensions to one dimension, which is just the number line.",
+  262.14,
+  270.04
+ ],
+ [
+  "These are functions that take in a 2D vector and spit out some number, but linear transformations are of course much more restricted than your run-of-the-mill function with a 2D input and a 1D output.",
+  272.42,
+  282.3
+ ],
+ [
+  "As with transformations in higher dimensions, like the ones I talked about in chapter 3, there are some formal properties that make these functions linear, but I'm going to purposefully ignore those here so as to not distract from our end goal, and instead focus on a certain visual property that's equivalent to all the formal stuff.",
+  283.02,
+  298.26
+ ],
+ [
+  "If you take a line of evenly spaced dots and apply a transformation, a linear transformation will keep those dots evenly spaced once they land in the output space, which is the number line.",
+  299.04,
+  311.28
+ ],
+ [
+  "Otherwise, if there's some line of dots that gets unevenly spaced, then your transformation is not linear.",
+  312.42,
+  317.14
+ ],
+ [
+  "As with the cases we've seen before, one of these linear transformations is completely determined by where it takes i-hat and j-hat, but this time each one of those basis vectors just lands on a number, so when we record where they land as the columns of a matrix, each of those columns just has a single number.",
+  319.22,
+  336.82
+ ],
+ [
+  "This is a 1x2 matrix.",
+  338.46,
+  339.84
+ ],
+ [
+  "Let's walk through an example of what it means to apply one of these transformations to a vector.",
+  341.86,
+  345.66
+ ],
+ [
+  "Let's say you have a linear transformation that takes i-hat to 1 and j-hat to negative 2.",
+  346.38,
+  351.68
+ ],
+ [
+  "To follow where a vector with coordinates, say, 4, 3 ends up, think of breaking up this vector as 4 times i-hat plus 3 times j-hat.",
+  352.42,
+  361.02
+ ],
+ [
+  "A consequence of linearity is that after the transformation, the vector will be 4 times the place where i-hat lands, 1, plus 3 times the place where j-hat lands, negative 2, which in this case implies that it lands on negative 2.",
+  361.84,
+  375.78
+ ],
+ [
+  "When you do this calculation purely numerically, it's matrix vector multiplication.",
+  378.02,
+  382.36
+ ],
+ [
+  "Now, this numerical operation of multiplying a 1x2 matrix by a vector feels just like taking the dot product of two vectors.",
+  385.7,
+  392.86
+ ],
+ [
+  "Doesn't that 1x2 matrix just look like a vector that we tipped on its side?",
+  393.46,
+  396.8
+ ],
+ [
+  "In fact, we could say right now that there's a nice association between 1x2 matrices and 2D vectors, defined by tilting the numerical representation of a vector on its side to get the associated matrix, or to tip the matrix back up to get the associated vector.",
+  397.96,
+  412.58
+ ],
+ [
+  "Since we're just looking at numerical expressions right now, going back and forth between vectors and 1x2 matrices might feel like a silly thing to do.",
+  413.56,
+  420.86
+ ],
+ [
+  "But this suggests something that's truly awesome from the geometric view.",
+  421.46,
+  425.12
+ ],
+ [
+  "There's some kind of connection between linear transformations that take vectors to numbers and vectors themselves.",
+  425.38,
+  431.72
+ ],
+ [
+  "Let me show an example that clarifies the significance, and which just so happens to also answer the dot product puzzle from earlier.",
+  434.78,
+  441.38
+ ],
+ [
+  "Unlearn what you have learned, and imagine that you don't already know that the dot product relates to projection.",
+  442.14,
+  447.18
+ ],
+ [
+  "What I'm going to do here is take a copy of the number line and place it diagonally in space somehow, with the number 0 sitting at the origin.",
+  448.86,
+  456.06
+ ],
+ [
+  "Now think of the two-dimensional unit vector whose tip sits where the number 1 on the number is.",
+  456.9,
+  461.92
+ ],
+ [
+  "I want to give that guy a name, u-hat.",
+  462.4,
+  464.56
+ ],
+ [
+  "This little guy plays an important role in what's about to happen, so just keep him in the back of your mind.",
+  465.62,
+  470.02
+ ],
+ [
+  "If we project 2d vectors straight onto this diagonal number line, in effect, we've just defined a function that takes 2d vectors to numbers.",
+  470.74,
+  478.96
+ ],
+ [
+  "What's more, this function is actually linear, since it passes our visual test that any line of evenly spaced dots remains evenly spaced once it lands on the number line.",
+  479.66,
+  488.96
+ ],
+ [
+  "Just to be clear, even though I've embedded the number line in 2d space like this, the outputs of the function are numbers, not 2d vectors.",
+  491.64,
+  499.28
+ ],
+ [
+  "You should think of a function that takes in two coordinates and outputs a single coordinate.",
+  499.96,
+  503.68
+ ],
+ [
+  "But that vector u-hat is a two-dimensional vector, living in the input space.",
+  505.06,
+  509.02
+ ],
+ [
+  "It's just situated in such a way that overlaps with the embedding of the number line.",
+  509.44,
+  513.22
+ ],
+ [
+  "With this projection, we just defined a linear transformation from 2d vectors to numbers, so we're going to be able to find some kind of 1x2 matrix that describes that transformation.",
+  514.6,
+  524.6
+ ],
+ [
+  "To find that 1x2 matrix, let's zoom in on this diagonal number line setup and think about where i-hat and j-hat each land, since those landing spots are going to be the columns of the matrix.",
+  525.54,
+  536.46
+ ],
+ [
+  "This part's super cool.",
+  538.48,
+  539.44
+ ],
+ [
+  "We can reason through it with a really elegant piece of symmetry.",
+  539.7,
+  542.42
+ ],
+ [
+  "Since i-hat and u-hat are both unit vectors, projecting i-hat onto the line passing through u-hat looks totally symmetric to projecting u-hat onto the x-axis.",
+  543.02,
+  553.16
+ ],
+ [
+  "So when we ask what number does i-hat land on when it gets projected, the answer is going to be the same as whatever u-hat lands on when it's projected onto the x-axis.",
+  553.84,
+  562.32
+ ],
+ [
+  "But projecting u-hat onto the x-axis just means taking the x-coordinate of u-hat.",
+  562.92,
+  568.6
+ ],
+ [
+  "So by symmetry, the number where i-hat lands when it's projected onto that diagonal number line is going to be the x-coordinate of u-hat.",
+  569.02,
+  576.62
+ ],
+ [
+  "Isn't that cool?",
+  577.16,
+  577.66
+ ],
+ [
+  "The reasoning is almost identical for the j-hat case.",
+  579.2,
+  581.8
+ ],
+ [
+  "Think about it for a moment.",
+  582.18,
+  583.26
+ ],
+ [
+  "For all the same reasons, the y-coordinate of u-hat gives us the number where j-hat lands when it's projected onto the number line copy.",
+  589.12,
+  596.6
+ ],
+ [
+  "Pause and ponder that for a moment.",
+  597.58,
+  598.72
+ ],
+ [
+  "I just think that's really cool.",
+  598.78,
+  600.2
+ ],
+ [
+  "So the entries of the 1x2 matrix describing the projection transformation are going to be the coordinates of u-hat.",
+  600.92,
+  607.26
+ ],
+ [
+  "And computing this projection transformation for arbitrary vectors in space, which requires multiplying that matrix by those vectors, is computationally identical to taking a dot product with u-hat.",
+  608.04,
+  618.88
+ ],
+ [
+  "This is why taking the dot product with a unit vector can be interpreted as projecting a vector onto the span of that unit vector and taking the length.",
+  621.46,
+  630.59
+ ],
+ [
+  "So what about non-unit vectors?",
+  634.03,
+  635.79
+ ],
+ [
+  "For example, let's say we take that unit vector u-hat, but we scale it up by a factor of 3.",
+  636.31,
+  640.63
+ ],
+ [
+  "Numerically, each of its components gets multiplied by 3.",
+  641.35,
+  644.39
+ ],
+ [
+  "So looking at the matrix associated with that vector, it takes i-hat and j-hat to three times the values where they landed before.",
+  644.81,
+  652.39
+ ],
+ [
+  "Since this is all linear, it implies more generally that the new matrix can be interpreted as projecting any vector onto the number line copy and multiplying where it lands by 3.",
+  655.23,
+  664.65
+ ],
+ [
+  "This is why the dot product with a non-unit vector can be interpreted as first projecting onto that vector, then scaling up the length of that projection by the length of the vector.",
+  665.47,
+  674.95
+ ],
+ [
+  "Take a moment to think about what happened here.",
+  677.59,
+  679.55
+ ],
+ [
+  "We had a linear transformation from 2D space to the number line, which was not defined in terms of numerical vectors or numerical dot products, it was just defined by projecting space onto a diagonal copy of the number line.",
+  679.89,
+  690.89
+ ],
+ [
+  "But because the transformation is linear, it was necessarily described by some 1x2 matrix.",
+  691.67,
+  696.83
+ ],
+ [
+  "And since multiplying a 1x2 matrix by a 2D vector is the same as turning that matrix on its side and taking a dot product, this transformation was inescapably related to some 2D vector.",
+  697.33,
+  707.91
+ ],
+ [
+  "The lesson here is that any time you have one of these linear transformations whose output space is the number line, no matter how it was defined, there's going to be some unique vector v corresponding to that transformation, in the sense that applying the transformation is the same thing as taking a dot product with that vector.",
+  709.41,
+  726.35
+ ],
+ [
+  "To me, this is utterly beautiful.",
+  729.93,
+  732.03
+ ],
+ [
+  "It's an example of something in math called duality.",
+  732.73,
+  735.39
+ ],
+ [
+  "Duality shows up in many different ways and forms throughout math, and it's super tricky to actually define.",
+  736.27,
+  741.93
+ ],
+ [
+  "Loosely speaking, it refers to situations where you have a natural but surprising correspondence between two types of mathematical thing.",
+  742.67,
+  750.23
+ ],
+ [
+  "For the linear algebra case that you just learned about, you'd say that the dual of a vector is the linear transformation that it encodes, and the dual of a linear transformation from some space to one dimension is a certain vector in that space.",
+  751.01,
+  764.65
+ ],
+ [
+  "So to sum up, on the surface, the dot product is a very useful geometric tool for understanding projections and for testing whether or not vectors tend to point in the same direction.",
+  766.73,
+  776.31
+ ],
+ [
+  "And that's probably the most important thing for you to remember about the dot product.",
+  776.97,
+  780.79
+ ],
+ [
+  "But at a deeper level, dotting two vectors together is a way to translate one of them into the world of transformations.",
+  781.27,
+  787.73
+ ],
+ [
+  "Again, numerically, this might feel like a silly point to emphasize.",
+  788.67,
+  791.55
+ ],
+ [
+  "It's just two computations that happen to look similar.",
+  791.67,
+  794.49
+ ],
+ [
+  "But the reason I find this so important is that throughout math, when you're dealing with a vector, once you really get to know its personality, sometimes you realize that it's easier to understand it not as an arrow in space, but as the physical embodiment of a linear transformation.",
+  794.49,
+  810.09
+ ],
+ [
+  "It's as if the vector is really just a conceptual shorthand for a certain transformation, since it's easier for us to think about arrows in space rather than moving all of that space to the number line.",
+  810.73,
+  820.97
+ ],
+ [
+  "In the next video, you'll see another really cool example of this duality in action, as I talk about the cross product.",
+  822.61,
+  829.19
+ ]
+]

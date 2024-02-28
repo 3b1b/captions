@@ -1,722 +1,722 @@
 1
-00:00:04,060 --> 00:00:06,281
-Ở đây, chúng tôi giải quyết vấn đề lan truyền ngược, 
+00:00:04,060 --> 00:00:06,211
+Ở đây, chúng ta sẽ giải quyết 'lan truyền ngược', 
 
 2
-00:00:06,281 --> 00:00:08,880
+00:00:06,211 --> 00:00:08,880
 thuật toán cốt lõi đằng sau cách mạng lưới thần kinh học hỏi. 
 
 3
-00:00:09,400 --> 00:00:11,891
-Sau khi tóm tắt nhanh về vị trí của chúng ta, điều đầu tiên 
+00:00:09,400 --> 00:00:11,472
+Sau khi tóm tắt nhanh về những điều chúng ta đã biết, 
 
 4
-00:00:11,891 --> 00:00:14,466
-tôi sẽ làm là hướng dẫn trực quan về những gì thuật toán thực 
+00:00:11,472 --> 00:00:14,006
+điều đầu tiên tôi sẽ làm là hướng dẫn một cách trực quan về những 
 
 5
-00:00:14,466 --> 00:00:17,000
-sự đang thực hiện mà không cần tham chiếu đến các công thức. 
+00:00:14,006 --> 00:00:17,000
+gì thuật toán thực sự đang thực hiện mà không cần nhắc đến đến các công thức. 
 
 6
-00:00:17,660 --> 00:00:19,872
-Sau đó, dành cho những ai muốn đi sâu vào toán học, 
+00:00:17,660 --> 00:00:20,254
+Sau đó, dành cho những ai muốn đi sâu vào toán học đứng sau, 
 
 7
-00:00:19,872 --> 00:00:23,020
-video tiếp theo sẽ đi sâu vào phép tính cơ bản của tất cả những điều này. 
+00:00:20,254 --> 00:00:23,020
+video tiếp theo sẽ đi sâu vào các tính toán của tất cả điều này. 
 
 8
-00:00:23,820 --> 00:00:27,431
+00:00:23,820 --> 00:00:27,637
 Nếu bạn đã xem hai video cuối cùng hoặc nếu bạn chỉ bắt đầu với nền tảng thích hợp, 
 
 9
-00:00:27,431 --> 00:00:31,000
-thì bạn sẽ biết mạng lưới thần kinh là gì và cách nó truyền thông tin chuyển tiếp. 
+00:00:27,637 --> 00:00:31,000
+thì bạn sẽ biết mạng lưới thần kinh là gì và cách nó truyền thông tin đi. 
 
 10
-00:00:31,680 --> 00:00:35,977
-Ở đây, chúng tôi đang thực hiện một ví dụ cổ điển về việc nhận dạng các chữ 
+00:00:31,680 --> 00:00:36,076
+Ở đây, chúng tôi đang thực hiện một ví dụ kinh điển về việc nhận dạng các chữ 
 
 11
-00:00:35,977 --> 00:00:40,388
+00:00:36,076 --> 00:00:40,472
 số viết tay có giá trị pixel được đưa vào lớp đầu tiên của mạng có 784 nơ-ron 
 
 12
-00:00:40,388 --> 00:00:44,629
-và tôi đã hiển thị một mạng có hai lớp ẩn, mỗi lớp chỉ có 16 nơ-ron và một 
+00:00:40,472 --> 00:00:44,869
+và tôi đã sử dụng một mạng có hai lớp ẩn, mỗi lớp chỉ có 16 nơ-ron và một đầu 
 
 13
-00:00:44,629 --> 00:00:49,040
-đầu ra lớp gồm 10 nơ-ron, cho biết mạng đang chọn chữ số nào làm câu trả lời. 
+00:00:44,869 --> 00:00:49,040
+ra lớp gồm 10 nơ-ron, cho biết mạng đang chọn chữ số nào làm câu trả lời. 
 
 14
-00:00:50,040 --> 00:00:53,759
-Tôi cũng mong bạn hiểu độ dốc giảm dần, như được mô tả trong 
+00:00:50,040 --> 00:00:53,700
+Tôi cũng mong bạn hiểu khái niệm hạ gradient, như đã được mô 
 
 15
-00:00:53,759 --> 00:00:57,479
-video trước và ý nghĩa của việc học là chúng tôi muốn tìm ra 
+00:00:53,700 --> 00:00:57,360
+tả trong video trước và ý nghĩa của việc học là tìm ra trọng 
 
 16
-00:00:57,479 --> 00:01:01,260
-trọng số và độ lệch nào giảm thiểu một hàm chi phí nhất định. 
+00:00:57,360 --> 00:01:01,260
+số và độ lệch thích hợp để giảm thiểu một hàm chi phí nhất định. 
 
 17
-00:01:02,040 --> 00:01:05,348
-Xin nhắc lại, với chi phí cho một ví dụ đào tạo, 
+00:01:02,040 --> 00:01:08,004
+Xin nhắc lại, để tính chi phí cho một mẫu huấn luyện, bạn lấy đầu ra mà mạng đưa ra, 
 
 18
-00:01:05,348 --> 00:01:10,345
-bạn lấy đầu ra mà mạng cung cấp, cùng với đầu ra mà bạn muốn nó cung cấp, 
+00:01:08,004 --> 00:01:14,178
+cùng với đầu ra mà bạn muốn nó đưa ra, rồi cộng các bình phương của hiệu giữa mỗi thành 
 
 19
-00:01:10,345 --> 00:01:14,600
-rồi cộng các bình phương của sự khác biệt giữa mỗi thành phần. 
+00:01:14,178 --> 00:01:14,600
+phần. 
 
 20
-00:01:15,380 --> 00:01:19,199
-Thực hiện việc này cho tất cả hàng chục nghìn ví dụ đào tạo của bạn và tính 
+00:01:15,380 --> 00:01:19,224
+Thực hiện việc này cho tất cả hàng chục nghìn mẫu huấn luyện của bạn và tính 
 
 21
-00:01:19,199 --> 00:01:23,020
+00:01:19,224 --> 00:01:23,020
 trung bình các kết quả, điều này sẽ mang lại cho bạn tổng chi phí của mạng. 
 
 22
-00:01:23,020 --> 00:01:26,757
-Như thể nghĩ thế vẫn chưa đủ, như được mô tả trong video trước, 
+00:01:23,020 --> 00:01:27,888
+Chưa hết, như được mô tả trong video trước, thứ mà chúng ta đang tìm kiếm là 
 
 23
-00:01:26,757 --> 00:01:30,611
-thứ mà chúng ta đang tìm kiếm là gradient âm của hàm chi phí này, 
+00:01:27,888 --> 00:01:32,819
+gradient âm của hàm chi phí này, nó cho bạn biết cách bạn cần thay đổi tất cả 
 
 24
-00:01:30,611 --> 00:01:34,465
-nó cho bạn biết cách bạn cần thay đổi tất cả trọng số và độ lệch, 
+00:01:32,819 --> 00:01:38,320
+trọng số và độ lệch, tất cả những kết nối này, để giảm chi phí một cách hiệu quả nhất. 
 
 25
-00:01:34,465 --> 00:01:38,320
-tất cả những kết nối này, để giảm chi phí một cách hiệu quả nhất. 
+00:01:43,260 --> 00:01:46,361
+Lan truyền ngược, chủ đề của video này, là một thuật 
 
 26
-00:01:43,260 --> 00:01:46,291
-Lan truyền ngược, chủ đề của video này, là một 
+00:01:46,361 --> 00:01:49,580
+toán để tính toán giá trị gradient cực kỳ phức tạp đó. 
 
 27
-00:01:46,291 --> 00:01:49,580
-thuật toán để tính toán độ dốc cực kỳ phức tạp đó. 
+00:01:49,580 --> 00:01:54,282
+Một ý tưởng từ video trước mà tôi thực sự muốn bạn ghi nhớ ngay bây giờ là bởi vì việc 
 
 28
-00:01:49,580 --> 00:01:54,135
-Một ý tưởng từ video trước mà tôi thực sự muốn bạn ghi nhớ ngay bây giờ là vì coi 
+00:01:54,282 --> 00:01:58,985
+coi vectơ gradient như một hướng trong không gian 13000 chiều, nói một cách nhẹ nhàng, 
 
 29
-00:01:54,135 --> 00:01:58,191
-vectơ gradient như một hướng trong 13.000 chiều, nói một cách nhẹ nhàng, 
+00:01:58,985 --> 00:02:03,580
+ngoài phạm vi trí tưởng tượng của chúng ta, còn một cách khác bạn có thể nghĩ về nó. 
 
 30
-00:01:58,191 --> 00:02:02,024
-ngoài phạm vi trí tưởng tượng của chúng ta, còn có một ý tưởng khác. 
-
-31
-00:02:02,024 --> 00:02:03,580
-cách bạn có thể nghĩ về nó. 
-
-32
 00:02:04,600 --> 00:02:07,883
 Độ lớn của từng thành phần ở đây cho bạn biết mức độ nhạy 
 
-33
+31
 00:02:07,883 --> 00:02:10,940
 cảm của hàm chi phí đối với từng trọng số và độ lệch. 
 
+32
+00:02:11,800 --> 00:02:16,594
+Ví dụ: giả sử bạn thực hiện quy trình mà tôi sắp mô tả và tính 
+
+33
+00:02:16,594 --> 00:02:21,998
+gradient âm và thành phần liên quan đến trọng số trên cạnh này là 3.2, 
+
 34
-00:02:11,800 --> 00:02:16,878
-Ví dụ: giả sử bạn thực hiện quy trình mà tôi sắp mô tả và tính gradient 
+00:02:21,998 --> 00:02:26,260
+trong khi thành phần được liên kết với cạnh này là 0.1. 
 
 35
-00:02:16,878 --> 00:02:21,886
-âm và thành phần liên quan đến trọng số trên cạnh này ở đây sẽ là 3.2, 
+00:02:26,820 --> 00:02:30,909
+Bạn có thể hiểu là chi phí của hàm nhạy cảm hơn 32 lần với những thay 
 
 36
-00:02:21,886 --> 00:02:26,260
-trong khi thành phần được liên kết với cạnh này ở đây là 0.1. 
+00:02:30,909 --> 00:02:35,232
+đổi về trọng số đầu tiên đó, vì vậy nếu bạn thay đổi giá trị đó một chút, 
 
 37
-00:02:26,820 --> 00:02:32,072
-Theo cách bạn giải thích thì chi phí của hàm nhạy cảm hơn 32 lần với những thay đổi về 
+00:02:35,232 --> 00:02:39,204
+điều đó sẽ gây ra một số thay đổi về chi phí và thay đổi đó lớn hơn 
 
 38
-00:02:32,072 --> 00:02:36,117
-trọng số đầu tiên đó, vì vậy nếu bạn thay đổi giá trị đó một chút, 
+00:02:39,204 --> 00:02:43,060
+32 lần so với thay đổi mà việc chỉnh sửa trọng số thứ hai gây ra. 
 
 39
-00:02:36,117 --> 00:02:41,550
-điều đó sẽ gây ra một số thay đổi về chi phí và thay đổi đó lớn hơn 32 lần so với lực lắc 
-
-40
-00:02:41,550 --> 00:02:43,060
-của vật nặng thứ hai đó. 
-
-41
 00:02:48,420 --> 00:02:51,905
 Cá nhân tôi, khi lần đầu tiên tìm hiểu về lan truyền ngược, 
 
-42
+40
 00:02:51,905 --> 00:02:55,740
 tôi nghĩ khía cạnh khó hiểu nhất chỉ là ký hiệu và chỉ số của nó. 
 
-43
-00:02:56,220 --> 00:03:00,449
+41
+00:02:56,220 --> 00:03:00,387
 Nhưng một khi bạn khám phá ra chức năng thực sự của từng phần của thuật toán này, 
 
-44
-00:03:00,449 --> 00:03:03,544
+42
+00:03:00,387 --> 00:03:03,437
 mỗi hiệu ứng riêng lẻ mà nó mang lại thực sự khá trực quan, 
 
+43
+00:03:03,437 --> 00:03:06,640
+chỉ là nó có rất nhiều điều chỉnh nhỏ được xếp chồng lên nhau. 
+
+44
+00:03:07,740 --> 00:03:11,957
+Vì vậy, tôi sẽ bắt đầu mọi thứ ở đây mà hoàn toàn không quan tâm đến ký hiệu 
+
 45
-00:03:03,544 --> 00:03:06,640
-chỉ là có rất nhiều điều chỉnh nhỏ được xếp chồng lên nhau. 
+00:03:11,957 --> 00:03:16,120
+và chỉ xem qua tác động của mỗi mẫu huấn luyện đối với trọng số và độ lệch. 
 
 46
-00:03:07,740 --> 00:03:11,799
-Vì vậy, tôi sẽ bắt đầu mọi thứ ở đây với việc hoàn toàn không quan tâm đến ký 
-
-47
-00:03:11,799 --> 00:03:16,120
-hiệu và chỉ xem qua tác động của mỗi ví dụ huấn luyện đối với trọng số và độ lệch. 
-
-48
-00:03:17,020 --> 00:03:21,654
+00:03:17,020 --> 00:03:21,732
 Bởi vì hàm chi phí liên quan đến việc tính trung bình một chi phí nhất định cho 
 
+47
+00:03:21,732 --> 00:03:24,854
+mỗi mẫu trong tất cả hàng chục nghìn mẫu huấn luyện, 
+
+48
+00:03:24,854 --> 00:03:29,626
+nên cách chúng ta điều chỉnh trọng số và độ lệch cho một bước giảm gradient cũng 
+
 49
-00:03:21,654 --> 00:03:24,956
-mỗi ví dụ trong tất cả hàng chục nghìn ví dụ huấn luyện, 
+00:03:29,626 --> 00:03:31,040
+phụ thuộc vào từng mẫu. 
 
 50
-00:03:24,956 --> 00:03:29,533
-nên cách chúng ta điều chỉnh trọng số và độ lệch cho một bước giảm độ dốc cũng 
-
-51
-00:03:29,533 --> 00:03:31,040
-phụ thuộc vào từng ví dụ. 
-
-52
-00:03:31,680 --> 00:03:34,834
+00:03:31,680 --> 00:03:34,890
 Hay đúng hơn, về nguyên tắc là như vậy, nhưng để đạt hiệu quả tính toán, 
 
-53
-00:03:34,834 --> 00:03:38,594
-chúng tôi sẽ thực hiện một thủ thuật nhỏ sau để giúp bạn không cần phải xem từng ví dụ 
+51
+00:03:34,890 --> 00:03:38,584
+chúng ta sẽ thực hiện một thủ thuật nhỏ sau để giúp bạn không cần phải xem từng mẫu 
 
-54
-00:03:38,594 --> 00:03:39,200
+52
+00:03:38,584 --> 00:03:39,200
 cho mỗi bước. 
 
-55
-00:03:39,200 --> 00:03:42,579
+53
+00:03:39,200 --> 00:03:42,629
 Trong các trường hợp khác, ngay bây giờ, tất cả những gì chúng ta sẽ 
 
-56
-00:03:42,579 --> 00:03:45,960
-làm là tập trung sự chú ý vào một ví dụ duy nhất, hình ảnh số 2 này. 
+54
+00:03:42,629 --> 00:03:45,960
+làm là tập trung sự chú ý vào một mẫu duy nhất, hình ảnh số 2 này. 
 
-57
+55
 00:03:46,720 --> 00:03:51,480
-Ví dụ đào tạo này sẽ có ảnh hưởng gì đến cách điều chỉnh trọng số và độ lệch? 
+Mẫu huấn luyện này sẽ có ảnh hưởng gì đến cách điều chỉnh trọng số và độ lệch? 
 
-58
-00:03:52,680 --> 00:03:56,616
+56
+00:03:52,680 --> 00:03:56,430
 Giả sử chúng ta đang ở thời điểm mạng chưa được đào tạo tốt, do đó, 
 
-59
-00:03:56,616 --> 00:04:01,015
-kích hoạt ở đầu ra sẽ trông khá ngẫu nhiên, có thể giống như 0.5, 0.8, 0.2, 
+57
+00:03:56,430 --> 00:04:01,062
+giá trị kích hoạt ở đầu ra sẽ trông khá ngẫu nhiên, có thể giống như 0.5, 0.8, 0.2, 
 
-60
-00:04:01,015 --> 00:04:02,000
+58
+00:04:01,062 --> 00:04:02,000
 cứ thế tiếp tục. 
 
+59
+00:04:02,520 --> 00:04:05,622
+Chúng ta không thể trực tiếp thay đổi những giá trị kích hoạt đó, 
+
+60
+00:04:05,622 --> 00:04:07,973
+chúng ta chỉ có thể thay đổi trọng số và độ lệch, 
+
 61
-00:04:02,520 --> 00:04:05,280
-Chúng tôi không thể trực tiếp thay đổi những kích hoạt đó, 
+00:04:07,973 --> 00:04:11,357
+nhưng sẽ rất hữu ích khi theo dõi những thay đổi nào chúng ta muốn diễn 
 
 62
-00:04:05,280 --> 00:04:07,713
-chúng tôi chỉ có ảnh hưởng đến trọng số và độ lệch, 
+00:04:11,357 --> 00:04:12,580
+ra đối với lớp đầu ra đó. 
 
 63
-00:04:07,713 --> 00:04:10,989
-nhưng sẽ rất hữu ích khi theo dõi những điều chỉnh nào chúng tôi muốn 
+00:04:13,360 --> 00:04:16,166
+Và vì chúng ta muốn nó phân loại hình ảnh thành số 2, 
 
 64
-00:04:10,989 --> 00:04:12,580
-sẽ diễn ra đối với lớp đầu ra đó. 
+00:04:16,166 --> 00:04:20,064
+nên chúng ta muốn giá trị thứ ba đó được nâng lên trong khi tất cả các giá 
 
 65
-00:04:13,360 --> 00:04:16,080
-Và vì chúng tôi muốn nó phân loại hình ảnh thành 2, 
-
-66
-00:04:16,080 --> 00:04:20,056
-nên chúng tôi muốn giá trị thứ ba đó được nâng lên trong khi tất cả các giá 
-
-67
-00:04:20,056 --> 00:04:21,260
+00:04:20,064 --> 00:04:21,260
 trị khác bị đẩy xuống. 
 
-68
-00:04:22,060 --> 00:04:25,675
-Hơn nữa, kích thước của những cú hích này phải tỷ lệ thuận với 
+66
+00:04:22,060 --> 00:04:25,704
+Hơn nữa, kích thước của những thay đổi này phải tỷ lệ thuận với 
 
-69
-00:04:25,675 --> 00:04:29,520
+67
+00:04:25,704 --> 00:04:29,520
 khoảng cách giữa mỗi giá trị hiện tại với giá trị mục tiêu của nó. 
 
+68
+00:04:30,220 --> 00:04:35,593
+Ví dụ, việc tăng giá trị kích hoạt nơ-ron số 2 theo một nghĩa nào đó quan trọng 
+
+69
+00:04:35,593 --> 00:04:40,900
+hơn việc giảm giá trị kích hoạt nơ-ron số 8, vốn đã khá gần với mức cần thiết. 
+
 70
-00:04:30,220 --> 00:04:35,402
-Ví dụ, việc tăng cường kích hoạt tế bào thần kinh số 2 theo một nghĩa nào đó quan 
+00:04:42,040 --> 00:04:44,951
+Vì vậy, nhìn sâu hơn nữa, hãy tập trung vào một nơ-ron này, 
 
 71
-00:04:35,402 --> 00:04:40,900
-trọng hơn việc giảm kích hoạt tế bào thần kinh số 8, vốn đã khá gần với mức cần thiết. 
+00:04:44,951 --> 00:04:47,280
+nơ-ron mà chúng ta muốn tăng giá trị kích hoạt. 
 
 72
-00:04:42,040 --> 00:04:45,088
-Vì vậy, hãy phóng to hơn nữa, hãy tập trung vào một nơ-ron này, 
+00:04:48,180 --> 00:04:52,486
+Hãy nhớ rằng, giá trị kích hoạt đó được xác định là tổng có trọng số của 
 
 73
-00:04:45,088 --> 00:04:47,280
-nơ-ron mà chúng ta muốn tăng cường kích hoạt. 
+00:04:52,486 --> 00:04:56,025
+tất cả các giá trị kích hoạt ở lớp trước, cộng với độ lệch, 
 
 74
-00:04:48,180 --> 00:04:52,507
-Hãy nhớ rằng, kích hoạt đó được xác định là tổng có trọng số nhất định 
+00:04:56,025 --> 00:05:01,040
+sau đó tất cả được đưa vào một hàm nào đó như hàm sigmoid squishification hoặc ReLU. 
 
 75
-00:04:52,507 --> 00:04:55,920
-của tất cả các kích hoạt ở lớp trước, cộng với độ lệch, 
+00:05:01,640 --> 00:05:07,020
+Vì vậy, có ba cách khác nhau có thể cùng nhau tăng cường giá trị kích hoạt đó. 
 
 76
-00:04:55,920 --> 00:05:01,040
-sau đó tất cả được cắm vào một cái gì đó như hàm sigmoid squishification hoặc ReLU. 
+00:05:07,440 --> 00:05:10,774
+Bạn có thể tăng độ lệch, có thể tăng trọng số và 
 
 77
-00:05:01,640 --> 00:05:07,020
-Vì vậy, có ba cách khác nhau có thể hợp tác với nhau để giúp tăng cường sự kích hoạt đó. 
+00:05:10,774 --> 00:05:14,040
+có thể thay đổi giá trị kích hoạt từ lớp trước. 
 
 78
-00:05:07,440 --> 00:05:14,040
-Bạn có thể tăng độ lệch, có thể tăng trọng số và có thể thay đổi kích hoạt từ lớp trước. 
+00:05:14,940 --> 00:05:17,383
+Bây giờ hãy tập trung vào cách điều chỉnh trọng số, 
 
 79
-00:05:14,940 --> 00:05:17,744
-Tập trung vào cách điều chỉnh trọng số, chú ý xem các 
+00:05:17,383 --> 00:05:20,860
+chú ý xem các trọng số thực sự có mức độ ảnh hưởng khác nhau như thế nào. 
 
 80
-00:05:17,744 --> 00:05:20,860
-trọng số thực sự có mức độ ảnh hưởng khác nhau như thế nào. 
-
-81
 00:05:21,440 --> 00:05:25,299
 Các kết nối với các nơ-ron sáng nhất từ lớp trước có tác động lớn 
 
-82
+81
 00:05:25,299 --> 00:05:29,100
 nhất vì các trọng số đó được nhân với giá trị kích hoạt lớn hơn. 
 
-83
-00:05:31,460 --> 00:05:34,294
+82
+00:05:31,460 --> 00:05:34,281
 Vì vậy, nếu bạn tăng một trong những trọng số đó, 
 
-84
-00:05:34,294 --> 00:05:38,320
+83
+00:05:34,281 --> 00:05:38,288
 nó thực sự có ảnh hưởng mạnh hơn đến hàm chi phí cuối cùng so với việc 
 
-85
-00:05:38,320 --> 00:05:41,325
+84
+00:05:38,288 --> 00:05:41,279
 tăng trọng số của các kết nối với các nơ-ron mờ hơn, 
 
+85
+00:05:41,279 --> 00:05:43,480
+ít nhất là đối với mẫu huấn luyện này. 
+
 86
-00:05:41,325 --> 00:05:43,480
-ít nhất là đối với ví dụ đào tạo này. 
+00:05:44,420 --> 00:05:47,284
+Hãy nhớ rằng, khi nói về việc giảm gradient, chúng ta không chỉ quan 
 
 87
-00:05:44,420 --> 00:05:47,242
-Hãy nhớ rằng, khi nói về việc giảm độ dốc, chúng tôi không chỉ quan 
-
-88
-00:05:47,242 --> 00:05:49,816
+00:05:47,284 --> 00:05:49,857
 tâm đến việc mỗi thành phần nên được nâng lên hay giảm xuống, 
 
+88
+00:05:49,857 --> 00:05:53,220
+mà chúng ta còn quan tâm đến thành phần nào mang lại cho bạn nhiều lợi ích nhất. 
+
 89
-00:05:49,816 --> 00:05:53,220
-mà chúng tôi còn quan tâm đến thành phần nào mang lại cho bạn nhiều lợi ích nhất. 
+00:05:55,020 --> 00:05:58,915
+Nhân tiện, điều này ít nhất gợi nhớ đến một lý thuyết trong khoa học thần kinh 
 
 90
-00:05:55,020 --> 00:05:58,802
-Nhân tiện, điều này ít nhất gợi nhớ đến một lý thuyết trong khoa học thần kinh về 
+00:05:58,915 --> 00:06:02,367
+về cách mạng lưới sinh học của các nơ-ron học hỏi, lý thuyết Hebbian, 
 
 91
-00:05:58,802 --> 00:06:02,354
-cách mạng lưới sinh học của các tế bào thần kinh học hỏi, lý thuyết Hebbian, 
+00:06:02,367 --> 00:06:06,460
+thường được tóm tắt trong cụm từ, các nơ-ron hoạt động cùng nhau thì nối với nhau. 
 
 92
-00:06:02,354 --> 00:06:06,460
-thường được tóm tắt trong cụm từ, các tế bào thần kinh hoạt động cùng nhau nối với nhau. 
+00:06:07,260 --> 00:06:11,749
+Ở đây, sự tăng lên lớn nhất của trọng số, sự tăng cường lớn nhất của các kết nối, 
 
 93
-00:06:07,260 --> 00:06:11,391
-Ở đây, trọng lượng tăng lên nhiều nhất, sự tăng cường lớn nhất của các kết nối, 
+00:06:11,749 --> 00:06:15,144
+xảy ra giữa các nơ-ron hoạt động mạnh nhất và những tế bào mà 
 
 94
-00:06:11,391 --> 00:06:14,749
-xảy ra giữa các tế bào thần kinh hoạt động mạnh nhất và những tế 
+00:06:15,144 --> 00:06:17,280
+chúng ta mong muốn hoạt động mạnh hơn. 
 
 95
-00:06:14,749 --> 00:06:17,280
-bào mà chúng ta mong muốn trở nên năng động hơn. 
+00:06:17,940 --> 00:06:21,210
+Theo một nghĩa nào đó, các nơ-ron kích hoạt khi nhìn thấy số 2 sẽ có 
 
 96
-00:06:17,940 --> 00:06:21,210
-Theo một nghĩa nào đó, các tế bào thần kinh kích hoạt khi nhìn thấy số 2 sẽ có 
+00:06:21,210 --> 00:06:24,480
+mối liên kết chặt chẽ hơn với những nơ-ron kích hoạt khi nghĩ về nó. 
 
 97
-00:06:21,210 --> 00:06:24,480
-mối liên kết chặt chẽ hơn với những tế bào thần kinh kích hoạt khi nghĩ về nó. 
-
-98
-00:06:25,400 --> 00:06:29,401
+00:06:25,400 --> 00:06:29,247
 Nói rõ hơn, tôi không có đủ tư cách để đưa ra tuyên bố theo cách này hay cách khác 
 
-99
-00:06:29,401 --> 00:06:33,692
+98
+00:06:29,247 --> 00:06:33,372
 về việc liệu mạng lưới nơ-ron nhân tạo có hoạt động giống như bộ não sinh học hay không, 
 
+99
+00:06:33,372 --> 00:06:37,080
+và ý tưởng hoạt động cùng nhau thì nối với nhau đi kèm với một vài dấu hoa thị, 
+
 100
-00:06:33,692 --> 00:06:37,307
-và ý tưởng này kết hợp với nhau đi kèm với một vài dấu hoa thị có ý nghĩa, 
+00:06:37,080 --> 00:06:41,020
+nhưng nếu coi như là một sự so sánh lỏng lẻo, tôi thấy thú vị khi lưu ý về điều này. 
 
 101
-00:06:37,307 --> 00:06:41,020
-nhưng được coi là rất lỏng lẻo. sự tương tự, tôi thấy thật thú vị khi lưu ý. 
+00:06:41,940 --> 00:06:45,385
+Dù sao đi nữa, cách thứ ba chúng ta có thể giúp tăng giá trị kích 
 
 102
-00:06:41,940 --> 00:06:45,542
-Dù sao đi nữa, cách thứ ba chúng ta có thể giúp tăng cường kích hoạt 
+00:06:45,385 --> 00:06:49,040
+hoạt nơ-ron này là thay đổi tất cả các giá trị kích hoạt ở lớp trước. 
 
 103
-00:06:45,542 --> 00:06:49,040
-tế bào thần kinh này là thay đổi tất cả các kích hoạt ở lớp trước. 
+00:06:49,040 --> 00:06:52,858
+Cụ thể, nếu mọi thứ kết nối với nơ-ron số 2 có trọng số dương 
 
 104
-00:06:49,040 --> 00:06:52,837
-Cụ thể, nếu mọi thứ kết nối với nơron số 2 có trọng số dương 
+00:06:52,858 --> 00:06:56,861
+trở nên sáng hơn và nếu mọi thứ kết nối với nơ-ron số 2 có trọng 
 
 105
-00:06:52,837 --> 00:06:56,820
-trở nên sáng hơn và nếu mọi thứ kết nối với nơron số 2 có trọng 
+00:06:56,861 --> 00:07:00,680
+số âm trở nên mờ đi thì nơ-ron số 2 đó sẽ hoạt động mạnh hơn. 
 
 106
-00:06:56,820 --> 00:07:00,680
-số âm trở nên mờ hơn thì nơron số 2 đó sẽ hoạt động mạnh hơn. 
+00:07:02,540 --> 00:07:06,363
+Và tương tự như những thay đổi về trọng số, bạn sẽ thu được lợi ích lớn nhất bằng 
 
 107
-00:07:02,540 --> 00:07:04,655
-Và tương tự như những thay đổi về trọng lượng, 
+00:07:06,363 --> 00:07:10,280
+cách tìm kiếm những thay đổi tỷ lệ thuận với kích thước của các trọng số tương ứng. 
 
 108
-00:07:04,655 --> 00:07:08,615
-bạn sẽ thu được lợi ích lớn nhất bằng cách tìm kiếm những thay đổi tỷ lệ thuận với kích 
+00:07:12,140 --> 00:07:14,847
+Tất nhiên, hiện tại, chúng ta không thể tác động trực tiếp đến những giá 
 
 109
-00:07:08,615 --> 00:07:10,280
-thước của các trọng lượng tương ứng. 
+00:07:14,847 --> 00:07:17,480
+trị kích hoạt đó, chúng ta chỉ có quyền kiểm soát trọng số và độ lệch. 
 
 110
-00:07:12,140 --> 00:07:15,390
-Tất nhiên, hiện tại, chúng tôi không thể tác động trực tiếp đến những kích hoạt đó, 
-
-111
-00:07:15,390 --> 00:07:17,480
-chúng tôi chỉ có quyền kiểm soát trọng số và độ lệch. 
-
-112
 00:07:17,480 --> 00:07:20,766
 Nhưng cũng giống như lớp cuối cùng, việc ghi lại 
 
-113
+111
 00:07:20,766 --> 00:07:24,120
 những thay đổi mong muốn đó là gì sẽ rất hữu ích. 
 
+112
+00:07:24,580 --> 00:07:26,913
+Nhưng hãy nhớ rằng, đi ngược lại một bước ở đây, 
+
+113
+00:07:26,913 --> 00:07:29,200
+đây chỉ là điều mà nơ-ron đầu ra chữ số 2 muốn. 
+
 114
-00:07:24,580 --> 00:07:26,990
-Nhưng hãy nhớ rằng, thu nhỏ một bước ở đây, đây 
+00:07:29,760 --> 00:07:33,022
+Hãy nhớ rằng, chúng ta cũng muốn tất cả các nơ-ron khác ở lớp 
 
 115
-00:07:26,990 --> 00:07:29,200
-chỉ là điều mà nơ-ron đầu ra chữ số 2 muốn. 
+00:07:33,022 --> 00:07:36,232
+cuối cùng trở nên ít hoạt động hơn và mỗi nơ-ron đầu ra khác 
 
 116
-00:07:29,760 --> 00:07:33,056
-Hãy nhớ rằng, chúng ta cũng muốn tất cả các nơ-ron khác ở lớp cuối 
+00:07:36,232 --> 00:07:39,600
+đó có suy nghĩ riêng về điều gì nên xảy ra với lớp gần cuối đó. 
 
 117
-00:07:33,056 --> 00:07:36,303
-cùng trở nên ít hoạt động hơn và mỗi nơ-ron đầu ra khác đó có suy 
+00:07:42,700 --> 00:07:48,730
+Vì vậy, mong muốn của nơ-ron chữ số 2 này được cộng thêm cùng với mong muốn của tất 
 
 118
-00:07:36,303 --> 00:07:39,600
-nghĩ riêng về điều gì sẽ xảy ra với lớp thứ hai đến lớp cuối cùng. 
+00:07:48,730 --> 00:07:53,756
+cả các nơ-ron đầu ra khác về điều gì nên xảy ra đến lớp gần cuối này, 
 
 119
-00:07:42,700 --> 00:07:48,683
-Vì vậy, mong muốn của nơ-ron chữ số 2 này được cộng thêm cùng với mong muốn của tất cả 
+00:07:53,756 --> 00:07:59,571
+một lần nữa theo tỷ lệ với trọng số tương ứng và tỷ lệ với mỗi nơ-ron đó cần bao 
 
 120
-00:07:48,683 --> 00:07:54,048
-các nơ-ron đầu ra khác về điều gì sẽ xảy ra từ lớp thứ hai đến lớp cuối cùng, 
+00:07:59,571 --> 00:08:00,720
+nhiêu thay đổi. 
 
 121
-00:07:54,048 --> 00:08:00,032
-một lần nữa theo tỷ lệ với trọng số tương ứng và tỷ lệ với mỗi nơ-ron đó cần bao nhiêu 
+00:08:01,600 --> 00:08:05,480
+Đây chính là nơi mà ý tưởng lan truyền ngược xuất hiện. 
 
 122
-00:08:00,032 --> 00:08:00,720
-thay đổi. 
+00:08:05,820 --> 00:08:08,930
+Bằng cách kết hợp tất cả các hiệu ứng mong muốn này lại với nhau, 
 
 123
-00:08:01,600 --> 00:08:05,480
-Đây chính là nơi mà ý tưởng truyền bá ngược xuất hiện. 
+00:08:08,930 --> 00:08:12,700
+về cơ bản bạn sẽ có được một danh sách các thay đổi mà bạn muốn thực hiện ở lớp 
 
 124
-00:08:05,820 --> 00:08:08,630
-Bằng cách cộng tất cả các hiệu ứng mong muốn này lại với nhau, 
+00:08:12,700 --> 00:08:13,360
+gần cuối này. 
 
 125
-00:08:08,630 --> 00:08:12,333
-về cơ bản bạn sẽ có được một danh sách các cú hích mà bạn muốn thực hiện ở lớp thứ 
+00:08:14,220 --> 00:08:17,846
+Và khi bạn đã có những thứ đó, bạn có thể áp dụng quy trình tương tự cho 
 
 126
-00:08:12,333 --> 00:08:13,360
-hai đến lớp cuối cùng. 
+00:08:17,846 --> 00:08:21,075
+các trọng số và độ lệch có liên quan để xác định các giá trị đó, 
 
 127
-00:08:14,220 --> 00:08:17,878
-Và khi bạn đã có những thứ đó, bạn có thể áp dụng đệ quy quy trình tương tự 
-
-128
-00:08:17,878 --> 00:08:21,200
-cho các trọng số và độ lệch có liên quan để xác định các giá trị đó, 
-
-129
-00:08:21,200 --> 00:08:25,100
+00:08:21,075 --> 00:08:25,100
 lặp lại quy trình tương tự mà tôi vừa thực hiện và di chuyển ngược lại qua mạng. 
 
+128
+00:08:28,960 --> 00:08:32,947
+Và thu nhỏ hơn một chút, hãy nhớ rằng đây chỉ là cách một mẫu 
+
+129
+00:08:32,947 --> 00:08:37,000
+huấn luyện duy nhất muốn thay đổi từng trọng số và độ lệch đó. 
+
 130
-00:08:28,960 --> 00:08:33,011
-Và thu nhỏ hơn một chút, hãy nhớ rằng đây chỉ là cách một ví dụ 
+00:08:37,480 --> 00:08:40,416
+Nếu chúng ta chỉ xem xét những gì số 2 đó muốn thì cuối cùng mạng 
 
 131
-00:08:33,011 --> 00:08:37,000
-đào tạo duy nhất muốn thúc đẩy từng trọng số và thành kiến đó. 
+00:08:40,416 --> 00:08:43,220
+sẽ được khuyến khích chỉ phân loại tất cả hình ảnh thành số 2. 
 
 132
-00:08:37,480 --> 00:08:40,242
-Nếu chúng ta chỉ lắng nghe những gì thứ 2 đó muốn thì cuối cùng 
+00:08:44,059 --> 00:08:49,406
+Vì vậy, những gì bạn làm là thực hiện quy trình tương tự này cho mọi mẫu huấn luyện khác, 
 
 133
-00:08:40,242 --> 00:08:43,220
-mạng sẽ được khuyến khích chỉ phân loại tất cả hình ảnh thành thứ 2. 
+00:08:49,406 --> 00:08:52,732
+ghi lại cách mỗi mẫu muốn thay đổi trọng số và độ lệch, 
 
 134
-00:08:44,059 --> 00:08:47,944
-Vì vậy, những gì bạn làm là thực hiện quy trình hỗ trợ tương tự này 
-
-135
-00:08:47,944 --> 00:08:52,857
-cho mọi ví dụ đào tạo khác, ghi lại cách mỗi ví dụ muốn thay đổi trọng số và độ lệch, 
-
-136
-00:08:52,857 --> 00:08:56,000
+00:08:52,732 --> 00:08:56,000
 đồng thời tính trung bình những thay đổi mong muốn đó. 
 
+135
+00:09:01,720 --> 00:09:06,074
+Bộ sưu tập gồm các mức tăng trung bình cho từng trọng số và độ lệch ở đây, 
+
+136
+00:09:06,074 --> 00:09:09,964
+nói một cách lỏng lẻo, là gradient âm của hàm chi phí được nói đến 
+
 137
-00:09:01,720 --> 00:09:06,053
-Bộ sưu tập ở đây gồm các mức tăng trung bình cho từng trọng số và độ lệch, 
-
-138
-00:09:06,053 --> 00:09:09,982
-nói một cách lỏng lẻo, là độ dốc âm của hàm chi phí được tham chiếu 
-
-139
-00:09:09,982 --> 00:09:13,680
+00:09:09,964 --> 00:09:13,680
 trong video trước hoặc ít nhất là thứ gì đó tỷ lệ thuận với nó. 
 
-140
-00:09:14,380 --> 00:09:18,535
+138
+00:09:14,380 --> 00:09:18,484
 Tôi nói một cách lỏng lẻo chỉ vì tôi vẫn chưa hiểu chính xác về mặt định lượng về 
 
-141
-00:09:18,535 --> 00:09:22,031
-những cú hích đó, nhưng nếu bạn hiểu mọi thay đổi mà tôi vừa đề cập, 
+139
+00:09:18,484 --> 00:09:21,989
+những thay đổi đó, nhưng nếu bạn hiểu mọi thay đổi mà tôi vừa đề cập, 
 
-142
-00:09:22,031 --> 00:09:26,186
+140
+00:09:21,989 --> 00:09:26,094
 tại sao một số thay đổi lại lớn hơn những thay đổi khác theo tỷ lệ và cách tất cả 
 
+141
+00:09:26,094 --> 00:09:30,199
+chúng cần được kết hợp lại với nhau, bạn sẽ hiểu cơ chế của lan truyền ngược thực 
+
+142
+00:09:30,199 --> 00:09:31,000
+sự đang làm gì. 
+
 143
-00:09:26,186 --> 00:09:30,341
-chúng cần được cộng lại với nhau, bạn sẽ hiểu cơ chế của lan truyền ngược thực sự 
-
-144
-00:09:30,341 --> 00:09:31,000
-đang làm gì. 
-
-145
 00:09:33,960 --> 00:09:38,258
 Nhân tiện, trên thực tế, máy tính phải mất một thời gian rất dài để cộng 
 
-146
+144
 00:09:38,258 --> 00:09:42,440
-dồn mức độ ảnh hưởng của từng ví dụ huấn luyện ở mỗi bước giảm độ dốc. 
+dồn mức độ ảnh hưởng của từng mẫu huấn luyện ở mỗi bước giảm gradient. 
 
-147
+145
 00:09:43,140 --> 00:09:44,820
-Vì vậy, đây là những gì thường được thực hiện thay thế. 
+Vì vậy, đây là những gì thường được lảm thay vào đó. 
 
-148
+146
 00:09:45,480 --> 00:09:50,258
 Bạn xáo trộn ngẫu nhiên dữ liệu huấn luyện của mình và chia nó thành nhiều đợt nhỏ, 
 
-149
+147
 00:09:50,258 --> 00:09:52,420
 giả sử mỗi đợt có 100 mẫu huấn luyện. 
 
-150
+148
 00:09:52,939 --> 00:09:57,280
 Sau đó, bạn tính toán một bước theo lô nhỏ. 
 
+149
+00:09:57,280 --> 00:09:59,794
+Đó không phải là gradient thực tế của hàm chi phí, 
+
+150
+00:09:59,794 --> 00:10:03,541
+nó phụ thuộc vào tất cả dữ liệu huấn luyện, không phải tập hợp con nhỏ này, 
+
 151
-00:09:57,280 --> 00:10:01,673
-Đó không phải là độ dốc thực tế của hàm chi phí, phụ thuộc vào tất cả dữ liệu huấn luyện, 
+00:10:03,541 --> 00:10:06,253
+vì vậy đây không phải là bước xuống dốc hiệu quả nhất, 
 
 152
-00:10:01,673 --> 00:10:05,920
-không phải tập hợp con nhỏ này, vì vậy đây không phải là bước xuống dốc hiệu quả nhất, 
+00:10:06,253 --> 00:10:09,950
+nhưng mỗi lô nhỏ sẽ đưa ra cho bạn một ước lượng khá tốt và quan trọng hơn 
 
 153
-00:10:05,920 --> 00:10:09,679
-nhưng mỗi lô nhỏ sẽ cung cấp cho bạn một xấp xỉ khá tốt và quan trọng hơn là 
+00:10:09,950 --> 00:10:12,120
+là nó cho bạn một tốc độ tính toán đáng kể. 
 
 154
-00:10:09,679 --> 00:10:12,120
-nó cung cấp cho bạn một tốc độ tính toán đáng kể. 
+00:10:12,820 --> 00:10:15,990
+Nếu bạn lập biểu đồ quỹ đạo của mạng trên bề mặt của hàm chi phí, 
 
 155
-00:10:12,820 --> 00:10:16,122
-Nếu bạn lập biểu đồ quỹ đạo của mạng theo bề mặt chi phí liên quan, 
+00:10:15,990 --> 00:10:19,352
+thì nó sẽ giống một người đàn ông say rượu ngã không định hướng xuống 
 
 156
-00:10:16,122 --> 00:10:20,251
-thì nó sẽ giống một người đàn ông say rượu vấp ngã không mục đích xuống một ngọn đồi 
+00:10:19,352 --> 00:10:22,282
+một ngọn đồi nhưng thực hiện được những bước đi nhanh chóng, 
 
 157
-00:10:20,251 --> 00:10:24,477
-nhưng thực hiện những bước đi nhanh chóng, hơn là một người đàn ông tính toán cẩn thận 
+00:10:22,282 --> 00:10:25,740
+hơn là một người đàn ông tính toán cẩn thận để xác định hướng xuống dốc 
 
 158
-00:10:24,477 --> 00:10:28,848
-xác định hướng xuống dốc chính xác của mỗi bước trước khi thực hiện bước đi thật chậm rãi 
+00:10:25,740 --> 00:10:29,199
+chính xác của mỗi bước trước khi thực hiện bước đi thật chậm rãi và cẩn 
 
 159
-00:10:28,848 --> 00:10:30,160
-và cẩn thận theo hướng đó. 
+00:10:29,199 --> 00:10:30,160
+thận theo hướng đó. 
 
 160
 00:10:31,540 --> 00:10:34,660
-Kỹ thuật này được gọi là giảm độ dốc ngẫu nhiên. 
+Kỹ thuật này được gọi là giảm gradient ngẫu nhiên. 
 
 161
 00:10:35,960 --> 00:10:39,620
-Có rất nhiều điều đang diễn ra ở đây, vì vậy chúng ta hãy tự tổng hợp lại nhé? 
+Có rất nhiều điều đang diễn ra ở đây, vì vậy chúng ta hãy tổng hợp lại nhé? 
 
 162
-00:10:40,440 --> 00:10:45,437
-Lan truyền ngược là thuật toán để xác định cách một ví dụ huấn luyện muốn điều 
+00:10:40,440 --> 00:10:45,352
+Lan truyền ngược là thuật toán để xác định cách một mẫu huấn luyện muốn điều 
 
 163
-00:10:45,437 --> 00:10:50,435
-chỉnh trọng số và độ lệch, không chỉ về việc chúng nên tăng hay giảm mà còn về 
+00:10:45,352 --> 00:10:50,392
+chỉnh trọng số và độ lệch, không chỉ về việc chúng nên tăng hay giảm mà còn là 
 
 164
-00:10:50,435 --> 00:10:55,560
-tỷ lệ tương đối với những thay đổi đó gây ra sự giảm nhanh nhất đối với trị giá. 
+00:10:50,392 --> 00:10:55,560
+tỷ lệ tương đối của những thay đổi đó gây ra sự giảm nhanh nhất đối với chi phí. 
 
 165
-00:10:56,260 --> 00:11:00,531
-Bước giảm độ dốc thực sự sẽ liên quan đến việc thực hiện việc này cho tất cả hàng 
+00:10:56,260 --> 00:11:00,595
+Bước giảm gradient thực sự sẽ liên quan đến việc thực hiện việc này cho tất cả hàng 
 
 166
-00:11:00,531 --> 00:11:04,802
-chục nghìn ví dụ đào tạo của bạn và tính trung bình các thay đổi mong muốn mà bạn 
+00:11:00,595 --> 00:11:04,879
+chục nghìn mẫu huấn luyện của bạn và tính trung bình các thay đổi mong muốn mà bạn 
 
 167
-00:11:04,802 --> 00:11:08,343
+00:11:04,879 --> 00:11:08,388
 nhận được, nhưng việc đó chậm về mặt tính toán, vì vậy thay vào đó, 
 
 168
-00:11:08,343 --> 00:11:12,614
+00:11:08,388 --> 00:11:12,620
 bạn chia ngẫu nhiên dữ liệu thành các lô nhỏ và tính toán từng bước tương ứng với 
 
 169
-00:11:12,614 --> 00:11:13,240
+00:11:12,620 --> 00:11:13,240
 một lô nhỏ. 
 
 170
-00:11:14,000 --> 00:11:18,433
-Liên tục thực hiện tất cả các đợt nhỏ và thực hiện những điều chỉnh này, 
+00:11:14,000 --> 00:11:18,154
+Liên tục thực hiện tất cả các đợt nhỏ và những điều chỉnh này, 
 
 171
-00:11:18,433 --> 00:11:21,774
-bạn sẽ hội tụ về mức tối thiểu cục bộ của hàm chi phí, 
+00:11:18,154 --> 00:11:21,385
+bạn sẽ đạt được cực tiểu cục bộ của hàm chi phí, 
 
 172
-00:11:21,774 --> 00:11:25,540
-nghĩa là mạng của bạn sẽ thực hiện rất tốt các ví dụ đào tạo. 
+00:11:21,385 --> 00:11:25,540
+nghĩa là mạng của bạn sẽ thực hiện rất tốt các mẫu huấn luyện. 
 
 173
-00:11:27,240 --> 00:11:31,922
-Vì vậy, với tất cả những gì đã nói, mọi dòng mã dùng để triển khai backprop thực 
+00:11:27,240 --> 00:11:31,869
+Vì vậy, với tất cả những gì đã nói, mọi dòng mã dùng để triển khai lan truyền ngược 
 
 174
-00:11:31,922 --> 00:11:36,720
-sự tương ứng với những gì bạn đã thấy, ít nhất là theo thuật ngữ không chính thức. 
+00:11:31,869 --> 00:11:36,720
+thực sự tương ứng với những gì bạn đã thấy, ít nhất là theo thuật ngữ không chính thức. 
 
 175
-00:11:37,560 --> 00:11:40,549
-Nhưng đôi khi biết những gì toán học làm mới chỉ là một nửa trận chiến, 
+00:11:37,560 --> 00:11:40,667
+Nhưng đôi khi biết những gì toán học đằng sau làm mới chỉ là một nửa trận chiến, 
 
 176
-00:11:40,549 --> 00:11:44,120
-và chỉ việc trình bày cái thứ chết tiệt đó là mọi thứ sẽ trở nên lộn xộn và khó hiểu. 
+00:11:40,667 --> 00:11:44,120
+và chỉ việc trình bày cái thứ chết tiệt đó là lúc mọi thứ sẽ trở nên lộn xộn và khó hiểu. 
 
 177
-00:11:44,860 --> 00:11:47,097
+00:11:44,860 --> 00:11:47,143
 Vì vậy, đối với những ai muốn tìm hiểu sâu hơn, 
 
 178
-00:11:47,097 --> 00:11:50,733
+00:11:47,143 --> 00:11:50,854
 video tiếp theo sẽ trình bày những ý tưởng tương tự vừa được trình bày ở đây, 
 
 179
-00:11:50,733 --> 00:11:54,508
-nhưng về mặt phép tính cơ bản, hy vọng sẽ làm cho nó quen thuộc hơn một chút khi 
+00:11:50,854 --> 00:11:54,659
+nhưng bằng các phép tính, hy vọng sẽ làm cho nó quen thuộc hơn một chút khi bạn 
 
 180
-00:11:54,508 --> 00:11:56,420
-bạn xem chủ đề trong các nguồn lực khác. 
+00:11:54,659 --> 00:11:56,420
+xem chủ đề này trong các nguồn khác. 
 
 181
 00:11:57,340 --> 00:12:01,497
@@ -724,29 +724,29 @@ Trước đó, một điều đáng nhấn mạnh là để thuật toán này h
 
 182
 00:12:01,497 --> 00:12:05,900
-cho tất cả các loại máy học ngoài mạng lưới thần kinh, bạn cần rất nhiều dữ liệu đào tạo. 
+cho tất cả các loại học máy ngoài mạng lưới thần kinh, bạn cần rất nhiều dữ liệu đào tạo. 
 
 183
-00:12:06,420 --> 00:12:10,507
-Trong trường hợp của chúng tôi, một điều khiến các chữ số viết tay trở thành một ví 
+00:12:06,420 --> 00:12:10,506
+Trong trường hợp của chúng ta, một điều khiến các chữ số viết tay trở thành một ví 
 
 184
-00:12:10,507 --> 00:12:14,740
-dụ hay là tồn tại cơ sở dữ liệu MNIST, với rất nhiều ví dụ đã được con người gắn nhãn. 
+00:12:10,506 --> 00:12:14,740
+dụ hay là tồn tại cơ sở dữ liệu MNIST, với rất nhiều mẫu đã được con người phân loại. 
 
 185
-00:12:15,300 --> 00:12:18,186
-Vì vậy, một thách thức chung mà những người làm việc trong lĩnh vực 
+00:12:15,300 --> 00:12:18,229
+Vì vậy, một thách thức chung mà những người làm việc trong lĩnh vực học 
 
 186
-00:12:18,186 --> 00:12:21,666
-học máy sẽ quen thuộc là lấy dữ liệu huấn luyện được gắn nhãn mà bạn thực sự cần, 
+00:12:18,229 --> 00:12:21,769
+máy sẽ quen thuộc là lấy dữ liệu huấn luyện được đã được phân loại mà bạn thực sự cần, 
 
 187
-00:12:21,666 --> 00:12:24,595
-cho dù đó là yêu cầu mọi người gắn nhãn cho hàng chục nghìn hình ảnh 
+00:12:21,769 --> 00:12:24,699
+cho dù đó là yêu cầu nhiều người phân loại cho hàng chục nghìn hình ảnh 
 
 188
-00:12:24,595 --> 00:12:27,100
+00:12:24,699 --> 00:12:27,100
 hay bất kỳ loại dữ liệu nào khác mà bạn có thể đang xử lý. 
 
