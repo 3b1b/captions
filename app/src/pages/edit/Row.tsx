@@ -108,7 +108,7 @@ function Row({ index, entries }: Props) {
           <span>{edited ? 1 : reviews + Number(upvoted)}</span>
         </button>
 
-        {(start && end) && (
+        {start && end && (
           <button
             className={classes.action}
             onClick={() => {

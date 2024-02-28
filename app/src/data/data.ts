@@ -27,7 +27,7 @@ export function convert(entry: _Entry): Entry {
     currentOriginal: entry.input,
     startingTranslation: entry.translatedText,
     currentTranslation: entry.translatedText,
-    model: entry.model || null,
+    model: entry.model || undefined,
     legacyTranslation: entry.from_community_srt,
     reviews: entry.n_reviews || 0,
     upvoted: false,
@@ -41,8 +41,10 @@ export function revert(entry: Entry): _Entry {
   return {
     input: entry.currentOriginal,
     translatedText: entry.currentTranslation,
-    ...(entry.model ? { model: entry.model } : {}),
-    ...(entry.legacyTranslation ? { from_community_srt: entry.legacyTranslation } : {}),
+    ...(entry.model && { model: entry.model }),
+    ...(entry.legacyTranslation && {
+      from_community_srt: entry.legacyTranslation,
+    }),
     n_reviews: isEdited(entry) ? 1 : entry.reviews + Number(entry.upvoted),
     start: entry.start,
     end: entry.end,
@@ -68,7 +70,11 @@ export function charsPerSec(language: string) {
 }
 
 /** Estimate how many characters would cause an overflow of narration time */
-export function maxCharsAllowed(language: string, start: number, end: number): number {
+export function maxCharsAllowed(
+  language: string,
+  start: number,
+  end: number,
+): number {
   const mult_const: number = 1.05;
   const time_buff: number = 1.0;
   return mult_const * (charsPerSec(language) * (end - start + time_buff));
@@ -76,16 +82,13 @@ export function maxCharsAllowed(language: string, start: number, end: number): n
 
 /** get max length for entry translation text */
 export function translationMax(
-  { startingTranslation, startingOriginal, start, end }: Entry,
+  { startingTranslation, start, end }: Entry,
   language: string,
 ) {
   /** for entries with time range, i.e. captions */
   if (start && end) return maxCharsAllowed(language, start, end);
   /** for entries without a time range, i.e. title and description */ else
-    return (
-      startingTranslation.length * 1.5 ||
-      Infinity
-    );
+    return startingTranslation.length * 1.5 || Infinity;
 }
 
 /** get max length for entry original text */

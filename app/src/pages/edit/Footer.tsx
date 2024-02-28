@@ -102,16 +102,11 @@ function Footer() {
           onChange={setAuthor}
           placeholder="@github-user or name"
           data-tooltip="So we can tag you on GitHub and/or attribute these edits to you"
+          required={true}
+          form="submit-edits"
         />
 
         <Button
-          onClick={async () => {
-            setSubmitting(true);
-            const pr = await submitPr(lesson, language, author || "");
-            setSubmitting(false);
-            if (pr && window.confirm(successMessage(pr.link)))
-              window.location.href = pr.link;
-          }}
           disabled={edits === 0 || submitting}
           text={
             submitting
@@ -119,7 +114,20 @@ function Footer() {
               : `Submit ${edits.toLocaleString()} Edit(s)`
           }
           icon={submitting ? <ImSpinner8 className="spin" /> : <FaPaperPlane />}
+          type="submit"
+          form="submit-edits"
           data-tooltip="Submit your edits to be reviewed. Opens a public pull request on GitHub."
+        />
+
+        <form
+          id="submit-edits"
+          onSubmit={async () => {
+            setSubmitting(true);
+            const pr = await submitPr(lesson, language, author || "");
+            setSubmitting(false);
+            if (pr && window.confirm(successMessage(pr.link)))
+              window.location.href = pr.link;
+          }}
         />
       </div>
     </footer>

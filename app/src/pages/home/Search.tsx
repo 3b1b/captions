@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { useAtom } from "jotai";
-import { sortBy, startCase } from "lodash";
+import { startCase } from "lodash";
 import Badge from "@/components/Badge";
 import Input from "@/components/Input";
 import { flatLessons } from "@/data/data";
