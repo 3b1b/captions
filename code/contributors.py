@@ -11,7 +11,6 @@ for path in paths:
                         "shortlog", "--summary", "--numbered", "--", folder],
                        capture_output=True, check=True, shell=False)
         text = proc.stdout.decode("utf-8")
-        print(folder)
         contributors = []
         for line in text.split('\n'):
             fields = line.split('\t')
@@ -19,5 +18,4 @@ for path in paths:
                 contributors.append(fields[1])
         file = folder / "contributors.json"
         contribs_string = json.dumps({'contributors': contributors})
-        print(contribs_string)
         file.write_text(contribs_string)
