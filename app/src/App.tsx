@@ -32,7 +32,7 @@ export default App;
 export const loading = atom(0);
 
 /** route layout */
-const Layout = () => {
+function Layout() {
   const { state } = useNavigation();
   const getLoading = useAtomValue(loading);
 
@@ -49,7 +49,7 @@ const Layout = () => {
       </QueryParamProvider>
     </IconContext.Provider>
   );
-};
+}
 
 /** route definitions */
 const routes: RouteObject[] = [
