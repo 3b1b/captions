@@ -174,7 +174,7 @@ export async function submitPr(
   /** make request */
   const pr = await createPr({
     branch: `${lesson}-${language}`,
-    title: `Edit "${lesson} (${language})"`,
+    title: `Edit "${lesson} (${language})" by ${author}`,
     body: [`Author: ${author}`].join("\n"),
     files: [
       {
