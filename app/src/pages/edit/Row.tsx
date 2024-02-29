@@ -96,7 +96,7 @@ function Row({ index, entries }: Props) {
   return (
     <div
       ref={ref}
-      className={classNames(classes.row, (edited || upvoted) && classes.edited)}
+      className={classNames(classes.row, (edited || upvoted || reviews > 0) && classes.edited)}
     >
       {/* actions */}
       <div className={classes.actions}>
