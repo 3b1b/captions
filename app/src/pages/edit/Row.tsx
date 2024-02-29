@@ -7,6 +7,7 @@ import {
   FaStop,
   FaThumbsUp,
 } from "react-icons/fa6";
+import { FaExclamationTriangle } from 'react-icons/fa';
 import { Link, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { useAtom, useAtomValue } from "jotai";
@@ -108,30 +109,39 @@ function Row({ index, entries }: Props) {
           <span>{edited ? 1 : reviews + Number(upvoted)}</span>
         </button>
 
-        {start && end && (
-          <button
-            className={classes.action}
-            onClick={() => {
-              const header = document.querySelector("header")!;
+        <div className={classes.playWarningWrapper}>
+          {translationWarning && (
+            <FaExclamationTriangle 
+              className={classes.warningTriangle}
+              data-tooltip="This translation may be too long to fit in the time slot"
+            />
+          )}
 
-              if (getPlaying) {
-                stopVideo();
-                header.style.height = "";
-              } else {
-                // Add a little breathing room at the end
-                playSegment(start, end + 0.5);
+          {start && end && (
+            <button
+              className={classes.action}
+              onClick={() => {
+                const header = document.querySelector("header")!;
 
-                /** expand header */
-                const expand = innerHeight / 3;
-                if (parseFloat(window.getComputedStyle(header).height) < expand)
-                  header.style.height = expand + "px";
-              }
-            }}
-            data-tooltip={`Play video at this timestamp<br/>(${formatTime(start)} - ${formatTime(end)})`}
-          >
-            {getPlaying ? <FaStop /> : <FaPlay />}
-          </button>
-        )}
+                if (getPlaying) {
+                  stopVideo();
+                  header.style.height = "";
+                } else {
+                  // Add a little breathing room at the end
+                  playSegment(start, end + 0.5);
+
+                  /** expand header */
+                  const expand = innerHeight / 3;
+                  if (parseFloat(window.getComputedStyle(header).height) < expand)
+                    header.style.height = expand + "px";
+                }
+              }}
+              data-tooltip={`Play video at this timestamp<br/>(${formatTime(start)} - ${formatTime(end)})`}
+            >
+              {getPlaying ? <FaStop /> : <FaPlay />}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* translation edit textbox */}
@@ -142,11 +152,7 @@ function Row({ index, entries }: Props) {
         )}
         value={currentTranslation}
         onChange={(value) => setEntry({ currentTranslation: value })}
-        data-tooltip={
-          translationWarning
-            ? "This translation is starting to become too long to fit in the time slot"
-            : "Edit translated text"
-        }
+        data-tooltip={"Edit translated text"}
       />
 
       {/* original english textbox */}
@@ -157,11 +163,7 @@ function Row({ index, entries }: Props) {
         )}
         value={entry.currentOriginal}
         onChange={(value) => setEntry({ currentOriginal: value })}
-        data-tooltip={
-          translationWarning
-            ? "This text is starting to become too long to fit in the time slot"
-            : "Original English text. If you see a significant problem, click to edit."
-        }
+        data-tooltip={"Original English text. If you see a significant problem, click to edit."}
       />
 
       {/* secondary actions */}
