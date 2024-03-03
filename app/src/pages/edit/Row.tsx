@@ -84,6 +84,10 @@ function Row({ index, entries }: Props) {
     currentTranslation.length >= translationMax(entry, language);
   const originalWarning = currentOriginal.length >= originalMax(entry);
 
+  /** right to left languages need special styling, and the "legacy translation" label needs to be translated for them */
+  const rtlLanguage = ["arabic", "hebrew", "persian", "urdu"].includes(language);
+  const legacyLabel = rtlLanguage ? { "hebrew": "תרגום עבר", "arabic": "الترجمة القديمة", "persian": "ترجمه قدیمی", "urdu": "پرانا ترجمہ" }[language] : "Legacy translation";
+
   /** issue url params */
   const issueTitle = `${lesson}/${language}`;
   const issueBody = [
@@ -148,6 +152,7 @@ function Row({ index, entries }: Props) {
       <Textarea
         className={classNames(
           classes.edit,
+          rtlLanguage && classes.rtl,
           translationWarning && classes.warning,
         )}
         value={currentTranslation}
@@ -192,8 +197,11 @@ function Row({ index, entries }: Props) {
 
       {/* legacy translation */}
       {legacyTranslation && getShowLegacy && getCompletion < 1 && (
-        <div className={classes.legacy}>
-          <strong>Legacy translation</strong>: {legacyTranslation}
+          <div className={classNames(
+              classes.legacy,
+              rtlLanguage && classes.rtl,
+          )}>
+          <strong>{legacyLabel}</strong>: {legacyTranslation}
         </div>
       )}
     </div>
