@@ -157,9 +157,9 @@ function Row({ index, entries }: Props) {
       <Textarea
         className={classNames(
           classes.edit,
-          rtlLanguage && "rtl",
           translationWarning && classes.warning,
         )}
+        dir={rtlLanguage ? "rtl" : "ltr"}
         value={currentTranslation}
         onChange={(value) => setEntry({ currentTranslation: value })}
         data-tooltip={"Edit translated text"}
@@ -206,9 +206,7 @@ function Row({ index, entries }: Props) {
       {legacyTranslation && getShowLegacy && getCompletion < 1 && (
         <div className={classes.legacy}>
           <strong>Legacy Translation</strong>
-          <span className={classNames(rtlLanguage && "rtl")}>
-            {legacyTranslation}
-          </span>
+          <span dir={rtlLanguage ? "rtl" : "ltr"}>{legacyTranslation}</span>
         </div>
       )}
     </div>
