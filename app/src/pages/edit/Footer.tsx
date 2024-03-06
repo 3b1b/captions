@@ -86,7 +86,7 @@ function Footer() {
               label="Show legacy translations"
               value={getShowLegacy}
               onChange={setShowLegacy}
-              data-tooltip="Show community contributed translations from back when YouTube had that feature built-in. For reference or copy/pasting.<br/><br/><b>Note:</b> The way they are split is different and they may apply to one or more adjacent entries."
+              data-tooltip={legacyTooltip}
             />
           )}
       </div>
@@ -139,3 +139,6 @@ function Footer() {
 }
 
 export default Footer;
+
+export const legacyTooltip =
+  "Community contributed translations from back when YouTube had that feature built-in. For reference or copy/pasting.<br/><br/><b>Note:</b> The way they are split is different and they may apply to one or more adjacent entries.";

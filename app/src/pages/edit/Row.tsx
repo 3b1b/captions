@@ -24,6 +24,7 @@ import {
   showLegacy,
   title,
 } from "@/pages/Edit";
+import { legacyTooltip } from "@/pages/edit/Footer";
 import { glow, scrollIntoView } from "@/util/dom";
 import { isRtl } from "@/util/language";
 import { formatTime } from "@/util/string";
@@ -205,7 +206,9 @@ function Row({ index, entries }: Props) {
       {/* legacy translation */}
       {legacyTranslation && getShowLegacy && getCompletion < 1 && (
         <>
-          <strong className={classes.legacyLabel}>Legacy:</strong>
+          <strong className={classes.legacyLabel} data-tooltip={legacyTooltip}>
+            Legacy:
+          </strong>
           <span
             className={classes.legacyText}
             dir={rtlLanguage ? "rtl" : "ltr"}
