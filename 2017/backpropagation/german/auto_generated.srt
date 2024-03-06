@@ -1,0 +1,808 @@
+1
+00:00:04,059 --> 00:00:06,302
+Hier befassen wir uns mit Backpropagation, dem 
+
+2
+00:00:06,302 --> 00:00:08,880
+zentralen Algorithmus für das Lernen neuronaler Netze.
+
+3
+00:00:09,400 --> 00:00:12,011
+Nach einer kurzen Zusammenfassung, wo wir uns befinden, 
+
+4
+00:00:12,011 --> 00:00:15,507
+werde ich zunächst intuitiv erklären, was der Algorithmus tatsächlich tut, 
+
+5
+00:00:15,507 --> 00:00:17,000
+ohne auf die Formeln einzugehen.
+
+6
+00:00:17,660 --> 00:00:20,173
+Für diejenigen unter euch, die in die Mathematik eintauchen wollen, 
+
+7
+00:00:20,173 --> 00:00:23,020
+geht das nächste Video auf die Berechnungen ein, die all dem zugrunde liegen.
+
+8
+00:00:23,820 --> 00:00:26,226
+Wenn du die letzten beiden Videos gesehen hast oder gerade mit 
+
+9
+00:00:26,226 --> 00:00:28,479
+dem entsprechenden Hintergrundwissen einsteigst, weißt du, 
+
+10
+00:00:28,479 --> 00:00:31,000
+was ein neuronales Netz ist und wie es Informationen weiterleitet.
+
+11
+00:00:31,680 --> 00:00:35,720
+Hier machen wir das klassische Beispiel der Erkennung handgeschriebener Ziffern, 
+
+12
+00:00:35,720 --> 00:00:40,010
+deren Pixelwerte in die erste Schicht des Netzes mit 784 Neuronen eingespeist werden. 
+
+13
+00:00:40,010 --> 00:00:44,350
+Ich habe ein Netz mit zwei versteckten Schichten mit jeweils nur 16 Neuronen und einer 
+
+14
+00:00:44,350 --> 00:00:46,994
+Ausgabeschicht mit 10 Neuronen gezeigt, die anzeigt, 
+
+15
+00:00:46,994 --> 00:00:49,040
+welche Ziffer das Netz als Antwort wählt.
+
+16
+00:00:50,040 --> 00:00:52,821
+Ich erwarte auch, dass du den Gradientenabstieg verstehst, 
+
+17
+00:00:52,821 --> 00:00:56,357
+wie er im letzten Video beschrieben wurde, und dass wir mit Lernen meinen, 
+
+18
+00:00:56,357 --> 00:01:00,034
+dass wir herausfinden wollen, welche Gewichte und Verzerrungen eine bestimmte 
+
+19
+00:01:00,034 --> 00:01:01,260
+Kostenfunktion minimieren.
+
+20
+00:01:02,040 --> 00:01:06,952
+Zur Erinnerung: Für die Kosten eines einzigen Trainingsbeispiels nimmst du die Ausgabe, 
+
+21
+00:01:06,952 --> 00:01:10,301
+die das Netz liefert, und die Ausgabe, die es liefern soll, 
+
+22
+00:01:10,301 --> 00:01:14,600
+und addierst die Quadrate der Differenzen zwischen den einzelnen Komponenten.
+
+23
+00:01:15,380 --> 00:01:18,814
+Wenn du das für alle deine zehntausend Trainingsbeispiele machst und 
+
+24
+00:01:18,814 --> 00:01:22,200
+die Ergebnisse mittelst, erhältst du die Gesamtkosten des Netzwerks.
+
+25
+00:01:22,200 --> 00:01:27,160
+Und als ob das noch nicht genug wäre, suchen wir, wie im letzten Video beschrieben, 
+
+26
+00:01:27,160 --> 00:01:30,998
+nach der negativen Steigung dieser Kostenfunktion, die dir sagt, 
+
+27
+00:01:30,998 --> 00:01:34,718
+wie du die Gewichte und Vorspannungen, also alle Verbindungen, 
+
+28
+00:01:34,718 --> 00:01:38,320
+verändern musst, um die Kosten möglichst effizient zu senken.
+
+29
+00:01:43,260 --> 00:01:45,348
+Die Backpropagation, um die es in diesem Video geht, 
+
+30
+00:01:45,348 --> 00:01:48,580
+ist ein Algorithmus zur Berechnung dieses verrückten und komplizierten Gradienten.
+
+31
+00:01:49,140 --> 00:01:53,289
+Die Idee aus dem letzten Video, die du dir unbedingt merken solltest, ist, 
+
+32
+00:01:53,289 --> 00:01:58,102
+dass es eine andere Möglichkeit gibt, den Gradientenvektor als eine Richtung in 13.000 
+
+33
+00:01:58,102 --> 00:02:01,588
+Dimensionen zu betrachten, die, um es vorsichtig auszudrücken, 
+
+34
+00:02:01,588 --> 00:02:03,580
+unsere Vorstellungskraft übersteigt.
+
+35
+00:02:04,600 --> 00:02:06,807
+Die Größe der einzelnen Komponenten zeigt dir, 
+
+36
+00:02:06,807 --> 00:02:10,940
+wie empfindlich die Kostenfunktion auf die einzelnen Gewichte und Verzerrungen reagiert.
+
+37
+00:02:11,800 --> 00:02:15,705
+Angenommen, du gehst den Prozess durch, den ich gleich beschreiben werde, 
+
+38
+00:02:15,705 --> 00:02:18,713
+und berechnest den negativen Gradienten. Die Komponente, 
+
+39
+00:02:18,713 --> 00:02:22,196
+die mit dem Gewicht dieser Kante hier verbunden ist, beträgt 3,2, 
+
+40
+00:02:22,196 --> 00:02:26,260
+während die Komponente, die mit dieser Kante hier verbunden ist, 0,1 beträgt.
+
+41
+00:02:26,820 --> 00:02:30,929
+Du kannst das so interpretieren, dass die Kosten der Funktion 32-mal empfindlicher 
+
+42
+00:02:30,929 --> 00:02:33,306
+auf Änderungen der ersten Gewichtung reagieren. 
+
+43
+00:02:33,306 --> 00:02:35,831
+Wenn du also diesen Wert nur ein wenig veränderst, 
+
+44
+00:02:35,831 --> 00:02:40,089
+führt das zu einer Änderung der Kosten, und diese Änderung ist 32-mal größer als die, 
+
+45
+00:02:40,089 --> 00:02:43,060
+die dieselbe Änderung der zweiten Gewichtung bewirken würde.
+
+46
+00:02:48,420 --> 00:02:51,225
+Als ich zum ersten Mal etwas über Backpropagation gelernt habe, 
+
+47
+00:02:51,225 --> 00:02:54,556
+war für mich der verwirrendste Aspekt die Notation und die Indexverfolgung, 
+
+48
+00:02:54,556 --> 00:02:55,740
+die sich dahinter verbirgt.
+
+49
+00:02:56,220 --> 00:02:59,663
+Aber wenn du erst einmal herausgefunden hast, was die einzelnen Teile dieses 
+
+50
+00:02:59,663 --> 00:03:03,330
+Algorithmus wirklich tun, ist jeder einzelne Effekt eigentlich ziemlich intuitiv, 
+
+51
+00:03:03,330 --> 00:03:06,640
+es gibt nur viele kleine Anpassungen, die übereinander geschichtet werden.
+
+52
+00:03:07,740 --> 00:03:11,733
+Ich fange also ohne Rücksicht auf die Notation an und gehe einfach die 
+
+53
+00:03:11,733 --> 00:03:16,120
+Auswirkungen jedes Trainingsbeispiels auf die Gewichte und Verzerrungen durch.
+
+54
+00:03:17,020 --> 00:03:21,485
+Da die Kostenfunktion einen Durchschnittswert pro Beispiel über alle Zehntausende von 
+
+55
+00:03:21,485 --> 00:03:24,237
+Trainingsbeispielen bildet, hängt die Art und Weise, 
+
+56
+00:03:24,237 --> 00:03:28,599
+wie wir die Gewichte und Verzerrungen für einen einzelnen Gradientenabstiegsschritt 
+
+57
+00:03:28,599 --> 00:03:31,040
+anpassen, auch von jedem einzelnen Beispiel ab.
+
+58
+00:03:31,680 --> 00:03:34,161
+Oder besser gesagt, im Prinzip sollte es das, aber aus Gründen der 
+
+59
+00:03:34,161 --> 00:03:36,532
+Recheneffizienz werden wir später einen kleinen Trick anwenden, 
+
+60
+00:03:36,532 --> 00:03:39,200
+damit du nicht jedes einzelne Beispiel für jeden Schritt aufrufen musst.
+
+61
+00:03:39,200 --> 00:03:44,660
+In anderen Fällen werden wir uns jetzt nur auf ein einziges Beispiel konzentrieren, 
+
+62
+00:03:44,660 --> 00:03:45,960
+dieses Bild einer 2.
+
+63
+00:03:46,720 --> 00:03:49,164
+Welche Auswirkungen sollte dieses eine Trainingsbeispiel 
+
+64
+00:03:49,164 --> 00:03:51,480
+auf die Anpassung der Gewichte und Verzerrungen haben?
+
+65
+00:03:52,680 --> 00:03:56,425
+Nehmen wir an, wir sind an einem Punkt, an dem das Netz noch nicht gut trainiert ist, 
+
+66
+00:03:56,425 --> 00:03:59,735
+so dass die Aktivierungen in der Ausgabe ziemlich zufällig aussehen werden, 
+
+67
+00:03:59,735 --> 00:04:02,000
+vielleicht so etwas wie 0,5, 0,8, 0,2 und so weiter.
+
+68
+00:04:02,520 --> 00:04:04,733
+Wir können diese Aktivierungen nicht direkt ändern, 
+
+69
+00:04:04,733 --> 00:04:07,160
+wir haben nur Einfluss auf die Gewichte und Verzerrungen.
+
+70
+00:04:07,160 --> 00:04:09,715
+Aber es ist hilfreich, den Überblick darüber zu behalten, 
+
+71
+00:04:09,715 --> 00:04:12,580
+welche Anpassungen wir an dieser Ausgabeschicht vornehmen wollen.
+
+72
+00:04:13,360 --> 00:04:16,195
+Und da wir wollen, dass das Bild als 2 eingestuft wird, 
+
+73
+00:04:16,195 --> 00:04:18,727
+soll der dritte Wert nach oben verschoben werden, 
+
+74
+00:04:18,727 --> 00:04:21,260
+während alle anderen nach unten verschoben werden.
+
+75
+00:04:22,060 --> 00:04:25,939
+Außerdem sollte die Größe dieser Anstöße proportional dazu sein, 
+
+76
+00:04:25,939 --> 00:04:29,520
+wie weit der aktuelle Wert von seinem Zielwert entfernt ist.
+
+77
+00:04:30,220 --> 00:04:33,780
+So ist zum Beispiel die Erhöhung der Aktivierung des Neurons Nummer 
+
+78
+00:04:33,780 --> 00:04:37,601
+2 in gewisser Weise wichtiger als die Verringerung des Neurons Nummer 8, 
+
+79
+00:04:37,601 --> 00:04:40,900
+das bereits ziemlich nahe an dem Wert ist, den es haben sollte.
+
+80
+00:04:42,040 --> 00:04:45,592
+Zoomen wir also weiter hinein und konzentrieren uns nur auf dieses eine Neuron, 
+
+81
+00:04:45,592 --> 00:04:47,280
+dessen Aktivierung wir erhöhen wollen.
+
+82
+00:04:48,180 --> 00:04:52,185
+Denke daran, dass die Aktivierung als eine bestimmte gewichtete Summe aller 
+
+83
+00:04:52,185 --> 00:04:56,296
+Aktivierungen in der vorherigen Schicht plus einer Vorspannung definiert ist, 
+
+84
+00:04:56,296 --> 00:05:01,040
+die dann in eine Funktion wie die sigmoide Squishification oder eine ReLU eingesetzt wird.
+
+85
+00:05:01,640 --> 00:05:05,302
+Es gibt also drei verschiedene Wege, die zusammenhelfen können, 
+
+86
+00:05:05,302 --> 00:05:07,020
+um die Aktivierung zu erhöhen.
+
+87
+00:05:07,440 --> 00:05:10,658
+Du kannst den Bias erhöhen, du kannst die Gewichte erhöhen 
+
+88
+00:05:10,658 --> 00:05:14,040
+und du kannst die Aktivierungen der vorherigen Schicht ändern.
+
+89
+00:05:14,940 --> 00:05:17,826
+Wenn du dich darauf konzentrierst, wie die Gewichte angepasst werden sollten, 
+
+90
+00:05:17,826 --> 00:05:20,860
+bemerkst du, dass die Gewichte tatsächlich einen unterschiedlichen Einfluss haben.
+
+91
+00:05:21,440 --> 00:05:25,225
+Die Verbindungen mit den hellsten Neuronen aus der vorangegangenen Schicht haben den 
+
+92
+00:05:25,225 --> 00:05:29,100
+größten Effekt, da diese Gewichte mit größeren Aktivierungswerten multipliziert werden.
+
+93
+00:05:31,460 --> 00:05:35,365
+Wenn du also eines dieser Gewichte erhöhst, hat das einen stärkeren Einfluss 
+
+94
+00:05:35,365 --> 00:05:39,473
+auf die endgültige Kostenfunktion als die Erhöhung der Gewichte von Verbindungen 
+
+95
+00:05:39,473 --> 00:05:43,480
+mit schwächeren Neuronen, zumindest was dieses eine Trainingsbeispiel betrifft.
+
+96
+00:05:44,420 --> 00:05:47,216
+Vergiss nicht, dass es beim Gradientenabstieg nicht nur darum geht, 
+
+97
+00:05:47,216 --> 00:05:50,341
+ob die einzelnen Komponenten nach oben oder unten verschoben werden sollen, 
+
+98
+00:05:50,341 --> 00:05:53,220
+sondern auch darum, welche Komponenten dir das meiste Geld einbringen.
+
+99
+00:05:55,020 --> 00:05:58,258
+Das erinnert übrigens ein wenig an eine Theorie aus den Neurowissenschaften, 
+
+100
+00:05:58,258 --> 00:06:00,908
+die beschreibt, wie biologische Netzwerke von Neuronen lernen: 
+
+101
+00:06:00,908 --> 00:06:03,684
+die Hebb'sche Theorie, die oft mit dem Satz zusammengefasst wird, 
+
+102
+00:06:03,684 --> 00:06:06,460
+dass Neuronen, die zusammen feuern, auch zusammen verdrahtet sind.
+
+103
+00:06:07,260 --> 00:06:12,270
+Hier findet die größte Erhöhung der Gewichte, die größte Stärkung der Verbindungen, 
+
+104
+00:06:12,270 --> 00:06:17,280
+zwischen den aktivsten Neuronen und denjenigen statt, die wir aktiver machen wollen.
+
+105
+00:06:17,940 --> 00:06:21,396
+In gewisser Weise werden die Neuronen, die feuern, wenn du eine 2 siehst, 
+
+106
+00:06:21,396 --> 00:06:24,480
+stärker mit denen verknüpft, die feuern, wenn du an eine 2 denkst.
+
+107
+00:06:25,400 --> 00:06:30,345
+Um das klarzustellen: Ich bin nicht in der Lage, eine Aussage darüber zu treffen, 
+
+108
+00:06:30,345 --> 00:06:34,989
+ob sich künstliche Netzwerke von Neuronen wie biologische Gehirne verhalten, 
+
+109
+00:06:34,989 --> 00:06:38,125
+und die Idee, dass Feuer und Draht zusammengehören, 
+
+110
+00:06:38,125 --> 00:06:41,020
+ist mit ein paar bedeutsamen Sternchen versehen.
+
+111
+00:06:41,940 --> 00:06:45,412
+Die dritte Möglichkeit, die Aktivierung dieses Neurons zu erhöhen, 
+
+112
+00:06:45,412 --> 00:06:49,040
+besteht darin, alle Aktivierungen in der vorherigen Schicht zu ändern.
+
+113
+00:06:49,040 --> 00:06:52,801
+Wenn nämlich alles, was mit dem Neuron der Ziffer 2 verbunden ist und ein 
+
+114
+00:06:52,801 --> 00:06:55,444
+positives Gewicht hat, heller wird, und wenn alles, 
+
+115
+00:06:55,444 --> 00:06:58,545
+was mit einem negativen Gewicht verbunden ist, dunkler wird, 
+
+116
+00:06:58,545 --> 00:07:00,680
+dann wird das Neuron der Ziffer 2 aktiver.
+
+117
+00:07:02,540 --> 00:07:06,322
+Ähnlich wie bei den Gewichtsveränderungen wirst du das meiste für dein Geld bekommen, 
+
+118
+00:07:06,322 --> 00:07:10,280
+wenn du Veränderungen suchst, die proportional zur Größe der entsprechenden Gewichte sind.
+
+119
+00:07:12,140 --> 00:07:14,911
+Natürlich können wir diese Aktivierungen nicht direkt beeinflussen, 
+
+120
+00:07:14,911 --> 00:07:17,480
+wir haben nur die Kontrolle über die Gewichte und Verzerrungen.
+
+121
+00:07:17,480 --> 00:07:20,859
+Aber genau wie bei der letzten Schicht ist es hilfreich, 
+
+122
+00:07:20,859 --> 00:07:24,120
+sich zu notieren, welche Veränderungen du dir wünschst.
+
+123
+00:07:24,580 --> 00:07:26,948
+Aber vergiss nicht: Wenn du hier einen Schritt herauszoomst, 
+
+124
+00:07:26,948 --> 00:07:29,200
+ist das nur das, was das Ausgangsneuron der Ziffer 2 will.
+
+125
+00:07:29,760 --> 00:07:33,040
+Denke daran, dass wir auch wollen, dass alle anderen Neuronen in der letzten 
+
+126
+00:07:33,040 --> 00:07:36,277
+Schicht weniger aktiv werden, und jedes dieser anderen Ausgangsneuronen hat 
+
+127
+00:07:36,277 --> 00:07:39,600
+seine eigenen Gedanken darüber, was mit der vorletzten Schicht passieren soll.
+
+128
+00:07:42,700 --> 00:07:48,244
+Der Wunsch dieses Neurons der Ziffer 2 wird also mit den Wünschen aller anderen 
+
+129
+00:07:48,244 --> 00:07:51,848
+Ausgangsneuronen für die vorletzte Schicht addiert, 
+
+130
+00:07:51,848 --> 00:07:57,323
+wiederum im Verhältnis zu den entsprechenden Gewichten und im Verhältnis dazu, 
+
+131
+00:07:57,323 --> 00:08:00,720
+wie stark sich jedes dieser Neuronen ändern muss.
+
+132
+00:08:01,600 --> 00:08:05,480
+Genau hier kommt die Idee der Rückwärtsvermehrung ins Spiel.
+
+133
+00:08:05,820 --> 00:08:08,552
+Wenn du all diese gewünschten Effekte zusammenzählst, 
+
+134
+00:08:08,552 --> 00:08:12,196
+erhältst du im Grunde eine Liste von Stößen, die du für diese vorletzte 
+
+135
+00:08:12,196 --> 00:08:13,360
+Schicht haben möchtest.
+
+136
+00:08:14,220 --> 00:08:17,889
+Wenn du diese Werte hast, kannst du den gleichen Prozess auf die relevanten Gewichte 
+
+137
+00:08:17,889 --> 00:08:21,689
+und Verzerrungen anwenden, die diese Werte bestimmen, indem du den Prozess wiederholst, 
+
+138
+00:08:21,689 --> 00:08:25,100
+den ich gerade beschrieben habe, und dich rückwärts durch das Netzwerk bewegst.
+
+139
+00:08:28,960 --> 00:08:32,049
+Und wenn du noch ein bisschen weiter herauszoomst, solltest du bedenken, 
+
+140
+00:08:32,049 --> 00:08:34,418
+dass dies alles nur ein einziges Trainingsbeispiel ist, 
+
+141
+00:08:34,418 --> 00:08:37,000
+mit dem du die Gewichte und Verzerrungen beeinflussen willst.
+
+142
+00:08:37,480 --> 00:08:40,019
+Wenn wir nur darauf hören würden, was die 2 will, 
+
+143
+00:08:40,019 --> 00:08:43,220
+hätte das Netzwerk einen Anreiz, alle Bilder als 2 einzustufen.
+
+144
+00:08:44,059 --> 00:08:48,173
+Du gehst also dieselbe Backprop-Routine für jedes andere Trainingsbeispiel durch, 
+
+145
+00:08:48,173 --> 00:08:52,588
+indem du aufzeichnest, wie jeder von ihnen die Gewichte und Verzerrungen ändern möchte, 
+
+146
+00:08:52,588 --> 00:08:56,000
+und den Durchschnitt dieser gewünschten Änderungen zusammenrechnest.
+
+147
+00:09:01,720 --> 00:09:06,088
+Die Summe der gemittelten Zuschläge für jedes Gewicht und jede Vorspannung ist, 
+
+148
+00:09:06,088 --> 00:09:09,092
+grob gesagt, die negative Steigung der Kostenfunktion, 
+
+149
+00:09:09,092 --> 00:09:13,680
+die im letzten Video erwähnt wurde, oder zumindest etwas, das proportional dazu ist.
+
+150
+00:09:14,380 --> 00:09:18,777
+Ich spreche nur grob davon, weil ich diese Anstöße noch nicht quantitativ präzisieren 
+
+151
+00:09:18,777 --> 00:09:22,868
+kann, aber wenn du jede Änderung, die ich gerade erwähnt habe, verstanden hast, 
+
+152
+00:09:22,868 --> 00:09:27,420
+warum einige proportional größer sind als andere und wie sie alle addiert werden müssen, 
+
+153
+00:09:27,420 --> 00:09:31,000
+verstehst du die Mechanik dessen, was Backpropagation tatsächlich tut.
+
+154
+00:09:33,960 --> 00:09:37,230
+In der Praxis brauchen Computer übrigens extrem viel Zeit, 
+
+155
+00:09:37,230 --> 00:09:41,774
+um den Einfluss jedes Trainingsbeispiels bei jedem Schritt des Gradientenabstiegs 
+
+156
+00:09:41,774 --> 00:09:42,440
+zu addieren.
+
+157
+00:09:43,140 --> 00:09:44,820
+Hier ist, was stattdessen üblicherweise gemacht wird.
+
+158
+00:09:45,480 --> 00:09:48,889
+Du mischst deine Trainingsdaten nach dem Zufallsprinzip und teilst sie dann in eine 
+
+159
+00:09:48,889 --> 00:09:52,420
+Reihe von Mini-Batches auf, von denen jeder, sagen wir, 100 Trainingsbeispiele enthält.
+
+160
+00:09:52,940 --> 00:09:56,200
+Dann berechnest du einen Schritt entsprechend dem Mini-Batch.
+
+161
+00:09:56,960 --> 00:09:59,973
+Es wird nicht der tatsächliche Gradient der Kostenfunktion sein, 
+
+162
+00:09:59,973 --> 00:10:03,450
+der von allen Trainingsdaten abhängt, nicht von dieser winzigen Teilmenge. 
+
+163
+00:10:03,450 --> 00:10:05,861
+Es ist also nicht der effizienteste Schritt bergab, 
+
+164
+00:10:05,861 --> 00:10:10,033
+aber jeder Mini-Batch gibt dir eine ziemlich gute Annäherung und, was noch wichtiger ist, 
+
+165
+00:10:10,033 --> 00:10:12,120
+er beschleunigt deine Berechnungen erheblich.
+
+166
+00:10:12,820 --> 00:10:16,349
+Wenn du die Flugbahn deines Netzwerks unter der entsprechenden Kostenoberfläche 
+
+167
+00:10:16,349 --> 00:10:18,997
+aufzeichnen würdest, wäre es eher wie ein betrunkener Mann, 
+
+168
+00:10:18,997 --> 00:10:22,350
+der ziellos einen Hügel hinunterstolpert und dabei schnelle Schritte macht, 
+
+169
+00:10:22,350 --> 00:10:25,571
+als ein sorgfältig kalkulierender Mann, der bei jedem Schritt die genaue 
+
+170
+00:10:25,571 --> 00:10:29,101
+Abwärtsrichtung bestimmt und dann einen sehr langsamen und vorsichtigen Schritt 
+
+171
+00:10:29,101 --> 00:10:30,160
+in diese Richtung macht.
+
+172
+00:10:31,540 --> 00:10:34,660
+Diese Technik wird als stochastischer Gradientenabstieg bezeichnet.
+
+173
+00:10:35,960 --> 00:10:39,620
+Hier ist eine Menge los, also fassen wir es einfach für uns selbst zusammen, okay?
+
+174
+00:10:40,440 --> 00:10:42,827
+Backpropagation ist ein Algorithmus, der bestimmt, 
+
+175
+00:10:42,827 --> 00:10:46,665
+wie ein einzelnes Trainingsbeispiel die Gewichte und Verzerrungen verändern soll. 
+
+176
+00:10:46,665 --> 00:10:50,083
+Dabei geht es nicht nur darum, ob sie nach oben oder unten gehen sollen, 
+
+177
+00:10:50,083 --> 00:10:54,062
+sondern auch darum, welche relativen Anteile an diesen Veränderungen den schnellsten 
+
+178
+00:10:54,062 --> 00:10:55,560
+Rückgang der Kosten verursachen.
+
+179
+00:10:56,260 --> 00:11:00,183
+Ein echter Gradientenabstieg würde bedeuten, dass du dies für alle Zehntausende von 
+
+180
+00:11:00,183 --> 00:11:04,200
+Trainingsbeispielen machst und den Durchschnitt der gewünschten Änderungen ermittelst.
+
+181
+00:11:04,860 --> 00:11:08,803
+Das ist aber sehr rechenintensiv. Stattdessen unterteilst du die Daten nach dem 
+
+182
+00:11:08,803 --> 00:11:13,240
+Zufallsprinzip in Mini-Batches und berechnest jeden Schritt in Bezug auf einen Mini-Batch.
+
+183
+00:11:14,000 --> 00:11:18,081
+Wenn du alle Mini-Batches wiederholt durchgehst und diese Anpassungen vornimmst, 
+
+184
+00:11:18,081 --> 00:11:21,458
+konvergierst du gegen ein lokales Minimum der Kostenfunktion, d.h. 
+
+185
+00:11:21,458 --> 00:11:25,540
+dein Netzwerk macht am Ende einen wirklich guten Job bei den Trainingsbeispielen.
+
+186
+00:11:27,240 --> 00:11:31,893
+Damit ist gesagt, dass jede Zeile Code, die für die Implementierung von Backprop 
+
+187
+00:11:31,893 --> 00:11:36,720
+benötigt wird, etwas entspricht, das du bereits gesehen hast, zumindest inoffiziell.
+
+188
+00:11:37,560 --> 00:11:40,797
+Aber manchmal ist das Wissen, was die Mathematik macht, nur die halbe Miete, 
+
+189
+00:11:40,797 --> 00:11:44,120
+und wenn man das verdammte Ding einfach nur darstellt, wird es ganz verwirrend.
+
+190
+00:11:44,860 --> 00:11:47,163
+Für diejenigen unter euch, die tiefer einsteigen wollen, 
+
+191
+00:11:47,163 --> 00:11:50,680
+geht das nächste Video auf die gleichen Ideen ein, die hier gerade vorgestellt wurden, 
+
+192
+00:11:50,680 --> 00:11:52,782
+aber in Bezug auf die zugrundeliegende Kalkulation, 
+
+193
+00:11:52,782 --> 00:11:56,420
+was das Thema hoffentlich ein wenig vertrauter macht, wenn ihr es in anderen Quellen seht.
+
+194
+00:11:57,340 --> 00:12:01,520
+Damit dieser Algorithmus funktioniert - und das gilt nicht nur für neuronale Netze, 
+
+195
+00:12:01,520 --> 00:12:05,900
+sondern für alle Arten des maschinellen Lernens - brauchst du eine Menge Trainingsdaten.
+
+196
+00:12:06,420 --> 00:12:09,788
+In unserem Fall sind handgeschriebene Ziffern ein gutes Beispiel, 
+
+197
+00:12:09,788 --> 00:12:12,647
+weil es die MNIST-Datenbank mit vielen Beispielen gibt, 
+
+198
+00:12:12,647 --> 00:12:14,740
+die von Menschen beschriftet worden sind.
+
+199
+00:12:15,300 --> 00:12:18,455
+Diejenigen unter euch, die im Bereich des maschinellen Lernens arbeiten, 
+
+200
+00:12:18,455 --> 00:12:22,129
+kennen die Herausforderung, die benötigten beschrifteten Trainingsdaten zu erhalten, 
+
+201
+00:12:22,129 --> 00:12:26,019
+sei es, dass Menschen Zehntausende von Bildern beschriften müssen oder andere Datentypen, 
+
+202
+00:12:26,019 --> 00:12:27,100
+mit denen du zu tun hast.
+

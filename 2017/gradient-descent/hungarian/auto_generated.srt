@@ -1,0 +1,1264 @@
+1
+00:00:04,180 --> 00:00:07,280
+A legutóbbi videóban bemutattam a neurális hálózat felépítését.
+
+2
+00:00:07,680 --> 00:00:10,754
+Egy gyors összefoglalót fogok adni, hogy frissen emlékezzünk rá, 
+
+3
+00:00:10,754 --> 00:00:12,600
+majd két fő célom van ezzel a videóval.
+
+4
+00:00:13,100 --> 00:00:15,893
+Az első a gradiens süllyedés gondolatának bemutatása, 
+
+5
+00:00:15,893 --> 00:00:18,375
+amely nemcsak a neurális hálózatok tanulásának, 
+
+6
+00:00:18,375 --> 00:00:20,600
+hanem sok más gépi tanulásnak is az alapja.
+
+7
+00:00:21,120 --> 00:00:23,758
+Ezután egy kicsit mélyebben beleássuk magunkat abba, 
+
+8
+00:00:23,758 --> 00:00:27,940
+hogyan működik ez a bizonyos hálózat, és mit keresnek végül a rejtett neuronrétegek.
+
+9
+00:00:28,980 --> 00:00:34,185
+Emlékeztetőül, a célunk itt a kézzel írt számjegyek felismerésének klasszikus példája, 
+
+10
+00:00:34,185 --> 00:00:36,220
+a neurális hálózatok helló világa.
+
+11
+00:00:37,020 --> 00:00:40,196
+Ezek a számjegyek egy 28x28 pixeles rácson kerülnek megjelenítésre, 
+
+12
+00:00:40,196 --> 00:00:43,420
+minden egyes pixelhez 0 és 1 közötti szürkeárnyalatos érték tartozik.
+
+13
+00:00:43,820 --> 00:00:50,040
+Ezek határozzák meg a hálózat bemeneti rétegében lévő 784 neuron aktivációját.
+
+14
+00:00:51,180 --> 00:00:55,620
+Ezután a következő rétegekben az egyes neuronok aktivációja az előző réteg összes 
+
+15
+00:00:55,620 --> 00:00:59,411
+aktivációjának súlyozott összegén alapul, plusz egy speciális számon, 
+
+16
+00:00:59,411 --> 00:01:00,820
+az úgynevezett torzításon.
+
+17
+00:01:02,160 --> 00:01:05,033
+Ezután ezt az összeget összeállítod valamilyen más függvénnyel, 
+
+18
+00:01:05,033 --> 00:01:08,940
+például a szigmoid squishification vagy egy relu, ahogy a múltkori videóban bemutattam.
+
+19
+00:01:09,480 --> 00:01:13,256
+Összesen, a két rejtett rétegből álló, egyenként 16 neuronnal rendelkező, 
+
+20
+00:01:13,256 --> 00:01:16,572
+kissé önkényesen választott két rejtett réteget figyelembe véve, 
+
+21
+00:01:16,572 --> 00:01:20,655
+a hálózatnak körülbelül 13 000 súlya és torzítása van, amelyeket beállíthatunk, 
+
+22
+00:01:20,655 --> 00:01:24,380
+és ezek az értékek határozzák meg, hogy pontosan mit is csinál a hálózat.
+
+23
+00:01:24,880 --> 00:01:29,114
+Akkor azt értjük, amikor azt mondjuk, hogy ez a hálózat egy adott számjegyet osztályoz, 
+
+24
+00:01:29,114 --> 00:01:33,300
+hogy a 10 neuron közül a legfényesebb az utolsó rétegben megfelel az adott számjegynek.
+
+25
+00:01:34,100 --> 00:01:37,475
+És ne feledjük, hogy a réteges struktúra motivációja az volt, 
+
+26
+00:01:37,475 --> 00:01:42,321
+hogy talán a második réteg fel tudja venni az éleket, a harmadik réteg pedig a mintákat, 
+
+27
+00:01:42,321 --> 00:01:47,112
+például a hurkokat és a vonalakat, az utolsó pedig össze tudja rakni ezeket a mintákat, 
+
+28
+00:01:47,112 --> 00:01:48,800
+hogy felismerje a számjegyeket.
+
+29
+00:01:49,800 --> 00:01:52,240
+Itt tehát megtudjuk, hogyan tanul a hálózat.
+
+30
+00:01:52,640 --> 00:01:56,996
+Mi egy olyan algoritmust szeretnénk, ahol megmutathatunk ennek a hálózatnak egy 
+
+31
+00:01:56,996 --> 00:02:01,897
+csomó gyakorló adatot, amely kézzel írt számjegyek különböző képeinek formájában érkezik, 
+
+32
+00:02:01,897 --> 00:02:06,308
+a feltételezett számjegyek címkéivel együtt, és a hálózat beállítja ezt a 13 000 
+
+33
+00:02:06,308 --> 00:02:10,120
+súlyt és torzítást, hogy javítsa a teljesítményét a gyakorló adatokon.
+
+34
+00:02:10,720 --> 00:02:13,206
+Remélhetőleg ez a réteges struktúra azt jelenti, 
+
+35
+00:02:13,206 --> 00:02:16,860
+hogy a tanultakat a képzési adatokon túlmutató képekre is általánosítja.
+
+36
+00:02:17,640 --> 00:02:20,321
+Ezt úgy teszteljük, hogy miután betanítottuk a hálózatot, 
+
+37
+00:02:20,321 --> 00:02:23,787
+több olyan felcímkézett adatot mutatunk neki, amelyet még soha nem látott, 
+
+38
+00:02:23,787 --> 00:02:26,700
+és megnézzük, milyen pontosan osztályozza ezeket az új képeket.
+
+39
+00:02:31,120 --> 00:02:33,841
+Szerencsénkre - és ami miatt ez egy ilyen gyakori példa, 
+
+40
+00:02:33,841 --> 00:02:37,421
+amivel kezdhetjük - a jó emberek az MNIST adatbázis mögött összeállítottak 
+
+41
+00:02:37,421 --> 00:02:40,715
+egy több tízezer kézzel írt számjegyes képet tartalmazó gyűjteményt, 
+
+42
+00:02:40,715 --> 00:02:44,200
+amelyek mindegyike fel van címkézve a számokkal, amiknek lenniük kellene.
+
+43
+00:02:44,900 --> 00:02:48,079
+És bármennyire is provokatív egy gépet tanulóként leírni, 
+
+44
+00:02:48,079 --> 00:02:51,478
+ha egyszer látod, hogyan működik, sokkal kevésbé tűnik valami 
+
+45
+00:02:51,478 --> 00:02:55,480
+őrült sci-fi előfeltevésnek, és sokkal inkább egy számítási gyakorlatnak.
+
+46
+00:02:56,200 --> 00:02:59,960
+Úgy értem, alapvetően egy bizonyos függvény minimumát kell megtalálni.
+
+47
+00:03:01,940 --> 00:03:05,747
+Ne feledjük, hogy koncepcionálisan úgy gondolunk minden neuronra, 
+
+48
+00:03:05,747 --> 00:03:08,978
+mint ami az előző réteg összes neuronjához kapcsolódik, 
+
+49
+00:03:08,978 --> 00:03:12,555
+és az aktiválást meghatározó súlyozott összeg súlyai olyanok, 
+
+50
+00:03:12,555 --> 00:03:16,248
+mint ezeknek a kapcsolatoknak az erőssége, és a torzítás jelzi, 
+
+51
+00:03:16,248 --> 00:03:18,960
+hogy az adott neuron inkább aktív vagy inaktív.
+
+52
+00:03:19,720 --> 00:03:22,036
+És hogy a dolgokat elkezdjük, az összes súlyt és 
+
+53
+00:03:22,036 --> 00:03:24,400
+torzítást teljesen véletlenszerűen inicializáljuk.
+
+54
+00:03:24,940 --> 00:03:27,851
+Mondanom sem kell, hogy ez a hálózat elég szörnyen fog teljesíteni 
+
+55
+00:03:27,851 --> 00:03:30,720
+egy adott képzési példán, mivel csak valami véletlenszerűt csinál.
+
+56
+00:03:31,040 --> 00:03:34,878
+Például betáplálod ezt a 3-as képet, és a kimeneti réteg csak úgy néz ki, 
+
+57
+00:03:34,878 --> 00:03:36,020
+mint egy rendetlenség.
+
+58
+00:03:36,600 --> 00:03:39,795
+Tehát, amit teszel, az az, hogy definiálsz egy költségfüggvényt, 
+
+59
+00:03:39,795 --> 00:03:43,237
+egy módot arra, hogy megmondd a számítógépnek, nem, rossz számítógép, 
+
+60
+00:03:43,237 --> 00:03:46,039
+hogy a kimenetnek olyan aktivációkkal kell rendelkeznie, 
+
+61
+00:03:46,039 --> 00:03:49,924
+amelyek a legtöbb neuron esetében 0, de ennél a neuronnál 1, amit adtál nekem, 
+
+62
+00:03:49,924 --> 00:03:50,760
+az teljes szemét.
+
+63
+00:03:51,720 --> 00:03:58,035
+Kicsit matematikailag kifejezve, összeadjuk az egyes szemét kimeneti aktivációk és a 
+
+64
+00:03:58,035 --> 00:04:04,128
+kívánt érték közötti különbségek négyzetét, és ezt nevezzük egyetlen tréningpélda 
+
+65
+00:04:04,128 --> 00:04:05,020
+költségének.
+
+66
+00:04:05,960 --> 00:04:10,955
+Vegyük észre, hogy ez az összeg kicsi, amikor a hálózat magabiztosan helyesen 
+
+67
+00:04:10,955 --> 00:04:16,399
+osztályozza a képet, de nagy, amikor a hálózat úgy tűnik, hogy nem tudja, mit csinál.
+
+68
+00:04:18,640 --> 00:04:21,889
+Így aztán azt kell tennie, hogy a rendelkezésére álló 
+
+69
+00:04:21,889 --> 00:04:25,440
+több tízezer képzési példa átlagköltségét veszi figyelembe.
+
+70
+00:04:27,040 --> 00:04:30,309
+Ez az átlagköltség a mi mérőszámunk arra, hogy mennyire pocsék a hálózat, 
+
+71
+00:04:30,309 --> 00:04:32,740
+és mennyire rosszul kell éreznie magát a számítógépnek.
+
+72
+00:04:33,420 --> 00:04:34,600
+És ez egy bonyolult dolog.
+
+73
+00:04:35,040 --> 00:04:38,855
+Emlékszel, hogy maga a hálózat alapvetően egy függvény volt, 
+
+74
+00:04:38,855 --> 00:04:42,420
+amely bemenetként 784 számot vesz fel, a pixelértékeket, 
+
+75
+00:04:42,420 --> 00:04:47,298
+és kimenetként 10 számot ad ki, és bizonyos értelemben a súlyok és torzítások 
+
+76
+00:04:47,298 --> 00:04:48,800
+által van paraméterezve?
+
+77
+00:04:49,500 --> 00:04:52,820
+Nos, a költségfüggvény egy újabb komplexitási réteg a tetején.
+
+78
+00:04:53,100 --> 00:04:57,640
+A rendszer bemenetként veszi ezt a körülbelül 13 000 súlyt és torzítást, 
+
+79
+00:04:57,640 --> 00:05:02,555
+és egyetlen számot ad ki, amely leírja, hogy mennyire rosszak ezek a súlyok és 
+
+80
+00:05:02,555 --> 00:05:07,718
+torzítások, és ennek meghatározása a hálózat viselkedésétől függ a több tízezernyi 
+
+81
+00:05:07,718 --> 00:05:08,900
+képzési adat során.
+
+82
+00:05:09,520 --> 00:05:11,000
+Ez sok minden, amin el kell gondolkodni.
+
+83
+00:05:12,400 --> 00:05:15,820
+De csak azt mondani a számítógépnek, hogy milyen szar munkát végez, nem túl hasznos.
+
+84
+00:05:16,220 --> 00:05:19,395
+Meg akarod mondani neki, hogyan változtassa meg ezeket a súlyokat és elfogultságokat, 
+
+85
+00:05:19,395 --> 00:05:20,060
+hogy jobbá váljon.
+
+86
+00:05:20,780 --> 00:05:23,830
+A könnyebbség kedvéért, ahelyett, hogy egy 13 000 bemenettel 
+
+87
+00:05:23,830 --> 00:05:27,880
+rendelkező függvényt kellene elképzelnünk, képzeljünk el egy egyszerű függvényt, 
+
+88
+00:05:27,880 --> 00:05:30,480
+amelynek bemenete egy szám, kimenete pedig egy szám.
+
+89
+00:05:31,480 --> 00:05:35,300
+Hogyan találjuk meg azt a bemenetet, amely minimalizálja ennek a függvénynek az értékét?
+
+90
+00:05:36,460 --> 00:05:41,275
+A számítást tanuló diákok tudják, hogy a minimumot néha explicit módon is ki lehet 
+
+91
+00:05:41,275 --> 00:05:45,568
+számolni, de ez nem mindig lehetséges igazán bonyolult függvények esetén, 
+
+92
+00:05:45,568 --> 00:05:50,325
+pláne nem az őrült bonyolult neurális hálózati költségfüggvényünk 13 000 bemenetű 
+
+93
+00:05:50,325 --> 00:05:51,080
+változatában.
+
+94
+00:05:51,580 --> 00:05:55,445
+Rugalmasabb taktika, ha bármelyik bemenetről indulunk, és kitaláljuk, 
+
+95
+00:05:55,445 --> 00:05:59,200
+hogy melyik irányba kell lépnünk, hogy a kimenet alacsonyabb legyen.
+
+96
+00:06:00,080 --> 00:06:04,926
+Konkrétan, ha ki tudja számolni a függvény meredekségét, akkor tolja balra, 
+
+97
+00:06:04,926 --> 00:06:09,900
+ha a meredekség pozitív, és tolja jobbra a bemenetet, ha a meredekség negatív.
+
+98
+00:06:11,960 --> 00:06:15,786
+Ha ezt ismételten megismétli, minden egyes ponton ellenőrizve az új meredekséget és 
+
+99
+00:06:15,786 --> 00:06:19,840
+megtéve a megfelelő lépést, akkor a függvény valamelyik helyi minimumához fog közelíteni.
+
+100
+00:06:20,640 --> 00:06:23,800
+A kép, ami itt eszedbe juthat, egy dombon lefelé guruló labda.
+
+101
+00:06:24,620 --> 00:06:27,388
+Vegyük észre, hogy még ennél a nagyon leegyszerűsített, 
+
+102
+00:06:27,388 --> 00:06:30,897
+egyetlen bemeneti függvénynél is sok lehetséges völgyben landolhatunk, 
+
+103
+00:06:30,897 --> 00:06:34,901
+attól függően, hogy milyen véletlen bemenetről indulunk, és nincs garancia arra, 
+
+104
+00:06:34,901 --> 00:06:38,806
+hogy a lokális minimum, ahol landolunk, a költségfüggvény legkisebb lehetséges 
+
+105
+00:06:38,806 --> 00:06:39,400
+értéke lesz.
+
+106
+00:06:40,220 --> 00:06:42,620
+Ez a neurális hálózatos esetünkre is át fog terjedni.
+
+107
+00:06:43,180 --> 00:06:48,287
+Azt is szeretném, ha észrevennéd, hogy ha a lépések méretét a lejtővel arányossá teszed, 
+
+108
+00:06:48,287 --> 00:06:51,099
+akkor amikor a lejtő a minimum felé ellaposodik, 
+
+109
+00:06:51,099 --> 00:06:54,600
+a lépéseid egyre kisebbek lesznek, és ez segít a túllövéstől.
+
+110
+00:06:55,940 --> 00:06:58,414
+A bonyolultságot egy kicsit megnövelve, képzeljünk el 
+
+111
+00:06:58,414 --> 00:07:00,980
+helyette egy függvényt két bemenettel és egy kimenettel.
+
+112
+00:07:01,500 --> 00:07:04,994
+A bemeneti teret az xy-síknak, a költségfüggvényt 
+
+113
+00:07:04,994 --> 00:07:08,140
+pedig a felette lévő felületnek tekinthetjük.
+
+114
+00:07:08,760 --> 00:07:11,571
+Ahelyett, hogy a függvény meredekségét kérdeznénk, 
+
+115
+00:07:11,571 --> 00:07:16,092
+azt kell megkérdeznünk, hogy milyen irányba kell lépnünk ebben a bemeneti térben, 
+
+116
+00:07:16,092 --> 00:07:18,960
+hogy a függvény kimenete a leggyorsabban csökkenjen.
+
+117
+00:07:19,720 --> 00:07:21,760
+Más szóval, mi a lejtő iránya?
+
+118
+00:07:22,380 --> 00:07:25,560
+Ismét hasznos, ha egy golyóra gondolunk, amely legurul a dombon.
+
+119
+00:07:26,660 --> 00:07:29,675
+Akik ismerik a többváltozós számítást, azok tudják, 
+
+120
+00:07:29,675 --> 00:07:33,792
+hogy egy függvény gradiense megadja a legmeredekebb emelkedés irányát, 
+
+121
+00:07:33,792 --> 00:07:38,780
+vagyis azt, hogy melyik irányba kell lépni, hogy a függvényt a leggyorsabban növeljük.
+
+122
+00:07:39,560 --> 00:07:42,162
+Természetesen, ha a gradiens negatívját vesszük, 
+
+123
+00:07:42,162 --> 00:07:46,040
+megkapjuk azt a lépésirányt, amely a leggyorsabban csökkenti a függvényt.
+
+124
+00:07:47,240 --> 00:07:51,045
+Sőt, a meredekségvektor hossza még ennél is többet mutat arról, 
+
+125
+00:07:51,045 --> 00:07:53,840
+hogy mennyire meredek az a legmeredekebb lejtő.
+
+126
+00:07:54,540 --> 00:07:57,659
+Ha nem ismered a többváltozós számítást, és többet szeretnél megtudni, 
+
+127
+00:07:57,659 --> 00:08:00,340
+nézd meg a Khan Academy számára készített munkámat a témában.
+
+128
+00:08:00,860 --> 00:08:04,171
+Őszintén szólva azonban most csak az számít neked és nekem, 
+
+129
+00:08:04,171 --> 00:08:07,870
+hogy elvileg létezik egy mód arra, hogy kiszámítsuk ezt a vektort, 
+
+130
+00:08:07,870 --> 00:08:11,900
+ezt a vektort, amely megmondja, hogy mi a lejtő iránya és milyen meredek.
+
+131
+00:08:12,400 --> 00:08:16,120
+Nem lesz gond, ha csak ennyit tudsz, és nem vagy sziklaszilárd a részletekben.
+
+132
+00:08:17,200 --> 00:08:20,891
+Ha ez megvan, akkor a függvény minimalizálásának algoritmusa az, 
+
+133
+00:08:20,891 --> 00:08:24,979
+hogy kiszámítja ezt a gradiens irányt, majd tesz egy kis lépést lefelé, 
+
+134
+00:08:24,979 --> 00:08:26,740
+és ezt újra és újra megismétli.
+
+135
+00:08:27,700 --> 00:08:30,339
+Ugyanez az alapötlet egy olyan függvény esetében, 
+
+136
+00:08:30,339 --> 00:08:32,820
+amelynek 2 bemenet helyett 13 000 bemenete van.
+
+137
+00:08:33,400 --> 00:08:36,430
+Képzeljük el, hogy a hálózatunk mind a 13 000 súlyát 
+
+138
+00:08:36,430 --> 00:08:39,460
+és torzítását egy hatalmas oszlopvektorba szervezzük.
+
+139
+00:08:40,140 --> 00:08:43,627
+A költségfüggvény negatív gradiense csak egy vektor, 
+
+140
+00:08:43,627 --> 00:08:48,168
+ez egy irány ebben az őrülten nagy bemeneti térben, amely megmondja, 
+
+141
+00:08:48,168 --> 00:08:53,037
+hogy az összes számhoz képest melyik lökés fogja a leggyorsabb csökkenést 
+
+142
+00:08:53,037 --> 00:08:54,880
+okozni a költségfüggvényben.
+
+143
+00:08:55,640 --> 00:08:59,072
+És természetesen a speciálisan tervezett költségfüggvényünkkel a súlyok és az 
+
+144
+00:08:59,072 --> 00:09:02,812
+előfeszítések csökkentése érdekében a súlyok és az előfeszítések megváltoztatása azt 
+
+145
+00:09:02,812 --> 00:09:06,464
+jelenti, hogy a hálózat kimenete az egyes képzési adatokon kevésbé hasonlít egy 10 
+
+146
+00:09:06,464 --> 00:09:09,544
+értékből álló véletlenszerű tömbre, és inkább egy tényleges döntésre, 
+
+147
+00:09:09,544 --> 00:09:10,820
+amelyet meg szeretnénk hozni.
+
+148
+00:09:11,440 --> 00:09:16,449
+Fontos megjegyezni, hogy ez a költségfüggvény az összes képzési adat átlagát tartalmazza, 
+
+149
+00:09:16,449 --> 00:09:21,180
+így ha minimalizálja, az azt jelenti, hogy az összes mintán jobb teljesítményt nyújt.
+
+150
+00:09:23,820 --> 00:09:26,895
+A gradiens hatékony kiszámítására szolgáló algoritmust, 
+
+151
+00:09:26,895 --> 00:09:30,080
+amely gyakorlatilag a neurális hálózat tanulásának szíve, 
+
+152
+00:09:30,080 --> 00:09:33,980
+backpropagációnak hívják, és erről fogok beszélni a következő videóban.
+
+153
+00:09:34,660 --> 00:09:37,643
+Itt tényleg szeretnék időt szánni arra, hogy végigsétáljak azon, 
+
+154
+00:09:37,643 --> 00:09:40,673
+hogy mi történik pontosan az egyes súlyokkal és torzításokkal egy 
+
+155
+00:09:40,673 --> 00:09:44,208
+adott képzési adatdarab esetében, és megpróbálok intuitív érzést adni arról, 
+
+156
+00:09:44,208 --> 00:09:47,100
+hogy mi történik a vonatkozó számítások és képletek halmán túl.
+
+157
+00:09:47,780 --> 00:09:51,019
+Itt és most, a legfontosabb dolog, amit szeretném, ha tudnátok, 
+
+158
+00:09:51,019 --> 00:09:55,373
+a megvalósítás részleteitől függetlenül, hogy amikor a hálózat tanulásáról beszélünk, 
+
+159
+00:09:55,373 --> 00:09:58,360
+azt értjük alatta, hogy egy költségfüggvény minimalizálása.
+
+160
+00:09:59,300 --> 00:10:02,297
+És vegyük észre, hogy ennek egyik következménye, hogy fontos, 
+
+161
+00:10:02,297 --> 00:10:04,860
+hogy a költségfüggvénynek szép sima kimenete legyen, 
+
+162
+00:10:04,860 --> 00:10:08,100
+hogy kis lépésekkel lefelé haladva megtaláljuk a lokális minimumot.
+
+163
+00:10:09,260 --> 00:10:13,703
+Ez az oka egyébként annak, hogy a mesterséges neuronok folyamatosan változó 
+
+164
+00:10:13,703 --> 00:10:17,620
+aktivációjúak, és nem egyszerűen binárisan aktívak vagy inaktívak, 
+
+165
+00:10:17,620 --> 00:10:19,140
+mint a biológiai neuronok.
+
+166
+00:10:20,220 --> 00:10:23,397
+Ezt a folyamatot, amelynek során egy függvény bemenetét ismételten a 
+
+167
+00:10:23,397 --> 00:10:26,760
+negatív gradiens többszörösével lökdösik, gradiens süllyedésnek nevezzük.
+
+168
+00:10:27,300 --> 00:10:30,765
+Ez egy módja annak, hogy a költségfüggvény egy lokális minimuma felé konvergáljunk, 
+
+169
+00:10:30,765 --> 00:10:32,580
+ami gyakorlatilag egy völgy ebben a gráfban.
+
+170
+00:10:33,440 --> 00:10:37,172
+Természetesen még mindig egy két bemenettel rendelkező függvény képét mutatom, 
+
+171
+00:10:37,172 --> 00:10:41,141
+mert a 13 000 dimenziós bemeneti térben a lökéseket egy kicsit nehéz elgondolkodni, 
+
+172
+00:10:41,141 --> 00:10:44,260
+de van egy szép nem térbeli módja annak, hogy erről gondolkodjunk.
+
+173
+00:10:45,080 --> 00:10:48,440
+A negatív gradiens minden egyes összetevője két dolgot mond el nekünk.
+
+174
+00:10:49,060 --> 00:10:52,180
+Az előjel természetesen megmondja, hogy a bemeneti vektor 
+
+175
+00:10:52,180 --> 00:10:55,140
+megfelelő komponensét felfelé vagy lefelé kell-e tolni.
+
+176
+00:10:55,800 --> 00:11:00,125
+De ami fontos, hogy ezen összetevők relatív nagysága megmutatja, 
+
+177
+00:11:00,125 --> 00:11:02,720
+hogy mely változások számítanak többet.
+
+178
+00:11:05,220 --> 00:11:09,101
+Látja, a mi hálózatunkban az egyik súly kiigazítása sokkal nagyobb 
+
+179
+00:11:09,101 --> 00:11:13,040
+hatással lehet a költségfüggvényre, mint egy másik súly kiigazítása.
+
+180
+00:11:14,800 --> 00:11:18,200
+Néhány ilyen kapcsolat egyszerűen csak többet számít a képzési adataink szempontjából.
+
+181
+00:11:19,320 --> 00:11:23,900
+Tehát az észbontóan masszív költségfüggvényünk gradiens vektorára úgy gondolhatsz, 
+
+182
+00:11:23,900 --> 00:11:28,095
+hogy az egyes súlyok és torzítások relatív fontosságát kódolja, vagyis azt, 
+
+183
+00:11:28,095 --> 00:11:32,400
+hogy ezek közül a változások közül melyik fogja a legtöbbet hozni a pénzedért.
+
+184
+00:11:33,620 --> 00:11:36,640
+Ez tényleg csak egy másik módja az irányról való gondolkodásnak.
+
+185
+00:11:37,100 --> 00:11:42,403
+Egy egyszerűbb példával élve, ha van valamilyen függvényünk két változóval, mint bemenet, 
+
+186
+00:11:42,403 --> 00:11:46,233
+és kiszámítjuk, hogy a gradiensének egy adott ponton 3,1 jön ki, 
+
+187
+00:11:46,233 --> 00:11:50,475
+akkor egyrészt ezt úgy értelmezhetjük, hogy amikor a bemenetnél állunk, 
+
+188
+00:11:50,475 --> 00:11:54,894
+akkor az ebben az irányban való mozgás növeli a leggyorsabban a függvényt, 
+
+189
+00:11:54,894 --> 00:11:58,842
+hogy amikor a függvényt a bemeneti pontok síkja felett ábrázoljuk, 
+
+190
+00:11:58,842 --> 00:12:02,260
+akkor ez a vektor adja az egyenesen felfelé mutató irányt.
+
+191
+00:12:02,860 --> 00:12:05,531
+De ezt másképp is olvashatjuk, ha azt mondjuk, 
+
+192
+00:12:05,531 --> 00:12:10,590
+hogy az első változó változása háromszor olyan fontos, mint a második változó változása, 
+
+193
+00:12:10,590 --> 00:12:15,422
+hogy legalábbis a releváns bemenet szomszédságában az x-érték megváltoztatása sokkal 
+
+194
+00:12:15,422 --> 00:12:16,900
+több pénzt hoz a konyhára.
+
+195
+00:12:19,880 --> 00:12:22,340
+Nagyítsuk ki és foglaljuk össze, hol tartunk eddig.
+
+196
+00:12:22,840 --> 00:12:26,755
+Maga a hálózat ez a függvény 784 bemenettel és 10 kimenettel, 
+
+197
+00:12:26,755 --> 00:12:30,040
+amelyet e súlyozott összegek alapján határozunk meg.
+
+198
+00:12:30,640 --> 00:12:33,680
+A költségfüggvény egy újabb komplexitási réteg a tetején.
+
+199
+00:12:33,980 --> 00:12:37,267
+A program a 13 000 súlyt és torzítást veszi be, 
+
+200
+00:12:37,267 --> 00:12:41,720
+és a képzési példák alapján egyetlen pocséksági mérőszámot ad ki.
+
+201
+00:12:42,440 --> 00:12:46,900
+A költségfüggvény gradiense pedig még egy réteggel bonyolultabb.
+
+202
+00:12:47,360 --> 00:12:50,628
+Megmondja, hogy az összes súly és torzítás milyen változtatásai 
+
+203
+00:12:50,628 --> 00:12:53,743
+okozzák a leggyorsabb változást a költségfüggvény értékében, 
+
+204
+00:12:53,743 --> 00:12:57,880
+amit úgy is értelmezhetünk, hogy melyik súlyok változásai számítanak a legtöbbet.
+
+205
+00:13:02,560 --> 00:13:06,380
+Tehát, ha a hálózatot véletlenszerű súlyokkal és torzításokkal inicializáljuk, 
+
+206
+00:13:06,380 --> 00:13:09,959
+és ezeket a gradiens ereszkedési folyamat alapján többször is módosítjuk, 
+
+207
+00:13:09,959 --> 00:13:13,200
+mennyire jól teljesít olyan képeken, amelyeket még soha nem látott?
+
+208
+00:13:14,100 --> 00:13:19,163
+Az általam itt leírt, két, egyenként 16 neuronból álló rejtett réteggel, 
+
+209
+00:13:19,163 --> 00:13:23,185
+amelyet főleg esztétikai okokból választottam, nem rossz, 
+
+210
+00:13:23,185 --> 00:13:25,960
+az új képek 96%-át helyesen osztályozza.
+
+211
+00:13:26,680 --> 00:13:29,685
+És őszintén szólva, ha megnézel néhány példát, amit elront, 
+
+212
+00:13:29,685 --> 00:13:32,540
+úgy érzed, hogy kénytelen vagy egy kicsit lazítani rajta.
+
+213
+00:13:36,220 --> 00:13:38,862
+Ha most a rejtett réteg struktúrájával játszadozol, 
+
+214
+00:13:38,862 --> 00:13:41,760
+és néhány finomítást végzel, akkor ezt 98%-ra növelheted.
+
+215
+00:13:41,760 --> 00:13:42,720
+És ez nagyon jó!
+
+216
+00:13:43,020 --> 00:13:45,956
+Nem ez a legjobb, biztosan lehet jobb teljesítményt elérni, 
+
+217
+00:13:45,956 --> 00:13:49,381
+ha ennél a sima vaníliahálózatnál kifinomultabbá válunk, de tekintve, 
+
+218
+00:13:49,381 --> 00:13:53,394
+hogy mennyire ijesztő a kezdeti feladat, azt hiszem, van valami hihetetlen abban, 
+
+219
+00:13:53,394 --> 00:13:57,407
+hogy egy hálózat ilyen jól teljesít olyan képeken, amelyeket még soha nem látott, 
+
+220
+00:13:57,407 --> 00:14:01,420
+tekintve, hogy soha nem mondtuk meg neki konkrétan, hogy milyen mintákat keressen.
+
+221
+00:14:02,560 --> 00:14:06,451
+Eredetileg úgy motiváltam ezt a struktúrát, hogy leírtam egy reményt, 
+
+222
+00:14:06,451 --> 00:14:11,065
+hogy a második réteg felismeri a kis éleket, a harmadik réteg összerakja ezeket az 
+
+223
+00:14:11,065 --> 00:14:14,400
+éleket, hogy felismerje a hurkokat és a hosszabb vonalakat, 
+
+224
+00:14:14,400 --> 00:14:17,180
+és ezekből összeállítva felismerje a számjegyeket.
+
+225
+00:14:17,960 --> 00:14:20,400
+Tehát a hálózatunk valójában ezt csinálja?
+
+226
+00:14:21,080 --> 00:14:24,400
+Nos, legalábbis ebben az esetben egyáltalán nem.
+
+227
+00:14:24,820 --> 00:14:27,453
+Emlékeztek, hogy az előző videóban azt néztük meg, 
+
+228
+00:14:27,453 --> 00:14:31,637
+hogy az első réteg összes neuronja és a második réteg egy adott neuronja közötti 
+
+229
+00:14:31,637 --> 00:14:34,994
+kapcsolatok súlyai hogyan ábrázolhatók egy adott pixelmintaként, 
+
+230
+00:14:34,994 --> 00:14:37,060
+amelyet a második réteg neuronja felfog?
+
+231
+00:14:37,780 --> 00:14:42,264
+Nos, amikor ezt az átmenetekhez kapcsolódó súlyokkal végezzük el, 
+
+232
+00:14:42,264 --> 00:14:47,564
+az első rétegből a következőbe, ahelyett, hogy itt-ott elszigetelt kis éleket 
+
+233
+00:14:47,564 --> 00:14:53,680
+vennénk észre, szinte véletlenszerűnek tűnnek, csak néhány nagyon laza mintával a közepén.
+
+234
+00:14:53,760 --> 00:14:58,086
+Úgy tűnik, hogy a lehetséges súlyok és torzítások kifürkészhetetlenül nagy, 
+
+235
+00:14:58,086 --> 00:15:03,039
+13 000 dimenziós terében a hálózatunk egy boldog kis lokális minimumot talált magának, 
+
+236
+00:15:03,039 --> 00:15:06,796
+amely annak ellenére, hogy a legtöbb képet sikeresen osztályozza, 
+
+237
+00:15:06,796 --> 00:15:08,960
+nem éppen a remélt mintákat veszi fel.
+
+238
+00:15:09,780 --> 00:15:12,033
+És hogy ezt a pontot tényleg hazavezesse, nézze meg, 
+
+239
+00:15:12,033 --> 00:15:13,820
+mi történik, ha véletlenszerű képet ad be.
+
+240
+00:15:14,320 --> 00:15:18,130
+Ha a rendszer okos lenne, akkor azt várnánk, hogy bizonytalan, 
+
+241
+00:15:18,130 --> 00:15:21,397
+talán nem aktiválja a 10 kimeneti neuron egyikét sem, 
+
+242
+00:15:21,397 --> 00:15:26,780
+vagy nem aktiválja őket egyenletesen, de ehelyett magabiztosan ad valami ostoba választ, 
+
+243
+00:15:26,780 --> 00:15:31,377
+mintha ugyanolyan biztos lenne abban, hogy ez a véletlenszerű zaj egy 5-ös, 
+
+244
+00:15:31,377 --> 00:15:34,160
+mint abban, hogy az 5-ös valódi képe egy 5-ös.
+
+245
+00:15:34,540 --> 00:15:38,496
+Másképp fogalmazva, még ha ez a hálózat elég jól fel is ismeri a számjegyeket, 
+
+246
+00:15:38,496 --> 00:15:40,700
+fogalma sincs, hogyan kell őket megrajzolni.
+
+247
+00:15:41,420 --> 00:15:45,240
+Ez nagyrészt azért van, mert ez egy olyan szűkös képzési keret.
+
+248
+00:15:45,880 --> 00:15:47,740
+Úgy értem, képzelje magát a hálózat helyébe.
+
+249
+00:15:48,140 --> 00:15:51,046
+Az ő szemszögéből nézve az egész világegyetem nem áll másból, 
+
+250
+00:15:51,046 --> 00:15:54,094
+mint egy apró rács középpontjában lévő, világosan meghatározott, 
+
+251
+00:15:54,094 --> 00:15:57,610
+mozdulatlan számjegyekből, és a költségfüggvénye soha nem ösztönözte arra, 
+
+252
+00:15:57,610 --> 00:16:01,080
+hogy bármi mást tegyen, minthogy teljesen magabiztos legyen a döntéseiben.
+
+253
+00:16:02,120 --> 00:16:04,734
+Így, hogy a második réteg neuronjai valójában mit csinálnak, 
+
+254
+00:16:04,734 --> 00:16:08,420
+talán elgondolkodik azon, hogy miért mutatom be ezt a hálózatot azzal a motivációval, 
+
+255
+00:16:08,420 --> 00:16:09,920
+hogy éleket és mintákat vegyen fel.
+
+256
+00:16:09,920 --> 00:16:12,300
+Úgy értem, ez egyáltalán nem az, amit végül is csinál.
+
+257
+00:16:13,380 --> 00:16:17,180
+Nos, ez nem a végcélunk, hanem egy kiindulópont.
+
+258
+00:16:17,640 --> 00:16:20,263
+Őszintén szólva, ez egy régi technológia, az a fajta, 
+
+259
+00:16:20,263 --> 00:16:23,226
+amit a 80-as és 90-es években kutattak, és meg kell értened, 
+
+260
+00:16:23,226 --> 00:16:25,801
+mielőtt megérted a részletesebb modern változatokat, 
+
+261
+00:16:25,801 --> 00:16:28,667
+és nyilvánvalóan képes megoldani néhány érdekes problémát, 
+
+262
+00:16:28,667 --> 00:16:33,039
+de minél jobban beleásod magad abba, hogy mit csinálnak valójában ezek a rejtett rétegek, 
+
+263
+00:16:33,039 --> 00:16:34,740
+annál kevésbé tűnik intelligensnek.
+
+264
+00:16:38,480 --> 00:16:41,970
+Ha egy pillanatra a hangsúlyt a hálózatok tanulási módjáról arra helyezzük át, 
+
+265
+00:16:41,970 --> 00:16:44,267
+hogy hogyan tanulsz, ez csak akkor fog megtörténni, 
+
+266
+00:16:44,267 --> 00:16:46,300
+ha valahogyan aktívan foglalkozol az anyaggal.
+
+267
+00:16:47,060 --> 00:16:49,853
+Egy nagyon egyszerű dolgot szeretnék, ha most megállnál, 
+
+268
+00:16:49,853 --> 00:16:53,479
+és egy pillanatra mélyen elgondolkodnál azon, hogy milyen változtatásokat 
+
+269
+00:16:53,479 --> 00:16:56,812
+tudnál tenni ezen a rendszeren és azon, ahogyan a képeket érzékeli, 
+
+270
+00:16:56,812 --> 00:17:00,880
+ha azt akarnád, hogy jobban észrevegye az olyan dolgokat, mint az élek és a minták.
+
+271
+00:17:01,480 --> 00:17:04,826
+De még ennél is jobb, ha valóban foglalkozni akarsz az anyaggal, 
+
+272
+00:17:04,826 --> 00:17:09,099
+nagyon ajánlom Michael Nielsen könyvét a mélytanulásról és a neurális hálózatokról.
+
+273
+00:17:09,680 --> 00:17:14,165
+Ebben megtalálod a kódot és az adatokat, amelyeket letölthetsz és játszhatsz 
+
+274
+00:17:14,165 --> 00:17:18,359
+ezzel a pontos példával, és a könyv lépésről lépésre végigvezet a kódon.
+
+275
+00:17:19,300 --> 00:17:22,697
+A legjobb az egészben az, hogy ez a könyv ingyenes és nyilvánosan elérhető, 
+
+276
+00:17:22,697 --> 00:17:25,782
+így ha valamit kihozol belőle, fontold meg, hogy csatlakozol hozzám, 
+
+277
+00:17:25,782 --> 00:17:27,660
+és adományozol a Nielsen erőfeszítéseihez.
+
+278
+00:17:27,660 --> 00:17:31,872
+A leírásban néhány más, általam nagyon kedvelt forrást is belinkeltem, 
+
+279
+00:17:31,872 --> 00:17:36,500
+köztük Chris Ola fenomenális és gyönyörű blogbejegyzését és a Distill cikkeit.
+
+280
+00:17:38,280 --> 00:17:41,052
+Az utolsó percek lezárásaként szeretném visszaadni 
+
+281
+00:17:41,052 --> 00:17:43,880
+egy részletet a Leisha Lee-vel készített interjúból.
+
+282
+00:17:44,300 --> 00:17:47,720
+Talán emlékeztek rá az előző videóból, a mélytanulásban végzett doktori munkát.
+
+283
+00:17:48,300 --> 00:17:51,491
+Ebben a kis részletben két nemrégiben megjelent cikkről beszél, 
+
+284
+00:17:51,491 --> 00:17:55,780
+amelyek igazán mélyre ásnak abban, hogyan tanulnak a modernebb képfelismerő hálózatok.
+
+285
+00:17:56,120 --> 00:17:58,506
+Csak hogy tisztázzuk, hol tartunk a beszélgetésben, 
+
+286
+00:17:58,506 --> 00:18:01,672
+az első cikk az egyik ilyen különösen mély neurális hálózatot vette, 
+
+287
+00:18:01,672 --> 00:18:03,921
+amely nagyon jó a képfelismerésben, és ahelyett, 
+
+288
+00:18:03,921 --> 00:18:06,766
+hogy egy megfelelően címkézett adathalmazon képezte volna ki, 
+
+289
+00:18:06,766 --> 00:18:08,740
+a képzés előtt az összes címkét megkeverte.
+
+290
+00:18:09,480 --> 00:18:13,407
+Nyilvánvaló, hogy a tesztelési pontosság itt sem volt jobb, mint a véletlenszerű, 
+
+291
+00:18:13,407 --> 00:18:15,706
+mivel minden csak véletlenszerűen van címkézve, 
+
+292
+00:18:15,706 --> 00:18:18,772
+de még mindig képes volt ugyanazt a képzési pontosságot elérni, 
+
+293
+00:18:18,772 --> 00:18:20,880
+mint egy megfelelően címkézett adathalmazon.
+
+294
+00:18:21,600 --> 00:18:25,413
+Alapvetően, a több millió súly ennek a hálózatnak elég volt ahhoz, 
+
+295
+00:18:25,413 --> 00:18:29,455
+hogy csak megjegyezze a véletlenszerű adatokat, ami felveti a kérdést, 
+
+296
+00:18:29,455 --> 00:18:34,407
+hogy vajon a költségfüggvény minimalizálása valóban megfelel-e valamilyen struktúrának 
+
+297
+00:18:34,407 --> 00:18:36,400
+a képben, vagy ez csak memorizálás?
+
+298
+00:18:51,440 --> 00:18:57,710
+Ha megnézzük a pontossági görbét, ha csak egy véletlenszerű adathalmazon edzenénk, 
+
+299
+00:18:57,710 --> 00:19:02,318
+akkor ez a görbe nagyon lassan, szinte lineárisan csökkenne, 
+
+300
+00:19:02,318 --> 00:19:07,758
+tehát tényleg küzdünk, hogy megtaláljuk a lehetséges helyi minimumokat, 
+
+301
+00:19:07,758 --> 00:19:12,140
+a megfelelő súlyokat, amelyekkel elérhetjük a pontosságot.
+
+302
+00:19:12,240 --> 00:19:17,279
+Míg ha egy strukturált, megfelelő címkékkel rendelkező adathalmazon edzünk, 
+
+303
+00:19:17,279 --> 00:19:22,849
+akkor az elején egy kicsit babrálunk, de aztán nagyon gyorsan eljutunk a pontossági 
+
+304
+00:19:22,849 --> 00:19:28,220
+szintre, és így bizonyos értelemben könnyebb volt megtalálni a lokális maximumot.
+
+305
+00:19:28,540 --> 00:19:31,907
+És ami szintén érdekes volt ebben, az az, hogy ez egy másik, 
+
+306
+00:19:31,907 --> 00:19:34,722
+néhány évvel ezelőtti tanulmányt is felszínre hoz, 
+
+307
+00:19:34,722 --> 00:19:39,083
+amely sokkal több egyszerűsítést tartalmaz a hálózati rétegekkel kapcsolatban, 
+
+308
+00:19:39,083 --> 00:19:43,444
+de az egyik eredmény azt mondja, hogy ha megnézzük az optimalizációs tájképet, 
+
+309
+00:19:43,444 --> 00:19:47,364
+a lokális minimumok, amelyeket ezek a hálózatok hajlamosak megtanulni, 
+
+310
+00:19:47,364 --> 00:19:52,277
+valójában azonos minőségűek, így bizonyos értelemben, ha az adatállományunk strukturált, 
+
+311
+00:19:52,277 --> 00:19:54,320
+sokkal könnyebben megtalálhatjuk azt.
+
+312
+00:19:58,160 --> 00:20:01,180
+Köszönöm, mint mindig, azoknak, akik támogatnak a Patreonon.
+
+313
+00:20:01,520 --> 00:20:04,410
+Már korábban is mondtam, hogy a Patreon mennyire megváltoztatja a játékot, 
+
+314
+00:20:04,410 --> 00:20:06,800
+de ezek a videók tényleg nem lennének lehetségesek nélkületek.
+
+315
+00:20:07,460 --> 00:20:11,106
+Külön köszönetet szeretnék mondani az Amplify Partners nevű kockázatitőke-cégnek is, 
+
+316
+00:20:11,106 --> 00:20:12,780
+amely támogatta a sorozat első videóit.
+

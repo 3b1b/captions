@@ -1,0 +1,1220 @@
+1
+00:00:04,180 --> 00:00:07,280
+Geçen videoda bir sinir ağının yapısını anlatmıştım.
+
+2
+00:00:07,680 --> 00:00:09,976
+Aklımızda taze kalması için burada kısa bir özet 
+
+3
+00:00:09,976 --> 00:00:12,600
+geçeceğim ve ardından bu video için iki ana hedefim var.
+
+4
+00:00:13,100 --> 00:00:15,895
+Birincisi, sadece sinir ağlarının nasıl öğrendiğinin değil, 
+
+5
+00:00:15,895 --> 00:00:19,668
+aynı zamanda diğer birçok makine öğreniminin de temelini oluşturan gradyan inişi 
+
+6
+00:00:19,668 --> 00:00:20,600
+fikrini tanıtmaktır.
+
+7
+00:00:21,120 --> 00:00:24,800
+Daha sonra bu özel ağın nasıl performans gösterdiğini ve nöronların 
+
+8
+00:00:24,800 --> 00:00:27,940
+gizli katmanlarının ne aradığını biraz daha inceleyeceğiz.
+
+9
+00:00:28,980 --> 00:00:32,539
+Hatırlatmak gerekirse, buradaki hedefimiz, sinir ağlarının 
+
+10
+00:00:32,539 --> 00:00:36,220
+merhaba dünyası olan klasik el yazısı rakam tanıma örneğidir.
+
+11
+00:00:37,020 --> 00:00:40,163
+Bu rakamlar 28x28 piksellik bir ızgarada işlenir ve her 
+
+12
+00:00:40,163 --> 00:00:43,420
+piksel 0 ile 1 arasında bir gri tonlama değerine sahiptir.
+
+13
+00:00:43,820 --> 00:00:50,040
+Bunlar, ağın giriş katmanındaki 784 nöronun aktivasyonlarını belirleyen şeylerdir.
+
+14
+00:00:51,180 --> 00:00:54,333
+Sonraki katmanlardaki her bir nöron için aktivasyon, 
+
+15
+00:00:54,333 --> 00:00:59,213
+bir önceki katmandaki tüm aktivasyonların ağırlıklı toplamına ve bias adı verilen 
+
+16
+00:00:59,213 --> 00:01:00,820
+bazı özel sayılara dayanır.
+
+17
+00:01:02,160 --> 00:01:06,474
+Daha sonra bu toplamı sigmoid squishification veya relu gibi başka bir fonksiyonla, 
+
+18
+00:01:06,474 --> 00:01:08,940
+geçen videoda anlattığım şekilde oluşturursunuz.
+
+19
+00:01:09,480 --> 00:01:14,577
+Toplamda, her biri 16 nöronlu iki gizli katmanın biraz keyfi seçimi göz önüne 
+
+20
+00:01:14,577 --> 00:01:19,544
+alındığında, ağın ayarlayabileceğimiz yaklaşık 13.000 ağırlığı ve önyargısı 
+
+21
+00:01:19,544 --> 00:01:24,380
+vardır ve ağın gerçekte tam olarak ne yaptığını belirleyen bu değerlerdir.
+
+22
+00:01:24,880 --> 00:01:29,319
+O zaman bu ağın belirli bir rakamı sınıflandırdığını söylediğimizde kastettiğimiz şey, 
+
+23
+00:01:29,319 --> 00:01:33,300
+son katmandaki bu 10 nörondan en parlak olanının o rakama karşılık geldiğidir.
+
+24
+00:01:34,100 --> 00:01:37,922
+Ve hatırlayın, burada katmanlı yapı için aklımızdaki motivasyon, 
+
+25
+00:01:37,922 --> 00:01:42,920
+belki ikinci katmanın kenarları, üçüncü katmanın ilmekler ve çizgiler gibi desenleri 
+
+26
+00:01:42,920 --> 00:01:47,741
+algılayabileceği ve sonuncusunun da rakamları tanımak için bu desenleri bir araya 
+
+27
+00:01:47,741 --> 00:01:48,800
+getirebileceğiydi.
+
+28
+00:01:49,800 --> 00:01:52,240
+Yani burada, ağın nasıl öğrendiğini öğreniyoruz.
+
+29
+00:01:52,640 --> 00:01:57,257
+İstediğimiz şey, bu ağa bir dizi eğitim verisi gösterebileceğiniz bir algoritmadır; 
+
+30
+00:01:57,257 --> 00:02:01,819
+bu veriler, el yazısıyla yazılmış rakamların bir dizi farklı görüntüsü ve bunların 
+
+31
+00:02:01,819 --> 00:02:06,602
+ne olması gerektiğine dair etiketler şeklinde gelir ve bu 13.000 ağırlık ve önyargıyı, 
+
+32
+00:02:06,602 --> 00:02:10,120
+eğitim verilerindeki performansını artırmak için ayarlayacaktır.
+
+33
+00:02:10,720 --> 00:02:13,890
+Umarım bu katmanlı yapı, öğrendiklerinin bu eğitim verilerinin 
+
+34
+00:02:13,890 --> 00:02:16,860
+ötesindeki görüntülere de genellenebileceği anlamına gelir.
+
+35
+00:02:17,640 --> 00:02:22,013
+Bunu test etmenin yolu, ağı eğittikten sonra ona daha önce hiç görmediği daha fazla 
+
+36
+00:02:22,013 --> 00:02:26,700
+etiketli veri göstermek ve bu yeni görüntüleri ne kadar doğru sınıflandırdığını görmektir.
+
+37
+00:02:31,120 --> 00:02:35,109
+Neyse ki bizim için ve bunu başlamak için bu kadar yaygın bir örnek yapan şey, 
+
+38
+00:02:35,109 --> 00:02:37,533
+MNIST veritabanının arkasındaki iyi insanların, 
+
+39
+00:02:37,533 --> 00:02:42,028
+her biri olması gereken sayılarla etiketlenmiş on binlerce el yazısı rakam görüntüsünden 
+
+40
+00:02:42,028 --> 00:02:44,200
+oluşan bir koleksiyon oluşturmuş olmasıdır.
+
+41
+00:02:44,900 --> 00:02:48,832
+Ve bir makineyi öğrenen olarak tanımlamak ne kadar kışkırtıcı olsa da, 
+
+42
+00:02:48,832 --> 00:02:53,042
+nasıl çalıştığını gördüğünüzde, çılgın bir bilim kurgu önermesi gibi değil, 
+
+43
+00:02:53,042 --> 00:02:55,480
+daha çok bir hesap alıştırması gibi geliyor.
+
+44
+00:02:56,200 --> 00:02:59,960
+Yani, temelde belirli bir fonksiyonun minimumunu bulmaya dayanıyor.
+
+45
+00:03:01,940 --> 00:03:05,983
+Unutmayın, kavramsal olarak, her nöronun bir önceki katmandaki tüm 
+
+46
+00:03:05,983 --> 00:03:09,906
+nöronlara bağlı olduğunu düşünüyoruz ve aktivasyonunu tanımlayan 
+
+47
+00:03:09,906 --> 00:03:14,493
+ağırlıklı toplamdaki ağırlıklar, bu bağlantıların gücü gibidir ve yanlılık, 
+
+48
+00:03:14,493 --> 00:03:18,960
+bu nöronun aktif veya inaktif olma eğiliminde olduğunun bir göstergesidir.
+
+49
+00:03:19,720 --> 00:03:22,308
+Başlangıç olarak, tüm bu ağırlıkları ve önyargıları 
+
+50
+00:03:22,308 --> 00:03:24,400
+tamamen rastgele bir şekilde başlatacağız.
+
+51
+00:03:24,940 --> 00:03:27,763
+Söylemeye gerek yok, bu ağ sadece rastgele bir şey yaptığı için 
+
+52
+00:03:27,763 --> 00:03:30,720
+belirli bir eğitim örneğinde oldukça kötü performans gösterecektir.
+
+53
+00:03:31,040 --> 00:03:36,020
+Örneğin, bu 3 resmini giriyorsunuz ve çıktı katmanı karmakarışık görünüyor.
+
+54
+00:03:36,600 --> 00:03:40,970
+Yani yaptığınız şey bir maliyet fonksiyonu tanımlamak, bilgisayara, hayır, 
+
+55
+00:03:40,970 --> 00:03:43,767
+kötü bilgisayar, bu çıktının çoğu nöron için 0, 
+
+56
+00:03:43,767 --> 00:03:48,895
+ancak bu nöron için 1 olan aktivasyonlara sahip olması gerektiğini söylemenin bir yolu, 
+
+57
+00:03:48,895 --> 00:03:50,760
+bana verdiğiniz şey tamamen çöp.
+
+58
+00:03:51,720 --> 00:03:54,944
+Bunu biraz daha matematiksel olarak söylemek gerekirse, 
+
+59
+00:03:54,944 --> 00:03:59,492
+bu çöp çıktı aktivasyonlarının her biri ile sahip olmalarını istediğiniz değer 
+
+60
+00:03:59,492 --> 00:04:03,926
+arasındaki farkların karelerini toplarsınız ve buna tek bir eğitim örneğinin 
+
+61
+00:04:03,926 --> 00:04:05,020
+maliyeti diyeceğiz.
+
+62
+00:04:05,960 --> 00:04:11,029
+Bu toplamın, ağ görüntüyü kendinden emin bir şekilde doğru sınıflandırdığında küçük 
+
+63
+00:04:11,029 --> 00:04:16,399
+olduğuna, ancak ağ ne yaptığını bilmiyormuş gibi göründüğünde büyük olduğuna dikkat edin.
+
+64
+00:04:18,640 --> 00:04:21,782
+O zaman yapacağınız şey, elinizdeki on binlerce eğitim 
+
+65
+00:04:21,782 --> 00:04:25,440
+örneğinin tümünün ortalama maliyetini göz önünde bulundurmaktır.
+
+66
+00:04:27,040 --> 00:04:30,179
+Bu ortalama maliyet, ağın ne kadar kötü olduğuna ve bilgisayarın 
+
+67
+00:04:30,179 --> 00:04:32,740
+ne kadar kötü hissetmesi gerektiğine dair ölçümüzdür.
+
+68
+00:04:33,420 --> 00:04:34,600
+Ve bu karmaşık bir şey.
+
+69
+00:04:35,040 --> 00:04:38,897
+Ağın kendisinin temelde bir fonksiyon olduğunu hatırlıyor musunuz; 
+
+70
+00:04:38,897 --> 00:04:43,445
+784 sayıyı girdi olarak alan, piksel değerleri ve 10 sayıyı çıktı olarak veren 
+
+71
+00:04:43,445 --> 00:04:47,993
+ve bir anlamda tüm bu ağırlıklar ve yanlılıklar tarafından parametrelendirilen 
+
+72
+00:04:47,993 --> 00:04:48,800
+bir fonksiyon?
+
+73
+00:04:49,500 --> 00:04:52,820
+Maliyet fonksiyonu bunun üzerine eklenen bir karmaşıklık katmanıdır.
+
+74
+00:04:53,100 --> 00:04:58,024
+Girdi olarak bu 13.000 kadar ağırlık ve önyargıyı alır ve bu ağırlık ve 
+
+75
+00:04:58,024 --> 00:05:03,428
+önyargıların ne kadar kötü olduğunu açıklayan tek bir sayı verir ve bu sayının 
+
+76
+00:05:03,428 --> 00:05:08,900
+tanımlanma şekli ağın on binlerce eğitim verisi üzerindeki davranışına bağlıdır.
+
+77
+00:05:09,520 --> 00:05:11,000
+Düşünecek çok şey var.
+
+78
+00:05:12,400 --> 00:05:15,820
+Ancak sadece bilgisayara ne kadar kötü bir iş yaptığını söylemek pek yardımcı olmuyor.
+
+79
+00:05:16,220 --> 00:05:18,325
+Daha iyi olması için bu ağırlıkları ve önyargıları 
+
+80
+00:05:18,325 --> 00:05:20,060
+nasıl değiştireceğini söylemek istersiniz.
+
+81
+00:05:20,780 --> 00:05:25,768
+Bunu kolaylaştırmak için, 13.000 girdisi olan bir fonksiyon hayal etmeye çalışmak yerine, 
+
+82
+00:05:25,768 --> 00:05:30,480
+girdi olarak bir sayı ve çıktı olarak bir sayı içeren basit bir fonksiyon hayal edin.
+
+83
+00:05:31,480 --> 00:05:35,300
+Bu fonksiyonun değerini minimize eden bir girdiyi nasıl bulursunuz?
+
+84
+00:05:36,460 --> 00:05:41,123
+Kalkülüs öğrencileri bazen bu minimum değeri açık bir şekilde bulabileceğinizi bilirler, 
+
+85
+00:05:41,123 --> 00:05:44,949
+ancak bu gerçekten karmaşık fonksiyonlar için her zaman mümkün değildir, 
+
+86
+00:05:44,949 --> 00:05:48,617
+kesinlikle bu durumun çılgın karmaşık sinir ağı maliyet fonksiyonumuz 
+
+87
+00:05:48,617 --> 00:05:51,080
+için 13.000 girdi versiyonunda mümkün değildir.
+
+88
+00:05:51,580 --> 00:05:55,124
+Daha esnek bir taktik, herhangi bir girdiden başlamak ve bu 
+
+89
+00:05:55,124 --> 00:05:59,200
+çıktıyı düşürmek için hangi yönde adım atmanız gerektiğini bulmaktır.
+
+90
+00:06:00,080 --> 00:06:04,810
+Özellikle, bulunduğunuz yerde fonksiyonun eğimini bulabilirseniz, 
+
+91
+00:06:04,810 --> 00:06:09,900
+bu eğim pozitifse sola kaydırın ve eğim negatifse girişi sağa kaydırın.
+
+92
+00:06:11,960 --> 00:06:15,790
+Bunu tekrar tekrar yaparsanız, her noktada yeni eğimi kontrol eder ve 
+
+93
+00:06:15,790 --> 00:06:19,840
+uygun adımı atarsanız, fonksiyonun bazı yerel minimumlarına yaklaşırsınız.
+
+94
+00:06:20,640 --> 00:06:23,800
+Burada aklınıza gelebilecek görüntü, bir tepeden aşağı yuvarlanan bir top olabilir.
+
+95
+00:06:24,620 --> 00:06:28,680
+Dikkat edin, bu gerçekten basitleştirilmiş tek girdi fonksiyonu için bile, 
+
+96
+00:06:28,680 --> 00:06:32,253
+hangi rastgele girdiyle başladığınıza bağlı olarak inebileceğiniz 
+
+97
+00:06:32,253 --> 00:06:35,610
+birçok olası vadi vardır ve indiğiniz yerel minimumun maliyet 
+
+98
+00:06:35,610 --> 00:06:39,400
+fonksiyonunun mümkün olan en küçük değeri olacağının garantisi yoktur.
+
+99
+00:06:40,220 --> 00:06:42,620
+Bu bizim sinir ağı vakamıza da yansıyacaktır.
+
+100
+00:06:43,180 --> 00:06:46,702
+Ayrıca, adım boyutlarınızı eğimle orantılı hale getirirseniz, 
+
+101
+00:06:46,702 --> 00:06:50,509
+eğim minimuma doğru düzleşirken adımlarınızın nasıl küçüldüğünü ve 
+
+102
+00:06:50,509 --> 00:06:54,600
+bunun aşırıya kaçmanıza nasıl yardımcı olduğunu fark etmenizi istiyorum.
+
+103
+00:06:55,940 --> 00:06:58,308
+Karmaşıklığı biraz artırarak, bunun yerine iki 
+
+104
+00:06:58,308 --> 00:07:00,980
+girdisi ve bir çıktısı olan bir fonksiyon hayal edin.
+
+105
+00:07:01,500 --> 00:07:04,942
+Girdi uzayını xy düzlemi olarak ve maliyet fonksiyonunu 
+
+106
+00:07:04,942 --> 00:07:08,140
+da bunun üzerinde bir yüzey olarak düşünebilirsiniz.
+
+107
+00:07:08,760 --> 00:07:14,051
+Fonksiyonun eğimini sormak yerine, fonksiyonun çıktısını en hızlı şekilde azaltmak 
+
+108
+00:07:14,051 --> 00:07:18,960
+için bu girdi uzayında hangi yönde adım atmanız gerektiğini sormanız gerekir.
+
+109
+00:07:19,720 --> 00:07:21,760
+Başka bir deyişle, yokuş aşağı yön nedir?
+
+110
+00:07:22,380 --> 00:07:25,560
+Yine, tepeden aşağı yuvarlanan bir topu düşünmek faydalı olacaktır.
+
+111
+00:07:26,660 --> 00:07:30,741
+Çok değişkenli hesaba aşina olanlar, bir fonksiyonun gradyanının 
+
+112
+00:07:30,741 --> 00:07:34,949
+size en dik yükseliş yönünü verdiğini, fonksiyonu en hızlı şekilde 
+
+113
+00:07:34,949 --> 00:07:38,780
+artırmak için hangi yöne adım atmanız gerektiğini bilecektir.
+
+114
+00:07:39,560 --> 00:07:42,642
+Doğal olarak, bu gradyanın negatifini almak size 
+
+115
+00:07:42,642 --> 00:07:46,040
+fonksiyonu en hızlı şekilde azaltan adım yönünü verir.
+
+116
+00:07:47,240 --> 00:07:50,315
+Bunun da ötesinde, bu eğim vektörünün uzunluğu, 
+
+117
+00:07:50,315 --> 00:07:53,840
+en dik eğimin ne kadar dik olduğunun bir göstergesidir.
+
+118
+00:07:54,540 --> 00:07:57,458
+Çok değişkenli kalkülüs konusuna aşina değilseniz ve daha fazla bilgi edinmek 
+
+119
+00:07:57,458 --> 00:08:00,340
+istiyorsanız, Khan Academy için bu konuda yaptığım bazı çalışmalara göz atın.
+
+120
+00:08:00,860 --> 00:08:04,791
+Dürüst olmak gerekirse, şu anda sizin ve benim için önemli olan tek şey, 
+
+121
+00:08:04,791 --> 00:08:08,453
+prensipte bu vektörü, yokuş aşağı yönün ne olduğunu ve ne kadar dik 
+
+122
+00:08:08,453 --> 00:08:11,900
+olduğunu söyleyen bu vektörü hesaplamanın bir yolunun olmasıdır.
+
+123
+00:08:12,400 --> 00:08:16,120
+Bildiğiniz tek şey buysa ve ayrıntılar konusunda sağlam değilseniz sorun yaşamazsınız.
+
+124
+00:08:17,200 --> 00:08:21,797
+Bunu elde edebilirseniz, fonksiyonu minimize etme algoritması bu gradyan yönünü 
+
+125
+00:08:21,797 --> 00:08:26,740
+hesaplamak, ardından yokuş aşağı küçük bir adım atmak ve bunu tekrar tekrar yapmaktır.
+
+126
+00:08:27,700 --> 00:08:32,820
+Aynı temel fikir 2 giriş yerine 13.000 girişi olan bir fonksiyon için de geçerlidir.
+
+127
+00:08:33,400 --> 00:08:36,463
+Ağımızın 13.000 ağırlığını ve önyargısını dev 
+
+128
+00:08:36,463 --> 00:08:39,460
+bir sütun vektöründe düzenlediğinizi düşünün.
+
+129
+00:08:40,140 --> 00:08:44,442
+Maliyet fonksiyonunun negatif gradyanı sadece bir vektördür, 
+
+130
+00:08:44,442 --> 00:08:49,661
+bu delicesine büyük girdi uzayı içinde, tüm bu sayılara hangi dürtmelerin 
+
+131
+00:08:49,661 --> 00:08:54,880
+maliyet fonksiyonunda en hızlı düşüşe neden olacağını söyleyen bir yöndür.
+
+132
+00:08:55,640 --> 00:08:58,561
+Ve elbette, özel olarak tasarlanmış maliyet fonksiyonumuzla, 
+
+133
+00:08:58,561 --> 00:09:01,386
+bunu azaltmak için ağırlıkları ve önyargıları değiştirmek, 
+
+134
+00:09:01,386 --> 00:09:05,169
+ağın her bir eğitim verisi parçasındaki çıktısının 10 değerden oluşan rastgele 
+
+135
+00:09:05,169 --> 00:09:08,856
+bir dizi gibi görünmesini ve daha çok vermesini istediğimiz gerçek bir karar 
+
+136
+00:09:08,856 --> 00:09:10,820
+gibi görünmesini sağlamak anlamına gelir.
+
+137
+00:09:11,440 --> 00:09:14,547
+Bu maliyet fonksiyonunun tüm eğitim verileri üzerinde bir ortalama 
+
+138
+00:09:14,547 --> 00:09:17,794
+içerdiğini hatırlamak önemlidir, bu nedenle bunu en aza indirirseniz, 
+
+139
+00:09:17,794 --> 00:09:21,180
+tüm bu örneklerde daha iyi bir performans elde edeceğiniz anlamına gelir.
+
+140
+00:09:23,820 --> 00:09:27,095
+Bir sinir ağının nasıl öğrendiğinin kalbi olan bu gradyanı 
+
+141
+00:09:27,095 --> 00:09:30,371
+verimli bir şekilde hesaplamak için kullanılan algoritmaya 
+
+142
+00:09:30,371 --> 00:09:33,980
+geri yayılım denir ve bir sonraki videoda bahsedeceğim şey budur.
+
+143
+00:09:34,660 --> 00:09:38,953
+Burada, belirli bir eğitim verisi parçası için her bir ağırlığa ve önyargıya tam olarak 
+
+144
+00:09:38,953 --> 00:09:42,270
+ne olduğunu gözden geçirmek için gerçekten zaman ayırmak istiyorum, 
+
+145
+00:09:42,270 --> 00:09:46,514
+ilgili hesap ve formül yığınının ötesinde neler olduğuna dair sezgisel bir his vermeye 
+
+146
+00:09:46,514 --> 00:09:47,100
+çalışıyorum.
+
+147
+00:09:47,780 --> 00:09:52,373
+Tam burada, şu anda, uygulama detaylarından bağımsız olarak bilmenizi istediğim ana şey, 
+
+148
+00:09:52,373 --> 00:09:55,779
+bir ağın öğrenmesinden bahsettiğimizde kastettiğimiz şeyin sadece 
+
+149
+00:09:55,779 --> 00:09:58,360
+bir maliyet fonksiyonunu minimize etmek olduğudur.
+
+150
+00:09:59,300 --> 00:10:02,169
+Bunun bir sonucunun da, bu maliyet fonksiyonunun düzgün bir 
+
+151
+00:10:02,169 --> 00:10:04,704
+çıktıya sahip olmasının önemli olduğuna dikkat edin, 
+
+152
+00:10:04,704 --> 00:10:08,100
+böylece yokuş aşağı küçük adımlar atarak yerel bir minimum bulabiliriz.
+
+153
+00:10:09,260 --> 00:10:14,169
+Bu arada, yapay nöronların biyolojik nöronlar gibi ikili bir şekilde aktif veya 
+
+154
+00:10:14,169 --> 00:10:19,140
+inaktif olmak yerine sürekli değişen aktivasyonlara sahip olmasının nedeni budur.
+
+155
+00:10:20,220 --> 00:10:23,400
+Bir fonksiyonun girdisini negatif gradyanın bir katı 
+
+156
+00:10:23,400 --> 00:10:26,760
+kadar tekrar tekrar dürtme işlemine gradyan inişi denir.
+
+157
+00:10:27,300 --> 00:10:29,562
+Bu, bir maliyet fonksiyonunun yerel minimumuna, 
+
+158
+00:10:29,562 --> 00:10:32,580
+temelde bu grafikteki bir vadiye doğru yakınsamanın bir yoludur.
+
+159
+00:10:33,440 --> 00:10:36,831
+Elbette hala iki girdili bir fonksiyonun resmini gösteriyorum, 
+
+160
+00:10:36,831 --> 00:10:41,191
+çünkü 13.000 boyutlu bir girdi uzayında dürtmelerin zihninizi sarması biraz zor, 
+
+161
+00:10:41,191 --> 00:10:44,260
+ancak bunu düşünmenin uzamsal olmayan güzel bir yolu var.
+
+162
+00:10:45,080 --> 00:10:48,440
+Negatif gradyanın her bir bileşeni bize iki şey söyler.
+
+163
+00:10:49,060 --> 00:10:52,183
+Elbette işaret bize girdi vektörünün ilgili bileşeninin 
+
+164
+00:10:52,183 --> 00:10:55,140
+yukarı mı yoksa aşağı mı itilmesi gerektiğini söyler.
+
+165
+00:10:55,800 --> 00:10:59,574
+Ancak daha da önemlisi, tüm bu bileşenlerin göreceli büyüklükleri 
+
+166
+00:10:59,574 --> 00:11:02,720
+size hangi değişikliklerin daha önemli olduğunu söyler.
+
+167
+00:11:05,220 --> 00:11:08,296
+Gördüğünüz gibi, ağımızda ağırlıklardan birinde yapılacak bir ayarlama, 
+
+168
+00:11:08,296 --> 00:11:10,775
+maliyet fonksiyonu üzerinde başka bir ağırlıkta yapılacak 
+
+169
+00:11:10,775 --> 00:11:13,040
+ayarlamadan çok daha büyük bir etkiye sahip olabilir.
+
+170
+00:11:14,800 --> 00:11:18,200
+Bu bağlantılardan bazıları eğitim verilerimiz için daha önemlidir.
+
+171
+00:11:19,320 --> 00:11:23,864
+Akıl almaz derecede büyük maliyet fonksiyonumuzun bu gradyan vektörünü düşünmenin 
+
+172
+00:11:23,864 --> 00:11:27,190
+bir yolu, her bir ağırlığın ve önyargının göreceli önemini, 
+
+173
+00:11:27,190 --> 00:11:31,679
+yani bu değişikliklerden hangisinin paranız için en büyük patlamayı taşıyacağını 
+
+174
+00:11:31,679 --> 00:11:32,400
+kodlamasıdır.
+
+175
+00:11:33,620 --> 00:11:36,640
+Bu gerçekten de yön hakkında düşünmenin başka bir yoludur.
+
+176
+00:11:37,100 --> 00:11:42,328
+Daha basit bir örnek vermek gerekirse, girdi olarak iki değişkenli bir fonksiyonunuz 
+
+177
+00:11:42,328 --> 00:11:47,188
+varsa ve belirli bir noktadaki gradyanının 3,1 olarak çıktığını hesaplarsanız, 
+
+178
+00:11:47,188 --> 00:11:52,109
+bunu bir yandan bu girdide durduğunuzda, bu yönde hareket etmenin fonksiyonu en 
+
+179
+00:11:52,109 --> 00:11:55,431
+hızlı şekilde artırdığı şeklinde yorumlayabilirsiniz; 
+
+180
+00:11:55,431 --> 00:11:59,184
+fonksiyonu girdi noktaları düzleminin üzerinde çizdiğinizde, 
+
+181
+00:11:59,184 --> 00:12:02,260
+bu vektör size düz yokuş yukarı yönü veren şeydir.
+
+182
+00:12:02,860 --> 00:12:07,124
+Ancak bunu okumanın bir başka yolu da, bu ilk değişkendeki değişikliklerin ikinci 
+
+183
+00:12:07,124 --> 00:12:10,712
+değişkendeki değişikliklerden 3 kat daha fazla öneme sahip olduğunu, 
+
+184
+00:12:10,712 --> 00:12:15,288
+en azından ilgili girdinin çevresinde, x değerini dürtmenin paranız için çok daha fazla 
+
+185
+00:12:15,288 --> 00:12:16,900
+patlama taşıdığını söylemektir.
+
+186
+00:12:19,880 --> 00:12:22,340
+Şimdi biraz uzaklaşalım ve şu ana kadar geldiğimiz noktayı özetleyelim.
+
+187
+00:12:22,840 --> 00:12:26,240
+Ağın kendisi, tüm bu ağırlıklı toplamlar cinsinden 
+
+188
+00:12:26,240 --> 00:12:30,040
+tanımlanan 784 girdi ve 10 çıktıya sahip bu fonksiyondur.
+
+189
+00:12:30,640 --> 00:12:33,680
+Maliyet fonksiyonu bunun üzerine eklenen bir karmaşıklık katmanıdır.
+
+190
+00:12:33,980 --> 00:12:37,716
+Girdi olarak 13.000 ağırlık ve önyargıyı alır ve eğitim 
+
+191
+00:12:37,716 --> 00:12:41,720
+örneklerine dayanarak tek bir kötülük ölçüsü ortaya çıkarır.
+
+192
+00:12:42,440 --> 00:12:46,900
+Maliyet fonksiyonunun gradyanı ise karmaşıklığın bir kat daha artmasına neden olur.
+
+193
+00:12:47,360 --> 00:12:50,924
+Tüm bu ağırlıklara ve önyargılara yapılan hangi dürtmelerin maliyet fonksiyonunun 
+
+194
+00:12:50,924 --> 00:12:53,489
+değerinde en hızlı değişikliğe neden olduğunu bize söyler, 
+
+195
+00:12:53,489 --> 00:12:57,010
+bunu hangi ağırlıklarda hangi değişikliklerin en önemli olduğunu söylemek olarak 
+
+196
+00:12:57,010 --> 00:12:57,880
+yorumlayabilirsiniz.
+
+197
+00:13:02,560 --> 00:13:06,106
+Peki, ağı rastgele ağırlıklar ve önyargılarla başlattığınızda ve bunları 
+
+198
+00:13:06,106 --> 00:13:08,924
+bu gradyan iniş sürecine göre birçok kez ayarladığınızda, 
+
+199
+00:13:08,924 --> 00:13:13,200
+daha önce hiç görmediği görüntüler üzerinde gerçekte ne kadar iyi performans gösteriyor?
+
+200
+00:13:14,100 --> 00:13:18,212
+Burada anlattığım, her biri 16 nörondan oluşan ve çoğunlukla estetik 
+
+201
+00:13:18,212 --> 00:13:22,503
+nedenlerle seçilen iki gizli katmanlı katman, gördüğü yeni görüntülerin 
+
+202
+00:13:22,503 --> 00:13:25,960
+yaklaşık %96'sını doğru sınıflandırarak hiç de fena değil.
+
+203
+00:13:26,680 --> 00:13:30,404
+Ve dürüst olmak gerekirse, berbat ettiği bazı örneklere bakarsanız, 
+
+204
+00:13:30,404 --> 00:13:32,540
+biraz gevşemek zorunda hissediyorsunuz.
+
+205
+00:13:36,220 --> 00:13:39,895
+Şimdi gizli katman yapısıyla oynar ve birkaç ince ayar yaparsanız, 
+
+206
+00:13:39,895 --> 00:13:41,760
+bunu %98'e kadar çıkarabilirsiniz.
+
+207
+00:13:41,760 --> 00:13:42,720
+Ve bu oldukça iyi!
+
+208
+00:13:43,020 --> 00:13:46,776
+En iyisi değil, bu sade vanilya ağından daha sofistike hale gelerek kesinlikle 
+
+209
+00:13:46,776 --> 00:13:50,437
+daha iyi performans elde edebilirsiniz, ancak başlangıçtaki görevin ne kadar 
+
+210
+00:13:50,437 --> 00:13:54,288
+göz korkutucu olduğu göz önüne alındığında, daha önce hiç görmediği görüntülerde 
+
+211
+00:13:54,288 --> 00:13:57,996
+bu kadar iyi performans gösteren herhangi bir ağın inanılmaz bir şey olduğunu 
+
+212
+00:13:57,996 --> 00:14:01,420
+düşünüyorum, çünkü ona hangi kalıpları arayacağını özellikle söylemedik.
+
+213
+00:14:02,560 --> 00:14:06,003
+Başlangıçta, bu yapıyı motive etme şeklim, ikinci katmanın küçük 
+
+214
+00:14:06,003 --> 00:14:09,552
+kenarları algılayabileceği, üçüncü katmanın ilmekleri ve daha uzun 
+
+215
+00:14:09,552 --> 00:14:13,419
+çizgileri tanımak için bu kenarları bir araya getirebileceği ve bunların 
+
+216
+00:14:13,419 --> 00:14:17,180
+rakamları tanımak için bir araya getirilebileceği umudunu tanımlamaktı.
+
+217
+00:14:17,960 --> 00:14:20,400
+Peki ağımızın gerçekte yaptığı şey bu mu?
+
+218
+00:14:21,080 --> 00:14:24,400
+En azından bu seferki için, hiç de değil.
+
+219
+00:14:24,820 --> 00:14:28,963
+Geçen videoda, birinci katmandaki tüm nöronlardan ikinci katmandaki belirli bir nörona 
+
+220
+00:14:28,963 --> 00:14:32,916
+giden bağlantıların ağırlıklarının, ikinci katman nöronunun algıladığı belirli bir 
+
+221
+00:14:32,916 --> 00:14:37,060
+piksel deseni olarak nasıl görselleştirilebileceğini incelediğimizi hatırlıyor musunuz?
+
+222
+00:14:37,780 --> 00:14:43,911
+Aslında bunu ilk katmandan diğerine geçişlerle ilişkili ağırlıklar için yaptığımızda, 
+
+223
+00:14:43,911 --> 00:14:48,261
+burada ve orada izole edilmiş küçük kenarları seçmek yerine, 
+
+224
+00:14:48,261 --> 00:14:53,680
+neredeyse rastgele görünüyorlar, sadece ortada bazı çok gevşek desenler var.
+
+225
+00:14:53,760 --> 00:14:58,806
+Görünüşe göre, olası ağırlıkların ve önyargıların akıl almaz derecede büyük 13.000 
+
+226
+00:14:58,806 --> 00:15:04,156
+boyutlu uzayında, ağımız, çoğu görüntüyü başarılı bir şekilde sınıflandırmasına rağmen, 
+
+227
+00:15:04,156 --> 00:15:08,960
+umduğumuz kalıpları tam olarak algılamayan mutlu küçük bir yerel minimum buldu.
+
+228
+00:15:09,780 --> 00:15:11,822
+Bu noktayı gerçekten vurgulamak için rastgele 
+
+229
+00:15:11,822 --> 00:15:13,820
+bir görüntü girdiğinizde ne olduğunu izleyin.
+
+230
+00:15:14,320 --> 00:15:19,410
+Sistem akıllı olsaydı, kararsız hissetmesini, belki de bu 10 çıkış nöronundan hiçbirini 
+
+231
+00:15:19,410 --> 00:15:24,558
+gerçekten aktive etmemesini veya hepsini eşit şekilde aktive etmesini bekleyebilirdiniz, 
+
+232
+00:15:24,558 --> 00:15:28,202
+ancak bunun yerine, sanki bu rastgele gürültünün 5 olduğundan, 
+
+233
+00:15:28,202 --> 00:15:33,234
+5'in gerçek bir görüntüsünün 5 olduğundan emin olduğu gibi emin bir şekilde size saçma 
+
+234
+00:15:33,234 --> 00:15:34,160
+bir cevap verir.
+
+235
+00:15:34,540 --> 00:15:37,985
+Başka bir ifadeyle, bu ağ rakamları oldukça iyi tanıyabilse bile, 
+
+236
+00:15:37,985 --> 00:15:40,700
+onları nasıl çizeceği konusunda hiçbir fikri yoktur.
+
+237
+00:15:41,420 --> 00:15:43,580
+Bunun büyük bir kısmı, çok sıkı bir şekilde kısıtlanmış 
+
+238
+00:15:43,580 --> 00:15:45,240
+bir eğitim düzeni olmasından kaynaklanıyor.
+
+239
+00:15:45,880 --> 00:15:47,740
+Yani, kendinizi kanalın yerine koyun.
+
+240
+00:15:48,140 --> 00:15:52,202
+Onun bakış açısına göre, tüm evren küçük bir ızgarada ortalanmış net bir şekilde 
+
+241
+00:15:52,202 --> 00:15:56,415
+tanımlanmış hareketsiz rakamlardan başka bir şey değildir ve maliyet fonksiyonu ona 
+
+242
+00:15:56,415 --> 00:16:00,377
+kararlarında son derece emin olmaktan başka bir şey yapması için hiçbir teşvik 
+
+243
+00:16:00,377 --> 00:16:01,080
+sağlamamıştır.
+
+244
+00:16:02,120 --> 00:16:05,636
+İkinci katman nöronlarının gerçekte ne yaptığının görüntüsü bu olduğuna göre, 
+
+245
+00:16:05,636 --> 00:16:09,288
+bu ağı neden kenarları ve desenleri tespit etme motivasyonuyla tanıttığımı merak 
+
+246
+00:16:09,288 --> 00:16:09,920
+edebilirsiniz.
+
+247
+00:16:09,920 --> 00:16:12,300
+Yani, sonuçta hiç de öyle olmuyor.
+
+248
+00:16:13,380 --> 00:16:17,180
+Bunun nihai hedefimiz değil, bir başlangıç noktası olması gerekiyor.
+
+249
+00:16:17,640 --> 00:16:21,955
+Açıkçası, bu eski bir teknoloji, 80'li ve 90'lı yıllarda araştırılan türden ve 
+
+250
+00:16:21,955 --> 00:16:25,944
+daha ayrıntılı modern varyantları anlayabilmeniz için önce onu anlamanız 
+
+251
+00:16:25,944 --> 00:16:28,948
+gerekiyor ve açıkça bazı ilginç sorunları çözebiliyor, 
+
+252
+00:16:28,948 --> 00:16:33,210
+ancak bu gizli katmanların gerçekte ne yaptığını ne kadar çok araştırırsanız, 
+
+253
+00:16:33,210 --> 00:16:34,740
+o kadar az akıllı görünüyor.
+
+254
+00:16:38,480 --> 00:16:42,367
+Odağı bir an için ağların nasıl öğrendiğinden sizin nasıl öğrendiğinize kaydırırsak, 
+
+255
+00:16:42,367 --> 00:16:46,300
+bu ancak buradaki materyalle bir şekilde aktif olarak ilgilenirseniz gerçekleşecektir.
+
+256
+00:16:47,060 --> 00:16:49,835
+Sizden yapmanızı istediğim oldukça basit bir şey, 
+
+257
+00:16:49,835 --> 00:16:54,275
+şu anda durup bir an için bu sistemde ne gibi değişiklikler yapabileceğinizi ve 
+
+258
+00:16:54,275 --> 00:16:58,770
+kenar ve desen gibi şeyleri daha iyi algılamasını istiyorsanız görüntüleri nasıl 
+
+259
+00:16:58,770 --> 00:17:00,880
+algıladığını derinlemesine düşünmeniz.
+
+260
+00:17:01,480 --> 00:17:05,386
+Ancak bundan daha iyisi, materyalle gerçekten ilgilenmek için Michael Nielsen'in 
+
+261
+00:17:05,386 --> 00:17:09,099
+derin öğrenme ve sinir ağları üzerine yazdığı kitabı şiddetle tavsiye ederim.
+
+262
+00:17:09,680 --> 00:17:14,077
+Kitapta, tam olarak bu örnek için indirip oynayabileceğiniz kodu ve verileri 
+
+263
+00:17:14,077 --> 00:17:18,359
+bulabilirsiniz ve kitap size bu kodun ne yaptığını adım adım gösterecektir.
+
+264
+00:17:19,300 --> 00:17:22,409
+Harika olan şey, bu kitabın ücretsiz ve herkese açık olması, 
+
+265
+00:17:22,409 --> 00:17:26,487
+bu yüzden eğer bir şeyler öğrenirseniz, Nielsen'in çabalarına bağış yapmak için 
+
+266
+00:17:26,487 --> 00:17:27,660
+bana katılmayı düşünün.
+
+267
+00:17:27,660 --> 00:17:32,134
+Ayrıca Chris Ola'nın olağanüstü ve güzel blog yazısı ve Distill'deki makaleler de 
+
+268
+00:17:32,134 --> 00:17:36,500
+dahil olmak üzere açıklamada çok beğendiğim birkaç kaynağa daha bağlantı verdim.
+
+269
+00:17:38,280 --> 00:17:40,956
+Son birkaç dakikayı burada tamamlamak için Leisha Lee 
+
+270
+00:17:40,956 --> 00:17:43,880
+ile yaptığım röportajın bir bölümüne geri dönmek istiyorum.
+
+271
+00:17:44,300 --> 00:17:46,152
+Kendisini son videodan hatırlayabilirsiniz, doktora 
+
+272
+00:17:46,152 --> 00:17:47,720
+çalışmasını derin öğrenme alanında yapmıştı.
+
+273
+00:17:48,300 --> 00:17:51,888
+Bu küçük parçacıkta, daha modern görüntü tanıma ağlarından bazılarının 
+
+274
+00:17:51,888 --> 00:17:55,780
+gerçekte nasıl öğrendiğini gerçekten araştıran iki yeni makaleden bahsediyor.
+
+275
+00:17:56,120 --> 00:17:58,719
+Sadece konuşmanın neresinde olduğumuzu ayarlamak için, 
+
+276
+00:17:58,719 --> 00:18:02,973
+ilk makale görüntü tanımada gerçekten iyi olan bu özellikle derin sinir ağlarından birini 
+
+277
+00:18:02,973 --> 00:18:06,802
+aldı ve düzgün bir şekilde etiketlenmiş bir veri kümesi üzerinde eğitmek yerine, 
+
+278
+00:18:06,802 --> 00:18:08,740
+eğitimden önce tüm etiketleri karıştırdı.
+
+279
+00:18:09,480 --> 00:18:12,987
+Açıkçası buradaki test doğruluğu rastgele olandan daha iyi değildi, 
+
+280
+00:18:12,987 --> 00:18:16,443
+çünkü her şey rastgele etiketlenmişti, ancak yine de uygun şekilde 
+
+281
+00:18:16,443 --> 00:18:20,880
+etiketlenmiş bir veri kümesinde elde edeceğiniz aynı eğitim doğruluğunu elde edebildi.
+
+282
+00:18:21,600 --> 00:18:24,344
+Temel olarak, bu özel ağ için milyonlarca ağırlık, 
+
+283
+00:18:24,344 --> 00:18:27,250
+sadece rastgele verileri ezberlemesi için yeterliydi, 
+
+284
+00:18:27,250 --> 00:18:31,018
+bu da bu maliyet fonksiyonunu en aza indirmenin gerçekten görüntüdeki 
+
+285
+00:18:31,018 --> 00:18:34,570
+herhangi bir yapıya mı karşılık geldiği yoksa sadece ezberleme mi 
+
+286
+00:18:34,570 --> 00:18:36,400
+olduğu sorusunu gündeme getiriyor.
+
+287
+00:18:51,440 --> 00:18:56,650
+Bu doğruluk eğrisine bakarsanız, rastgele bir veri kümesi üzerinde eğitim 
+
+288
+00:18:56,650 --> 00:19:01,790
+yapıyor olsaydınız, bu eğri neredeyse doğrusal bir şekilde çok yavaş bir 
+
+289
+00:19:01,790 --> 00:19:07,000
+şekilde aşağı inerdi, bu nedenle size bu doğruluğu sağlayacak olası doğru 
+
+290
+00:19:07,000 --> 00:19:12,140
+ağırlıkların yerel minimumunu bulmak için gerçekten mücadele ediyorsunuz.
+
+291
+00:19:12,240 --> 00:19:17,469
+Oysa doğru etiketlere sahip yapılandırılmış bir veri kümesi üzerinde eğitim yapıyorsanız, 
+
+292
+00:19:17,469 --> 00:19:21,711
+başlangıçta biraz kurcalarsınız, ancak daha sonra bu doğruluk seviyesine 
+
+293
+00:19:21,711 --> 00:19:25,430
+ulaşmak için çok hızlı bir şekilde düşersiniz ve bu nedenle bir 
+
+294
+00:19:25,430 --> 00:19:28,220
+anlamda yerel maksimumları bulmak daha kolaydır.
+
+295
+00:19:28,540 --> 00:19:33,744
+Bunun ilginç bir yanı da aslında birkaç yıl önce yayınlanan ve ağ katmanları hakkında 
+
+296
+00:19:33,744 --> 00:19:39,009
+çok daha fazla basitleştirmeye sahip olan başka bir makaleyi gün ışığına çıkarmasıdır, 
+
+297
+00:19:39,009 --> 00:19:42,519
+ancak sonuçlardan biri, optimizasyon ortamına bakarsanız, 
+
+298
+00:19:42,519 --> 00:19:47,784
+bu ağların öğrenme eğiliminde olduğu yerel minimumların aslında eşit kalitede olduğunu 
+
+299
+00:19:47,784 --> 00:19:51,838
+söylüyordu, bu nedenle bir anlamda veri kümeniz yapılandırılmışsa, 
+
+300
+00:19:51,838 --> 00:19:54,320
+bunu çok daha kolay bulabilmeniz gerekir.
+
+301
+00:19:58,160 --> 00:20:01,180
+Her zaman olduğu gibi Patreon'da destek verenlere teşekkür ederim.
+
+302
+00:20:01,520 --> 00:20:04,680
+Patreon'un ne kadar büyük bir oyun değiştirici olduğunu daha önce de söylemiştim, 
+
+303
+00:20:04,680 --> 00:20:06,800
+ancak bu videolar siz olmadan gerçekten mümkün olmazdı.
+
+304
+00:20:07,460 --> 00:20:10,120
+Ayrıca, serinin bu ilk videolarına destek veren VC firması 
+
+305
+00:20:10,120 --> 00:20:12,780
+Amplify Partners'a da özel olarak teşekkür etmek istiyorum.
+
