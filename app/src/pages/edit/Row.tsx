@@ -204,10 +204,15 @@ function Row({ index, entries }: Props) {
 
       {/* legacy translation */}
       {legacyTranslation && getShowLegacy && getCompletion < 1 && (
-        <div className={classes.legacy}>
-          <strong>Legacy Translation</strong>
-          <span dir={rtlLanguage ? "rtl" : "ltr"}>{legacyTranslation}</span>
-        </div>
+        <>
+          <strong className={classes.legacyLabel}>Legacy:</strong>
+          <span
+            className={classes.legacyText}
+            dir={rtlLanguage ? "rtl" : "ltr"}
+          >
+            {legacyTranslation}
+          </span>
+        </>
       )}
     </div>
   );
