@@ -1,0 +1,756 @@
+1
+00:00:04,059 --> 00:00:06,371
+Aqui, abordamos a retropropagação, o algoritmo 
+
+2
+00:00:06,371 --> 00:00:08,880
+central por trás de como as redes neurais aprendem.
+
+3
+00:00:09,400 --> 00:00:11,513
+Depois de uma rápida recapitulação de onde estamos, 
+
+4
+00:00:11,513 --> 00:00:14,073
+a primeira coisa que farei é um passo a passo intuitivo do que 
+
+5
+00:00:14,073 --> 00:00:17,000
+o algoritmo está realmente fazendo, sem qualquer referência às fórmulas.
+
+6
+00:00:17,660 --> 00:00:20,363
+Então, para aqueles que desejam mergulhar na matemática, 
+
+7
+00:00:20,363 --> 00:00:23,020
+o próximo vídeo aborda o cálculo subjacente a tudo isso.
+
+8
+00:00:23,820 --> 00:00:27,562
+Se você assistiu aos dois últimos vídeos, ou se está apenas começando com o histórico 
+
+9
+00:00:27,562 --> 00:00:31,000
+apropriado, você sabe o que é uma rede neural e como ela transmite informações.
+
+10
+00:00:31,680 --> 00:00:36,120
+Aqui, estamos fazendo o exemplo clássico de reconhecimento de dígitos manuscritos cujos 
+
+11
+00:00:36,120 --> 00:00:40,107
+valores de pixel são alimentados na primeira camada da rede com 784 neurônios, 
+
+12
+00:00:40,107 --> 00:00:44,245
+e estou mostrando uma rede com duas camadas ocultas com apenas 16 neurônios cada, 
+
+13
+00:00:44,245 --> 00:00:48,585
+e uma saída camada de 10 neurônios, indicando qual dígito a rede está escolhendo como 
+
+14
+00:00:48,585 --> 00:00:49,040
+resposta.
+
+15
+00:00:50,040 --> 00:00:52,845
+Também espero que você entenda o gradiente descendente, 
+
+16
+00:00:52,845 --> 00:00:56,852
+conforme descrito no último vídeo, e como o que queremos dizer com aprendizagem 
+
+17
+00:00:56,852 --> 00:01:01,260
+é que queremos descobrir quais pesos e vieses minimizam uma determinada função de custo.
+
+18
+00:01:02,040 --> 00:01:06,131
+Como um rápido lembrete, pelo custo de um único exemplo de treinamento, 
+
+19
+00:01:06,131 --> 00:01:10,394
+você pega o resultado que a rede fornece, junto com o resultado que deseja 
+
+20
+00:01:10,394 --> 00:01:14,600
+que ela forneça, e soma os quadrados das diferenças entre cada componente.
+
+21
+00:01:15,380 --> 00:01:18,995
+Fazendo isso para todas as suas dezenas de milhares de exemplos de treinamento 
+
+22
+00:01:18,995 --> 00:01:22,200
+e calculando a média dos resultados, você obtém o custo total da rede.
+
+23
+00:01:22,200 --> 00:01:26,638
+E como se isso não bastasse para pensar, conforme descrito no último vídeo, 
+
+24
+00:01:26,638 --> 00:01:30,318
+o que procuramos é o gradiente negativo desta função de custo, 
+
+25
+00:01:30,318 --> 00:01:33,997
+que lhe diz como você precisa alterar todos os pesos e vieses, 
+
+26
+00:01:33,997 --> 00:01:38,320
+todos dessas conexões, de modo a diminuir o custo de forma mais eficiente.
+
+27
+00:01:43,260 --> 00:01:45,996
+A retropropagação, o tema deste vídeo, é um algoritmo 
+
+28
+00:01:45,996 --> 00:01:48,580
+para calcular aquele gradiente maluco e complicado.
+
+29
+00:01:49,140 --> 00:01:52,525
+E a única ideia do último vídeo que eu realmente quero que você 
+
+30
+00:01:52,525 --> 00:01:56,280
+mantenha firmemente em sua mente agora é que pensar no vetor gradiente 
+
+31
+00:01:56,280 --> 00:01:59,665
+como uma direção em 13.000 dimensões está, para dizer o mínimo, 
+
+32
+00:01:59,665 --> 00:02:03,580
+além do escopo de nossa imaginação, há outra maneira de pensar sobre isso.
+
+33
+00:02:04,600 --> 00:02:07,613
+A magnitude de cada componente aqui indica quão 
+
+34
+00:02:07,613 --> 00:02:10,940
+sensível é a função de custo a cada peso e tendência.
+
+35
+00:02:11,800 --> 00:02:16,560
+Por exemplo, digamos que você passe pelo processo que estou prestes a descrever 
+
+36
+00:02:16,560 --> 00:02:21,499
+e calcule o gradiente negativo, e o componente associado ao peso nesta aresta aqui 
+
+37
+00:02:21,499 --> 00:02:26,260
+resulta em 3,2, enquanto o componente associado a esta aresta aqui vem como 0,1.
+
+38
+00:02:26,820 --> 00:02:30,865
+A forma como você interpretaria isso é que o custo da função é 32 vezes 
+
+39
+00:02:30,865 --> 00:02:33,507
+mais sensível às mudanças nesse primeiro peso, 
+
+40
+00:02:33,507 --> 00:02:38,339
+então se você mexer esse valor só um pouquinho, isso causará alguma mudança no custo, 
+
+41
+00:02:38,339 --> 00:02:43,060
+e isso a mudança é 32 vezes maior do que o mesmo movimento desse segundo peso daria.
+
+42
+00:02:48,420 --> 00:02:51,178
+Pessoalmente, quando aprendi sobre retropropagação, 
+
+43
+00:02:51,178 --> 00:02:55,740
+acho que o aspecto mais confuso foi apenas a notação e a busca do índice de tudo isso.
+
+44
+00:02:56,220 --> 00:03:00,541
+Mas uma vez que você desembrulha o que cada parte deste algoritmo está realmente fazendo, 
+
+45
+00:03:00,541 --> 00:03:03,278
+cada efeito individual que ele tem é bastante intuitivo, 
+
+46
+00:03:03,278 --> 00:03:06,640
+só que há muitos pequenos ajustes sendo colocados uns sobre os outros.
+
+47
+00:03:07,740 --> 00:03:11,957
+Então, vou começar aqui ignorando completamente a notação e apenas analisando 
+
+48
+00:03:11,957 --> 00:03:16,120
+os efeitos que cada exemplo de treinamento tem sobre os pesos e preconceitos.
+
+49
+00:03:17,020 --> 00:03:21,537
+Como a função de custo envolve calcular a média de um determinado custo por exemplo em 
+
+50
+00:03:21,537 --> 00:03:24,497
+todas as dezenas de milhares de exemplos de treinamento, 
+
+51
+00:03:24,497 --> 00:03:28,911
+a maneira como ajustamos os pesos e as tendências para uma única etapa de descida do 
+
+52
+00:03:28,911 --> 00:03:31,040
+gradiente também depende de cada exemplo.
+
+53
+00:03:31,680 --> 00:03:35,418
+Ou melhor, em princípio deveria, mas para eficiência computacional faremos um pequeno 
+
+54
+00:03:35,418 --> 00:03:39,200
+truque mais tarde para evitar que você precise acertar todos os exemplos de cada etapa.
+
+55
+00:03:39,200 --> 00:03:42,272
+Noutros casos, neste momento, tudo o que vamos fazer é 
+
+56
+00:03:42,272 --> 00:03:45,960
+concentrar a nossa atenção num único exemplo, esta imagem de um 2.
+
+57
+00:03:46,720 --> 00:03:49,075
+Que efeito este exemplo de treinamento deve ter 
+
+58
+00:03:49,075 --> 00:03:51,480
+sobre como os pesos e preconceitos são ajustados?
+
+59
+00:03:52,680 --> 00:03:56,458
+Digamos que estamos em um ponto em que a rede ainda não está bem treinada, 
+
+60
+00:03:56,458 --> 00:03:59,430
+então as ativações na saída parecerão bastante aleatórias, 
+
+61
+00:03:59,430 --> 00:04:02,000
+talvez algo como 0,5, 0,8, 0,2, e assim por diante.
+
+62
+00:04:02,520 --> 00:04:05,018
+Não podemos alterar diretamente essas ativações, 
+
+63
+00:04:05,018 --> 00:04:07,160
+apenas influenciamos os pesos e os vieses.
+
+64
+00:04:07,160 --> 00:04:12,580
+Mas é útil acompanhar quais ajustes desejamos que ocorram nessa camada de produção.
+
+65
+00:04:13,360 --> 00:04:17,046
+E como queremos classificar a imagem como 2, queremos que esse 
+
+66
+00:04:17,046 --> 00:04:21,260
+terceiro valor seja aumentado enquanto todos os outros sejam diminuídos.
+
+67
+00:04:22,060 --> 00:04:26,189
+Além disso, os tamanhos desses nudges devem ser proporcionais 
+
+68
+00:04:26,189 --> 00:04:29,520
+à distância de cada valor atual do seu valor alvo.
+
+69
+00:04:30,220 --> 00:04:33,701
+Por exemplo, o aumento da ativação do neurônio número 2 é, 
+
+70
+00:04:33,701 --> 00:04:38,185
+em certo sentido, mais importante do que a diminuição do neurônio número 8, 
+
+71
+00:04:38,185 --> 00:04:40,900
+que já está bem próximo de onde deveria estar.
+
+72
+00:04:42,040 --> 00:04:45,425
+Então, ampliando ainda mais, vamos nos concentrar apenas neste neurônio, 
+
+73
+00:04:45,425 --> 00:04:47,280
+aquele cuja ativação desejamos aumentar.
+
+74
+00:04:48,180 --> 00:04:52,487
+Lembre-se de que a ativação é definida como uma certa soma ponderada 
+
+75
+00:04:52,487 --> 00:04:56,357
+de todas as ativações na camada anterior, mais uma tendência, 
+
+76
+00:04:56,357 --> 00:05:01,040
+que é então conectada a algo como a função de esmagamento sigmóide ou ReLU.
+
+77
+00:05:01,640 --> 00:05:04,220
+Portanto, existem três caminhos diferentes que 
+
+78
+00:05:04,220 --> 00:05:07,020
+podem se unir para ajudar a aumentar essa ativação.
+
+79
+00:05:07,440 --> 00:05:14,040
+Você pode aumentar o viés, aumentar os pesos e alterar as ativações da camada anterior.
+
+80
+00:05:14,940 --> 00:05:17,560
+Concentrando-se em como os pesos devem ser ajustados, 
+
+81
+00:05:17,560 --> 00:05:20,860
+observe como os pesos realmente têm diferentes níveis de influência.
+
+82
+00:05:21,440 --> 00:05:25,512
+As conexões com os neurônios mais brilhantes da camada anterior têm o maior efeito, 
+
+83
+00:05:25,512 --> 00:05:29,100
+uma vez que esses pesos são multiplicados por valores de ativação maiores.
+
+84
+00:05:31,460 --> 00:05:35,359
+Portanto, se você aumentar um desses pesos, ele terá uma influência mais 
+
+85
+00:05:35,359 --> 00:05:39,259
+forte na função de custo final do que aumentar os pesos das conexões com 
+
+86
+00:05:39,259 --> 00:05:43,480
+neurônios dimmer, pelo menos no que diz respeito a este exemplo de treinamento.
+
+87
+00:05:44,420 --> 00:05:46,536
+Lembre-se, quando falamos sobre descida gradiente, 
+
+88
+00:05:46,536 --> 00:05:50,272
+não nos preocupamos apenas se cada componente deve ser empurrado para cima ou para baixo, 
+
+89
+00:05:50,272 --> 00:05:53,220
+mas também quais deles oferecem o melhor retorno para seu investimento.
+
+90
+00:05:55,020 --> 00:05:58,781
+A propósito, isso lembra pelo menos um pouco uma teoria da neurociência 
+
+91
+00:05:58,781 --> 00:06:02,594
+sobre como as redes biológicas de neurônios aprendem, a teoria hebbiana, 
+
+92
+00:06:02,594 --> 00:06:06,460
+muitas vezes resumida na frase: neurônios que disparam juntos se conectam.
+
+93
+00:06:07,260 --> 00:06:11,659
+Aqui, os maiores aumentos de pesos, o maior fortalecimento de conexões, 
+
+94
+00:06:11,659 --> 00:06:16,546
+acontecem entre os neurônios que são mais ativos e aqueles que desejamos tornar 
+
+95
+00:06:16,546 --> 00:06:17,280
+mais ativos.
+
+96
+00:06:17,940 --> 00:06:20,998
+De certa forma, os neurônios que disparam ao ver um 2 ficam mais 
+
+97
+00:06:20,998 --> 00:06:24,480
+fortemente ligados a esses neurônios que disparam quando se pensa em um 2.
+
+98
+00:06:25,400 --> 00:06:29,316
+Para ser claro, não estou em posição de fazer declarações de uma forma ou de outra 
+
+99
+00:06:29,316 --> 00:06:33,375
+sobre se as redes artificiais de neurônios se comportam de alguma forma como cérebros 
+
+100
+00:06:33,375 --> 00:06:36,112
+biológicos, e essa ideia de disparos juntos, fios juntos, 
+
+101
+00:06:36,112 --> 00:06:39,887
+vem com alguns asteriscos significativos, mas considerada muito vaga. analogia, 
+
+102
+00:06:39,887 --> 00:06:41,020
+acho interessante notar.
+
+103
+00:06:41,940 --> 00:06:45,695
+De qualquer forma, a terceira maneira de ajudarmos a aumentar a ativação 
+
+104
+00:06:45,695 --> 00:06:49,040
+desse neurônio é alterando todas as ativações da camada anterior.
+
+105
+00:06:49,040 --> 00:06:52,864
+Ou seja, se tudo conectado ao neurônio do dígito 2 com peso positivo 
+
+106
+00:06:52,864 --> 00:06:57,631
+ficasse mais brilhante, e se tudo conectado com um peso negativo ficasse mais escuro, 
+
+107
+00:06:57,631 --> 00:07:00,680
+então esse neurônio do dígito 2 se tornaria mais ativo.
+
+108
+00:07:02,540 --> 00:07:06,528
+E, semelhante às mudanças de peso, você obterá o melhor retorno do seu investimento 
+
+109
+00:07:06,528 --> 00:07:10,280
+buscando mudanças que sejam proporcionais ao tamanho dos pesos correspondentes.
+
+110
+00:07:12,140 --> 00:07:15,267
+É claro que não podemos influenciar diretamente essas ativações, 
+
+111
+00:07:15,267 --> 00:07:17,480
+apenas temos controle sobre os pesos e vieses.
+
+112
+00:07:17,480 --> 00:07:24,120
+Mas, assim como na última camada, é útil anotar quais são as alterações desejadas.
+
+113
+00:07:24,580 --> 00:07:26,823
+Mas tenha em mente, diminuindo um passo aqui, isso 
+
+114
+00:07:26,823 --> 00:07:29,200
+é apenas o que o neurônio de saída do dígito 2 deseja.
+
+115
+00:07:29,760 --> 00:07:33,131
+Lembre-se, também queremos que todos os outros neurônios da última camada 
+
+116
+00:07:33,131 --> 00:07:36,365
+se tornem menos ativos, e cada um desses outros neurônios de saída tem 
+
+117
+00:07:36,365 --> 00:07:39,600
+suas próprias idéias sobre o que deve acontecer com a penúltima camada.
+
+118
+00:07:42,700 --> 00:07:47,270
+Portanto, o desejo deste neurônio do dígito 2 é somado aos desejos de 
+
+119
+00:07:47,270 --> 00:07:51,775
+todos os outros neurônios de saída sobre o que deveria acontecer com 
+
+120
+00:07:51,775 --> 00:07:56,541
+esta penúltima camada, novamente em proporção aos pesos correspondentes, 
+
+121
+00:07:56,541 --> 00:08:00,720
+e em proporção ao quanto cada um desses neurônios precisa mudar.
+
+122
+00:08:01,600 --> 00:08:05,480
+É aqui que entra a ideia de propagação para trás.
+
+123
+00:08:05,820 --> 00:08:09,480
+Ao adicionar todos esses efeitos desejados, você basicamente obtém 
+
+124
+00:08:09,480 --> 00:08:13,360
+uma lista de empurrões que deseja que aconteçam nesta penúltima camada.
+
+125
+00:08:14,220 --> 00:08:17,863
+E uma vez que você tenha isso, você pode aplicar recursivamente o mesmo 
+
+126
+00:08:17,863 --> 00:08:21,355
+processo aos pesos e vieses relevantes que determinam esses valores, 
+
+127
+00:08:21,355 --> 00:08:25,100
+repetindo o mesmo processo que acabei de percorrer e retrocedendo na rede.
+
+128
+00:08:28,960 --> 00:08:32,906
+E diminuindo um pouco mais o zoom, lembre-se de que tudo isso é exatamente como 
+
+129
+00:08:32,906 --> 00:08:37,000
+um único exemplo de treinamento deseja alterar cada um desses pesos e preconceitos.
+
+130
+00:08:37,480 --> 00:08:40,280
+Se apenas ouvíssemos o que aquele 2 queria, a rede acabaria 
+
+131
+00:08:40,280 --> 00:08:43,220
+sendo incentivada apenas a classificar todas as imagens como 2.
+
+132
+00:08:44,059 --> 00:08:47,953
+Então, o que você faz é seguir essa mesma rotina de backprop para todos os 
+
+133
+00:08:47,953 --> 00:08:51,846
+outros exemplos de treinamento, registrando como cada um deles gostaria de 
+
+134
+00:08:51,846 --> 00:08:56,000
+alterar os pesos e preconceitos, e calcular a média dessas alterações desejadas.
+
+135
+00:09:01,720 --> 00:09:05,941
+Esta coleção aqui de ajustes médios para cada peso e tendência é, 
+
+136
+00:09:05,941 --> 00:09:11,249
+grosso modo, o gradiente negativo da função de custo referenciada no último vídeo, 
+
+137
+00:09:11,249 --> 00:09:13,680
+ou pelo menos algo proporcional a ele.
+
+138
+00:09:14,380 --> 00:09:18,496
+Digo vagamente apenas porque ainda não fui quantitativamente preciso sobre esses 
+
+139
+00:09:18,496 --> 00:09:22,308
+empurrões, mas se você entendeu todas as mudanças que acabei de mencionar, 
+
+140
+00:09:22,308 --> 00:09:26,578
+por que algumas são proporcionalmente maiores que outras e como todas elas precisam 
+
+141
+00:09:26,578 --> 00:09:31,000
+ser somadas, você entende a mecânica de o que a retropropagação está realmente fazendo.
+
+142
+00:09:33,960 --> 00:09:37,976
+A propósito, na prática, os computadores levam muito tempo para somar a 
+
+143
+00:09:37,976 --> 00:09:42,440
+influência de cada exemplo de treinamento em cada etapa de descida do gradiente.
+
+144
+00:09:43,140 --> 00:09:44,820
+Então aqui está o que normalmente é feito.
+
+145
+00:09:45,480 --> 00:09:48,950
+Você embaralha aleatoriamente seus dados de treinamento e depois os divide 
+
+146
+00:09:48,950 --> 00:09:52,420
+em vários minilotes, digamos que cada um tenha 100 exemplos de treinamento.
+
+147
+00:09:52,940 --> 00:09:56,200
+Então você calcula uma etapa de acordo com o minilote.
+
+148
+00:09:56,960 --> 00:10:00,619
+Não será o gradiente real da função de custo, que depende de todos os 
+
+149
+00:10:00,619 --> 00:10:03,389
+dados de treinamento, não deste pequeno subconjunto, 
+
+150
+00:10:03,389 --> 00:10:07,937
+portanto não é o degrau mais eficiente, mas cada minilote fornece uma boa aproximação, 
+
+151
+00:10:07,937 --> 00:10:12,120
+e mais importante ainda, proporciona uma aceleração computacional significativa.
+
+152
+00:10:12,820 --> 00:10:16,767
+Se você traçasse a trajetória de sua rede sob a superfície de custo relevante, 
+
+153
+00:10:16,767 --> 00:10:20,865
+seria um pouco mais como um homem bêbado descendo uma colina tropeçando sem rumo, 
+
+154
+00:10:20,865 --> 00:10:25,162
+mas dando passos rápidos, em vez de um homem cuidadosamente calculista determinando a 
+
+155
+00:10:25,162 --> 00:10:29,460
+direção exata de descida de cada passo. antes de dar um passo muito lento e cuidadoso 
+
+156
+00:10:29,460 --> 00:10:30,160
+nessa direção.
+
+157
+00:10:31,540 --> 00:10:34,660
+Esta técnica é conhecida como descida gradiente estocástica.
+
+158
+00:10:35,960 --> 00:10:39,620
+Há muita coisa acontecendo aqui, então vamos resumir por nós mesmos, certo?
+
+159
+00:10:40,440 --> 00:10:44,180
+Backpropagation é o algoritmo para determinar como um único exemplo de 
+
+160
+00:10:44,180 --> 00:10:46,867
+treinamento gostaria de alterar os pesos e vieses, 
+
+161
+00:10:46,867 --> 00:10:50,186
+não apenas em termos de se eles deveriam aumentar ou diminuir, 
+
+162
+00:10:50,186 --> 00:10:53,874
+mas em termos de quais proporções relativas a essas mudanças causam a 
+
+163
+00:10:53,874 --> 00:10:55,560
+diminuição mais rápida no custo.
+
+164
+00:10:56,260 --> 00:11:00,252
+Uma verdadeira etapa de descida gradiente envolveria fazer isso para todas as dezenas de 
+
+165
+00:11:00,252 --> 00:11:04,200
+milhares de exemplos de treinamento e calcular a média das alterações desejadas obtidas.
+
+166
+00:11:04,860 --> 00:11:07,975
+Mas isso é computacionalmente lento, então, em vez disso, 
+
+167
+00:11:07,975 --> 00:11:12,058
+você subdivide aleatoriamente os dados em minilotes e calcula cada etapa em 
+
+168
+00:11:12,058 --> 00:11:13,240
+relação a um minilote.
+
+169
+00:11:14,000 --> 00:11:17,741
+Passando repetidamente por todos os minilotes e fazendo esses ajustes, 
+
+170
+00:11:17,741 --> 00:11:20,744
+você convergirá para um mínimo local da função de custo, 
+
+171
+00:11:20,744 --> 00:11:24,749
+o que significa que sua rede acabará fazendo um ótimo trabalho nos exemplos 
+
+172
+00:11:24,749 --> 00:11:25,540
+de treinamento.
+
+173
+00:11:27,240 --> 00:11:32,037
+Então, com tudo isso dito, cada linha de código usada na implementação do backprop 
+
+174
+00:11:32,037 --> 00:11:36,720
+na verdade corresponde a algo que você viu agora, pelo menos em termos informais.
+
+175
+00:11:37,560 --> 00:11:40,816
+Mas às vezes saber o que a matemática faz é apenas metade da batalha, 
+
+176
+00:11:40,816 --> 00:11:44,120
+e apenas representar a maldita coisa é que tudo fica confuso e confuso.
+
+177
+00:11:44,860 --> 00:11:47,042
+Então, para aqueles que desejam se aprofundar, 
+
+178
+00:11:47,042 --> 00:11:50,431
+o próximo vídeo aborda as mesmas ideias que acabamos de apresentar aqui, 
+
+179
+00:11:50,431 --> 00:11:54,237
+mas em termos do cálculo subjacente, o que deve torná-lo um pouco mais familiar à 
+
+180
+00:11:54,237 --> 00:11:56,420
+medida que você vê o tópico em outros recursos.
+
+181
+00:11:57,340 --> 00:12:00,828
+Antes disso, uma coisa que vale a pena enfatizar é que para esse algoritmo funcionar, 
+
+182
+00:12:00,828 --> 00:12:04,114
+e isso vale para todos os tipos de aprendizado de máquina além de redes neurais, 
+
+183
+00:12:04,114 --> 00:12:05,900
+você precisa de muitos dados de treinamento.
+
+184
+00:12:06,420 --> 00:12:10,579
+No nosso caso, uma coisa que torna os dígitos manuscritos um exemplo tão bom é que 
+
+185
+00:12:10,579 --> 00:12:14,740
+existe o banco de dados MNIST, com tantos exemplos que foram rotulados por humanos.
+
+186
+00:12:15,300 --> 00:12:18,230
+Portanto, um desafio comum com o qual aqueles que trabalham com aprendizado 
+
+187
+00:12:18,230 --> 00:12:21,200
+de máquina estão familiarizados é obter os dados de treinamento rotulados de 
+
+188
+00:12:21,200 --> 00:12:24,246
+que realmente precisam, seja fazer com que pessoas rotulem dezenas de milhares 
+
+189
+00:12:24,246 --> 00:12:27,100
+de imagens ou qualquer outro tipo de dados com o qual você esteja lidando.
+

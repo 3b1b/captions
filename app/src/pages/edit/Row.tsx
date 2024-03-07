@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { FaExclamationTriangle } from "react-icons/fa";
 import {
   FaArrowsRotate,
   FaFlag,
@@ -7,7 +8,6 @@ import {
   FaStop,
   FaThumbsUp,
 } from "react-icons/fa6";
-import { FaExclamationTriangle } from 'react-icons/fa';
 import { Link, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { useAtom, useAtomValue } from "jotai";
@@ -24,7 +24,9 @@ import {
   showLegacy,
   title,
 } from "@/pages/Edit";
+import { legacyTooltip } from "@/pages/edit/Footer";
 import { glow, scrollIntoView } from "@/util/dom";
+import { isRtl } from "@/util/language";
 import { formatTime } from "@/util/string";
 import classes from "./Row.module.css";
 
@@ -84,6 +86,9 @@ function Row({ index, entries }: Props) {
     currentTranslation.length >= translationMax(entry, language);
   const originalWarning = currentOriginal.length >= originalMax(entry);
 
+  /** right to left languages need special styling */
+  const rtlLanguage = isRtl(language);
+
   /** issue url params */
   const issueTitle = `${lesson}/${language}`;
   const issueBody = [
@@ -97,7 +102,10 @@ function Row({ index, entries }: Props) {
   return (
     <div
       ref={ref}
-      className={classNames(classes.row, (edited || upvoted || reviews > 0) && classes.edited)}
+      className={classNames(
+        classes.row,
+        (edited || upvoted || reviews > 0) && classes.edited,
+      )}
     >
       {/* actions */}
       <div className={classes.actions}>
@@ -109,10 +117,10 @@ function Row({ index, entries }: Props) {
           <span>{edited ? 1 : reviews + Number(upvoted)}</span>
         </button>
 
-        <div className={classes.playWarningWrapper}>
+        <div className={classes.playWrapper}>
           {translationWarning && (
-            <FaExclamationTriangle 
-              className={classes.warningTriangle}
+            <FaExclamationTriangle
+              className={classes.warningIcon}
               data-tooltip="This translation may be too long to fit in the time slot"
             />
           )}
@@ -132,7 +140,9 @@ function Row({ index, entries }: Props) {
 
                   /** expand header */
                   const expand = innerHeight / 3;
-                  if (parseFloat(window.getComputedStyle(header).height) < expand)
+                  if (
+                    parseFloat(window.getComputedStyle(header).height) < expand
+                  )
                     header.style.height = expand + "px";
                 }
               }}
@@ -150,6 +160,7 @@ function Row({ index, entries }: Props) {
           classes.edit,
           translationWarning && classes.warning,
         )}
+        dir={rtlLanguage ? "rtl" : "ltr"}
         value={currentTranslation}
         onChange={(value) => setEntry({ currentTranslation: value })}
         data-tooltip={"Edit translated text"}
@@ -163,7 +174,9 @@ function Row({ index, entries }: Props) {
         )}
         value={entry.currentOriginal}
         onChange={(value) => setEntry({ currentOriginal: value })}
-        data-tooltip={"Original English text. If you see a significant problem, click to edit."}
+        data-tooltip={
+          "Original English text. If you see a significant problem, click to edit."
+        }
       />
 
       {/* secondary actions */}
@@ -192,9 +205,17 @@ function Row({ index, entries }: Props) {
 
       {/* legacy translation */}
       {legacyTranslation && getShowLegacy && getCompletion < 1 && (
-        <div className={classes.legacy}>
-          <strong>Legacy translation</strong>: {legacyTranslation}
-        </div>
+        <>
+          <strong className={classes.legacyLabel} data-tooltip={legacyTooltip}>
+            Legacy:
+          </strong>
+          <span
+            className={classes.legacyText}
+            dir={rtlLanguage ? "rtl" : "ltr"}
+          >
+            {legacyTranslation}
+          </span>
+        </>
       )}
     </div>
   );
