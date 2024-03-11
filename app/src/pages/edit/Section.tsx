@@ -16,10 +16,11 @@ import classes from "../Edit.module.css";
 type Props = {
   label: string;
   entries: typeof title | typeof captions | typeof description;
+  file: string;
 };
 
 /** title/caption/description editor rows */
-function Section({ label, entries }: Props) {
+function Section({ label, entries, file }: Props) {
   /** url params */
   const { lesson = "", language = "" } = useParams();
 
@@ -36,7 +37,7 @@ function Section({ label, entries }: Props) {
         <div className={classes.rows}>
           {getEntries.map((entry, index) =>
             filterFuncs[getFilter](entry) ? (
-              <Row key={index} index={index} entries={entries} />
+              <Row key={index} index={index} entries={entries} file={file} />
             ) : (
               <Fragment key={index} />
             ),

@@ -27,7 +27,9 @@ function Search() {
     const filtered = flatLessons.filter(
       ({ lesson, title, topic, language }) =>
         nameTerms.every(
-          (term) => title.includes(term) || lesson.toLowerCase().includes(term),
+          (term) =>
+            title.toLowerCase().includes(term) ||
+            lesson.toLowerCase().includes(term),
         ) &&
         (topic === "" || topic.toLowerCase().includes(topicSearch)) &&
         language.toLowerCase().includes(languageSearch),

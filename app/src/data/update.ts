@@ -20,7 +20,7 @@ let paths = globSync("**/**/", {
 
     return {
       /** path, minus language */
-      full: path.split("/").slice(0, -1).join("/"),
+      path: path.split("/").slice(0, -1).join("/"),
       year,
       lesson,
       language,
@@ -67,23 +67,21 @@ for (const language of languageList)
       completion[language]![topic]![lesson] = 0;
     }
 
-for (const { full, lesson, language } of paths) {
+for (const { path, lesson, language } of paths) {
   /** cross-ref topic */
   const topic = topics.find((topic) => topic.lessons.includes(lesson))!;
 
   /** init entry */
   const newLesson: Lesson = {
-    path: full,
+    path: path,
     lesson,
     title: lesson,
     topic: topic.name,
   };
 
   /** get full lesson name */
-  if (newLesson.title === lesson) {
-    const titleFile = `../${full}/${language}/title.json`;
-    newLesson.title = readFile<_Title>(titleFile)?.input || lesson || "";
-  }
+  const titleFile = `../${path}/${language}/title.json`;
+  newLesson.title = readFile<_Title>(titleFile)?.input || lesson || "";
 
   /** find next/prev lessons */
   const index = topic.lessons.indexOf(lesson);
@@ -93,13 +91,13 @@ for (const { full, lesson, language } of paths) {
 
   /** get completion */
   const translation =
-    readFile<_Entry[]>(`../${full}/${language}/sentence_translations.json`) ||
+    readFile<_Entry[]>(`../${path}/${language}/sentence_translations.json`) ||
     [];
   const percent = calcCompletion(translation.map(convert), language);
   completion[language]![topic.name]![lesson] = clamp(percent, 0, 1);
 
   /** add lesson to list */
-  lessons[full] = newLesson;
+  lessons[path] = newLesson;
 }
 
 /** calc totals */
