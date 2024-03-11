@@ -111,12 +111,9 @@ function Footer() {
           accept=".zip"
           style={{ display: "none" }}
           onChange={async (event) => {
+            /** get uploaded file object */
             const file = (event.target?.files || [])[0];
-            if (file) {
-              const data = await file.arrayBuffer();
-              importData(await uploadZip(data));
-            }
-
+            if (file) importData(await uploadZip(await file.arrayBuffer()));
             /** reset input */
             if (uploadRef.current) uploadRef.current.value = "";
           }}
