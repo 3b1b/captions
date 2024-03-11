@@ -36,11 +36,11 @@ export async function downloadZip(
 }
 
 /** upload zip of json objects */
-export async function uploadZip(data: ArrayBuffer) {
+export async function uploadZip<T>(data: ArrayBuffer) {
   try {
     const zipReader = new ZipReader(new BlobReader(new Blob([data])));
     const entries = await zipReader.getEntries();
-    const files: Record<string, object | object[]> = {};
+    const files: UploadResult<T> = {};
     await Promise.all(
       entries.map(async (entry) => {
         const text = (await entry.getData?.(new TextWriter())) || "[]";
@@ -56,3 +56,5 @@ export async function uploadZip(data: ArrayBuffer) {
 
   return {};
 }
+
+export type UploadResult<T = unknown> = Record<string, T>;

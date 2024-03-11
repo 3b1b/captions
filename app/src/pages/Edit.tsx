@@ -8,7 +8,7 @@ import { _Entry, Entry } from "@/data/types";
 import Footer from "@/pages/edit/Footer";
 import Header from "@/pages/edit/Header";
 import Section from "@/pages/edit/Section";
-import { uploadZip } from "@/util/download";
+import { UploadResult } from "@/util/download";
 
 /** translation edit page */
 function Edit() {
@@ -164,14 +164,16 @@ export const loader: LoaderFunction = async ({ params }) => {
 };
 
 /** import data from zip */
-export function importData(files: Awaited<ReturnType<typeof uploadZip>>) {
+export function importData(files: UploadResult) {
   try {
-    setAtom(title, [convert(files["title.json"]! as _Entry)]);
-    setAtom(
-      captions,
-      (files["sentence_translations.json"]! as _Entry[]).map(convert),
-    );
-    setAtom(description, (files["description.json"]! as _Entry[]).map(convert));
+    const newTitle = files["title.json"] as _Entry | undefined;
+    if (newTitle) setAtom(title, [convert(newTitle)]);
+    const newCaptions = files["sentence_translations.json"] as
+      | _Entry[]
+      | undefined;
+    if (newCaptions) setAtom(captions, newCaptions.map(convert));
+    const newDescription = files["description.json"] as _Entry[] | undefined;
+    if (newDescription) setAtom(description, newDescription.map(convert));
   } catch (error) {
     console.error(error);
     window.alert("Error parsing uploaded file");
