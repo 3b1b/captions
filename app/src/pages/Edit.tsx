@@ -215,7 +215,11 @@ export async function submitPr(
         path: `${path}/description.json`,
         content: getAtom(description).map(revert),
       },
-    ],
+    ]
+      /** don't include empty files */
+      .filter((file) =>
+        Array.isArray(file.content) ? file.content.length : file.content,
+      ),
   });
 
   console.info(pr);
