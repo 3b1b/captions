@@ -37,6 +37,9 @@ async function createPr(params, debug = false) {
   if (!title) missing.push("title");
   if (!body) missing.push("body");
   if (!files.length) missing.push("files");
+  files.forEach(({ path, content }, index) => {
+    if (!path || !content) missing.push(`file ${index}`);
+  });
   if (missing.length) throw Error(`Insufficient ${missing.join(", ")}`);
 
   /** get main branch */
@@ -70,9 +73,7 @@ async function createPr(params, debug = false) {
   }
 
   /** update files */
-  for (const [index, { path, content }] of Object.entries(files)) {
-    if (!path || !content) throw Error(`File ${index} insufficient`);
-
+  for (const { path, content } of files) {
     /** get existing file */
     let existing;
     try {

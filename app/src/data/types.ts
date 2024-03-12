@@ -1,6 +1,6 @@
 /** paths read from repo directory structure */
 export type Path = {
-  full: string;
+  path: string;
   year: string;
   lesson: string;
   language: string;

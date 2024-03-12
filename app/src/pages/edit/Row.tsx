@@ -8,11 +8,12 @@ import {
   FaStop,
   FaThumbsUp,
 } from "react-icons/fa6";
+import { LuBraces } from "react-icons/lu";
 import { Link, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { useAtom, useAtomValue } from "jotai";
-import { cloneDeep } from "lodash";
-import { issueLink } from "@/api";
+import { cloneDeep, truncate } from "lodash";
+import { issueLink, repoFull } from "@/api";
 import { playing, playSegment, stopVideo, time } from "@/components/Player";
 import Textarea from "@/components/Textarea";
 import { isEdited, originalMax, translationMax } from "@/data/data";
@@ -21,6 +22,7 @@ import {
   captions,
   completion,
   description,
+  meta,
   showLegacy,
   title,
 } from "@/pages/Edit";
@@ -33,10 +35,11 @@ import classes from "./Row.module.css";
 type Props = {
   index: number;
   entries: typeof title | typeof captions | typeof description;
+  file: string;
 };
 
 /** editable entry row */
-function Row({ index, entries }: Props) {
+function Row({ index, entries, file }: Props) {
   /** get/set entry from list of entries and index */
   const [getEntries, setEntries] = useAtom(entries);
   const entry = getEntries[index]!;
@@ -64,6 +67,7 @@ function Row({ index, entries }: Props) {
   const { lesson = "", language = "" } = useParams();
 
   /** page state */
+  const getMeta = useAtomValue(meta);
   const getTime = useAtomValue(time);
   const getPlaying = useAtomValue(playing);
   const getShowLegacy = useAtomValue(showLegacy);
@@ -89,15 +93,29 @@ function Row({ index, entries }: Props) {
   /** right to left languages need special styling */
   const rtlLanguage = isRtl(language);
 
+  /** get (rough) line number in raw json */
+  const lineNumber = 1 + index * (6 + 2) + 2;
+  /** get first few words in original english, url-encoded */
+  const firstFewWords = window.encodeURIComponent(
+    startingOriginal.split(/\s+/).slice(0, 20).join(" "),
+  );
+
   /** issue url params */
   const issueTitle = `${lesson}/${language}`;
   const issueBody = [
-    `**Line**:\n`,
-    `${startingOriginal.slice(0, 100)}...\n`,
-    "\n",
-    ...(start && end ? ["**Time**:\n", `${start} - ${end}\n`, "\n"] : []),
-    `**Describe the issue**:\n`,
-  ];
+    ["**Original**", truncate(startingOriginal, { length: 300 })],
+    ["**Translation**:", truncate(startingTranslation, { length: 300 })],
+    start && end ? ["**Time**:", `${start} - ${end}`] : [],
+    ["**Line**", `Entry # ${index}`, `Line # ~${lineNumber}`],
+    ["**Describe the issue**"],
+  ]
+    .filter((line) => line.length)
+    .map((line) => line.join("\n"))
+    .join("\n\n")
+    .concat("\n");
+
+  /** get full path to file and line number */
+  const path = `${repoFull}/tree/main/${getMeta?.path}/${language}/${file}#:~:text=${firstFewWords}`;
 
   return (
     <div
@@ -195,9 +213,17 @@ function Row({ index, entries }: Props) {
         </button>
 
         <Link
+          to={path}
+          target="_blank"
+          data-tooltip="See raw JSON for this entry"
+        >
+          <LuBraces />
+        </Link>
+
+        <Link
           to={issueLink(issueTitle, issueBody)}
           target="_blank"
-          data-tooltip="Create an issue about this translation"
+          data-tooltip="Create an issue about this entry"
         >
           <FaFlag />
         </Link>

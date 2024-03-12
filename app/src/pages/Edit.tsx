@@ -8,6 +8,7 @@ import { _Entry, Entry } from "@/data/types";
 import Footer from "@/pages/edit/Footer";
 import Header from "@/pages/edit/Header";
 import Section from "@/pages/edit/Section";
+import { UploadResult } from "@/util/download";
 
 /** translation edit page */
 function Edit() {
@@ -18,9 +19,17 @@ function Edit() {
     <>
       <Header />
       <main>
-        <Section label="title" entries={title} />
-        <Section label="captions" entries={captions} />
-        <Section label="description" entries={description} />
+        <Section label="title" entries={title} file="title.json" />
+        <Section
+          label="captions"
+          entries={captions}
+          file="sentence_translations.json"
+        />
+        <Section
+          label="description"
+          entries={description}
+          file="description.json"
+        />
       </main>
       <Footer />
     </>
@@ -133,15 +142,6 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   setAtom(loading, 0.6);
 
-  /** load description entries */
-  {
-    const url = `${base}/${path}/${language}/description.json`;
-    const data = await request<_Entry[]>(url);
-    if (data) setAtom(description, data.map(convert));
-  }
-
-  setAtom(loading, 0.8);
-
   /** load caption entries */
   {
     const url = `${base}/${path}/${language}/sentence_translations.json`;
@@ -149,17 +149,43 @@ export const loader: LoaderFunction = async ({ params }) => {
     if (data) setAtom(captions, data.map(convert));
   }
 
+  setAtom(loading, 0.8);
+
+  /** load description entries */
+  {
+    const url = `${base}/${path}/${language}/description.json`;
+    const data = await request<_Entry[]>(url);
+    if (data) setAtom(description, data.map(convert));
+  }
+
   setAtom(loading, 1);
 
   return null;
 };
 
+/** import data from zip */
+export function importData(files: UploadResult) {
+  try {
+    const newTitle = files["title.json"] as _Entry | undefined;
+    if (newTitle) setAtom(title, [convert(newTitle)]);
+    const newCaptions = files["sentence_translations.json"] as
+      | _Entry[]
+      | undefined;
+    if (newCaptions) setAtom(captions, newCaptions.map(convert));
+    const newDescription = files["description.json"] as _Entry[] | undefined;
+    if (newDescription) setAtom(description, newDescription.map(convert));
+  } catch (error) {
+    console.error(error);
+    window.alert("Error parsing uploaded file");
+  }
+}
+
 /** clean data for export */
 export function exportData() {
   return {
     title: getAtom(title).map(revert)[0],
-    description: getAtom(description).map(revert),
     sentence_translations: getAtom(captions).map(revert),
+    description: getAtom(description).map(revert),
   };
 }
 
@@ -189,7 +215,11 @@ export async function submitPr(
         path: `${path}/description.json`,
         content: getAtom(description).map(revert),
       },
-    ],
+    ]
+      /** don't submit empty files */
+      .filter((file) =>
+        Array.isArray(file.content) ? file.content.length : file.content,
+      ),
   });
 
   console.info(pr);
