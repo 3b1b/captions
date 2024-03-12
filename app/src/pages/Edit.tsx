@@ -216,7 +216,7 @@ export async function submitPr(
         content: getAtom(description).map(revert),
       },
     ]
-      /** don't include empty files */
+      /** don't submit empty files */
       .filter((file) =>
         Array.isArray(file.content) ? file.content.length : file.content,
       ),
