@@ -1,644 +1,584 @@
 1
-00:00:04,020 --> 00:00:06,804
-Die harte Annahme hier ist, dass Sie Teil 3 gesehen haben, 
+00:00:04,019 --> 00:00:06,379
+Wir gehen davon aus, dass du Teil 3 gesehen hast, 
 
 2
-00:00:06,804 --> 00:00:09,920
-der eine intuitive Anleitung zum Backpropagation-Algorithmus gibt.
+00:00:06,379 --> 00:00:09,920
+in dem du den Backpropagation-Algorithmus intuitiv nachvollziehen konntest.
 
 3
 00:00:11,040 --> 00:00:14,220
-Hier werden wir etwas formeller und tauchen in die relevante Infinitesimalrechnung ein.
+Hier werden wir ein wenig formaler und tauchen in die relevante Kalkulation ein.
 
 4
-00:00:14,820 --> 00:00:18,456
-Es ist normal, dass dies zumindest ein wenig verwirrend ist, daher gilt das Mantra, 
+00:00:14,820 --> 00:00:18,475
+Es ist normal, dass das zumindest ein bisschen verwirrend ist, also gilt das Mantra, 
 
 5
-00:00:18,456 --> 00:00:21,400
+00:00:18,475 --> 00:00:21,400
 regelmäßig innezuhalten und nachzudenken, hier genauso wie anderswo.
 
 6
-00:00:21,940 --> 00:00:24,138
-Unser Hauptziel besteht darin, zu zeigen, wie Menschen, 
+00:00:21,940 --> 00:00:27,754
+Unser Hauptziel ist es zu zeigen, wie Menschen im Bereich des maschinellen Lernens 
 
 7
-00:00:24,138 --> 00:00:27,201
-die sich mit maschinellem Lernen befassen, üblicherweise über die Kettenregel 
+00:00:27,754 --> 00:00:33,640
+über die Kettenregel aus der Infinitesimalrechnung im Kontext von Netzwerken denken.
 
 8
-00:00:27,201 --> 00:00:29,203
-aus der Analysis im Kontext von Netzwerken denken, 
+00:00:34,340 --> 00:00:37,329
+Für diejenigen unter euch, die sich mit den entsprechenden Berechnungen nicht auskennen, 
 
 9
-00:00:29,203 --> 00:00:31,991
-was ein anderes Gefühl vermittelt als die Herangehensweise der meisten 
+00:00:37,329 --> 00:00:38,740
+habe ich eine ganze Serie zu diesem Thema.
 
 10
-00:00:31,991 --> 00:00:33,640
-Einführungskurse in Analysis an das Thema.
+00:00:39,960 --> 00:00:42,958
+Beginnen wir mit einem sehr einfachen Netzwerk, 
 
 11
-00:00:34,340 --> 00:00:36,845
-Für diejenigen unter Ihnen, die sich mit der relevanten Infinitesimalrechnung 
+00:00:42,958 --> 00:00:46,020
+in dem jede Schicht ein einzelnes Neuron enthält.
 
 12
-00:00:36,845 --> 00:00:38,740
-nicht auskennen, habe ich eine ganze Reihe zu diesem Thema.
+00:00:46,320 --> 00:00:49,814
+Dieses Netz wird durch drei Gewichte und drei Verzerrungen bestimmt, 
 
 13
-00:00:39,960 --> 00:00:43,020
-Beginnen wir mit einem äußerst einfachen Netzwerk, 
+00:00:49,814 --> 00:00:53,917
+und unser Ziel ist es zu verstehen, wie empfindlich die Kostenfunktion auf diese 
 
 14
-00:00:43,020 --> 00:00:46,020
-bei dem jede Schicht ein einzelnes Neuron enthält.
+00:00:53,917 --> 00:00:54,880
+Variablen reagiert.
 
 15
-00:00:46,320 --> 00:00:50,017
-Dieses Netzwerk wird durch drei Gewichte und drei Verzerrungen bestimmt. 
+00:00:55,420 --> 00:00:57,963
+Auf diese Weise wissen wir, welche Anpassungen an diesen 
 
 16
-00:00:50,017 --> 00:00:54,424
-Unser Ziel ist es zu verstehen, wie empfindlich die Kostenfunktion auf diese Variablen 
+00:00:57,963 --> 00:01:00,820
+Begriffen die effizienteste Senkung der Kostenfunktion bewirken.
 
 17
-00:00:54,424 --> 00:00:54,880
-reagiert.
-
-18
-00:00:55,419 --> 00:00:59,063
-Auf diese Weise wissen wir, welche Anpassungen dieser Bedingungen 
-
-19
-00:00:59,063 --> 00:01:02,320
-die effizienteste Verringerung der Kostenfunktion bewirken.
-
-20
-00:01:02,320 --> 00:01:04,840
+00:01:01,960 --> 00:01:04,840
 Wir konzentrieren uns nur auf die Verbindung zwischen den letzten beiden Neuronen.
 
-21
-00:01:05,980 --> 00:01:09,388
-Beschriften wir die Aktivierung dieses letzten Neurons mit einem hochgestellten L, 
+18
+00:01:05,980 --> 00:01:09,342
+Beschriften wir die Aktivierung des letzten Neurons mit einem hochgestellten L, 
 
-22
-00:01:09,388 --> 00:01:11,360
+19
+00:01:09,342 --> 00:01:11,360
 das angibt, in welcher Schicht es sich befindet.
 
-23
+20
 00:01:11,680 --> 00:01:15,560
 Die Aktivierung des vorherigen Neurons ist also AL-1.
 
+21
+00:01:16,360 --> 00:01:19,361
+Das sind keine Exponenten, sondern nur eine Möglichkeit, das, 
+
+22
+00:01:19,361 --> 00:01:23,040
+worüber wir reden, zu indizieren, da ich mir später die Indizes sparen will.
+
+23
+00:01:23,720 --> 00:01:28,169
+Nehmen wir an, der Wert, den wir für diese letzte Aktivierung für ein bestimmtes 
+
 24
-00:01:16,360 --> 00:01:19,149
-Dabei handelt es sich nicht um Exponenten, sondern nur um eine Möglichkeit, 
+00:01:28,169 --> 00:01:32,180
+Trainingsbeispiel haben wollen, ist y. y kann zum Beispiel 0 oder 1 sein.
 
 25
-00:01:19,149 --> 00:01:21,204
-das, worüber wir sprechen, zu indizieren, da ich später 
+00:01:32,840 --> 00:01:39,240
+Die Kosten dieses Netzes für ein einziges Trainingsbeispiel sind also AL-y2.
 
 26
-00:01:21,204 --> 00:01:23,040
-Indizes für verschiedene Indizes speichern möchte.
+00:01:40,260 --> 00:01:44,380
+Wir bezeichnen die Kosten für dieses eine Trainingsbeispiel als c0.
 
 27
-00:01:23,720 --> 00:01:28,032
-Nehmen wir an, dass der Wert, den diese letzte Aktivierung für ein bestimmtes 
+00:01:45,900 --> 00:01:50,659
+Zur Erinnerung: Diese letzte Aktivierung wird durch eine Gewichtung bestimmt, 
 
 28
-00:01:28,032 --> 00:01:32,180
-Trainingsbeispiel haben soll, y ist. Beispielsweise könnte y 0 oder 1 sein.
+00:01:50,659 --> 00:01:55,602
+die ich wL nenne, mal der vorherigen Neuronenaktivierung plus einer Vorspannung, 
 
 29
-00:01:32,840 --> 00:01:39,240
-Die Kosten dieses Netzwerks für ein einzelnes Trainingsbeispiel betragen also AL-y2.
+00:01:55,602 --> 00:01:56,640
+die ich bL nenne.
 
 30
-00:01:40,260 --> 00:01:44,380
-Wir bezeichnen die Kosten dieses einen Trainingsbeispiels als c0.
+00:01:57,420 --> 00:02:01,320
+Dann pumpst du das durch eine spezielle nichtlineare Funktion wie das Sigmoid oder ReLU.
 
 31
-00:01:45,900 --> 00:01:50,272
-Zur Erinnerung: Diese letzte Aktivierung wird durch ein Gewicht bestimmt, 
+00:02:01,800 --> 00:02:05,443
+Es macht die Sache einfacher, wenn wir dieser gewichteten Summe einen eigenen 
 
 32
-00:01:50,272 --> 00:01:54,231
-das ich wL nenne, multipliziert mit der Aktivierung des vorherigen 
+00:02:05,443 --> 00:02:09,320
+Namen geben, z. B. z, mit demselben Hochkomma wie die entsprechenden Aktivierungen.
 
 33
-00:01:54,231 --> 00:01:57,600
-Neurons plus einer gewissen Abweichung, die ich bL nenne.
+00:02:10,380 --> 00:02:13,711
+Das sind viele Begriffe, und du kannst dir das so vorstellen, 
 
 34
-00:01:57,600 --> 00:02:01,320
-Dann pumpen Sie das durch eine spezielle nichtlineare Funktion wie Sigmoid oder ReLU.
+00:02:13,711 --> 00:02:18,333
+dass das Gewicht, die vorherige Aktion und die Vorspannung zusammen verwendet werden, 
 
 35
-00:02:01,800 --> 00:02:03,709
-Es wird uns tatsächlich die Arbeit erleichtern, 
+00:02:18,333 --> 00:02:21,610
+um z zu berechnen, was uns wiederum erlaubt, a zu berechnen, 
 
 36
-00:02:03,709 --> 00:02:06,256
-wenn wir dieser gewichteten Summe einen speziellen Namen geben, 
+00:02:21,610 --> 00:02:25,480
+was uns schließlich zusammen mit einer Konstante y die Kosten berechnet.
 
 37
-00:02:06,256 --> 00:02:09,320
-z. B. z, mit demselben hochgestellten Index wie die relevanten Aktivierungen.
+00:02:27,340 --> 00:02:30,016
+Und natürlich wird AL-1 durch sein eigenes Gewicht, 
 
 38
-00:02:10,380 --> 00:02:14,557
-Das sind viele Begriffe, und Sie könnten sich das so vorstellen, dass das Gewicht, 
+00:02:30,016 --> 00:02:33,721
+seine Vorspannung und so weiter beeinflusst, aber darauf wollen wir uns 
 
 39
-00:02:14,557 --> 00:02:18,584
-die vorherige Aktion und der Bias zusammen verwendet werden, um z zu berechnen, 
+00:02:33,721 --> 00:02:35,060
+jetzt nicht konzentrieren.
 
 40
-00:02:18,584 --> 00:02:21,101
-was uns wiederum die Berechnung von a ermöglicht, 
-
-41
-00:02:21,101 --> 00:02:25,480
-was uns schließlich zusammen mit einer Konstante y ermöglicht Wir berechnen die Kosten.
-
-42
-00:02:27,340 --> 00:02:31,617
-Und natürlich wird AL-1 durch sein eigenes Gewicht, seine Voreingenommenheit usw. 
-
-43
-00:02:31,617 --> 00:02:35,060
-beeinflusst, aber darauf werden wir uns jetzt nicht konzentrieren.
-
-44
 00:02:35,700 --> 00:02:37,620
 Das sind doch alles nur Zahlen, oder?
 
-45
-00:02:38,060 --> 00:02:39,534
-Und es kann schön sein, sich vorzustellen, dass 
+41
+00:02:38,060 --> 00:02:41,040
+Und es kann schön sein, sich vorzustellen, dass jeder seine eigene kleine Zahlenreihe hat.
 
-46
-00:02:39,534 --> 00:02:41,040
-jede einzelne ihre eigene kleine Zahlenreihe hat.
+42
+00:02:41,720 --> 00:02:45,186
+Unser erstes Ziel ist es, zu verstehen, wie empfindlich die 
 
-47
-00:02:41,720 --> 00:02:45,360
-Unser erstes Ziel besteht darin zu verstehen, wie empfindlich die 
-
-48
-00:02:45,360 --> 00:02:49,000
+43
+00:02:45,186 --> 00:02:49,000
 Kostenfunktion auf kleine Änderungen unseres Gewichts wL reagiert.
 
-49
+44
 00:02:49,540 --> 00:02:54,860
 Oder anders ausgedrückt: Was ist die Ableitung von c nach wL?
 
-50
-00:02:55,600 --> 00:02:58,482
-Wenn Sie diesen del w-Begriff sehen, stellen Sie sich vor, 
+45
+00:02:55,600 --> 00:02:59,126
+Wenn du den Begriff del w siehst, kannst du dir vorstellen, 
 
-51
-00:02:58,482 --> 00:03:02,001
-dass er einen kleinen Anstoß an w bedeutet, etwa eine Änderung um 0.01, 
+46
+00:02:59,126 --> 00:03:03,534
+dass er eine winzige Änderung von w bedeutet, z. B. eine Änderung um 0,01, 
 
-52
-00:03:02,001 --> 00:03:05,323
-und stellen Sie sich diesen del c-Begriff so vor, dass er bedeutet, 
+47
+00:03:03,534 --> 00:03:08,060
+und der Begriff del c steht für die daraus resultierende Änderung der Kosten.
 
-53
-00:03:05,323 --> 00:03:08,060
-was auch immer der daraus resultierende Kostenschub ist.
-
-54
+48
 00:03:08,060 --> 00:03:10,220
 Was wir wollen, ist ihr Verhältnis.
 
+49
+00:03:11,260 --> 00:03:15,593
+Diese winzige Veränderung von wL bewirkt eine Veränderung von zL, 
+
+50
+00:03:15,593 --> 00:03:21,240
+die wiederum eine Veränderung von AL bewirkt, was sich direkt auf die Kosten auswirkt.
+
+51
+00:03:23,120 --> 00:03:27,962
+Also lösen wir die Sache auf, indem wir zuerst das Verhältnis zwischen einer winzigen 
+
+52
+00:03:27,962 --> 00:03:31,285
+Änderung von zL und dieser winzigen Änderung w betrachten, 
+
+53
+00:03:31,285 --> 00:03:33,200
+also die Ableitung von zL nach wL.
+
+54
+00:03:33,200 --> 00:03:36,879
+Ebenso berücksichtigst du das Verhältnis zwischen der Änderung von AL 
+
 55
-00:03:11,260 --> 00:03:15,843
-Konzeptionell führt dieser kleine Schub für wL zu einem gewissen Schub für zL, 
+00:03:36,879 --> 00:03:39,928
+und der winzigen Änderung von zL, die sie verursacht hat, 
 
 56
-00:03:15,843 --> 00:03:18,919
-was wiederum einen gewissen Schub für AL verursacht, 
-
-57
-00:03:18,919 --> 00:03:21,240
-was sich direkt auf die Kosten auswirkt.
-
-58
-00:03:23,120 --> 00:03:28,363
-Also unterteilen wir die Sache, indem wir zunächst das Verhältnis einer winzigen Änderung 
-
-59
-00:03:28,363 --> 00:03:33,200
-von zL zu dieser winzigen Änderung w betrachten, also die Ableitung von zL nach wL.
-
-60
-00:03:33,200 --> 00:03:36,948
-Ebenso berücksichtigen Sie dann das Verhältnis der Änderung von AL zu 
-
-61
-00:03:36,948 --> 00:03:39,840
-der winzigen Änderung von zL, die sie verursacht hat, 
-
-62
-00:03:39,840 --> 00:03:44,660
+00:03:39,928 --> 00:03:44,660
 sowie das Verhältnis zwischen dem endgültigen Anstoß an c und diesem Zwischenanstoß an AL.
 
-63
-00:03:45,740 --> 00:03:50,064
+57
+00:03:45,740 --> 00:03:50,244
 Das hier ist die Kettenregel, bei der die Multiplikation dieser drei 
 
+58
+00:03:50,244 --> 00:03:55,140
+Verhältnisse die Empfindlichkeit von c auf kleine Änderungen von wL ergibt.
+
+59
+00:03:56,880 --> 00:03:59,533
+Auf dem Bildschirm siehst du jetzt eine Menge Symbole. 
+
+60
+00:03:59,533 --> 00:04:03,200
+Nimm dir einen Moment Zeit, um sicherzustellen, dass du sie alle verstehst, 
+
+61
+00:04:03,200 --> 00:04:06,240
+denn jetzt werden wir die entsprechenden Ableitungen berechnen.
+
+62
+00:04:07,440 --> 00:04:13,160
+Die Ableitung von c nach AL ergibt sich als 2AL-y.
+
+63
+00:04:13,980 --> 00:04:18,181
+Das bedeutet, dass seine Größe proportional zur Differenz zwischen dem Ausgang des 
+
 64
-00:03:50,064 --> 00:03:55,140
-Verhältnisse die Empfindlichkeit von c gegenüber kleinen Änderungen in wL ergibt.
+00:04:18,181 --> 00:04:22,736
+Netzes und dem gewünschten Ergebnis ist. Wenn das Ergebnis also sehr unterschiedlich ist, 
 
 65
-00:03:56,880 --> 00:03:59,579
-Auf dem Bildschirm sind also gerade viele Symbole zu sehen, 
+00:04:22,736 --> 00:04:27,140
+haben selbst kleine Änderungen einen großen Einfluss auf die endgültige Kostenfunktion.
 
 66
-00:03:59,579 --> 00:04:02,460
-und nehmen Sie sich einen Moment Zeit, um sich zu vergewissern, 
+00:04:27,840 --> 00:04:32,640
+Die Ableitung von AL nach zL ist einfach die Ableitung unserer Sigmoidfunktion, 
 
 67
-00:04:02,460 --> 00:04:06,240
-dass sie alle klar sind, denn jetzt werden wir die relevanten Ableitungen berechnen.
+00:04:32,640 --> 00:04:36,180
+oder welche Nichtlinearität du auch immer verwenden willst.
 
 68
-00:04:07,440 --> 00:04:14,180
-Die Ableitung von c nach AL ergibt 2AL-y.
+00:04:37,220 --> 00:04:44,660
+Die Ableitung von zL nach wL ist dann AL-1.
 
 69
-00:04:14,180 --> 00:04:17,360
-Das bedeutet, dass seine Größe proportional zur Differenz zwischen 
+00:04:45,760 --> 00:04:48,339
+Ich weiß nicht, wie es dir geht, aber ich glaube, es ist leicht, 
 
 70
-00:04:17,360 --> 00:04:20,019
-der Ausgabe des Netzwerks und dem, was wir wollen, ist. 
+00:04:48,339 --> 00:04:50,840
+mit dem Kopf in den Formeln zu stecken, ohne sich einen Moment 
 
 71
-00:04:20,019 --> 00:04:22,392
-Wenn diese Ausgabe also sehr unterschiedlich ist, 
+00:04:50,840 --> 00:04:53,420
+zurückzulehnen und sich daran zu erinnern, was sie alle bedeuten.
 
 72
-00:04:22,392 --> 00:04:25,620
-können selbst geringfügige Änderungen einen großen Einfluss auf die 
+00:04:53,920 --> 00:04:58,370
+Im Fall dieser letzten Ableitung hängt der Einfluss der kleinen Änderung des 
 
 73
-00:04:25,620 --> 00:04:27,140
-endgültige Kostenfunktion haben.
+00:04:58,370 --> 00:05:02,820
+Gewichts auf die letzte Schicht davon ab, wie stark das vorherige Neuron ist.
 
 74
-00:04:27,840 --> 00:04:32,707
-Die Ableitung von AL nach zL ist einfach die Ableitung unserer 
+00:05:03,380 --> 00:05:05,938
+Denke daran, dass hier die Idee der Neuronen, die zusammen 
 
 75
-00:04:32,707 --> 00:04:37,420
-Sigmoidfunktion oder der von Ihnen gewählten Nichtlinearität.
+00:05:05,938 --> 00:05:08,280
+feuern und zusammen verdrahtet sind, zum Tragen kommt.
 
 76
-00:04:37,420 --> 00:04:46,160
-Die Ableitung von zL nach wL ergibt AL-1.
+00:05:09,200 --> 00:05:12,304
+Und all dies ist die Ableitung der Kosten für ein 
 
 77
-00:04:46,160 --> 00:04:48,308
-Ich weiß nicht, wie es Ihnen geht, aber ich denke, es ist leicht, 
+00:05:12,304 --> 00:05:15,720
+bestimmtes einzelnes Trainingsbeispiel in Bezug auf wL.
 
 78
-00:04:48,308 --> 00:04:51,141
-mit dem Kopf in den Formeln stecken zu bleiben, ohne sich einen Moment Zeit zu nehmen, 
+00:05:16,440 --> 00:05:19,761
+Da bei der vollständigen Kostenfunktion alle Kosten über viele 
 
 79
-00:04:51,141 --> 00:04:53,420
-sich zurückzulehnen und sich daran zu erinnern, was sie alle bedeuten.
+00:05:19,761 --> 00:05:23,136
+verschiedene Trainingsbeispiele hinweg gemittelt werden müssen, 
 
 80
-00:04:53,920 --> 00:04:58,702
-Im Fall dieser letzten Ableitung hängt der Einfluss des kleinen Gewichtsschubs 
+00:05:23,136 --> 00:05:27,460
+muss die Ableitung dieses Ausdrucks über alle Trainingsbeispiele gemittelt werden.
 
 81
-00:04:58,702 --> 00:05:02,820
-auf die letzte Schicht davon ab, wie stark das vorherige Neuron ist.
-
-82
-00:05:03,380 --> 00:05:05,666
-Denken Sie daran, hier kommt die Idee „Neuronen, 
-
-83
-00:05:05,666 --> 00:05:08,280
-die gemeinsam feuern, miteinander verdrahten“ ins Spiel.
-
-84
-00:05:09,200 --> 00:05:12,374
-Und all dies ist lediglich die Ableitung der Kosten für 
-
-85
-00:05:12,374 --> 00:05:15,720
-ein bestimmtes einzelnes Trainingsbeispiel in Bezug auf wL.
-
-86
-00:05:16,440 --> 00:05:20,631
-Da die Vollkostenfunktion die Mittelung aller dieser Kosten über viele 
-
-87
-00:05:20,631 --> 00:05:23,642
-verschiedene Trainingsbeispiele hinweg beinhaltet, 
-
-88
-00:05:23,642 --> 00:05:28,660
-erfordert ihre Ableitung die Mittelung dieses Ausdrucks über alle Trainingsbeispiele.
-
-89
-00:05:28,660 --> 00:05:31,931
+00:05:28,380 --> 00:05:31,673
 Das ist natürlich nur eine Komponente des Gradientenvektors, 
 
-90
-00:05:31,931 --> 00:05:36,758
-der aus den partiellen Ableitungen der Kostenfunktion in Bezug auf all diese Gewichte und 
+82
+00:05:31,673 --> 00:05:35,020
+der sich aus den partiellen Ableitungen der Kostenfunktion in 
 
-91
-00:05:36,758 --> 00:05:38,260
-Verzerrungen aufgebaut wird.
+83
+00:05:35,020 --> 00:05:38,260
+Bezug auf all diese Gewichte und Verzerrungen zusammensetzt.
 
-92
-00:05:40,640 --> 00:05:43,156
-Aber auch wenn das nur eine der vielen partiellen Ableitungen ist, 
+84
+00:05:40,640 --> 00:05:43,029
+Aber auch wenn das nur eine der vielen Teilableitungen ist, 
 
-93
-00:05:43,156 --> 00:05:45,260
-die wir brauchen, macht es mehr als 50 % der Arbeit aus.
+85
+00:05:43,029 --> 00:05:45,260
+die wir brauchen, macht das mehr als 50% der Arbeit aus.
 
-94
+86
 00:05:46,340 --> 00:05:49,720
-Die Empfindlichkeit gegenüber der Voreingenommenheit ist beispielsweise nahezu identisch.
+Die Empfindlichkeit gegenüber der Verzerrung ist zum Beispiel fast identisch.
 
-95
+87
 00:05:50,040 --> 00:05:55,020
-Wir müssen nur diesen del z del w-Term durch a del z del b ersetzen.
+Wir müssen nur den Begriff del z del w gegen einen Begriff del z del b austauschen.
 
-96
+88
 00:05:58,420 --> 00:06:02,400
-Und wenn Sie sich die relevante Formel ansehen, ergibt sich für diese Ableitung 1.
+Und wenn du dir die entsprechende Formel ansiehst, ergibt die Ableitung 1.
 
-97
-00:06:06,140 --> 00:06:10,912
-Außerdem, und hier kommt die Idee der Rückwärtsausbreitung ins Spiel, können Sie sehen, 
+89
+00:06:06,140 --> 00:06:10,966
+Außerdem - und hier kommt die Idee der Rückwärtspropagierung ins Spiel - kannst du sehen, 
 
-98
-00:06:10,912 --> 00:06:15,740
+90
+00:06:10,966 --> 00:06:15,740
 wie empfindlich diese Kostenfunktion auf die Aktivierung der vorherigen Schicht reagiert.
 
+91
+00:06:15,740 --> 00:06:20,996
+Die anfängliche Ableitung in der Kettenregel, also die Empfindlichkeit 
+
+92
+00:06:20,996 --> 00:06:25,660
+von z gegenüber der vorherigen Aktivierung, ist das Gewicht wL.
+
+93
+00:06:26,640 --> 00:06:30,674
+Auch wenn wir nicht in der Lage sind, die Aktivierung der vorherigen Schicht direkt 
+
+94
+00:06:30,674 --> 00:06:33,555
+zu beeinflussen, ist es hilfreich, sie im Auge zu behalten, 
+
+95
+00:06:33,555 --> 00:06:37,253
+denn jetzt können wir dieselbe Kettenregel rückwärts iterieren, um zu sehen, 
+
+96
+00:06:37,253 --> 00:06:41,191
+wie empfindlich die Kostenfunktion auf die vorherigen Gewichte und die vorherigen 
+
+97
+00:06:41,191 --> 00:06:42,440
+Voreinstellungen reagiert.
+
+98
+00:06:43,180 --> 00:06:46,035
+Du denkst vielleicht, dass dies ein zu einfaches Beispiel ist, 
+
 99
-00:06:15,740 --> 00:06:19,156
-Diese anfängliche Ableitung im Kettenregelausdruck, 
+00:06:46,035 --> 00:06:49,796
+da alle Schichten ein Neuron haben, aber in einem echten Netzwerk werden die Dinge 
 
 100
-00:06:19,156 --> 00:06:23,360
-die Empfindlichkeit von z gegenüber der vorherigen Aktivierung, 
+00:06:49,796 --> 00:06:51,020
+exponentiell komplizierter.
 
 101
-00:06:23,360 --> 00:06:25,660
-ergibt sich nämlich als Gewicht wL.
+00:06:51,700 --> 00:06:55,464
+Aber ehrlich gesagt ändert sich gar nicht so viel, 
 
 102
-00:06:26,640 --> 00:06:30,862
-Und auch wenn wir die Aktivierung der vorherigen Ebene nicht direkt beeinflussen können, 
+00:06:55,464 --> 00:06:58,860
+wenn wir den Schichten mehrere Neuronen geben.
 
 103
-00:06:30,862 --> 00:06:33,377
-ist es dennoch hilfreich, den Überblick zu behalten, 
+00:06:59,380 --> 00:07:02,625
+Die Aktivierung einer bestimmten Schicht ist nicht einfach AL, 
 
 104
-00:06:33,377 --> 00:06:37,315
-denn jetzt können wir dieselbe Kettenregelidee einfach weiter rückwärts iterieren, 
+00:07:02,625 --> 00:07:07,160
+sondern hat auch einen Index, der angibt, um welches Neuron der Schicht es sich handelt.
 
 105
-00:06:37,315 --> 00:06:41,348
-um zu sehen, wie empfindlich die Kostenfunktion darauf reagiert frühere Gewichtungen 
+00:07:07,160 --> 00:07:11,731
+Wir verwenden den Buchstaben k, um die Schicht L-1 zu kennzeichnen, 
 
 106
-00:06:41,348 --> 00:06:42,440
-und frühere Vorurteile.
+00:07:11,731 --> 00:07:14,420
+und j, um die Schicht L zu kennzeichnen.
 
 107
-00:06:43,180 --> 00:06:46,142
-Und Sie könnten denken, dass dies ein zu einfaches Beispiel ist, 
+00:07:15,260 --> 00:07:18,980
+Für die Kosten schauen wir uns wieder an, wie hoch der gewünschte Output ist, 
 
 108
-00:06:46,142 --> 00:06:50,062
-da alle Schichten ein Neuron haben und die Dinge für ein echtes Netzwerk exponentiell 
+00:07:18,980 --> 00:07:22,175
+aber dieses Mal addieren wir die Quadrate der Differenzen zwischen 
 
 109
-00:06:50,062 --> 00:06:51,020
-komplizierter werden.
+00:07:22,175 --> 00:07:25,180
+diesen letzten Schichtaktivierungen und dem gewünschten Output.
 
 110
-00:06:51,700 --> 00:06:53,645
-Aber ehrlich gesagt ändert sich nicht so viel, 
+00:07:26,080 --> 00:07:30,840
+Das heißt, du nimmst eine Summe über ALj minus yj zum Quadrat.
 
 111
-00:06:53,645 --> 00:06:55,590
-wenn wir den Schichten mehrere Neuronen geben, 
+00:07:33,040 --> 00:07:37,768
+Da es viel mehr Gewichte gibt, muss jedes einzelne ein paar mehr Indizes haben, 
 
 112
-00:06:55,590 --> 00:06:58,860
-es sind eigentlich nur ein paar weitere Indizes, die man im Auge behalten muss.
+00:07:37,768 --> 00:07:41,551
+um zu wissen, wo es ist. Nennen wir also das Gewicht der Kante, 
 
 113
-00:06:59,380 --> 00:07:02,700
-Anstatt dass die Aktivierung einer bestimmten Schicht einfach AL ist, 
+00:07:41,551 --> 00:07:44,920
+die das k-te Neuron mit dem j-ten Neuron verbindet, WLjk.
 
 114
-00:07:02,700 --> 00:07:06,543
-wird sie auch einen Index haben, der angibt, um welches Neuron dieser Schicht es 
+00:07:45,620 --> 00:07:48,335
+Diese Indizes mögen sich zunächst ein wenig verkehrt anfühlen, 
 
 115
-00:07:06,543 --> 00:07:07,160
-sich handelt.
+00:07:48,335 --> 00:07:50,964
+aber sie stimmen mit den Indizes der Gewichtsmatrix überein, 
 
 116
-00:07:07,160 --> 00:07:11,806
-Verwenden wir den Buchstaben k, um die Ebene L-1 zu indizieren, 
+00:07:50,964 --> 00:07:53,120
+über die ich in Teil 1 des Videos gesprochen habe.
 
 117
-00:07:11,806 --> 00:07:14,420
-und j, um die Ebene L zu indizieren.
+00:07:53,620 --> 00:07:57,789
+Es ist nach wie vor sinnvoll, der entsprechenden gewichteten Summe einen Namen zu geben, 
 
 118
-00:07:15,260 --> 00:07:18,939
-Für die Kosten schauen wir uns erneut an, wie hoch die gewünschte Ausgabe ist, 
+00:07:57,789 --> 00:08:01,396
+z. B. z, so dass die Aktivierung der letzten Schicht einfach deine spezielle 
 
 119
-00:07:18,939 --> 00:07:22,385
-aber dieses Mal addieren wir die Quadrate der Differenzen zwischen diesen 
+00:08:01,396 --> 00:08:04,160
+Funktion ist, z. B. das Sigmoid, das auf z angewendet wird.
 
 120
-00:07:22,385 --> 00:07:25,180
-Aktivierungen der letzten Ebene und der gewünschten Ausgabe.
+00:08:04,660 --> 00:08:08,452
+Du siehst, was ich meine: Das sind im Wesentlichen dieselben Gleichungen, 
 
 121
-00:07:26,080 --> 00:07:30,840
-Das heißt, Sie bilden die Summe über ALj minus yj im Quadrat.
+00:08:08,452 --> 00:08:11,578
+die wir schon für den Fall eines Neurons pro Schicht hatten, 
 
 122
-00:07:33,040 --> 00:07:37,238
-Da es viel mehr Gewichte gibt, muss jedes über ein paar weitere Indizes verfügen, 
+00:08:11,578 --> 00:08:13,680
+nur dass es etwas komplizierter aussieht.
 
 123
-00:07:37,238 --> 00:07:41,847
-um den Überblick zu behalten, wo es sich befindet. Nennen wir also das Gewicht der Kante, 
-
-124
-00:07:41,847 --> 00:07:44,920
-die dieses k-te Neuron mit dem j-ten Neuron verbindet, WLjk.
-
-125
-00:07:45,620 --> 00:07:47,847
-Diese Indizes wirken zunächst vielleicht etwas rückständig, 
-
-126
-00:07:47,847 --> 00:07:49,629
-aber sie stimmen mit der Art und Weise überein, 
-
-127
-00:07:49,629 --> 00:07:52,154
-wie Sie die Gewichtsmatrix indizieren würden, über die ich im Video 
-
-128
-00:07:52,154 --> 00:07:53,120
-zu Teil 1 gesprochen habe.
-
-129
-00:07:53,620 --> 00:07:57,006
-Nach wie vor ist es immer noch schön, der relevanten gewichteten Summe 
-
-130
-00:07:57,006 --> 00:08:00,440
-einen Namen zu geben, z. B. z, sodass die Aktivierung der letzten Ebene 
-
-131
-00:08:00,440 --> 00:08:04,160
-nur Ihre spezielle Funktion ist, z. B. das Sigmoid, das auf z angewendet wird.
-
-132
-00:08:04,660 --> 00:08:07,666
-Sie können sehen, was ich meine, wenn es sich bei all diesen Gleichungen 
-
-133
-00:08:07,666 --> 00:08:09,726
-im Wesentlichen um dieselben Gleichungen handelt, 
-
-134
-00:08:09,726 --> 00:08:12,156
-die wir zuvor im Fall von einem Neuron pro Schicht hatten, 
-
-135
-00:08:12,156 --> 00:08:13,680
-sieht es nur etwas komplizierter aus.
-
-136
 00:08:15,440 --> 00:08:19,151
 Und tatsächlich sieht der abgeleitete Ausdruck der Kettenregel, der beschreibt, 
 
-137
+124
 00:08:19,151 --> 00:08:22,167
 wie empfindlich die Kosten auf ein bestimmtes Gewicht reagieren, 
 
-138
+125
 00:08:22,167 --> 00:08:23,420
 im Wesentlichen gleich aus.
 
-139
-00:08:23,920 --> 00:08:26,338
-Ich überlasse es Ihnen, innezuhalten und über jeden dieser Begriffe nachzudenken, 
+126
+00:08:23,920 --> 00:08:26,378
+Ich überlasse es dir, innezuhalten und über jeden dieser Begriffe nachzudenken, 
 
-140
-00:08:26,338 --> 00:08:26,840
-wenn Sie möchten.
+127
+00:08:26,378 --> 00:08:26,840
+wenn du willst.
 
-141
-00:08:28,979 --> 00:08:32,921
+128
+00:08:28,980 --> 00:08:32,921
 Was sich hier jedoch ändert, ist die Ableitung der Kosten 
 
-142
+129
 00:08:32,921 --> 00:08:36,659
 in Bezug auf eine der Aktivierungen in der Schicht L-1.
 
+130
+00:08:37,780 --> 00:08:40,329
+In diesem Fall besteht der Unterschied darin, dass das Neuron 
+
+131
+00:08:40,329 --> 00:08:42,880
+die Kostenfunktion über mehrere verschiedene Wege beeinflusst.
+
+132
+00:08:44,680 --> 00:08:49,621
+Das heißt, sie beeinflusst einerseits AL0, das eine Rolle in der Kostenfunktion spielt, 
+
+133
+00:08:49,621 --> 00:08:53,777
+aber sie hat auch einen Einfluss auf AL1, das ebenfalls eine Rolle in der 
+
+134
+00:08:53,777 --> 00:08:57,540
+Kostenfunktion spielt, und diese beiden Faktoren musst du addieren.
+
+135
+00:08:59,820 --> 00:09:03,040
+Und das, na ja, das war's auch schon.
+
+136
+00:09:03,500 --> 00:09:06,706
+Sobald du weißt, wie empfindlich die Kostenfunktion auf die Aktivierungen 
+
+137
+00:09:06,706 --> 00:09:09,740
+in dieser vorletzten Schicht reagiert, kannst du den Prozess für alle 
+
+138
+00:09:09,740 --> 00:09:12,860
+Gewichte und Vorspannungen wiederholen, die in diese Schicht einfließen.
+
+139
+00:09:13,900 --> 00:09:14,960
+Also klopf dir selbst auf die Schulter!
+
+140
+00:09:15,300 --> 00:09:19,013
+Wenn dir das alles einleuchtet, hast du jetzt einen tiefen Einblick in das Herz 
+
+141
+00:09:19,013 --> 00:09:22,680
+der Backpropagation bekommen, dem Arbeitspferd, mit dem neuronale Netze lernen.
+
+142
+00:09:23,300 --> 00:09:26,463
+Mit diesen Kettenregelausdrücken erhältst du die Ableitungen, 
+
 143
-00:08:37,780 --> 00:08:40,250
-Der Unterschied besteht in diesem Fall darin, dass das Neuron 
+00:09:26,463 --> 00:09:29,677
+die jede Komponente der Steigung bestimmen, die dazu beiträgt, 
 
 144
-00:08:40,250 --> 00:08:42,880
-die Kostenfunktion über mehrere unterschiedliche Wege beeinflusst.
+00:09:29,677 --> 00:09:33,300
+die Kosten des Netzes zu minimieren, indem es immer wieder bergab geht.
 
 145
-00:08:44,680 --> 00:08:50,191
-Das heißt, es beeinflusst einerseits AL0, das in der Kostenfunktion eine Rolle spielt, 
+00:09:34,300 --> 00:09:37,713
+Wenn du dich zurücklehnst und über all das nachdenkst, 
 
 146
-00:08:50,191 --> 00:08:55,892
-aber es hat auch Einfluss auf AL1, das ebenfalls in der Kostenfunktion eine Rolle spielt, 
-
-147
-00:08:55,892 --> 00:08:57,540
-und das muss man addieren.
-
-148
-00:08:59,820 --> 00:09:03,040
-Und das ist so ziemlich alles.
-
-149
-00:09:03,500 --> 00:09:06,647
-Sobald Sie wissen, wie empfindlich die Kostenfunktion auf die Aktivierungen 
-
-150
-00:09:06,647 --> 00:09:09,836
-in dieser vorletzten Ebene reagiert, können Sie den Vorgang einfach für alle 
-
-151
-00:09:09,836 --> 00:09:12,860
-Gewichtungen und Bias wiederholen, die in diese Ebene eingespeist werden.
-
-152
-00:09:13,900 --> 00:09:14,960
-Also klopfen Sie sich selbst auf die Schulter!
-
-153
-00:09:15,300 --> 00:09:20,010
-Wenn das alles Sinn macht, haben Sie jetzt tief in den Kern der Backpropagation geschaut, 
-
-154
-00:09:20,010 --> 00:09:22,680
-dem Arbeitstier hinter dem Lernen neuronaler Netze.
-
-155
-00:09:23,300 --> 00:09:26,274
-Diese Kettenregelausdrücke liefern Ihnen die Ableitungen, 
-
-156
-00:09:26,274 --> 00:09:29,556
-die jede Komponente im Gradienten bestimmen, was dazu beiträgt, 
-
-157
-00:09:29,556 --> 00:09:33,300
-die Kosten des Netzwerks durch wiederholte Abwärtsschritte zu minimieren.
-
-158
-00:09:34,300 --> 00:09:36,937
-Wenn Sie sich zurücklehnen und über all das nachdenken, werden Sie feststellen, 
-
-159
-00:09:36,937 --> 00:09:39,607
-dass dies eine Menge Komplexitätsebenen ist, mit denen Sie sich befassen müssen. 
-
-160
-00:09:39,607 --> 00:09:42,047
-Machen Sie sich also keine Sorgen, wenn Ihr Verstand einige Zeit braucht, 
-
-161
-00:09:42,047 --> 00:09:42,740
-um alles zu verdauen.
+00:09:37,713 --> 00:09:42,740
+ist das eine ganze Menge an Komplexität, die du in deinem Kopf verarbeiten musst.
 

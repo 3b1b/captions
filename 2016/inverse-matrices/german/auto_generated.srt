@@ -1,0 +1,772 @@
+1
+00:00:10,240 --> 00:00:14,519
+Wie du wahrscheinlich schon gemerkt hast, geht es in dieser Reihe hauptsächlich darum, 
+
+2
+00:00:14,519 --> 00:00:17,421
+Matrix- und Vektoroperationen durch die visuelle Linse der 
+
+3
+00:00:17,421 --> 00:00:19,340
+linearen Transformationen zu verstehen.
+
+4
+00:00:19,980 --> 00:00:24,316
+Dieses Video ist keine Ausnahme, denn es beschreibt die Konzepte der inversen Matrizen, 
+
+5
+00:00:24,316 --> 00:00:27,520
+des Spaltenraums, des Rangs und des Nullraums durch diese Brille.
+
+6
+00:00:27,520 --> 00:00:29,960
+Eine Vorwarnung: Ich werde nicht über die Methoden sprechen, 
+
+7
+00:00:29,960 --> 00:00:33,040
+mit denen diese Dinge tatsächlich berechnet werden, und manche würden sagen, 
+
+8
+00:00:33,040 --> 00:00:34,240
+dass das ziemlich wichtig ist.
+
+9
+00:00:34,840 --> 00:00:39,315
+Es gibt viele sehr gute Ressourcen, um diese Methoden außerhalb dieser Reihe zu erlernen, 
+
+10
+00:00:39,315 --> 00:00:42,000
+Stichwort Gaußsche Eliminierung und Reihenechelonform.
+
+11
+00:00:42,540 --> 00:00:45,390
+Ich denke, der größte Teil des Wertes, den ich hier hinzufügen muss, 
+
+12
+00:00:45,390 --> 00:00:46,340
+liegt in der Intuition.
+
+13
+00:00:46,900 --> 00:00:48,597
+Außerdem lassen wir diese Dinge in der Praxis 
+
+14
+00:00:48,597 --> 00:00:50,480
+meist sowieso von einer Software für uns berechnen.
+
+15
+00:00:51,500 --> 00:00:53,920
+Zunächst ein paar Worte zur Nützlichkeit der linearen Algebra.
+
+16
+00:00:54,300 --> 00:00:57,689
+Inzwischen hast du schon eine Ahnung davon, wie er zur Beschreibung der Manipulation 
+
+17
+00:00:57,689 --> 00:01:01,040
+des Raums verwendet wird, was für Dinge wie Computergrafik und Robotik nützlich ist.
+
+18
+00:01:01,500 --> 00:01:04,277
+Einer der Hauptgründe dafür, dass die lineare Algebra breiter 
+
+19
+00:01:04,277 --> 00:01:07,324
+anwendbar ist und für fast jede technische Disziplin benötigt wird, 
+
+20
+00:01:07,324 --> 00:01:10,460
+ist jedoch, dass wir mit ihr bestimmte Gleichungssysteme lösen können.
+
+21
+00:01:11,380 --> 00:01:13,435
+Wenn ich von Gleichungssystemen spreche, meine ich damit, 
+
+22
+00:01:13,435 --> 00:01:15,562
+dass du eine Liste von Variablen hast, die du nicht kennst, 
+
+23
+00:01:15,562 --> 00:01:17,760
+und eine Liste von Gleichungen, die sie miteinander verbinden.
+
+24
+00:01:18,340 --> 00:01:21,600
+In vielen Situationen können diese Gleichungen sehr kompliziert werden.
+
+25
+00:01:22,120 --> 00:01:25,300
+Aber wenn du Glück hast, nehmen sie vielleicht eine besondere Form an.
+
+26
+00:01:26,440 --> 00:01:32,440
+In jeder Gleichung wird jede Variable nur durch eine Konstante skaliert, 
+
+27
+00:01:32,440 --> 00:01:36,880
+und jede dieser skalierten Variablen wird nur addiert.
+
+28
+00:01:37,540 --> 00:01:39,843
+Also keine Exponenten oder ausgefallenen Funktionen 
+
+29
+00:01:39,843 --> 00:01:42,280
+oder das Multiplizieren zweier Variablen und so weiter.
+
+30
+00:01:43,420 --> 00:01:47,318
+Die typische Art, solche speziellen Gleichungssysteme zu organisieren, ist, 
+
+31
+00:01:47,318 --> 00:01:51,575
+alle Variablen auf die linke Seite zu setzen und alle verbleibenden Konstanten auf 
+
+32
+00:01:51,575 --> 00:01:52,140
+die rechte.
+
+33
+00:01:53,600 --> 00:01:56,311
+Es ist auch gut, die gemeinsamen Variablen vertikal aufzustellen. 
+
+34
+00:01:56,311 --> 00:01:59,516
+Um das zu erreichen, musst du vielleicht ein paar Nullkoeffizienten einfügen, 
+
+35
+00:01:59,516 --> 00:02:01,940
+wenn die Variable nicht in einer der Gleichungen auftaucht.
+
+36
+00:02:04,540 --> 00:02:07,240
+Das nennt man ein lineares Gleichungssystem.
+
+37
+00:02:08,100 --> 00:02:11,180
+Vielleicht fällt dir auf, dass dies sehr nach einer Matrix-Vektor-Multiplikation aussieht.
+
+38
+00:02:11,820 --> 00:02:16,547
+Tatsächlich kannst du alle Gleichungen in eine einzige Vektorgleichung packen, 
+
+39
+00:02:16,547 --> 00:02:21,573
+in der du eine Matrix mit allen konstanten Koeffizienten und einen Vektor mit allen 
+
+40
+00:02:21,573 --> 00:02:26,780
+Variablen hast, deren Matrix-Vektor-Produkt einem anderen konstanten Vektor entspricht.
+
+41
+00:02:28,640 --> 00:02:31,800
+Nennen wir diese konstante Matrix A, bezeichnen wir den Vektor, 
+
+42
+00:02:31,800 --> 00:02:35,949
+der die Variablen enthält, mit einem fettgedruckten X und nennen wir den konstanten 
+
+43
+00:02:35,949 --> 00:02:37,480
+Vektor auf der rechten Seite V.
+
+44
+00:02:38,860 --> 00:02:41,071
+Dies ist mehr als nur ein Notationstrick, um unser 
+
+45
+00:02:41,071 --> 00:02:42,980
+Gleichungssystem auf eine Zeile zu bekommen.
+
+46
+00:02:43,340 --> 00:02:46,780
+Das wirft ein Licht auf eine ziemlich coole geometrische Interpretation des Problems.
+
+47
+00:02:47,620 --> 00:02:50,802
+Die Matrix A entspricht einer linearen Transformation. 
+
+48
+00:02:50,802 --> 00:02:55,026
+Ax gleich V zu lösen bedeutet also, dass wir nach einem Vektor X suchen, 
+
+49
+00:02:55,026 --> 00:02:57,920
+der nach Anwendung der Transformation auf V liegt.
+
+50
+00:02:59,940 --> 00:03:01,780
+Denke einen Moment darüber nach, was hier passiert.
+
+51
+00:03:02,060 --> 00:03:05,038
+Du kannst dir diese wirklich komplizierte Vorstellung von mehreren Variablen, 
+
+52
+00:03:05,038 --> 00:03:07,253
+die sich alle miteinander vermischen, in den Kopf setzen, 
+
+53
+00:03:07,253 --> 00:03:09,812
+indem du dir vorstellst, wie der Raum gequetscht und gemorpht wird 
+
+54
+00:03:09,812 --> 00:03:12,600
+und du versuchst herauszufinden, welcher Vektor auf einem anderen landet.
+
+55
+00:03:13,160 --> 00:03:13,760
+Cool, nicht wahr?
+
+56
+00:03:14,600 --> 00:03:16,620
+Um ganz einfach zu beginnen, nehmen wir an, du hast 
+
+57
+00:03:16,620 --> 00:03:18,680
+ein System mit zwei Gleichungen und zwei Unbekannten.
+
+58
+00:03:19,000 --> 00:03:21,506
+Das heißt, die Matrix A ist eine 2x2-Matrix und 
+
+59
+00:03:21,506 --> 00:03:23,960
+V und X sind jeweils zweidimensionale Vektoren.
+
+60
+00:03:25,600 --> 00:03:28,996
+Wie wir nun über die Lösungen dieser Gleichung denken, hängt davon ab, 
+
+61
+00:03:28,996 --> 00:03:33,158
+ob die mit A verbundene Transformation den gesamten Raum in eine niedrigere Dimension, 
+
+62
+00:03:33,158 --> 00:03:36,412
+wie eine Linie oder einen Punkt, quetscht, oder ob sie alles in den 
+
+63
+00:03:36,412 --> 00:03:38,900
+vollen zwei Dimensionen belässt, wo es begonnen hat.
+
+64
+00:03:40,320 --> 00:03:43,398
+In der Sprache des letzten Videos unterteilen wir in den Fall, 
+
+65
+00:03:43,398 --> 00:03:45,841
+in dem A die Determinante Null hat, und den Fall, 
+
+66
+00:03:45,841 --> 00:03:48,040
+in dem A eine Determinante ungleich Null hat.
+
+67
+00:03:51,300 --> 00:03:54,721
+Beginnen wir mit dem wahrscheinlichsten Fall, in dem die Determinante ungleich Null ist, 
+
+68
+00:03:54,721 --> 00:03:57,720
+was bedeutet, dass der Raum nicht in eine Null-Flächen-Region gequetscht wird.
+
+69
+00:03:58,600 --> 00:04:02,304
+In diesem Fall gibt es immer nur einen einzigen Vektor, der auf V landet, 
+
+70
+00:04:02,304 --> 00:04:06,160
+und du kannst ihn finden, indem du die Transformation rückwärts durchspielst.
+
+71
+00:04:06,700 --> 00:04:10,467
+Wenn du verfolgst, wohin V geht, wenn wir das Band so zurückspulen, 
+
+72
+00:04:10,467 --> 00:04:13,460
+findest du den Vektor x so, dass A mal x gleich V ist.
+
+73
+00:04:15,400 --> 00:04:17,769
+Wenn du die Transformation rückwärts abspielst, 
+
+74
+00:04:17,769 --> 00:04:21,125
+entspricht sie tatsächlich einer separaten linearen Transformation, 
+
+75
+00:04:21,125 --> 00:04:24,680
+die gemeinhin als Umkehrung von A bezeichnet wird, also A zum Negativen.
+
+76
+00:04:25,360 --> 00:04:29,136
+Wenn A zum Beispiel eine Drehung um 90 Grad gegen den Uhrzeigersinn wäre, 
+
+77
+00:04:29,136 --> 00:04:32,760
+dann wäre die Umkehrung von A eine Drehung um 90 Grad im Uhrzeigersinn.
+
+78
+00:04:34,320 --> 00:04:38,168
+Wenn A eine Scherung nach rechts wäre, die j-hat eine Einheit nach rechts schiebt, 
+
+79
+00:04:38,168 --> 00:04:40,532
+wäre die Umkehrung von A eine Scherung nach links, 
+
+80
+00:04:40,532 --> 00:04:42,480
+die j-hat eine Einheit nach links schiebt.
+
+81
+00:04:44,100 --> 00:04:47,036
+Im Allgemeinen ist die Umkehrung von A die einzige Transformation, 
+
+82
+00:04:47,036 --> 00:04:50,104
+die die Eigenschaft hat, dass du, wenn du zuerst A anwendest und dann 
+
+83
+00:04:50,104 --> 00:04:53,480
+die Umkehrung von A folgen lässt, wieder dort landest, wo du angefangen hast.
+
+84
+00:04:54,540 --> 00:04:58,646
+Die Anwendung einer Transformation nach der anderen wird algebraisch mit der 
+
+85
+00:04:58,646 --> 00:05:02,966
+Matrixmultiplikation erfasst. Die Kerneigenschaft dieser Transformation A invers 
+
+86
+00:05:02,966 --> 00:05:07,340
+ist also, dass A invers mal A gleich der Matrix ist, die dem Nichtstun entspricht.
+
+87
+00:05:08,200 --> 00:05:11,320
+Die Transformation, die nichts bewirkt, wird als Identitätstransformation bezeichnet.
+
+88
+00:05:11,780 --> 00:05:18,080
+Sie lässt i-hat und j-hat jeweils dort, wo sie sind, also in den Spalten 1,0 und 0,1.
+
+89
+00:05:19,980 --> 00:05:23,698
+Wenn du diesen Kehrwert gefunden hast, was du in der Praxis mit einem Computer machen 
+
+90
+00:05:23,698 --> 00:05:27,071
+würdest, kannst du deine Gleichung lösen, indem du diese inverse Matrix mit v 
+
+91
+00:05:27,071 --> 00:05:27,720
+multiplizierst.
+
+92
+00:05:29,960 --> 00:05:33,165
+Geometrisch bedeutet das wiederum, dass du die 
+
+93
+00:05:33,165 --> 00:05:36,440
+Transformation rückwärts und nach v durchführst.
+
+94
+00:05:40,200 --> 00:05:44,315
+Dieser Fall der Determinante ungleich Null, der bei einer zufälligen Wahl der Matrix 
+
+95
+00:05:44,315 --> 00:05:47,510
+bei weitem am wahrscheinlichsten ist, entspricht der Vorstellung, 
+
+96
+00:05:47,510 --> 00:05:51,431
+dass es bei zwei Unbekannten und zwei Gleichungen mit ziemlicher Sicherheit eine 
+
+97
+00:05:51,431 --> 00:05:52,400
+einzige Lösung gibt.
+
+98
+00:05:53,680 --> 00:05:56,058
+Diese Idee ist auch in höheren Dimensionen sinnvoll, 
+
+99
+00:05:56,058 --> 00:05:59,200
+wenn die Anzahl der Gleichungen die Anzahl der Unbekannten übersteigt.
+
+100
+00:05:59,380 --> 00:06:06,060
+Auch hier kann das Gleichungssystem in die geometrische Interpretation übertragen werden: 
+
+101
+00:06:06,060 --> 00:06:12,740
+Du hast eine Transformation A und einen Vektor v und suchst den Vektor x, der auf v liegt.
+
+102
+00:06:15,740 --> 00:06:19,578
+Solange die Transformation A nicht den gesamten Raum in eine niedrigere 
+
+103
+00:06:19,578 --> 00:06:22,883
+Dimension quetscht, d.h. ihre Determinante ungleich Null ist, 
+
+104
+00:06:22,883 --> 00:06:26,455
+gibt es eine inverse Transformation A invers, mit der Eigenschaft, 
+
+105
+00:06:26,455 --> 00:06:31,040
+dass es dasselbe ist, nichts zu tun, wenn du zuerst A machst und dann A invers machst.
+
+106
+00:06:33,540 --> 00:06:37,397
+Um deine Gleichung zu lösen, musst du die Rücktransformationsmatrix 
+
+107
+00:06:37,397 --> 00:06:39,440
+nur mit dem Vektor v multiplizieren.
+
+108
+00:06:43,500 --> 00:06:47,650
+Aber wenn die Determinante Null ist und die mit dem Gleichungssystem verbundene 
+
+109
+00:06:47,650 --> 00:06:52,060
+Transformation den Raum in eine kleinere Dimension quetscht, gibt es keine Umkehrung.
+
+110
+00:06:52,480 --> 00:06:55,460
+Du kannst eine Linie nicht aufheben, um sie in eine Ebene zu verwandeln.
+
+111
+00:06:55,980 --> 00:06:58,060
+Zumindest ist das nicht etwas, das eine Funktion tun kann.
+
+112
+00:06:58,360 --> 00:07:02,980
+Dazu müsste jeder einzelne Vektor in eine ganze Zeile voller Vektoren umgewandelt werden.
+
+113
+00:07:03,740 --> 00:07:06,740
+Aber Funktionen können nur eine einzige Eingabe mit einer einzigen Ausgabe verbinden.
+
+114
+00:07:08,400 --> 00:07:12,148
+Ebenso gibt es bei drei Gleichungen und drei Unbekannten keine Umkehrung, 
+
+115
+00:07:12,148 --> 00:07:15,847
+wenn die entsprechende Transformation den 3D-Raum in die Ebene quetscht, 
+
+116
+00:07:15,847 --> 00:07:19,140
+oder sogar wenn sie ihn auf eine Linie oder einen Punkt quetscht.
+
+117
+00:07:19,920 --> 00:07:22,310
+Diese entsprechen alle einer Determinante von Null, 
+
+118
+00:07:22,310 --> 00:07:25,160
+da jede Region in etwas mit dem Volumen Null zerquetscht wird.
+
+119
+00:07:26,700 --> 00:07:30,640
+Es ist immer noch möglich, dass es eine Lösung gibt, auch wenn es keine Umkehrung gibt.
+
+120
+00:07:30,720 --> 00:07:34,409
+Es ist nur so, dass, wenn deine Transformation den Raum auf, sagen wir, 
+
+121
+00:07:34,409 --> 00:07:36,817
+eine Linie quetscht, du das Glück haben musst, 
+
+122
+00:07:36,817 --> 00:07:39,380
+dass der Vektor v irgendwo auf dieser Linie liegt.
+
+123
+00:07:43,300 --> 00:07:45,469
+Du wirst feststellen, dass sich einige dieser 
+
+124
+00:07:45,469 --> 00:07:48,300
+Null-Bestimmungsfälle viel restriktiver anfühlen als andere.
+
+125
+00:07:48,840 --> 00:07:52,170
+Bei einer 3x3-Matrix scheint es zum Beispiel viel schwieriger zu sein, 
+
+126
+00:07:52,170 --> 00:07:55,407
+eine Lösung zu finden, wenn der Raum auf eine Linie gequetscht wird, 
+
+127
+00:07:55,407 --> 00:07:57,894
+als wenn die Dinge auf eine Ebene gequetscht werden, 
+
+128
+00:07:57,894 --> 00:08:00,240
+obwohl in beiden Fällen die Determinante null ist.
+
+129
+00:08:02,600 --> 00:08:04,401
+Wir haben eine Sprache, die etwas spezifischer ist, 
+
+130
+00:08:04,401 --> 00:08:06,100
+als nur zu sagen, dass die Determinante Null ist.
+
+131
+00:08:06,520 --> 00:08:09,897
+Wenn das Ergebnis einer Transformation eine Linie ist, d.h. 
+
+132
+00:08:09,897 --> 00:08:13,500
+eindimensional, sagen wir, die Transformation hat den Rang eins.
+
+133
+00:08:15,140 --> 00:08:17,824
+Wenn alle Vektoren auf einer zweidimensionalen Ebene landen, 
+
+134
+00:08:17,824 --> 00:08:20,420
+sagen wir, dass die Transformation einen Rang von zwei hat.
+
+135
+00:08:22,920 --> 00:08:25,714
+Das Wort Rang bezeichnet also die Anzahl der Dimensionen 
+
+136
+00:08:25,714 --> 00:08:27,480
+in der Ausgabe einer Transformation.
+
+137
+00:08:28,400 --> 00:08:32,720
+Bei 2x2-Matrizen zum Beispiel ist Rang zwei das Beste, was es geben kann.
+
+138
+00:08:33,080 --> 00:08:35,914
+Das bedeutet, dass die Basisvektoren weiterhin die vollen zwei 
+
+139
+00:08:35,914 --> 00:08:39,020
+Dimensionen des Raums aufspannen und die Determinante nicht Null ist.
+
+140
+00:08:39,419 --> 00:08:43,074
+Aber für 3x3-Matrizen bedeutet Rang zwei, dass wir kollabiert sind, 
+
+141
+00:08:43,074 --> 00:08:46,460
+aber nicht so sehr, wie es bei Rang eins der Fall gewesen wäre.
+
+142
+00:08:47,240 --> 00:08:50,335
+Wenn eine 3D-Transformation eine Determinante ungleich Null hat und 
+
+143
+00:08:50,335 --> 00:08:53,340
+ihr Ergebnis den gesamten 3D-Raum ausfüllt, hat sie den Rang drei.
+
+144
+00:08:54,520 --> 00:08:56,944
+Diese Menge aller möglichen Ausgaben für deine Matrix, 
+
+145
+00:08:56,944 --> 00:09:00,692
+egal ob es sich um eine Linie, eine Ebene, einen 3D-Raum oder etwas anderes handelt, 
+
+146
+00:09:00,692 --> 00:09:02,720
+wird als Spaltenraum deiner Matrix bezeichnet.
+
+147
+00:09:04,140 --> 00:09:06,280
+Du kannst dir wahrscheinlich denken, woher der Name kommt.
+
+148
+00:09:06,560 --> 00:09:10,511
+Die Spalten deiner Matrix sagen dir, wo die Basisvektoren landen, 
+
+149
+00:09:10,511 --> 00:09:15,840
+und die Spannweite dieser transformierten Basisvektoren gibt dir alle möglichen Ausgaben.
+
+150
+00:09:16,360 --> 00:09:21,140
+Mit anderen Worten: Der Spaltenraum ist die Spannweite der Spalten in deiner Matrix.
+
+151
+00:09:23,300 --> 00:09:26,176
+Eine genauere Definition des Rangs wäre also, dass 
+
+152
+00:09:26,176 --> 00:09:28,940
+es die Anzahl der Dimensionen im Spaltenraum ist.
+
+153
+00:09:29,940 --> 00:09:32,422
+Wenn dieser Rang so hoch wie möglich ist, d.h. 
+
+154
+00:09:32,422 --> 00:09:36,120
+er entspricht der Anzahl der Spalten, nennen wir die Matrix Full Rank.
+
+155
+00:09:38,540 --> 00:09:42,366
+Beachte, dass der Nullvektor immer im Spaltenraum enthalten ist, 
+
+156
+00:09:42,366 --> 00:09:45,840
+da lineare Transformationen den Ursprung festhalten müssen.
+
+157
+00:09:46,900 --> 00:09:49,900
+Bei einer vollständigen Rangtransformation ist der einzige Vektor, 
+
+158
+00:09:49,900 --> 00:09:51,960
+der im Ursprung landet, der Nullvektor selbst.
+
+159
+00:09:52,460 --> 00:09:55,723
+Aber bei Matrizen, die nicht vollwertig sind und die sich auf eine kleinere Dimension 
+
+160
+00:09:55,723 --> 00:09:58,760
+verkleinern, kannst du eine ganze Reihe von Vektoren haben, die auf Null landen.
+
+161
+00:10:01,640 --> 00:10:05,303
+Wenn eine 2D-Transformation den Raum zum Beispiel auf eine Linie quetscht, 
+
+162
+00:10:05,303 --> 00:10:08,674
+gibt es eine separate Linie in eine andere Richtung voller Vektoren, 
+
+163
+00:10:08,674 --> 00:10:10,580
+die auf den Ursprung gequetscht werden.
+
+164
+00:10:11,780 --> 00:10:14,482
+Wenn eine 3D-Transformation den Raum auf eine Ebene quetscht, 
+
+165
+00:10:14,482 --> 00:10:17,620
+gibt es auch eine ganze Reihe von Vektoren, die auf dem Ursprung landen.
+
+166
+00:10:20,520 --> 00:10:23,894
+Wenn eine 3D-Transformation den gesamten Raum auf eine Linie quetscht, 
+
+167
+00:10:23,894 --> 00:10:27,460
+dann gibt es eine ganze Ebene voller Vektoren, die auf dem Ursprung landen.
+
+168
+00:10:32,800 --> 00:10:35,847
+Die Menge der Vektoren, die auf dem Ursprung landet, 
+
+169
+00:10:35,847 --> 00:10:38,780
+nennt man den Nullraum oder den Kern deiner Matrix.
+
+170
+00:10:39,360 --> 00:10:41,770
+Es ist der Raum aller Vektoren, die null werden, 
+
+171
+00:10:41,770 --> 00:10:44,180
+in dem Sinne, dass sie auf dem Nullvektor landen.
+
+172
+00:10:45,680 --> 00:10:49,629
+In Bezug auf das lineare Gleichungssystem gibt dir der Nullraum 
+
+173
+00:10:49,629 --> 00:10:53,640
+alle möglichen Lösungen der Gleichung, wenn v der Nullvektor ist.
+
+174
+00:10:56,420 --> 00:10:58,842
+Das ist also ein sehr grober Überblick darüber, 
+
+175
+00:10:58,842 --> 00:11:01,720
+wie man über lineare Gleichungssysteme geometrisch denkt.
+
+176
+00:11:02,300 --> 00:11:05,163
+Jedem System ist eine lineare Transformation zugeordnet, 
+
+177
+00:11:05,163 --> 00:11:09,534
+und wenn diese Transformation eine Umkehrung hat, kannst du diese Umkehrung verwenden, 
+
+178
+00:11:09,534 --> 00:11:10,740
+um dein System zu lösen.
+
+179
+00:11:12,280 --> 00:11:15,594
+Ansonsten hilft uns die Idee des Spaltenraums zu verstehen, 
+
+180
+00:11:15,594 --> 00:11:20,511
+wann eine Lösung überhaupt existiert, und die Idee des Nullraums hilft uns zu verstehen, 
+
+181
+00:11:20,511 --> 00:11:23,440
+wie die Menge aller möglichen Lösungen aussehen kann.
+
+182
+00:11:24,980 --> 00:11:27,520
+Auch hier gibt es vieles, was ich nicht behandelt habe, 
+
+183
+00:11:27,520 --> 00:11:29,380
+vor allem, wie man diese Dinge berechnet.
+
+184
+00:11:29,800 --> 00:11:31,830
+Außerdem musste ich mich auf Beispiele beschränken, 
+
+185
+00:11:31,830 --> 00:11:34,760
+bei denen die Anzahl der Gleichungen gleich der Anzahl der Unbekannten ist.
+
+186
+00:11:34,880 --> 00:11:38,655
+Das Ziel ist nicht, dir alles beizubringen, sondern dass du ein 
+
+187
+00:11:38,655 --> 00:11:42,312
+starkes Gespür für inverse Matrizen, Spaltenraum und Nullraum 
+
+188
+00:11:42,312 --> 00:11:46,500
+bekommst und dass dieses Gespür dein weiteres Lernen fruchtbarer macht.
+
+189
+00:11:47,660 --> 00:11:49,728
+Das nächste Video wird auf vielfachen Wunsch eine 
+
+190
+00:11:49,728 --> 00:11:51,880
+kurze Fußnote über nicht-quadratische Matrizen sein.
+
+191
+00:11:51,880 --> 00:11:54,473
+Danach werde ich dir meine Sicht auf Punktprodukte erläutern 
+
+192
+00:11:54,473 --> 00:11:56,684
+und dir etwas ziemlich Cooles zeigen, das passiert, 
+
+193
+00:11:56,684 --> 00:11:59,660
+wenn du sie unter dem Licht von linearen Transformationen betrachtest.
+

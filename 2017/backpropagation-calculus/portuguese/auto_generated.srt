@@ -1,0 +1,548 @@
+1
+00:00:04,019 --> 00:00:06,621
+A suposição difícil aqui é que você assistiu à parte 3, 
+
+2
+00:00:06,621 --> 00:00:09,920
+que fornece um passo a passo intuitivo do algoritmo de retropropagação.
+
+3
+00:00:11,040 --> 00:00:14,220
+Aqui ficamos um pouco mais formais e mergulhamos no cálculo relevante.
+
+4
+00:00:14,820 --> 00:00:16,906
+É normal que isso seja pelo menos um pouco confuso, 
+
+5
+00:00:16,906 --> 00:00:20,156
+então o mantra de pausar e ponderar regularmente certamente se aplica tanto aqui 
+
+6
+00:00:20,156 --> 00:00:21,400
+quanto em qualquer outro lugar.
+
+7
+00:00:21,940 --> 00:00:24,746
+Nosso principal objetivo é mostrar como as pessoas que trabalham 
+
+8
+00:00:24,746 --> 00:00:27,682
+com aprendizado de máquina comumente pensam sobre a regra da cadeia 
+
+9
+00:00:27,682 --> 00:00:30,531
+do cálculo no contexto de redes, o que tem uma sensação diferente 
+
+10
+00:00:30,531 --> 00:00:33,640
+de como a maioria dos cursos introdutórios ao cálculo abordam o assunto.
+
+11
+00:00:34,340 --> 00:00:37,054
+Para aqueles que não se sentem à vontade com o cálculo relevante, 
+
+12
+00:00:37,054 --> 00:00:38,740
+tenho uma série completa sobre o assunto.
+
+13
+00:00:39,960 --> 00:00:43,223
+Vamos começar com uma rede extremamente simples, 
+
+14
+00:00:43,223 --> 00:00:46,020
+onde cada camada contém um único neurônio.
+
+15
+00:00:46,320 --> 00:00:49,795
+Esta rede é determinada por três pesos e três vieses, 
+
+16
+00:00:49,795 --> 00:00:54,880
+e nosso objetivo é entender o quão sensível é a função custo a essas variáveis.
+
+17
+00:00:55,420 --> 00:00:58,092
+Dessa forma, sabemos quais ajustes nesses termos 
+
+18
+00:00:58,092 --> 00:01:00,820
+causarão a redução mais eficiente na função custo.
+
+19
+00:01:01,960 --> 00:01:04,840
+E vamos nos concentrar apenas na conexão entre os dois últimos neurônios.
+
+20
+00:01:05,980 --> 00:01:10,416
+Vamos rotular a ativação desse último neurônio com um L sobrescrito, 
+
+21
+00:01:10,416 --> 00:01:15,560
+indicando em qual camada ele está, então a ativação do neurônio anterior é Al-1.
+
+22
+00:01:16,360 --> 00:01:19,792
+Não são expoentes, são apenas uma forma de indexar o que estamos falando, 
+
+23
+00:01:19,792 --> 00:01:23,040
+já que quero salvar subscritos para índices diferentes posteriormente.
+
+24
+00:01:23,720 --> 00:01:27,892
+Digamos que o valor que queremos que esta última ativação tenha para um 
+
+25
+00:01:27,892 --> 00:01:32,180
+determinado exemplo de treinamento seja y, por exemplo, y pode ser 0 ou 1.
+
+26
+00:01:32,840 --> 00:01:39,240
+Portanto, o custo desta rede para um único exemplo de treinamento é Al-y2.
+
+27
+00:01:40,260 --> 00:01:44,380
+Denotaremos o custo desse exemplo de treinamento como c0.
+
+28
+00:01:45,900 --> 00:01:51,545
+Lembrando que esta última ativação é determinada por um peso, que chamarei de WL, 
+
+29
+00:01:51,545 --> 00:01:56,640
+vezes a ativação do neurônio anterior mais algum viés, que chamarei de BL.
+
+30
+00:01:57,420 --> 00:01:59,513
+E então você bombeia isso através de alguma função 
+
+31
+00:01:59,513 --> 00:02:01,320
+não linear especial como o sigmóide ou ReLU.
+
+32
+00:02:01,800 --> 00:02:05,512
+Na verdade, as coisas ficarão mais fáceis para nós se dermos um nome especial 
+
+33
+00:02:05,512 --> 00:02:09,320
+a essa soma ponderada, como z, com o mesmo sobrescrito das ativações relevantes.
+
+34
+00:02:10,380 --> 00:02:14,288
+São muitos termos, e uma maneira de conceituar isso é que o peso, 
+
+35
+00:02:14,288 --> 00:02:18,610
+a ação anterior e a tendência, todos juntos, são usados para calcular z, 
+
+36
+00:02:18,610 --> 00:02:23,644
+o que por sua vez nos permite calcular a, que finalmente, junto com uma constante y, 
+
+37
+00:02:23,644 --> 00:02:25,480
+permite nós calculamos o custo.
+
+38
+00:02:27,340 --> 00:02:32,422
+E é claro que o Al-1 é influenciado pelo seu próprio peso e preconceito e tal, 
+
+39
+00:02:32,422 --> 00:02:35,060
+mas não vamos nos concentrar nisso agora.
+
+40
+00:02:35,700 --> 00:02:37,620
+Tudo isso são apenas números, certo?
+
+41
+00:02:38,060 --> 00:02:41,040
+E pode ser bom pensar que cada um tem a sua própria reta numérica.
+
+42
+00:02:41,720 --> 00:02:45,324
+Nosso primeiro objetivo é entender quão sensível é 
+
+43
+00:02:45,324 --> 00:02:49,000
+a função custo a pequenas mudanças em nosso peso WL.
+
+44
+00:02:49,540 --> 00:02:54,860
+Ou, de outra forma, qual é a derivada de c em relação a WL?
+
+45
+00:02:55,600 --> 00:03:00,533
+Quando você vir esse termo del W, pense nele como um pequeno empurrão para W, 
+
+46
+00:03:00,533 --> 00:03:04,960
+como uma mudança de 0,01, e pense nesse termo del c como significando 
+
+47
+00:03:04,960 --> 00:03:08,060
+qualquer que seja o empurrão resultante no custo.
+
+48
+00:03:08,060 --> 00:03:10,220
+O que queremos é a proporção deles.
+
+49
+00:03:11,260 --> 00:03:15,930
+Conceitualmente, esse pequeno empurrão no WL causa algum empurrão no ZL, 
+
+50
+00:03:15,930 --> 00:03:21,240
+o que por sua vez causa algum empurrão no AL, o que influencia diretamente o custo.
+
+51
+00:03:23,120 --> 00:03:27,848
+Portanto, dividimos as coisas observando primeiro a razão entre uma pequena 
+
+52
+00:03:27,848 --> 00:03:33,200
+alteração em ZL e esta pequena alteração W, ou seja, a derivada de ZL em relação a WL.
+
+53
+00:03:33,200 --> 00:03:37,040
+Da mesma forma, você considera a razão entre a mudança para AL 
+
+54
+00:03:37,040 --> 00:03:40,880
+e a pequena mudança em ZL que a causou, bem como a razão entre 
+
+55
+00:03:40,880 --> 00:03:44,660
+o empurrão final para c e esse empurrão intermediário para AL.
+
+56
+00:03:45,740 --> 00:03:50,403
+Isso aqui é a regra da cadeia, onde a multiplicação dessas três 
+
+57
+00:03:50,403 --> 00:03:55,140
+proporções nos dá a sensibilidade de c a pequenas mudanças no WL.
+
+58
+00:03:56,880 --> 00:04:01,614
+Então, na tela agora, há muitos símbolos, e reserve um momento para ter certeza de que 
+
+59
+00:04:01,614 --> 00:04:06,240
+está claro quais são todos eles, porque agora vamos calcular as derivadas relevantes.
+
+60
+00:04:07,440 --> 00:04:13,160
+A derivada de c em relação a AL resulta em 2AL-y.
+
+61
+00:04:13,980 --> 00:04:18,505
+Observe que isso significa que seu tamanho é proporcional à diferença entre a produção 
+
+62
+00:04:18,505 --> 00:04:23,030
+da rede e o que queremos que ela seja; portanto, se essa produção for muito diferente, 
+
+63
+00:04:23,030 --> 00:04:27,140
+mesmo pequenas alterações podem ter um grande impacto na função de custo final.
+
+64
+00:04:27,840 --> 00:04:32,908
+A derivada de AL em relação a ZL é apenas a derivada de nossa função sigmóide, 
+
+65
+00:04:32,908 --> 00:04:36,180
+ou qualquer não-linearidade que você escolher usar.
+
+66
+00:04:37,220 --> 00:04:44,660
+E a derivada de ZL em relação a WL é AL-1.
+
+67
+00:04:45,760 --> 00:04:49,737
+Bem, não sei sobre você, mas acho que é fácil ficar preso de cabeça nas fórmulas 
+
+68
+00:04:49,737 --> 00:04:53,420
+sem parar um momento para sentar e se lembrar do que todas elas significam.
+
+69
+00:04:53,920 --> 00:04:58,460
+No caso desta última derivada, a quantidade que o pequeno empurrão no peso 
+
+70
+00:04:58,460 --> 00:05:02,820
+influenciou a última camada depende de quão forte é o neurônio anterior.
+
+71
+00:05:03,380 --> 00:05:08,280
+Lembre-se de que é aqui que entra a ideia dos neurônios que disparam juntos.
+
+72
+00:05:09,200 --> 00:05:12,460
+E tudo isso é a derivada em relação ao WL apenas do 
+
+73
+00:05:12,460 --> 00:05:15,720
+custo de um único exemplo específico de treinamento.
+
+74
+00:05:16,440 --> 00:05:20,265
+Como a função de custo total envolve a média de todos esses custos 
+
+75
+00:05:20,265 --> 00:05:24,034
+em muitos exemplos de treinamento diferentes, sua derivada requer 
+
+76
+00:05:24,034 --> 00:05:27,460
+a média dessa expressão em todos os exemplos de treinamento.
+
+77
+00:05:28,380 --> 00:05:31,788
+E, claro, esta é apenas uma componente do vetor gradiente, 
+
+78
+00:05:31,788 --> 00:05:36,815
+que é construído a partir das derivadas parciais da função de custo em relação a todos 
+
+79
+00:05:36,815 --> 00:05:38,260
+esses pesos e tendências.
+
+80
+00:05:40,640 --> 00:05:44,168
+Mas mesmo que esta seja apenas uma das muitas derivadas parciais de que precisamos, 
+
+81
+00:05:44,168 --> 00:05:45,260
+é mais de 50% do trabalho.
+
+82
+00:05:46,340 --> 00:05:49,720
+A sensibilidade ao viés, por exemplo, é quase idêntica.
+
+83
+00:05:50,040 --> 00:05:55,020
+Só precisamos trocar esse termo del z del w por a del z del b.
+
+84
+00:05:58,420 --> 00:06:02,400
+E se você olhar para a fórmula relevante, essa derivada será 1.
+
+85
+00:06:06,140 --> 00:06:10,244
+Além disso, e é aí que entra a ideia de propagação para trás, 
+
+86
+00:06:10,244 --> 00:06:15,740
+você pode ver o quão sensível essa função de custo é à ativação da camada anterior.
+
+87
+00:06:15,740 --> 00:06:20,700
+Ou seja, esta derivada inicial na expressão da regra da cadeia, 
+
+88
+00:06:20,700 --> 00:06:25,660
+a sensibilidade de z à ativação anterior, resulta ser o peso WL.
+
+89
+00:06:26,640 --> 00:06:30,753
+E, novamente, mesmo que não seremos capazes de influenciar diretamente a ativação 
+
+90
+00:06:30,753 --> 00:06:34,414
+da camada anterior, é útil acompanhar, porque agora podemos simplesmente 
+
+91
+00:06:34,414 --> 00:06:38,427
+continuar iterando essa mesma ideia de regra da cadeia de trás para frente para 
+
+92
+00:06:38,427 --> 00:06:42,440
+ver quão sensível é a função de custo para pesos anteriores e vieses anteriores.
+
+93
+00:06:43,180 --> 00:06:45,762
+E você pode pensar que este é um exemplo muito simples, 
+
+94
+00:06:45,762 --> 00:06:49,590
+já que todas as camadas têm um neurônio, e as coisas ficarão exponencialmente mais 
+
+95
+00:06:49,590 --> 00:06:51,020
+complicadas para uma rede real.
+
+96
+00:06:51,700 --> 00:06:55,863
+Mas, honestamente, não muda muita coisa quando damos vários neurônios às camadas; 
+
+97
+00:06:55,863 --> 00:06:58,860
+na verdade, são apenas mais alguns índices para acompanhar.
+
+98
+00:06:59,380 --> 00:07:03,079
+Em vez de a ativação de uma determinada camada ser simplesmente AL, 
+
+99
+00:07:03,079 --> 00:07:07,160
+ela também terá um subscrito indicando qual neurônio dessa camada se trata.
+
+100
+00:07:07,160 --> 00:07:14,420
+Vamos usar a letra k para indexar a camada L-1 e j para indexar a camada L.
+
+101
+00:07:15,260 --> 00:07:18,750
+Para o custo, novamente olhamos qual é a saída desejada, 
+
+102
+00:07:18,750 --> 00:07:23,587
+mas desta vez somamos os quadrados das diferenças entre as ativações da última 
+
+103
+00:07:23,587 --> 00:07:25,180
+camada e a saída desejada.
+
+104
+00:07:26,080 --> 00:07:30,840
+Ou seja, você soma ALj menos Yj ao quadrado.
+
+105
+00:07:33,040 --> 00:07:37,188
+Como há muito mais pesos, cada um precisa ter mais alguns índices 
+
+106
+00:07:37,188 --> 00:07:41,148
+para acompanhar onde está, então vamos chamar o peso da aresta 
+
+107
+00:07:41,148 --> 00:07:44,920
+que conecta esse k-ésimo neurônio ao j-ésimo neurônio, WLjk.
+
+108
+00:07:45,620 --> 00:07:48,338
+Esses índices podem parecer um pouco atrasados no início, 
+
+109
+00:07:48,338 --> 00:07:52,182
+mas estão de acordo com a forma como você indexaria a matriz de peso de que falei 
+
+110
+00:07:52,182 --> 00:07:53,120
+na parte 1 do vídeo.
+
+111
+00:07:53,620 --> 00:07:58,238
+Assim como antes, ainda é bom dar um nome à soma ponderada relevante, como z, 
+
+112
+00:07:58,238 --> 00:08:03,390
+para que a ativação da última camada seja apenas sua função especial, como o sigmóide, 
+
+113
+00:08:03,390 --> 00:08:04,160
+aplicado a z.
+
+114
+00:08:04,660 --> 00:08:07,521
+Você pode entender o que quero dizer, onde todas essas são 
+
+115
+00:08:07,521 --> 00:08:11,788
+essencialmente as mesmas equações que tínhamos antes no caso de um neurônio por camada, 
+
+116
+00:08:11,788 --> 00:08:13,680
+só que parece um pouco mais complicado.
+
+117
+00:08:15,440 --> 00:08:19,155
+E, de fato, a expressão derivada em cadeia que descreve quão 
+
+118
+00:08:19,155 --> 00:08:23,420
+sensível é o custo a um peso específico parece essencialmente a mesma.
+
+119
+00:08:23,920 --> 00:08:26,840
+Deixo para você fazer uma pausa e pensar sobre cada um desses termos, se quiser.
+
+120
+00:08:28,980 --> 00:08:32,862
+O que muda aqui, porém, é a derivada do custo 
+
+121
+00:08:32,862 --> 00:08:36,659
+em relação a uma das ativações na camada L-1.
+
+122
+00:08:37,780 --> 00:08:40,261
+Neste caso, a diferença é que o neurônio influencia a 
+
+123
+00:08:40,261 --> 00:08:42,880
+função de custo através de múltiplos caminhos diferentes.
+
+124
+00:08:44,680 --> 00:08:50,283
+Ou seja, por um lado influencia AL0, que desempenha um papel na função custo, 
+
+125
+00:08:50,283 --> 00:08:55,672
+mas também influencia AL1, que também desempenha um papel na função custo, 
+
+126
+00:08:55,672 --> 00:08:57,540
+e você tem que somar isso.
+
+127
+00:08:59,820 --> 00:09:03,040
+E isso, bem, é basicamente isso.
+
+128
+00:09:03,500 --> 00:09:07,884
+Depois de saber o quão sensível a função de custo é às ativações nesta penúltima camada, 
+
+129
+00:09:07,884 --> 00:09:10,938
+você pode simplesmente repetir o processo para todos os pesos 
+
+130
+00:09:10,938 --> 00:09:12,860
+e tendências que alimentam essa camada.
+
+131
+00:09:13,900 --> 00:09:14,960
+Então dê um tapinha nas costas!
+
+132
+00:09:15,300 --> 00:09:19,778
+Se tudo isso faz sentido, você agora examinou profundamente o cerne da retropropagação, 
+
+133
+00:09:19,778 --> 00:09:22,680
+o carro-chefe por trás de como as redes neurais aprendem.
+
+134
+00:09:23,300 --> 00:09:28,442
+Essas expressões de regras da cadeia fornecem as derivadas que determinam cada componente 
+
+135
+00:09:28,442 --> 00:09:33,300
+no gradiente que ajuda a minimizar o custo da rede ao descer repetidamente a ladeira.
+
+136
+00:09:34,300 --> 00:09:38,617
+Se você sentar e pensar sobre tudo isso, verá que há muitas camadas de complexidade para 
+
+137
+00:09:38,617 --> 00:09:42,740
+envolver sua mente, então não se preocupe se levar tempo para sua mente digerir tudo.
+
