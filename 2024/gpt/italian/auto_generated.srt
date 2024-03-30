@@ -1,0 +1,1816 @@
+1
+00:00:00,000 --> 00:00:04,560
+Le iniziali GPT stanno per Generative Pretrained Transformer.
+
+2
+00:00:05,220 --> 00:00:09,020
+La prima parola è abbastanza semplice: si tratta di bot che generano nuovo testo.
+
+3
+00:00:09,800 --> 00:00:13,252
+Il termine "preaddestrato" si riferisce al fatto che il modello è stato sottoposto a un 
+
+4
+00:00:13,252 --> 00:00:15,488
+processo di apprendimento da un'enorme quantità di dati, 
+
+5
+00:00:15,488 --> 00:00:18,941
+mentre il prefisso indica che c'è più spazio per perfezionarlo su compiti specifici con 
+
+6
+00:00:18,941 --> 00:00:20,040
+un addestramento aggiuntivo.
+
+7
+00:00:20,720 --> 00:00:22,900
+Ma l'ultima parola è il vero pezzo chiave.
+
+8
+00:00:23,380 --> 00:00:25,967
+Un trasformatore è un tipo specifico di rete neurale, 
+
+9
+00:00:25,967 --> 00:00:29,753
+un modello di apprendimento automatico, ed è l'invenzione principale alla base 
+
+10
+00:00:29,753 --> 00:00:31,000
+dell'attuale boom dell'IA.
+
+11
+00:00:31,740 --> 00:00:35,430
+L'obiettivo di questo video e dei capitoli successivi è quello di 
+
+12
+00:00:35,430 --> 00:00:39,120
+spiegare visivamente cosa succede all'interno di un trasformatore.
+
+13
+00:00:39,700 --> 00:00:42,820
+Seguiremo i dati che lo attraversano e procederemo passo dopo passo.
+
+14
+00:00:43,440 --> 00:00:47,380
+Esistono diversi tipi di modelli che puoi costruire utilizzando i trasformatori.
+
+15
+00:00:47,800 --> 00:00:50,800
+Alcuni modelli ricevono l'audio e producono una trascrizione.
+
+16
+00:00:51,340 --> 00:00:53,900
+Questa frase proviene da un modello che fa il percorso inverso, 
+
+17
+00:00:53,900 --> 00:00:56,220
+producendo un discorso sintetico solo a partire dal testo.
+
+18
+00:00:56,660 --> 00:00:59,758
+Tutti quegli strumenti che hanno conquistato il mondo nel 2022, 
+
+19
+00:00:59,758 --> 00:01:04,067
+come Dolly e Midjourney, che accettano una descrizione testuale e producono un'immagine, 
+
+20
+00:01:04,067 --> 00:01:05,519
+sono basati sui trasformatori.
+
+21
+00:01:06,000 --> 00:01:09,590
+Anche se non riesco a fargli capire cosa dovrebbe essere una creatura a forma di torta, 
+
+22
+00:01:09,590 --> 00:01:13,100
+sono comunque stupito che questo genere di cose sia anche solo lontanamente possibile.
+
+23
+00:01:13,900 --> 00:01:17,973
+E il trasformatore originale introdotto nel 2017 da Google è stato inventato 
+
+24
+00:01:17,973 --> 00:01:22,100
+per lo specifico caso d'uso della traduzione di testi da una lingua all'altra.
+
+25
+00:01:22,660 --> 00:01:25,233
+Ma la variante su cui ci concentreremo io e te, 
+
+26
+00:01:25,233 --> 00:01:28,342
+che è quella che sta alla base di strumenti come ChatGPT, 
+
+27
+00:01:28,342 --> 00:01:31,398
+sarà un modello addestrato a recepire un brano di testo, 
+
+28
+00:01:31,398 --> 00:01:35,043
+magari con alcune immagini o suoni circostanti che lo accompagnano, 
+
+29
+00:01:35,043 --> 00:01:38,260
+e a produrre una previsione su ciò che viene dopo nel brano.
+
+30
+00:01:38,600 --> 00:01:41,134
+Questa previsione assume la forma di una distribuzione di 
+
+31
+00:01:41,134 --> 00:01:43,800
+probabilità su diversi pezzi di testo che potrebbero seguire.
+
+32
+00:01:45,040 --> 00:01:47,546
+A prima vista, potresti pensare che prevedere la parola successiva 
+
+33
+00:01:47,546 --> 00:01:49,940
+sia un obiettivo molto diverso dalla generazione di nuovo testo.
+
+34
+00:01:50,180 --> 00:01:52,979
+Ma una volta che hai un modello di predizione come questo, 
+
+35
+00:01:52,979 --> 00:01:56,823
+una cosa semplice per generare un testo più lungo è dargli un frammento iniziale 
+
+36
+00:01:56,823 --> 00:02:00,666
+con cui lavorare, fargli prendere un campione casuale dalla distribuzione che ha 
+
+37
+00:02:00,666 --> 00:02:04,652
+appena generato, aggiungere quel campione al testo e poi eseguire di nuovo l'intero 
+
+38
+00:02:04,652 --> 00:02:08,021
+processo per fare una nuova predizione basata su tutto il nuovo testo, 
+
+39
+00:02:08,021 --> 00:02:09,539
+compreso quello appena aggiunto.
+
+40
+00:02:10,100 --> 00:02:13,000
+Non so tu, ma a me sembra proprio che non debba funzionare.
+
+41
+00:02:13,420 --> 00:02:16,434
+In questa animazione, ad esempio, sto eseguendo GPT-2 sul mio laptop 
+
+42
+00:02:16,434 --> 00:02:19,361
+e gli sto facendo prevedere e campionare ripetutamente il pezzo di 
+
+43
+00:02:19,361 --> 00:02:22,420
+testo successivo per generare una storia basata sul testo di partenza.
+
+44
+00:02:22,420 --> 00:02:26,120
+La storia non ha molto senso.
+
+45
+00:02:26,500 --> 00:02:30,792
+Ma se lo sostituisco con chiamate API a GPT-3, che è lo stesso modello di base, 
+
+46
+00:02:30,792 --> 00:02:35,567
+solo molto più grande, improvvisamente e quasi magicamente otteniamo una storia sensata, 
+
+47
+00:02:35,567 --> 00:02:40,343
+che sembra persino dedurre che una creatura pi greco vivrebbe in una terra di matematica 
+
+48
+00:02:40,343 --> 00:02:40,880
+e calcolo.
+
+49
+00:02:41,580 --> 00:02:45,078
+Questo processo di predizione e campionamento ripetuto è essenzialmente 
+
+50
+00:02:45,078 --> 00:02:48,284
+ciò che accade quando interagisci con ChatGPT o con altri modelli 
+
+51
+00:02:48,284 --> 00:02:51,880
+linguistici di grandi dimensioni e li vedi produrre una parola alla volta.
+
+52
+00:02:52,480 --> 00:02:55,875
+Infatti, una funzione che mi piacerebbe molto è la possibilità di 
+
+53
+00:02:55,875 --> 00:02:59,220
+vedere la distribuzione sottostante per ogni nuova parola scelta.
+
+54
+00:03:03,820 --> 00:03:06,164
+Iniziamo con un'anteprima di alto livello di come 
+
+55
+00:03:06,164 --> 00:03:08,180
+i dati passano attraverso un trasformatore.
+
+56
+00:03:08,640 --> 00:03:11,947
+Dedicheremo molto più tempo a motivare, interpretare e approfondire 
+
+57
+00:03:11,947 --> 00:03:15,109
+i dettagli di ogni fase, ma a grandi linee, quando uno di questi 
+
+58
+00:03:15,109 --> 00:03:18,660
+chatbot genera una determinata parola, ecco cosa succede sotto il cofano.
+
+59
+00:03:19,080 --> 00:03:22,040
+Innanzitutto, l'input viene suddiviso in tanti piccoli pezzi.
+
+60
+00:03:22,620 --> 00:03:26,145
+Questi pezzi sono chiamati token e nel caso del testo tendono a essere 
+
+61
+00:03:26,145 --> 00:03:29,820
+parole o piccoli pezzi di parole o altre combinazioni di caratteri comuni.
+
+62
+00:03:30,740 --> 00:03:33,827
+Se si tratta di immagini o di suoni, i token potrebbero 
+
+63
+00:03:33,827 --> 00:03:37,080
+essere piccoli frammenti di quell'immagine o di quel suono.
+
+64
+00:03:37,580 --> 00:03:41,619
+Ognuno di questi token è poi associato a un vettore, cioè a un elenco di numeri, 
+
+65
+00:03:41,619 --> 00:03:45,360
+che ha lo scopo di codificare in qualche modo il significato di quel pezzo.
+
+66
+00:03:45,880 --> 00:03:50,023
+Se pensi a questi vettori come a delle coordinate in uno spazio dimensionale molto alto, 
+
+67
+00:03:50,023 --> 00:03:52,771
+le parole con significati simili tendono a posizionarsi su 
+
+68
+00:03:52,771 --> 00:03:54,680
+vettori vicini tra loro in quello spazio.
+
+69
+00:03:55,280 --> 00:03:58,426
+Questa sequenza di vettori passa poi attraverso un'operazione nota come 
+
+70
+00:03:58,426 --> 00:04:01,528
+blocco di attenzione, che permette ai vettori di parlare tra loro e di 
+
+71
+00:04:01,528 --> 00:04:04,500
+passare informazioni avanti e indietro per aggiornare i loro valori.
+
+72
+00:04:04,880 --> 00:04:08,080
+Ad esempio, il significato della parola modello nella frase un modello di 
+
+73
+00:04:08,080 --> 00:04:11,800
+apprendimento automatico è diverso dal suo significato nella frase un modello di moda.
+
+74
+00:04:12,260 --> 00:04:15,400
+Il blocco dell'attenzione è responsabile di capire quali parole del 
+
+75
+00:04:15,400 --> 00:04:18,541
+contesto sono rilevanti per aggiornare i significati di quali altre 
+
+76
+00:04:18,541 --> 00:04:21,959
+parole e come esattamente questi significati dovrebbero essere aggiornati.
+
+77
+00:04:22,500 --> 00:04:24,733
+E ancora, ogni volta che uso la parola significato, 
+
+78
+00:04:24,733 --> 00:04:28,040
+questo è in qualche modo interamente codificato nelle voci di questi vettori.
+
+79
+00:04:29,180 --> 00:04:32,687
+In seguito, questi vettori passano attraverso un altro tipo di operazione e, 
+
+80
+00:04:32,687 --> 00:04:35,694
+a seconda della fonte che stai leggendo, saranno indicati come un 
+
+81
+00:04:35,694 --> 00:04:38,200
+perceptron multistrato o forse un livello feed-forward.
+
+82
+00:04:38,580 --> 00:04:42,660
+E qui i vettori non parlano tra loro, ma eseguono tutti la stessa operazione in parallelo.
+
+83
+00:04:43,060 --> 00:04:46,144
+Sebbene questo blocco sia un po' più difficile da interpretare, 
+
+84
+00:04:46,144 --> 00:04:49,662
+più avanti parleremo di come il passaggio sia un po' come fare una lunga 
+
+85
+00:04:49,662 --> 00:04:54,000
+lista di domande su ogni vettore e poi aggiornarlo in base alle risposte a queste domande.
+
+86
+00:04:54,900 --> 00:04:58,280
+Tutte le operazioni di questi due blocchi sembrano un enorme 
+
+87
+00:04:58,280 --> 00:05:01,495
+mucchio di moltiplicazioni di matrici e il nostro compito 
+
+88
+00:05:01,495 --> 00:05:05,320
+principale sarà quello di capire come leggere le matrici sottostanti.
+
+89
+00:05:06,980 --> 00:05:09,820
+Sto tralasciando alcuni dettagli su alcune fasi di normalizzazione che 
+
+90
+00:05:09,820 --> 00:05:12,980
+avvengono nel mezzo, ma questa è in fin dei conti un'anteprima di alto livello.
+
+91
+00:05:13,680 --> 00:05:16,092
+Dopodiché, il processo si ripete essenzialmente, 
+
+92
+00:05:16,092 --> 00:05:20,474
+andando avanti e indietro tra blocchi di attenzione e blocchi di perceptron multistrato, 
+
+93
+00:05:20,474 --> 00:05:24,216
+fino a quando, alla fine, la speranza è che tutto il significato essenziale 
+
+94
+00:05:24,216 --> 00:05:28,500
+del passaggio sia stato in qualche modo incorporato nell'ultimo vettore della sequenza.
+
+95
+00:05:28,920 --> 00:05:31,989
+Poi eseguiamo una certa operazione su quest'ultimo vettore che 
+
+96
+00:05:31,989 --> 00:05:35,350
+produce una distribuzione di probabilità su tutti i possibili token, 
+
+97
+00:05:35,350 --> 00:05:38,420
+tutti i possibili pezzetti di testo che potrebbero venire dopo.
+
+98
+00:05:38,980 --> 00:05:42,931
+E come ho detto, una volta che hai uno strumento in grado di prevedere cosa viene dopo, 
+
+99
+00:05:42,931 --> 00:05:46,389
+dato un frammento di testo, puoi dargli in pasto un po' di testo di partenza 
+
+100
+00:05:46,389 --> 00:05:49,757
+e fargli fare ripetutamente questo gioco di previsione di cosa viene dopo, 
+
+101
+00:05:49,757 --> 00:05:53,080
+campionando dalla distribuzione, aggiungendo e ripetendo in continuazione.
+
+102
+00:05:53,640 --> 00:05:57,753
+Alcuni di voi conoscitori ricorderanno che, molto tempo prima dell'arrivo di ChatGPT, 
+
+103
+00:05:57,753 --> 00:06:00,383
+le prime demo di GPT-3 si presentavano in questo modo: 
+
+104
+00:06:00,383 --> 00:06:04,640
+potevi far completare automaticamente storie e saggi sulla base di un frammento iniziale.
+
+105
+00:06:05,580 --> 00:06:08,542
+Per trasformare uno strumento come questo in un chatbot, 
+
+106
+00:06:08,542 --> 00:06:13,167
+il punto di partenza più semplice è avere un po' di testo che stabilisca l'ambientazione 
+
+107
+00:06:13,167 --> 00:06:16,130
+di un utente che interagisce con un assistente AI utile, 
+
+108
+00:06:16,130 --> 00:06:20,339
+quello che chiameremmo il prompt del sistema, e poi usare la domanda o il prompt 
+
+109
+00:06:20,339 --> 00:06:22,938
+iniziale dell'utente come primo pezzo di dialogo, 
+
+110
+00:06:22,938 --> 00:06:26,940
+per poi iniziare a prevedere cosa direbbe un assistente AI utile in risposta.
+
+111
+00:06:27,720 --> 00:06:30,876
+C'è molto altro da dire sulla fase di formazione necessaria per far 
+
+112
+00:06:30,876 --> 00:06:33,940
+funzionare bene questo sistema, ma a grandi linee l'idea è questa.
+
+113
+00:06:35,720 --> 00:06:39,875
+In questo capitolo approfondiremo i dettagli di ciò che accade all'inizio della 
+
+114
+00:06:39,875 --> 00:06:44,082
+rete e alla fine della rete. Inoltre, vorrei dedicare un po' di tempo a rivedere 
+
+115
+00:06:44,082 --> 00:06:48,341
+alcune importanti conoscenze di base, cose che sarebbero state una seconda natura 
+
+116
+00:06:48,341 --> 00:06:52,600
+per qualsiasi ingegnere dell'apprendimento automatico all'epoca dei trasformatori.
+
+117
+00:06:53,060 --> 00:06:56,653
+Se ti senti a tuo agio con queste conoscenze di base e sei un po' impaziente, 
+
+118
+00:06:56,653 --> 00:07:00,384
+puoi passare al prossimo capitolo, che si concentrerà sui blocchi di attenzione, 
+
+119
+00:07:00,384 --> 00:07:02,780
+generalmente considerati il cuore del trasformatore.
+
+120
+00:07:03,360 --> 00:07:06,641
+In seguito voglio parlare di questi blocchi di perceptron multistrato, 
+
+121
+00:07:06,641 --> 00:07:10,755
+di come funziona l'addestramento e di una serie di altri dettagli che sono stati saltati 
+
+122
+00:07:10,755 --> 00:07:11,680
+fino a questo punto.
+
+123
+00:07:12,180 --> 00:07:15,766
+Per un contesto più ampio, questi video si aggiungono a una mini-serie sull'apprendimento 
+
+124
+00:07:15,766 --> 00:07:18,237
+profondo e non c'è problema se non hai guardato i precedenti, 
+
+125
+00:07:18,237 --> 00:07:21,585
+credo che tu possa farlo anche senza ordine, ma prima di immergerti nello specifico 
+
+126
+00:07:21,585 --> 00:07:24,813
+dei trasformatori, credo che valga la pena di assicurarsi che siamo sulla stessa 
+
+127
+00:07:24,813 --> 00:07:28,161
+lunghezza d'onda riguardo alle premesse e alla struttura di base dell'apprendimento 
+
+128
+00:07:28,161 --> 00:07:28,520
+profondo.
+
+129
+00:07:29,020 --> 00:07:32,750
+A rischio di dire cose ovvie, questo è un approccio all'apprendimento automatico, 
+
+130
+00:07:32,750 --> 00:07:35,616
+che descrive qualsiasi modello in cui si utilizzano i dati per 
+
+131
+00:07:35,616 --> 00:07:38,300
+determinare in qualche modo il comportamento di un modello.
+
+132
+00:07:39,140 --> 00:07:42,748
+Con questo intendo dire che, ad esempio, vuoi una funzione che prenda un'immagine 
+
+133
+00:07:42,748 --> 00:07:46,224
+e produca un'etichetta che la descriva, oppure il nostro esempio di previsione 
+
+134
+00:07:46,224 --> 00:07:49,568
+della parola successiva in un brano di testo, o qualsiasi altro compito che 
+
+135
+00:07:49,568 --> 00:07:52,780
+richieda un certo elemento di intuizione e di riconoscimento dei modelli.
+
+136
+00:07:53,200 --> 00:07:56,853
+Al giorno d'oggi lo diamo quasi per scontato, ma l'idea dell'apprendimento 
+
+137
+00:07:56,853 --> 00:08:00,750
+automatico è che piuttosto che cercare di definire esplicitamente una procedura 
+
+138
+00:08:00,750 --> 00:08:04,793
+per svolgere quel compito nel codice, come si faceva agli albori dell'intelligenza 
+
+139
+00:08:04,793 --> 00:08:08,593
+artificiale, si crea una struttura molto flessibile con parametri regolabili, 
+
+140
+00:08:08,593 --> 00:08:12,344
+come una serie di manopole e quadranti, e poi in qualche modo si usano molti 
+
+141
+00:08:12,344 --> 00:08:15,997
+esempi di come dovrebbe essere l'output per un dato input per modificare e 
+
+142
+00:08:15,997 --> 00:08:19,700
+mettere a punto i valori di quei parametri per imitare questo comportamento.
+
+143
+00:08:19,700 --> 00:08:24,650
+Ad esempio, la forma più semplice di apprendimento automatico è la regressione lineare, 
+
+144
+00:08:24,650 --> 00:08:27,518
+in cui gli input e gli output sono singoli numeri, 
+
+145
+00:08:27,518 --> 00:08:30,162
+come la metratura di una casa e il suo prezzo, 
+
+146
+00:08:30,162 --> 00:08:34,493
+e si vuole trovare una linea di migliore adattamento attraverso questi dati, 
+
+147
+00:08:34,493 --> 00:08:36,799
+per prevedere i prezzi futuri delle case.
+
+148
+00:08:37,440 --> 00:08:41,479
+La linea è descritta da due parametri continui, la pendenza e l'intercetta y, 
+
+149
+00:08:41,479 --> 00:08:45,156
+e l'obiettivo della regressione lineare è quello di determinare questi 
+
+150
+00:08:45,156 --> 00:08:48,160
+parametri in modo che corrispondano perfettamente ai dati.
+
+151
+00:08:48,880 --> 00:08:52,100
+Inutile dire che i modelli di deep learning diventano molto più complicati.
+
+152
+00:08:52,620 --> 00:08:57,660
+Il GPT-3, ad esempio, non ha due, ma 175 miliardi di parametri.
+
+153
+00:08:58,120 --> 00:09:01,967
+Ma il punto è che non è scontato che si possa creare un modello gigantesco 
+
+154
+00:09:01,967 --> 00:09:05,815
+con un numero enorme di parametri senza che si adatti in modo eccessivo ai 
+
+155
+00:09:05,815 --> 00:09:09,560
+dati di addestramento o che sia completamente intrattabile da addestrare.
+
+156
+00:09:10,260 --> 00:09:13,303
+L'apprendimento profondo descrive una classe di modelli che negli ultimi 
+
+157
+00:09:13,303 --> 00:09:16,180
+due decenni ha dimostrato di poter essere scalata in modo eccellente.
+
+158
+00:09:16,480 --> 00:09:19,628
+Ciò che li accomuna è lo stesso algoritmo di addestramento, 
+
+159
+00:09:19,628 --> 00:09:23,355
+chiamato backpropagation, e il contesto che voglio che tu abbia mentre 
+
+160
+00:09:23,355 --> 00:09:27,028
+andiamo avanti è che per far sì che questo algoritmo di addestramento 
+
+161
+00:09:27,028 --> 00:09:31,280
+funzioni bene in scala, questi modelli devono seguire un certo formato specifico.
+
+162
+00:09:31,800 --> 00:09:35,942
+Se conosci questo formato, ti aiuterà a spiegare molte delle scelte di come un 
+
+163
+00:09:35,942 --> 00:09:40,400
+trasformatore elabora il linguaggio, che altrimenti rischiano di sembrare arbitrarie.
+
+164
+00:09:41,440 --> 00:09:44,090
+Innanzitutto, qualunque sia il modello che stai realizzando, 
+
+165
+00:09:44,090 --> 00:09:46,740
+l'input deve essere formattato come un array di numeri reali.
+
+166
+00:09:46,740 --> 00:09:51,370
+Può trattarsi di un elenco di numeri, di un array bidimensionale o, molto spesso, 
+
+167
+00:09:51,370 --> 00:09:56,000
+di array di dimensioni più elevate, dove il termine generale utilizzato è tensore.
+
+168
+00:09:56,560 --> 00:10:00,697
+Spesso si pensa che i dati in ingresso vengano progressivamente trasformati in molti 
+
+169
+00:10:00,697 --> 00:10:04,688
+strati distinti, dove ogni strato è sempre strutturato come una sorta di array di 
+
+170
+00:10:04,688 --> 00:10:08,680
+numeri reali, fino ad arrivare a uno strato finale che viene considerato l'output.
+
+171
+00:10:09,280 --> 00:10:11,998
+Ad esempio, il livello finale del nostro modello di elaborazione 
+
+172
+00:10:11,998 --> 00:10:14,801
+del testo è un elenco di numeri che rappresentano la distribuzione 
+
+173
+00:10:14,801 --> 00:10:17,060
+di probabilità per tutti i possibili token successivi.
+
+174
+00:10:17,820 --> 00:10:21,975
+Nel deep learning, questi parametri del modello sono quasi sempre indicati come pesi, 
+
+175
+00:10:21,975 --> 00:10:25,986
+perché una caratteristica fondamentale di questi modelli è che l'unico modo in cui 
+
+176
+00:10:25,986 --> 00:10:29,900
+questi parametri interagiscono con i dati elaborati è attraverso somme ponderate.
+
+177
+00:10:30,340 --> 00:10:34,360
+Inoltre, si possono aggiungere alcune funzioni non lineari, ma non dipendono da parametri.
+
+178
+00:10:35,200 --> 00:10:38,766
+In genere, però, invece di vedere le somme ponderate tutte nude 
+
+179
+00:10:38,766 --> 00:10:42,388
+e scritte esplicitamente in questo modo, le troverai raggruppate 
+
+180
+00:10:42,388 --> 00:10:45,620
+come vari componenti di un prodotto vettoriale matriciale.
+
+181
+00:10:46,740 --> 00:10:50,668
+Se pensi a come funziona la moltiplicazione vettoriale a matrice, 
+
+182
+00:10:50,668 --> 00:10:54,240
+ogni componente dell'output appare come una somma ponderata.
+
+183
+00:10:54,780 --> 00:11:00,067
+Spesso è concettualmente più semplice per te e per me pensare a matrici riempite 
+
+184
+00:11:00,067 --> 00:11:05,420
+con parametri regolabili che trasformano i vettori ricavati dai dati da elaborare.
+
+185
+00:11:06,340 --> 00:11:10,173
+Ad esempio, i 175 miliardi di pesi del GPT-3 sono 
+
+186
+00:11:10,173 --> 00:11:14,160
+organizzati in poco meno di 28.000 matrici distinte.
+
+187
+00:11:14,660 --> 00:11:17,804
+Queste matrici si suddividono a loro volta in otto categorie diverse, 
+
+188
+00:11:17,804 --> 00:11:21,756
+e quello che faremo è passare in rassegna ognuna di queste categorie per capire cosa fa 
+
+189
+00:11:21,756 --> 00:11:22,700
+quel tipo di matrice.
+
+190
+00:11:23,160 --> 00:11:26,990
+Mentre andiamo avanti, credo sia divertente fare riferimento ai numeri 
+
+191
+00:11:26,990 --> 00:11:31,360
+specifici del GPT-3 per contare esattamente da dove provengono quei 175 miliardi.
+
+192
+00:11:31,880 --> 00:11:34,609
+Anche se al giorno d'oggi ci sono modelli più grandi e migliori, 
+
+193
+00:11:34,609 --> 00:11:37,674
+questo ha un certo fascino in quanto è stato il modello di grande lingua 
+
+194
+00:11:37,674 --> 00:11:40,740
+a catturare davvero l'attenzione del mondo al di fuori delle comunità ML.
+
+195
+00:11:41,440 --> 00:11:44,069
+Inoltre, dal punto di vista pratico, le aziende tendono a tenere 
+
+196
+00:11:44,069 --> 00:11:46,740
+le labbra ben strette sui numeri specifici delle reti più moderne.
+
+197
+00:11:47,360 --> 00:11:50,614
+Voglio solo mettere in chiaro che quando si sbircia sotto il cofano per 
+
+198
+00:11:50,614 --> 00:11:53,462
+vedere cosa succede all'interno di uno strumento come ChatGPT, 
+
+199
+00:11:53,462 --> 00:11:57,440
+quasi tutti i calcoli effettivi assomigliano alla moltiplicazione vettoriale di matrici.
+
+200
+00:11:57,900 --> 00:12:01,487
+C'è il rischio di perdersi in un mare di miliardi di numeri, 
+
+201
+00:12:01,487 --> 00:12:06,781
+ma dovresti tracciare una distinzione molto netta nella tua mente tra i pesi del modello, 
+
+202
+00:12:06,781 --> 00:12:11,840
+che colorerò sempre di blu o rosso, e i dati elaborati, che colorerò sempre di grigio.
+
+203
+00:12:12,180 --> 00:12:15,203
+I pesi sono i cervelli veri e propri, sono le cose apprese 
+
+204
+00:12:15,203 --> 00:12:17,920
+durante l'allenamento e determinano il comportamento.
+
+205
+00:12:18,280 --> 00:12:22,260
+I dati elaborati codificano semplicemente qualsiasi input specifico inserito 
+
+206
+00:12:22,260 --> 00:12:26,500
+nel modello per una determinata esecuzione, come ad esempio un frammento di testo.
+
+207
+00:12:27,480 --> 00:12:31,823
+Con tutte queste premesse, passiamo alla prima fase di questo esempio di elaborazione 
+
+208
+00:12:31,823 --> 00:12:36,015
+del testo, che consiste nel suddividere l'input in piccoli pezzi e trasformarli in 
+
+209
+00:12:36,015 --> 00:12:36,420
+vettori.
+
+210
+00:12:37,020 --> 00:12:39,706
+Ho accennato al fatto che questi pezzi sono chiamati token, 
+
+211
+00:12:39,706 --> 00:12:42,169
+che possono essere pezzi di parole o di punteggiatura, 
+
+212
+00:12:42,169 --> 00:12:45,214
+ma di tanto in tanto in questo capitolo e soprattutto nel prossimo, 
+
+213
+00:12:45,214 --> 00:12:48,080
+vorrei far finta che sia suddiviso in modo più pulito in parole.
+
+214
+00:12:48,600 --> 00:12:51,360
+Poiché noi esseri umani pensiamo a parole, questo renderà molto più 
+
+215
+00:12:51,360 --> 00:12:54,080
+facile fare riferimento a piccoli esempi e chiarire ogni passaggio.
+
+216
+00:12:55,260 --> 00:12:59,770
+Il modello ha un vocabolario predefinito, un elenco di tutte le parole possibili, 
+
+217
+00:12:59,770 --> 00:13:02,849
+ad esempio 50.000, e la prima matrice che incontreremo, 
+
+218
+00:13:02,849 --> 00:13:07,800
+nota come matrice di incorporazione, ha una singola colonna per ciascuna di queste parole.
+
+219
+00:13:08,940 --> 00:13:13,760
+Queste colonne determinano il vettore in cui ogni parola si trasforma nella prima fase.
+
+220
+00:13:15,100 --> 00:13:18,211
+La etichettiamo We e, come tutte le matrici che vediamo, 
+
+221
+00:13:18,211 --> 00:13:22,360
+i suoi valori iniziano in modo casuale, ma verranno appresi in base ai dati.
+
+222
+00:13:23,620 --> 00:13:26,521
+La trasformazione delle parole in vettori era una pratica comune 
+
+223
+00:13:26,521 --> 00:13:29,243
+nell'apprendimento automatico molto prima dei trasformatori, 
+
+224
+00:13:29,243 --> 00:13:33,171
+ma è un po' strana se non l'hai mai vista prima e pone le basi per tutto ciò che segue, 
+
+225
+00:13:33,171 --> 00:13:35,760
+quindi prendiamoci un momento per familiarizzare con essa.
+
+226
+00:13:36,040 --> 00:13:38,173
+Spesso chiamiamo questo incorporamento parola, 
+
+227
+00:13:38,173 --> 00:13:41,940
+il che invita a pensare a questi vettori in modo molto geometrico come a dei punti 
+
+228
+00:13:41,940 --> 00:13:43,620
+in uno spazio ad alta dimensionalità.
+
+229
+00:13:44,180 --> 00:13:48,088
+Visualizzare un elenco di tre numeri come coordinate di punti nello spazio 3D non sarebbe 
+
+230
+00:13:48,088 --> 00:13:51,780
+un problema, ma le incorporazioni di parole tendono ad essere molto più dimensionali.
+
+231
+00:13:52,280 --> 00:13:55,867
+In GPT-3 ci sono 12.288 dimensioni e, come vedrai, 
+
+232
+00:13:55,867 --> 00:14:00,440
+è importante lavorare in uno spazio con molte direzioni distinte.
+
+233
+00:14:01,180 --> 00:14:04,937
+Nello stesso modo in cui si può prendere una fetta bidimensionale di uno 
+
+234
+00:14:04,937 --> 00:14:07,716
+spazio 3D e proiettare tutti i punti su quella fetta, 
+
+235
+00:14:07,716 --> 00:14:11,679
+per animare le incorporazioni di parole che un semplice modello mi fornisce, 
+
+236
+00:14:11,679 --> 00:14:15,590
+farò una cosa analoga scegliendo una fetta tridimensionale di questo spazio 
+
+237
+00:14:15,590 --> 00:14:19,141
+ad alta dimensionalità, proiettando i vettori di parole su di essa e 
+
+238
+00:14:19,141 --> 00:14:20,480
+visualizzando i risultati.
+
+239
+00:14:21,280 --> 00:14:24,462
+L'idea principale è che, man mano che un modello modifica e regola i suoi 
+
+240
+00:14:24,462 --> 00:14:27,860
+pesi per determinare il modo in cui le parole vengono incorporate come vettori 
+
+241
+00:14:27,860 --> 00:14:31,257
+durante l'addestramento, tende a stabilizzarsi su un insieme di incorporazioni 
+
+242
+00:14:31,257 --> 00:14:34,440
+in cui le direzioni nello spazio hanno una sorta di significato semantico.
+
+243
+00:14:34,980 --> 00:14:38,054
+Per il semplice modello da parola a vettore che sto eseguendo qui, 
+
+244
+00:14:38,054 --> 00:14:41,724
+se eseguo una ricerca di tutte le parole le cui incorporazioni si avvicinano di 
+
+245
+00:14:41,724 --> 00:14:45,487
+più a quella di torre, noterai che tutte sembrano dare vibrazioni simili a quelle 
+
+246
+00:14:45,487 --> 00:14:45,900
+di torre.
+
+247
+00:14:46,340 --> 00:14:48,754
+E se vuoi usare Python e giocare a casa tua, questo è il 
+
+248
+00:14:48,754 --> 00:14:51,380
+modello specifico che sto usando per realizzare le animazioni.
+
+249
+00:14:51,620 --> 00:14:54,714
+Non si tratta di un trasformatore, ma è sufficiente per illustrare l'idea 
+
+250
+00:14:54,714 --> 00:14:57,600
+che le direzioni nello spazio possono avere un significato semantico.
+
+251
+00:14:58,300 --> 00:15:03,168
+Un esempio molto classico di questo è che se prendi la differenza tra i vettori di 
+
+252
+00:15:03,168 --> 00:15:08,155
+donna e uomo, qualcosa che potresti visualizzare come un piccolo vettore che collega 
+
+253
+00:15:08,155 --> 00:15:13,200
+la punta di uno alla punta dell'altro, è molto simile alla differenza tra re e regina.
+
+254
+00:15:15,080 --> 00:15:19,116
+Quindi, supponiamo che tu non conosca la parola che indica un monarca donna, 
+
+255
+00:15:19,116 --> 00:15:22,681
+potresti trovarla prendendo re, aggiungendo la direzione donna-uomo 
+
+256
+00:15:22,681 --> 00:15:25,460
+e cercando le incorporazioni più vicine a quel punto.
+
+257
+00:15:27,000 --> 00:15:28,200
+O almeno, più o meno.
+
+258
+00:15:28,480 --> 00:15:31,665
+Nonostante questo sia un esempio classico per il modello con cui sto giocando, 
+
+259
+00:15:31,665 --> 00:15:34,771
+la vera incorporazione di regina è in realtà un po' più lontana di quanto si 
+
+260
+00:15:34,771 --> 00:15:37,876
+possa pensare, presumibilmente perché il modo in cui regina viene utilizzata 
+
+261
+00:15:37,876 --> 00:15:40,780
+nei dati di formazione non è semplicemente una versione femminile di re.
+
+262
+00:15:41,620 --> 00:15:45,260
+Quando ho giocato, le relazioni familiari sembravano illustrare meglio l'idea.
+
+263
+00:15:46,340 --> 00:15:49,281
+Il punto è che sembra che durante l'addestramento il modello abbia 
+
+264
+00:15:49,281 --> 00:15:52,090
+trovato vantaggioso scegliere le incorporazioni in modo che una 
+
+265
+00:15:52,090 --> 00:15:54,900
+direzione di questo spazio codifichi le informazioni sul genere.
+
+266
+00:15:56,800 --> 00:16:00,175
+Un altro esempio è che se si prende l'embedding dell'Italia, 
+
+267
+00:16:00,175 --> 00:16:04,603
+si sottrae l'embedding della Germania e lo si aggiunge all'embedding di Hitler, 
+
+268
+00:16:04,603 --> 00:16:08,090
+si ottiene qualcosa di molto simile all'embedding di Mussolini.
+
+269
+00:16:08,570 --> 00:16:11,967
+È come se il modello avesse imparato ad associare alcune direzioni 
+
+270
+00:16:11,967 --> 00:16:15,670
+all'italianità e altre ai leader dell'asse della Seconda Guerra Mondiale.
+
+271
+00:16:16,470 --> 00:16:20,168
+Forse il mio esempio preferito in questo senso è che in alcuni modelli, 
+
+272
+00:16:20,168 --> 00:16:24,175
+se si prende la differenza tra Germania e Giappone e la si aggiunge al sushi, 
+
+273
+00:16:24,175 --> 00:16:26,230
+si finisce per avvicinarsi al bratwurst.
+
+274
+00:16:27,350 --> 00:16:30,292
+Inoltre, giocando a questo gioco di ricerca dei vicini più vicini, 
+
+275
+00:16:30,292 --> 00:16:33,850
+mi ha fatto piacere vedere quanto Kat fosse vicina sia alla bestia che al mostro.
+
+276
+00:16:34,690 --> 00:16:37,069
+Un'intuizione matematica che è utile tenere a mente, 
+
+277
+00:16:37,069 --> 00:16:40,168
+soprattutto per il prossimo capitolo, è che il prodotto del punto di 
+
+278
+00:16:40,168 --> 00:16:43,850
+due vettori può essere considerato come un modo per misurare il loro allineamento.
+
+279
+00:16:44,870 --> 00:16:48,086
+Dal punto di vista computazionale, i prodotti di punti comportano la moltiplicazione 
+
+280
+00:16:48,086 --> 00:16:50,886
+di tutti i componenti corrispondenti e la successiva somma dei risultati, 
+
+281
+00:16:50,886 --> 00:16:53,951
+il che è positivo, dato che molti dei nostri calcoli devono assomigliare a somme 
+
+282
+00:16:53,951 --> 00:16:54,330
+ponderate.
+
+283
+00:16:55,190 --> 00:17:00,400
+Geometricamente, il prodotto del punto è positivo quando i vettori puntano in direzioni 
+
+284
+00:17:00,400 --> 00:17:05,609
+simili, è zero se sono perpendicolari ed è negativo quando puntano in direzioni opposte.
+
+285
+00:17:06,550 --> 00:17:10,131
+Ad esempio, supponiamo che tu stia giocando con questo modello 
+
+286
+00:17:10,131 --> 00:17:13,201
+e ipotizzi che l'inclusione di gatti meno gatto possa 
+
+287
+00:17:13,201 --> 00:17:17,010
+rappresentare una sorta di direzione di pluralità in questo spazio.
+
+288
+00:17:17,430 --> 00:17:20,636
+Per verificarlo, prenderò questo vettore e calcolerò il suo prodotto 
+
+289
+00:17:20,636 --> 00:17:23,796
+di punti rispetto agli incorporamenti di alcuni nomi singolari e lo 
+
+290
+00:17:23,796 --> 00:17:27,050
+confronterò con i prodotti di punti con i corrispondenti nomi plurali.
+
+291
+00:17:27,270 --> 00:17:31,721
+Se ci giochi un po', noterai che quelli plurali sembrano dare costantemente valori più 
+
+292
+00:17:31,721 --> 00:17:36,070
+alti di quelli singolari, indicando che si allineano maggiormente a questa direzione.
+
+293
+00:17:37,070 --> 00:17:40,915
+È anche divertente il fatto che se si fa il prodotto dei punti con gli embeddings 
+
+294
+00:17:40,915 --> 00:17:43,917
+delle parole 1, 2, 3 e così via, si ottengono valori crescenti, 
+
+295
+00:17:43,917 --> 00:17:47,951
+quindi è come se potessimo misurare quantitativamente quanto il modello trovi plurale 
+
+296
+00:17:47,951 --> 00:17:49,030
+una determinata parola.
+
+297
+00:17:50,250 --> 00:17:51,810
+Anche in questo caso, le specifiche del modo in cui le 
+
+298
+00:17:51,810 --> 00:17:53,570
+parole vengono incorporate vengono apprese utilizzando i dati.
+
+299
+00:17:54,050 --> 00:17:57,730
+Questa matrice di incorporazione, le cui colonne ci dicono cosa succede a ogni parola, 
+
+300
+00:17:57,730 --> 00:17:59,550
+è la prima pila di pesi del nostro modello.
+
+301
+00:18:00,030 --> 00:18:04,742
+Utilizzando i numeri del GPT-3, la dimensione del vocabolario è di 50.257, 
+
+302
+00:18:04,742 --> 00:18:09,770
+e anche in questo caso, tecnicamente non si tratta di parole in sé, ma di token.
+
+303
+00:18:10,630 --> 00:18:14,069
+La dimensione di incorporazione è di 12.288, e moltiplicando 
+
+304
+00:18:14,069 --> 00:18:17,790
+questi dati si ottiene che si tratta di circa 617 milioni di pesi.
+
+305
+00:18:18,250 --> 00:18:20,796
+Aggiungiamo questi dati a un conteggio continuo, 
+
+306
+00:18:20,796 --> 00:18:23,810
+ricordando che alla fine dovremmo arrivare a 175 miliardi.
+
+307
+00:18:25,430 --> 00:18:28,883
+Nel caso dei trasformatori, è bene pensare che i vettori in questo 
+
+308
+00:18:28,883 --> 00:18:32,130
+spazio di incorporazione non rappresentino solo singole parole.
+
+309
+00:18:32,550 --> 00:18:36,670
+Innanzitutto, codificano anche le informazioni sulla posizione della parola, 
+
+310
+00:18:36,670 --> 00:18:40,148
+di cui parleremo più avanti, ma soprattutto è necessario pensare 
+
+311
+00:18:40,148 --> 00:18:42,770
+che abbiano la capacità di assorbire il contesto.
+
+312
+00:18:43,350 --> 00:18:47,549
+Un vettore che ha iniziato la sua vita come incorporazione della parola re, ad esempio, 
+
+313
+00:18:47,549 --> 00:18:51,653
+potrebbe essere progressivamente strattonato e tirato da vari blocchi di questa rete, 
+
+314
+00:18:51,653 --> 00:18:55,948
+in modo che alla fine punti in una direzione molto più specifica e sfumata che in qualche 
+
+315
+00:18:55,948 --> 00:18:58,860
+modo codifica che si trattava di un re che viveva in Scozia, 
+
+316
+00:18:58,860 --> 00:19:02,868
+che aveva ottenuto la sua carica dopo aver assassinato il re precedente e che viene 
+
+317
+00:19:02,868 --> 00:19:04,730
+descritto in linguaggio shakespeariano.
+
+318
+00:19:05,210 --> 00:19:07,790
+Pensa alla tua comprensione di una determinata parola.
+
+319
+00:19:08,250 --> 00:19:12,137
+Il significato di quella parola è chiaramente influenzato dall'ambiente circostante, 
+
+320
+00:19:12,137 --> 00:19:15,339
+che a volte include un contesto a grande distanza. Per questo motivo, 
+
+321
+00:19:15,339 --> 00:19:18,861
+nel creare un modello che sia in grado di prevedere quale parola verrà dopo, 
+
+322
+00:19:18,861 --> 00:19:22,658
+l'obiettivo è quello di permettergli di incorporare in qualche modo il contesto in 
+
+323
+00:19:22,658 --> 00:19:23,390
+modo efficiente.
+
+324
+00:19:24,050 --> 00:19:27,330
+Per essere chiari, in questa prima fase, quando si crea l'array di vettori basati 
+
+325
+00:19:27,330 --> 00:19:30,570
+sul testo in ingresso, ognuno di essi viene semplicemente estratto dalla matrice 
+
+326
+00:19:30,570 --> 00:19:33,650
+di incorporamento, quindi inizialmente ognuno di essi può codificare solo il 
+
+327
+00:19:33,650 --> 00:19:36,770
+significato di una singola parola senza alcun input dall'ambiente circostante.
+
+328
+00:19:37,710 --> 00:19:41,447
+Ma dovresti pensare che l'obiettivo principale di questa rete in cui scorre sia 
+
+329
+00:19:41,447 --> 00:19:45,278
+quello di permettere a ognuno di questi vettori di assorbire un significato molto 
+
+330
+00:19:45,278 --> 00:19:48,970
+più ricco e specifico di quello che potrebbero rappresentare le singole parole.
+
+331
+00:19:49,510 --> 00:19:52,585
+La rete può elaborare solo un numero fisso di vettori alla volta, 
+
+332
+00:19:52,585 --> 00:19:54,170
+noto come dimensione del contesto.
+
+333
+00:19:54,510 --> 00:19:57,993
+Per GPT-3 è stato addestrato con una dimensione del contesto di 2048, 
+
+334
+00:19:57,993 --> 00:20:01,526
+quindi i dati che passano attraverso la rete hanno sempre l'aspetto di 
+
+335
+00:20:01,526 --> 00:20:05,010
+questo array di 2048 colonne, ognuna delle quali ha 12.000 dimensioni.
+
+336
+00:20:05,590 --> 00:20:08,430
+Questa dimensione del contesto limita la quantità di testo che il 
+
+337
+00:20:08,430 --> 00:20:11,830
+trasformatore può incorporare quando fa una previsione della parola successiva.
+
+338
+00:20:12,370 --> 00:20:15,241
+Per questo motivo le conversazioni lunghe con alcuni chatbot, 
+
+339
+00:20:15,241 --> 00:20:18,483
+come le prime versioni di ChatGPT, spesso davano la sensazione che il 
+
+340
+00:20:18,483 --> 00:20:22,050
+bot perdesse il filo della conversazione quando si continuava troppo a lungo.
+
+341
+00:20:23,030 --> 00:20:25,367
+Entreremo nei dettagli dell'attenzione a tempo debito, 
+
+342
+00:20:25,367 --> 00:20:28,810
+ma saltando il discorso voglio parlare per un minuto di ciò che accade alla fine.
+
+343
+00:20:29,450 --> 00:20:32,135
+Ricorda che l'output desiderato è una distribuzione di 
+
+344
+00:20:32,135 --> 00:20:34,870
+probabilità su tutti i token che potrebbero venire dopo.
+
+345
+00:20:35,170 --> 00:20:39,312
+Ad esempio, se l'ultima parola è Professore e il contesto include parole come 
+
+346
+00:20:39,312 --> 00:20:42,817
+Harry Potter, e subito prima vediamo l'insegnante meno preferito, 
+
+347
+00:20:42,817 --> 00:20:46,694
+e se mi lasciate un po' di margine facendo finta che i token assomiglino 
+
+348
+00:20:46,694 --> 00:20:50,890
+semplicemente a parole intere, allora una rete ben addestrata che ha acquisito 
+
+349
+00:20:50,890 --> 00:20:54,874
+una conoscenza di Harry Potter presumibilmente assegnerà un numero elevato 
+
+350
+00:20:54,874 --> 00:20:55,830
+alla parola Piton.
+
+351
+00:20:56,510 --> 00:20:57,970
+Questo comporta due diverse fasi.
+
+352
+00:20:58,310 --> 00:21:02,988
+La prima consiste nell'utilizzare un'altra matrice che mappa l'ultimo vettore di 
+
+353
+00:21:02,988 --> 00:21:07,610
+quel contesto in un elenco di 50.000 valori, uno per ogni token del vocabolario.
+
+354
+00:21:08,170 --> 00:21:12,378
+C'è poi una funzione che normalizza il tutto in una distribuzione di probabilità, 
+
+355
+00:21:12,378 --> 00:21:15,253
+si chiama Softmax e ne parleremo meglio tra un secondo, 
+
+356
+00:21:15,253 --> 00:21:19,359
+ma prima potrebbe sembrare un po' strano utilizzare solo quest'ultimo embedding 
+
+357
+00:21:19,359 --> 00:21:23,567
+per fare una previsione, quando dopo tutto nell'ultimo passaggio ci sono migliaia 
+
+358
+00:21:23,567 --> 00:21:27,674
+di altri vettori nello strato che se ne stanno lì con i loro significati ricchi 
+
+359
+00:21:27,674 --> 00:21:28,290
+di contesto.
+
+360
+00:21:28,930 --> 00:21:32,726
+Questo ha a che fare con il fatto che nel processo di addestramento risulta 
+
+361
+00:21:32,726 --> 00:21:36,573
+molto più efficiente utilizzare ognuno di questi vettori nello strato finale 
+
+362
+00:21:36,573 --> 00:21:40,270
+per fare contemporaneamente una previsione su ciò che avverrà subito dopo.
+
+363
+00:21:40,970 --> 00:21:45,090
+Ci sarà molto altro da dire sull'allenamento in seguito, ma voglio solo ricordarlo adesso.
+
+364
+00:21:45,730 --> 00:21:49,690
+Questa matrice è chiamata matrice di disincarnazione e le diamo l'etichetta WU.
+
+365
+00:21:50,210 --> 00:21:52,585
+Anche in questo caso, come tutte le matrici di peso che vediamo, 
+
+366
+00:21:52,585 --> 00:21:55,398
+le sue voci iniziano in modo casuale, ma vengono apprese durante il processo 
+
+367
+00:21:55,398 --> 00:21:55,910
+di formazione.
+
+368
+00:21:56,470 --> 00:21:59,205
+Per restare in tema di parametri totali, questa matrice di 
+
+369
+00:21:59,205 --> 00:22:02,311
+disincarnazione ha una riga per ogni parola del vocabolario e ogni 
+
+370
+00:22:02,311 --> 00:22:05,650
+riga ha lo stesso numero di elementi della dimensione di incorporazione.
+
+371
+00:22:06,410 --> 00:22:10,120
+È molto simile alla matrice di incorporamento, solo con l'ordine invertito, 
+
+372
+00:22:10,120 --> 00:22:12,952
+quindi aggiunge altri 617 milioni di parametri alla rete, 
+
+373
+00:22:12,952 --> 00:22:16,760
+il che significa che il nostro conteggio finora è di poco più di un miliardo, 
+
+374
+00:22:16,760 --> 00:22:20,374
+una frazione piccola ma non del tutto insignificante dei 175 miliardi che 
+
+375
+00:22:20,374 --> 00:22:21,790
+finiremo per avere in totale.
+
+376
+00:22:22,550 --> 00:22:25,207
+Come ultima mini-lezione di questo capitolo, voglio parlare 
+
+377
+00:22:25,207 --> 00:22:27,908
+ancora di questa funzione softmax, dato che farà di nuovo la 
+
+378
+00:22:27,908 --> 00:22:30,610
+sua comparsa quando ci immergeremo nei blocchi di attenzione.
+
+379
+00:22:31,430 --> 00:22:35,498
+L'idea è che se vuoi che una sequenza di numeri agisca come una distribuzione di 
+
+380
+00:22:35,498 --> 00:22:39,667
+probabilità, ad esempio una distribuzione su tutte le possibili parole successive, 
+
+381
+00:22:39,667 --> 00:22:42,229
+allora ogni valore deve essere compreso tra 0 e 1, 
+
+382
+00:22:42,229 --> 00:22:44,590
+e devi anche che tutti i valori si sommino a 1.
+
+383
+00:22:45,250 --> 00:22:48,436
+Tuttavia, se stai giocando al gioco dell'apprendimento in cui tutto 
+
+384
+00:22:48,436 --> 00:22:51,060
+ciò che fai sembra una moltiplicazione matrice-vettore, 
+
+385
+00:22:51,060 --> 00:22:54,810
+i risultati che otterrai per impostazione predefinita non lo rispettano affatto.
+
+386
+00:22:55,330 --> 00:22:58,093
+I valori sono spesso negativi, o molto più grandi di 1, 
+
+387
+00:22:58,093 --> 00:22:59,870
+e quasi sicuramente non sommano a 1.
+
+388
+00:23:00,510 --> 00:23:04,300
+Softmax è il modo standard per trasformare un elenco arbitrario 
+
+389
+00:23:04,300 --> 00:23:07,676
+di numeri in una distribuzione valida in modo tale che i 
+
+390
+00:23:07,676 --> 00:23:11,290
+valori più grandi si avvicinino a 1 e quelli più piccoli a 0.
+
+391
+00:23:11,830 --> 00:23:13,070
+Questo è tutto ciò che devi sapere.
+
+392
+00:23:13,090 --> 00:23:17,146
+Ma se sei curioso, il modo in cui funziona è quello di elevare e alla potenza 
+
+393
+00:23:17,146 --> 00:23:21,462
+di ciascuno dei numeri, il che significa che ora hai un elenco di valori positivi, 
+
+394
+00:23:21,462 --> 00:23:25,466
+e poi puoi prendere la somma di tutti questi valori positivi e dividere ogni 
+
+395
+00:23:25,466 --> 00:23:29,470
+termine per quella somma, che normalizza il tutto in un elenco che somma a 1.
+
+396
+00:23:30,170 --> 00:23:34,467
+Noterai che se uno dei numeri in ingresso è significativamente più grande degli altri, 
+
+397
+00:23:34,467 --> 00:23:37,579
+nell'output il termine corrispondente domina la distribuzione, 
+
+398
+00:23:37,579 --> 00:23:41,729
+quindi se dovessi campionare da esso, quasi certamente sceglieresti solo l'ingresso 
+
+399
+00:23:41,729 --> 00:23:42,470
+che massimizza.
+
+400
+00:23:42,990 --> 00:23:46,113
+Ma è più morbido rispetto alla semplice scelta del massimo, 
+
+401
+00:23:46,113 --> 00:23:49,184
+nel senso che quando altri valori sono altrettanto grandi, 
+
+402
+00:23:49,184 --> 00:23:51,943
+ottengono un peso significativo nella distribuzione, 
+
+403
+00:23:51,943 --> 00:23:54,650
+e tutto cambia continuamente al variare degli input.
+
+404
+00:23:55,130 --> 00:23:59,776
+In alcune situazioni, come quando ChatGPT utilizza questa distribuzione per creare una 
+
+405
+00:23:59,776 --> 00:24:04,370
+parola successiva, c'è spazio per un po' di divertimento in più aggiungendo un po' di 
+
+406
+00:24:04,370 --> 00:24:08,910
+pepe a questa funzione, con una costante t inserita nel denominatore degli esponenti.
+
+407
+00:24:09,550 --> 00:24:14,000
+La chiamiamo temperatura, poiché ricorda vagamente il ruolo della temperatura in 
+
+408
+00:24:14,000 --> 00:24:18,340
+alcune equazioni della termodinamica, e l'effetto è che quando t è più grande, 
+
+409
+00:24:18,340 --> 00:24:22,900
+si dà più peso ai valori più bassi, il che significa che la distribuzione è un po' 
+
+410
+00:24:22,900 --> 00:24:27,570
+più uniforme; se t è più piccolo, allora i valori più grandi domineranno in modo più 
+
+411
+00:24:27,570 --> 00:24:30,867
+aggressivo, mentre all'estremo, impostando t uguale a zero, 
+
+412
+00:24:30,867 --> 00:24:32,790
+tutto il peso va al valore massimo.
+
+413
+00:24:33,470 --> 00:24:38,634
+Ad esempio, farò in modo che GPT-3 generi una storia con il testo di partenza, 
+
+414
+00:24:38,634 --> 00:24:42,950
+C'era una volta A, ma utilizzerò temperature diverse in ogni caso.
+
+415
+00:24:43,630 --> 00:24:47,942
+La temperatura zero significa che sceglie sempre la parola più prevedibile 
+
+416
+00:24:47,942 --> 00:24:52,370
+e ciò che si ottiene finisce per essere un banale derivato di Riccioli d'oro.
+
+417
+00:24:53,010 --> 00:24:56,805
+Una temperatura più alta dà la possibilità di scegliere parole meno probabili, 
+
+418
+00:24:56,805 --> 00:24:57,910
+ma comporta un rischio.
+
+419
+00:24:58,230 --> 00:25:01,173
+In questo caso, la storia inizia in modo più originale, 
+
+420
+00:25:01,173 --> 00:25:04,065
+parlando di un giovane web artist della Corea del Sud, 
+
+421
+00:25:04,065 --> 00:25:06,010
+ma degenera rapidamente nel nonsense.
+
+422
+00:25:06,950 --> 00:25:10,830
+Tecnicamente parlando, l'API non ti permette di scegliere una temperatura superiore a 2.
+
+423
+00:25:11,170 --> 00:25:15,391
+Non c'è una ragione matematica per questo, è solo un vincolo arbitrario imposto 
+
+424
+00:25:15,391 --> 00:25:19,350
+per evitare che il loro strumento sia visto generare cose troppo insensate.
+
+425
+00:25:19,870 --> 00:25:24,200
+Quindi, se sei curioso, il modo in cui funziona questa animazione è che prendo 
+
+426
+00:25:24,200 --> 00:25:27,214
+i 20 token successivi più probabili generati da GPT-3, 
+
+427
+00:25:27,214 --> 00:25:31,709
+che sembra essere il massimo che mi darà, e poi modifico le probabilità basandomi 
+
+428
+00:25:31,709 --> 00:25:32,970
+su un esponente di 1/5.
+
+429
+00:25:33,130 --> 00:25:37,275
+Come ulteriore elemento di gergo, allo stesso modo in cui si possono chiamare 
+
+430
+00:25:37,275 --> 00:25:40,304
+probabilità i componenti dell'uscita di questa funzione, 
+
+431
+00:25:40,304 --> 00:25:44,236
+spesso ci si riferisce agli ingressi come logiti, o alcuni dicono logiti, 
+
+432
+00:25:44,236 --> 00:25:46,150
+altri dicono logiti, io dirò logiti.
+
+433
+00:25:46,530 --> 00:25:48,407
+Quindi, ad esempio, quando inserisci un testo, 
+
+434
+00:25:48,407 --> 00:25:51,363
+fai fluire tutte queste incorporazioni di parole attraverso la rete e fai 
+
+435
+00:25:51,363 --> 00:25:54,079
+questa moltiplicazione finale con la matrice di non incorporamento, 
+
+436
+00:25:54,079 --> 00:25:56,995
+le persone che si occupano di apprendimento automatico si riferiscono ai 
+
+437
+00:25:56,995 --> 00:25:59,991
+componenti di questo output grezzo e non normalizzato come ai logit per la 
+
+438
+00:25:59,991 --> 00:26:01,390
+previsione della parola successiva.
+
+439
+00:26:03,330 --> 00:26:06,719
+L'obiettivo di questo capitolo è stato quello di gettare le basi 
+
+440
+00:26:06,719 --> 00:26:10,370
+per la comprensione del meccanismo di attenzione, in stile Karate Kid.
+
+441
+00:26:10,850 --> 00:26:14,729
+Vedi, se hai una forte intuizione per le incorporazioni di parole, per il softmax, 
+
+442
+00:26:14,729 --> 00:26:17,720
+per il modo in cui i prodotti di punti misurano la somiglianza, 
+
+443
+00:26:17,720 --> 00:26:21,459
+e anche la premessa di fondo che la maggior parte dei calcoli deve assomigliare 
+
+444
+00:26:21,459 --> 00:26:25,199
+a una moltiplicazione matriciale con matrici piene di parametri sintonizzabili, 
+
+445
+00:26:25,199 --> 00:26:27,769
+allora la comprensione del meccanismo dell'attenzione, 
+
+446
+00:26:27,769 --> 00:26:30,387
+questa pietra miliare dell'intero boom moderno dell'IA, 
+
+447
+00:26:30,387 --> 00:26:32,210
+dovrebbe essere relativamente semplice.
+
+448
+00:26:32,650 --> 00:26:34,510
+Per questo, unisciti a me nel prossimo capitolo.
+
+449
+00:26:36,390 --> 00:26:38,886
+Mentre sto pubblicando questo articolo, una bozza del prossimo capitolo 
+
+450
+00:26:38,886 --> 00:26:41,210
+è disponibile per la revisione da parte dei sostenitori di Patreon.
+
+451
+00:26:41,770 --> 00:26:44,751
+La versione finale dovrebbe essere resa pubblica tra una o due settimane, 
+
+452
+00:26:44,751 --> 00:26:47,370
+di solito dipende da quante cose cambierò in base alla revisione.
+
+453
+00:26:47,810 --> 00:26:51,542
+Nel frattempo, se vuoi immergerti nell'attenzione e se vuoi aiutare un po' il canale, 
+
+454
+00:26:51,542 --> 00:26:52,410
+è lì che ti aspetta.
+
