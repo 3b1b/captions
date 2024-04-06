@@ -1,0 +1,1832 @@
+1
+00:00:00,000 --> 00:00:02,184
+Dalam bab terakhir, Anda dan saya mulai melangkah 
+
+2
+00:00:02,184 --> 00:00:04,019
+melalui cara kerja internal transformator.
+
+3
+00:00:04,560 --> 00:00:08,206
+Ini adalah salah satu bagian penting dari teknologi di dalam model bahasa yang besar, 
+
+4
+00:00:08,206 --> 00:00:10,200
+dan banyak alat lain dalam gelombang AI modern.
+
+5
+00:00:10,980 --> 00:00:14,496
+Hal ini pertama kali muncul dalam sebuah makalah yang terkenal di tahun 2017 yang 
+
+6
+00:00:14,496 --> 00:00:18,012
+berjudul Attention is All You Need, dan dalam bab ini Anda dan saya akan menggali 
+
+7
+00:00:18,012 --> 00:00:21,700
+apa itu mekanisme perhatian, memvisualisasikan bagaimana mekanisme ini memproses data.
+
+8
+00:00:26,140 --> 00:00:29,540
+Sebagai rangkuman singkat, inilah konteks penting yang saya ingin Anda pikirkan.
+
+9
+00:00:30,000 --> 00:00:33,074
+Tujuan dari model yang Anda dan saya pelajari adalah untuk mengambil 
+
+10
+00:00:33,074 --> 00:00:36,060
+sepotong teks dan memprediksi kata apa yang akan muncul berikutnya.
+
+11
+00:00:36,860 --> 00:00:40,506
+Teks input dipecah menjadi potongan-potongan kecil yang kita sebut token, 
+
+12
+00:00:40,506 --> 00:00:43,069
+dan ini sering kali berupa kata atau potongan kata, 
+
+13
+00:00:43,069 --> 00:00:47,307
+tetapi untuk membuat contoh dalam video ini lebih mudah untuk Anda dan saya pikirkan, 
+
+14
+00:00:47,307 --> 00:00:50,560
+mari kita sederhanakan dengan menganggap token selalu berupa kata.
+
+15
+00:00:51,480 --> 00:00:54,433
+Langkah pertama dalam transformator adalah mengasosiasikan setiap 
+
+16
+00:00:54,433 --> 00:00:57,700
+token dengan vektor berdimensi tinggi, yang kita sebut sebagai embedding.
+
+17
+00:00:57,700 --> 00:01:00,855
+Gagasan terpenting yang saya ingin Anda pikirkan adalah, 
+
+18
+00:01:00,855 --> 00:01:05,394
+bagaimana arah dalam ruang dimensi tinggi dari semua kemungkinan penyematan dapat 
+
+19
+00:01:05,394 --> 00:01:07,000
+sesuai dengan makna semantik.
+
+20
+00:01:07,680 --> 00:01:11,621
+Pada bab sebelumnya, kita telah melihat contoh bagaimana arah dapat berhubungan dengan 
+
+21
+00:01:11,621 --> 00:01:15,381
+jenis kelamin, dalam arti bahwa menambahkan langkah tertentu dalam ruang ini dapat 
+
+22
+00:01:15,381 --> 00:01:19,322
+membawa Anda dari penyematan kata benda maskulin ke penyematan kata benda feminin yang 
+
+23
+00:01:19,322 --> 00:01:19,640
+sesuai.
+
+24
+00:01:20,160 --> 00:01:23,719
+Itu hanya salah satu contoh yang bisa Anda bayangkan berapa banyak arah lain dalam 
+
+25
+00:01:23,719 --> 00:01:27,580
+ruang dimensi tinggi ini yang bisa berhubungan dengan berbagai aspek lain dari makna kata.
+
+26
+00:01:28,800 --> 00:01:32,454
+Tujuan dari transformator adalah untuk secara progresif menyesuaikan 
+
+27
+00:01:32,454 --> 00:01:35,843
+penyematan ini sehingga tidak hanya menyandikan satu kata saja, 
+
+28
+00:01:35,843 --> 00:01:39,180
+tetapi juga menyematkan makna kontekstual yang jauh lebih kaya.
+
+29
+00:01:40,140 --> 00:01:43,471
+Saya harus mengatakan di depan bahwa banyak orang merasa mekanisme perhatian, 
+
+30
+00:01:43,471 --> 00:01:45,947
+bagian penting dalam transformator, sangat membingungkan, 
+
+31
+00:01:45,947 --> 00:01:48,980
+jadi jangan khawatir jika perlu waktu untuk meresap ke dalam diri Anda.
+
+32
+00:01:49,440 --> 00:01:53,689
+Saya pikir sebelum kita menyelami detail komputasi dan semua perkalian matriks, 
+
+33
+00:01:53,689 --> 00:01:57,141
+ada baiknya kita memikirkan beberapa contoh untuk jenis perilaku 
+
+34
+00:01:57,141 --> 00:01:59,160
+yang kita inginkan untuk diperhatikan.
+
+35
+00:02:00,140 --> 00:02:04,414
+Pertimbangkan frasa tahi lalat asli Amerika, satu mol karbon dioksida, 
+
+36
+00:02:04,414 --> 00:02:06,220
+dan lakukan biopsi tahi lalat.
+
+37
+00:02:06,700 --> 00:02:10,021
+Anda dan saya tahu bahwa kata tahi lalat memiliki arti yang berbeda dalam setiap kata, 
+
+38
+00:02:10,021 --> 00:02:10,900
+berdasarkan konteksnya.
+
+39
+00:02:11,360 --> 00:02:14,968
+Tetapi setelah langkah pertama transformator, yang memecah teks dan 
+
+40
+00:02:14,968 --> 00:02:18,683
+mengasosiasikan setiap token dengan vektor, vektor yang diasosiasikan 
+
+41
+00:02:18,683 --> 00:02:22,398
+dengan mol akan sama di semua kasus ini, karena penyematan token awal 
+
+42
+00:02:22,398 --> 00:02:26,220
+ini secara efektif merupakan tabel pencarian tanpa referensi ke konteks.
+
+43
+00:02:26,620 --> 00:02:30,340
+Hanya pada langkah berikutnya dari transformator, baru pada penyematan di sekelilingnya, 
+
+44
+00:02:30,340 --> 00:02:33,100
+ada peluang untuk meneruskan informasi ke dalam transformator ini.
+
+45
+00:02:33,820 --> 00:02:37,298
+Gambaran yang mungkin ada di benak Anda adalah bahwa ada beberapa arah 
+
+46
+00:02:37,298 --> 00:02:41,707
+yang berbeda dalam ruang penyematan yang mengkodekan berbagai arti berbeda dari kata mol, 
+
+47
+00:02:41,707 --> 00:02:45,186
+dan bahwa blok perhatian yang terlatih dengan baik akan menghitung apa 
+
+48
+00:02:45,186 --> 00:02:48,860
+yang perlu Anda tambahkan ke penyematan umum untuk memindahkannya ke salah 
+
+49
+00:02:48,860 --> 00:02:51,800
+satu dari arah tertentu ini, sebagai fungsi dari konteksnya.
+
+50
+00:02:53,300 --> 00:02:56,180
+Untuk mengambil contoh lain, pertimbangkan penyematan kata menara.
+
+51
+00:02:57,060 --> 00:03:00,765
+Ini mungkin merupakan arah yang sangat umum dan tidak spesifik di dalam ruang, 
+
+52
+00:03:00,765 --> 00:03:03,720
+yang terkait dengan banyak kata benda besar dan tinggi lainnya.
+
+53
+00:03:04,020 --> 00:03:07,588
+Jika kata ini langsung didahului oleh Eiffel, Anda dapat membayangkan 
+
+54
+00:03:07,588 --> 00:03:11,157
+mekanisme untuk memperbarui vektor ini sehingga menunjuk ke arah yang 
+
+55
+00:03:11,157 --> 00:03:15,032
+lebih spesifik mengkodekan menara Eiffel, mungkin berkorelasi dengan vektor 
+
+56
+00:03:15,032 --> 00:03:19,060
+yang terkait dengan Paris dan Prancis serta benda-benda yang terbuat dari baja.
+
+57
+00:03:19,920 --> 00:03:24,019
+Jika juga didahului oleh kata miniatur, maka vektor harus diperbarui lebih jauh lagi, 
+
+58
+00:03:24,019 --> 00:03:27,500
+sehingga tidak lagi berkorelasi dengan benda-benda yang besar dan tinggi.
+
+59
+00:03:29,480 --> 00:03:32,541
+Secara lebih umum daripada sekadar menyempurnakan arti sebuah kata, 
+
+60
+00:03:32,541 --> 00:03:36,007
+blok perhatian memungkinkan model untuk memindahkan informasi yang dikodekan 
+
+61
+00:03:36,007 --> 00:03:39,788
+dalam satu penyematan ke penyematan lainnya, yang mungkin saja berjarak cukup jauh, 
+
+62
+00:03:39,788 --> 00:03:43,300
+dan berpotensi dengan informasi yang jauh lebih kaya daripada hanya satu kata.
+
+63
+00:03:43,300 --> 00:03:47,031
+Apa yang kita lihat pada bab sebelumnya adalah bagaimana setelah semua 
+
+64
+00:03:47,031 --> 00:03:51,184
+vektor mengalir melalui jaringan, termasuk banyak blok perhatian yang berbeda, 
+
+65
+00:03:51,184 --> 00:03:55,021
+komputasi yang Anda lakukan untuk menghasilkan prediksi token berikutnya 
+
+66
+00:03:55,021 --> 00:03:58,280
+sepenuhnya merupakan fungsi dari vektor terakhir dalam urutan.
+
+67
+00:03:59,100 --> 00:04:02,015
+Bayangkan, misalnya, teks yang Anda masukkan adalah sebagian 
+
+68
+00:04:02,015 --> 00:04:05,362
+besar dari keseluruhan novel misteri, sampai ke titik di dekat akhir, 
+
+69
+00:04:05,362 --> 00:04:07,800
+yang berbunyi, oleh karena itu, pembunuhnya adalah.
+
+70
+00:04:08,400 --> 00:04:11,352
+Jika model akan secara akurat memprediksi kata berikutnya, 
+
+71
+00:04:11,352 --> 00:04:15,256
+vektor terakhir dalam urutan tersebut, yang memulai kehidupannya hanya dengan 
+
+72
+00:04:15,256 --> 00:04:19,110
+menyematkan kata itu, harus telah diperbarui oleh semua blok perhatian untuk 
+
+73
+00:04:19,110 --> 00:04:22,213
+mewakili lebih banyak, lebih banyak daripada kata individual, 
+
+74
+00:04:22,213 --> 00:04:26,117
+entah bagaimana mengkodekan semua informasi dari jendela konteks lengkap yang 
+
+75
+00:04:26,117 --> 00:04:28,220
+relevan untuk memprediksi kata berikutnya.
+
+76
+00:04:29,500 --> 00:04:31,182
+Namun, untuk melangkah lebih jauh dalam perhitungan, 
+
+77
+00:04:31,182 --> 00:04:32,580
+mari kita ambil contoh yang lebih sederhana.
+
+78
+00:04:32,980 --> 00:04:35,519
+Bayangkan bahwa masukannya mencakup frasa, makhluk 
+
+79
+00:04:35,519 --> 00:04:37,960
+biru yang lembut berkeliaran di hutan yang hijau.
+
+80
+00:04:38,460 --> 00:04:42,392
+Dan untuk saat ini, anggaplah satu-satunya jenis pembaruan yang kita 
+
+81
+00:04:42,392 --> 00:04:46,780
+pedulikan adalah membuat kata sifat menyesuaikan arti kata benda yang sesuai.
+
+82
+00:04:47,000 --> 00:04:50,291
+Apa yang akan saya jelaskan adalah apa yang kita sebut sebagai satu kepala perhatian, 
+
+83
+00:04:50,291 --> 00:04:53,123
+dan nanti kita akan melihat, bagaimana blok perhatian terdiri atas banyak 
+
+84
+00:04:53,123 --> 00:04:55,420
+kepala perhatian yang berbeda, yang berjalan secara paralel.
+
+85
+00:04:56,140 --> 00:04:59,734
+Sekali lagi, penyematan awal untuk setiap kata adalah beberapa vektor 
+
+86
+00:04:59,734 --> 00:05:03,380
+dimensi tinggi yang hanya mengkodekan arti kata tertentu tanpa konteks.
+
+87
+00:05:04,000 --> 00:05:05,220
+Sebenarnya, hal itu tidak sepenuhnya benar.
+
+88
+00:05:05,380 --> 00:05:07,640
+Mereka juga menyandikan posisi kata.
+
+89
+00:05:07,980 --> 00:05:11,265
+Masih banyak lagi yang dapat dikatakan tentang cara pengkodean posisi, 
+
+90
+00:05:11,265 --> 00:05:14,828
+tetapi saat ini, yang perlu Anda ketahui adalah bahwa entri vektor ini sudah 
+
+91
+00:05:14,828 --> 00:05:18,900
+cukup untuk memberi tahu Anda apa kata itu dan di mana kata itu berada dalam konteksnya.
+
+92
+00:05:19,500 --> 00:05:21,660
+Mari kita lanjutkan dan tandai penyematan ini dengan huruf e.
+
+93
+00:05:22,420 --> 00:05:25,838
+Tujuannya adalah agar serangkaian komputasi menghasilkan serangkaian 
+
+94
+00:05:25,838 --> 00:05:28,514
+penyematan baru yang disempurnakan di mana, misalnya, 
+
+95
+00:05:28,514 --> 00:05:32,280
+kata benda yang sesuai dengan kata benda tersebut telah menyerap makna dari 
+
+96
+00:05:32,280 --> 00:05:33,420
+kata sifat yang sesuai.
+
+97
+00:05:33,900 --> 00:05:37,132
+Dan dalam permainan deep learning, kami ingin sebagian besar komputasi yang 
+
+98
+00:05:37,132 --> 00:05:39,216
+terlibat terlihat seperti produk vektor-matriks, 
+
+99
+00:05:39,216 --> 00:05:41,555
+di mana matriks penuh dengan bobot yang dapat disetel, 
+
+100
+00:05:41,555 --> 00:05:43,980
+hal-hal yang akan dipelajari oleh model berdasarkan data.
+
+101
+00:05:44,660 --> 00:05:47,168
+Untuk memperjelas, saya membuat contoh kata sifat yang memperbarui 
+
+102
+00:05:47,168 --> 00:05:49,564
+kata benda ini hanya untuk mengilustrasikan jenis perilaku yang 
+
+103
+00:05:49,564 --> 00:05:52,260
+dapat Anda bayangkan dilakukan oleh seorang kepala yang penuh perhatian.
+
+104
+00:05:52,860 --> 00:05:55,633
+Seperti halnya banyak pembelajaran mendalam, perilaku sebenarnya jauh 
+
+105
+00:05:55,633 --> 00:05:58,288
+lebih sulit untuk diuraikan karena didasarkan pada penyesuaian dan 
+
+106
+00:05:58,288 --> 00:06:01,340
+penyetelan sejumlah besar parameter untuk meminimalkan beberapa fungsi biaya.
+
+107
+00:06:01,680 --> 00:06:04,461
+Hanya saja, saat kita melangkah melalui semua matriks berbeda yang 
+
+108
+00:06:04,461 --> 00:06:06,744
+diisi dengan parameter yang terlibat dalam proses ini, 
+
+109
+00:06:06,744 --> 00:06:09,567
+saya pikir akan sangat membantu jika kita memiliki contoh yang bisa 
+
+110
+00:06:09,567 --> 00:06:13,220
+dibayangkan tentang sesuatu yang bisa dilakukan untuk membantu membuatnya lebih konkret.
+
+111
+00:06:14,140 --> 00:06:17,844
+Untuk langkah pertama dari proses ini, Anda bisa membayangkan setiap kata benda, 
+
+112
+00:06:17,844 --> 00:06:21,960
+seperti makhluk, mengajukan pertanyaan, hei, apakah ada kata sifat yang ada di depan saya?
+
+113
+00:06:22,160 --> 00:06:25,158
+Dan untuk kata fluffy dan blue, masing-masing bisa menjawab, 
+
+114
+00:06:25,158 --> 00:06:27,960
+ya, saya adalah kata sifat dan saya berada di posisi itu.
+
+115
+00:06:28,960 --> 00:06:32,711
+Pertanyaan itu entah bagaimana dikodekan sebagai vektor lain, 
+
+116
+00:06:32,711 --> 00:06:36,100
+daftar angka lain, yang kita sebut kueri untuk kata ini.
+
+117
+00:06:36,980 --> 00:06:41,248
+Vektor kueri ini memiliki dimensi yang jauh lebih kecil daripada vektor embedding, 
+
+118
+00:06:41,248 --> 00:06:42,020
+katakanlah 128.
+
+119
+00:06:42,940 --> 00:06:46,386
+Menghitung kueri ini terlihat seperti mengambil matriks tertentu, 
+
+120
+00:06:46,386 --> 00:06:49,780
+yang akan saya beri label wq, dan mengalikannya dengan embedding.
+
+121
+00:06:50,960 --> 00:06:54,560
+Untuk lebih memperjelas, mari kita tuliskan vektor kueri tersebut sebagai q, 
+
+122
+00:06:54,560 --> 00:06:58,394
+lalu kapan pun Anda melihat saya meletakkan matriks di samping panah seperti ini, 
+
+123
+00:06:58,394 --> 00:07:01,947
+ini dimaksudkan untuk merepresentasikan bahwa mengalikan matriks ini dengan 
+
+124
+00:07:01,947 --> 00:07:04,800
+vektor di awal panah akan menghasilkan vektor di akhir panah.
+
+125
+00:07:05,860 --> 00:07:10,072
+Dalam kasus ini, Anda mengalikan matriks ini dengan semua penyematan dalam konteks, 
+
+126
+00:07:10,072 --> 00:07:12,580
+menghasilkan satu vektor kueri untuk setiap token.
+
+127
+00:07:13,740 --> 00:07:16,130
+Entri dari matriks ini adalah parameter dari model, 
+
+128
+00:07:16,130 --> 00:07:19,670
+yang berarti perilaku sebenarnya dipelajari dari data, dan dalam praktiknya, 
+
+129
+00:07:19,670 --> 00:07:23,440
+apa yang dilakukan matriks ini di kepala perhatian tertentu sulit untuk diuraikan.
+
+130
+00:07:23,900 --> 00:07:27,229
+Namun demi kepentingan kita, dengan membayangkan sebuah contoh yang kita 
+
+131
+00:07:27,229 --> 00:07:30,513
+harapkan dapat dipelajari, kita anggap saja matriks kueri ini memetakan 
+
+132
+00:07:30,513 --> 00:07:34,071
+penyematan kata benda ke arah tertentu dalam ruang kueri yang lebih kecil ini 
+
+133
+00:07:34,071 --> 00:07:38,040
+yang entah bagaimana mengkodekan gagasan untuk mencari kata sifat di posisi sebelumnya.
+
+134
+00:07:38,780 --> 00:07:41,440
+Mengenai apa yang dilakukannya pada penyematan lainnya, siapa yang tahu?
+
+135
+00:07:41,720 --> 00:07:44,340
+Mungkin secara bersamaan mencoba untuk mencapai beberapa tujuan lain dengan itu.
+
+136
+00:07:44,540 --> 00:07:47,160
+Saat ini, kami memfokuskan laser pada kata benda.
+
+137
+00:07:47,280 --> 00:07:50,950
+Pada saat yang sama, yang terkait dengan ini adalah matriks kedua yang 
+
+138
+00:07:50,950 --> 00:07:54,620
+disebut matriks kunci, yang juga Anda kalikan dengan setiap penyematan.
+
+139
+00:07:55,280 --> 00:07:58,500
+Hal ini menghasilkan urutan vektor kedua yang kita sebut sebagai kunci.
+
+140
+00:07:59,420 --> 00:08:03,140
+Secara konseptual, Anda ingin memikirkan kunci yang berpotensi menjawab pertanyaan.
+
+141
+00:08:03,840 --> 00:08:06,827
+Matriks kunci ini juga penuh dengan parameter yang dapat disetel, 
+
+142
+00:08:06,827 --> 00:08:10,630
+dan seperti matriks kueri, matriks ini memetakan vektor penyisipan ke ruang dimensi 
+
+143
+00:08:10,630 --> 00:08:11,400
+yang lebih kecil.
+
+144
+00:08:12,200 --> 00:08:14,559
+Anda menganggap kunci sebagai pencocokan kueri 
+
+145
+00:08:14,559 --> 00:08:17,020
+setiap kali mereka saling sejajar satu sama lain.
+
+146
+00:08:17,460 --> 00:08:21,839
+Dalam contoh kita, Anda dapat membayangkan bahwa matriks kunci memetakan kata sifat 
+
+147
+00:08:21,839 --> 00:08:26,322
+seperti fluffy dan blue ke vektor yang selaras dengan kueri yang dihasilkan oleh kata 
+
+148
+00:08:26,322 --> 00:08:26,740
+makhluk.
+
+149
+00:08:27,200 --> 00:08:30,435
+Untuk mengukur seberapa baik setiap kunci cocok dengan setiap kueri, 
+
+150
+00:08:30,435 --> 00:08:34,000
+Anda menghitung dot product antara setiap pasangan kunci-kueri yang mungkin.
+
+151
+00:08:34,480 --> 00:08:37,530
+Saya suka memvisualisasikan kisi-kisi yang penuh dengan sekumpulan titik, 
+
+152
+00:08:37,530 --> 00:08:40,911
+di mana titik-titik yang lebih besar sesuai dengan produk titik yang lebih besar, 
+
+153
+00:08:40,911 --> 00:08:42,559
+tempat di mana tombol dan kueri sejajar.
+
+154
+00:08:43,280 --> 00:08:47,040
+Untuk contoh kata sifat kata benda kita, akan terlihat seperti ini, 
+
+155
+00:08:47,040 --> 00:08:50,800
+di mana jika kunci yang dihasilkan oleh fluffy dan blue benar-benar 
+
+156
+00:08:50,800 --> 00:08:53,675
+selaras dengan kueri yang dihasilkan oleh creature, 
+
+157
+00:08:53,675 --> 00:08:58,320
+maka hasil kali titik di kedua titik tersebut akan menjadi angka positif yang besar.
+
+158
+00:08:59,100 --> 00:09:02,147
+Dalam istilah pembelajaran mesin, orang-orang akan mengatakan bahwa 
+
+159
+00:09:02,147 --> 00:09:05,420
+ini berarti penyematan bulu halus dan biru menghadiri penyematan makhluk.
+
+160
+00:09:06,040 --> 00:09:09,717
+Sebaliknya, dot product antara kunci untuk beberapa kata lain seperti 
+
+161
+00:09:09,717 --> 00:09:13,027
+dan kueri untuk makhluk akan menjadi beberapa nilai kecil atau 
+
+162
+00:09:13,027 --> 00:09:16,600
+negatif yang mencerminkan bahwa mereka tidak terkait satu sama lain.
+
+163
+00:09:17,700 --> 00:09:21,293
+Jadi, kita memiliki kisi-kisi nilai yang dapat berupa bilangan real dari 
+
+164
+00:09:21,293 --> 00:09:24,886
+negatif tak terhingga hingga tak terhingga, yang memberi kita skor untuk 
+
+165
+00:09:24,886 --> 00:09:28,480
+seberapa relevan setiap kata untuk memperbarui makna setiap kata lainnya.
+
+166
+00:09:29,200 --> 00:09:32,304
+Cara kita akan menggunakan skor ini adalah dengan mengambil jumlah 
+
+167
+00:09:32,304 --> 00:09:35,780
+tertimbang tertentu di setiap kolom, yang dibobotkan berdasarkan relevansi.
+
+168
+00:09:36,520 --> 00:09:40,377
+Jadi, alih-alih memiliki rentang nilai dari negatif tak terhingga hingga tak terhingga, 
+
+169
+00:09:40,377 --> 00:09:44,147
+yang kita inginkan adalah angka-angka dalam kolom-kolom ini berada di antara 0 dan 1, 
+
+170
+00:09:44,147 --> 00:09:47,610
+dan untuk setiap kolom dijumlahkan hingga 1, seolah-olah itu adalah distribusi 
+
+171
+00:09:47,610 --> 00:09:48,180
+probabilitas.
+
+172
+00:09:49,280 --> 00:09:52,220
+Jika Anda membaca bab sebelumnya, Anda pasti tahu apa yang harus kita lakukan.
+
+173
+00:09:52,620 --> 00:09:57,300
+Kami menghitung softmax di sepanjang masing-masing kolom ini untuk menormalkan nilainya.
+
+174
+00:10:00,060 --> 00:10:02,982
+Pada gambar kita, setelah Anda menerapkan softmax ke semua kolom, 
+
+175
+00:10:02,982 --> 00:10:05,860
+kita akan mengisi grid dengan nilai-nilai yang dinormalisasi ini.
+
+176
+00:10:06,780 --> 00:10:10,609
+Pada titik ini, Anda dapat menganggap setiap kolom sebagai pemberian bobot sesuai 
+
+177
+00:10:10,609 --> 00:10:14,580
+dengan seberapa relevan kata di sebelah kiri dengan nilai yang sesuai di bagian atas.
+
+178
+00:10:15,080 --> 00:10:16,840
+Kami menyebut kisi-kisi ini sebagai pola perhatian.
+
+179
+00:10:18,080 --> 00:10:20,428
+Sekarang, jika Anda melihat kertas transformator asli, 
+
+180
+00:10:20,428 --> 00:10:22,820
+ada cara yang sangat ringkas untuk menuliskan semua ini.
+
+181
+00:10:23,880 --> 00:10:29,031
+Di sini, variabel q dan k masing-masing mewakili larik penuh dari vektor kueri dan kunci, 
+
+182
+00:10:29,031 --> 00:10:32,293
+vektor-vektor kecil yang Anda dapatkan dengan mengalikan 
+
+183
+00:10:32,293 --> 00:10:34,640
+embedding dengan kueri dan matriks kunci.
+
+184
+00:10:35,160 --> 00:10:38,973
+Ekspresi di pembilang ini adalah cara yang sangat ringkas untuk merepresentasikan 
+
+185
+00:10:38,973 --> 00:10:43,020
+kisi-kisi dari semua produk titik yang mungkin terjadi antara pasangan kunci dan kueri.
+
+186
+00:10:44,000 --> 00:10:48,162
+Detail teknis kecil yang tidak saya sebutkan adalah bahwa untuk stabilitas numerik, 
+
+187
+00:10:48,162 --> 00:10:51,284
+akan sangat membantu untuk membagi semua nilai ini dengan akar 
+
+188
+00:10:51,284 --> 00:10:53,960
+kuadrat dari dimensi dalam ruang kueri kunci tersebut.
+
+189
+00:10:54,480 --> 00:10:57,418
+Kemudian, softmax yang melingkari ekspresi penuh ini 
+
+190
+00:10:57,418 --> 00:11:00,800
+dimaksudkan untuk dipahami untuk menerapkan kolom demi kolom.
+
+191
+00:11:01,640 --> 00:11:04,700
+Mengenai istilah v, kita akan membicarakannya sebentar lagi.
+
+192
+00:11:05,020 --> 00:11:08,460
+Sebelum itu, ada satu detail teknis lain yang sejauh ini saya lewati.
+
+193
+00:11:09,040 --> 00:11:12,770
+Selama proses pelatihan, ketika Anda menjalankan model ini pada contoh teks yang 
+
+194
+00:11:12,770 --> 00:11:16,684
+diberikan, dan semua bobot sedikit disesuaikan dan disetel untuk memberi penghargaan 
+
+195
+00:11:16,684 --> 00:11:20,323
+atau hukuman berdasarkan seberapa tinggi probabilitas yang diberikan pada kata 
+
+196
+00:11:20,323 --> 00:11:23,869
+yang benar berikutnya dalam bagian tersebut, ternyata membuat seluruh proses 
+
+197
+00:11:23,869 --> 00:11:27,783
+pelatihan jauh lebih efisien jika Anda secara bersamaan memintanya untuk memprediksi 
+
+198
+00:11:27,783 --> 00:11:31,560
+setiap token berikutnya yang mungkin mengikuti setiap token awal dalam bagian ini.
+
+199
+00:11:31,940 --> 00:11:34,376
+Misalnya, dengan frasa yang telah kita fokuskan, 
+
+200
+00:11:34,376 --> 00:11:37,956
+mungkin juga dapat memprediksi kata apa yang mengikuti makhluk dan kata 
+
+201
+00:11:37,956 --> 00:11:39,100
+apa yang mengikuti the.
+
+202
+00:11:39,940 --> 00:11:42,872
+Ini sangat bagus, karena ini berarti apa yang seharusnya menjadi contoh 
+
+203
+00:11:42,872 --> 00:11:45,560
+pelatihan tunggal, secara efektif bertindak sebagai banyak contoh.
+
+204
+00:11:46,100 --> 00:11:49,313
+Untuk tujuan pola perhatian kita, ini berarti bahwa Anda tidak akan pernah membiarkan 
+
+205
+00:11:49,313 --> 00:11:52,303
+kata-kata yang muncul belakangan mempengaruhi kata-kata yang muncul sebelumnya, 
+
+206
+00:11:52,303 --> 00:11:55,628
+karena jika tidak, kata-kata tersebut bisa memberikan jawaban untuk apa yang akan muncul 
+
+207
+00:11:55,628 --> 00:11:56,040
+berikutnya.
+
+208
+00:11:56,560 --> 00:12:00,363
+Artinya, kita ingin semua titik di sini, yang mewakili token-token yang muncul 
+
+209
+00:12:00,363 --> 00:12:04,600
+belakangan dan mempengaruhi token-token sebelumnya, entah bagaimana dipaksa menjadi nol.
+
+210
+00:12:05,920 --> 00:12:08,017
+Hal paling sederhana yang mungkin Anda pikirkan untuk dilakukan adalah 
+
+211
+00:12:08,017 --> 00:12:10,085
+mengaturnya sama dengan nol, tetapi jika Anda melakukan hal tersebut, 
+
+212
+00:12:10,085 --> 00:12:12,420
+kolom-kolomnya tidak akan berjumlah satu lagi, mereka tidak akan dinormalisasi.
+
+213
+00:12:13,120 --> 00:12:16,200
+Jadi, cara umum untuk melakukan ini adalah sebelum menerapkan softmax, 
+
+214
+00:12:16,200 --> 00:12:19,020
+Anda mengatur semua entri tersebut menjadi tak terhingga negatif.
+
+215
+00:12:19,680 --> 00:12:22,115
+Jika Anda melakukan hal itu, maka setelah menerapkan softmax, 
+
+216
+00:12:22,115 --> 00:12:25,180
+semua itu akan berubah menjadi nol, tetapi kolom-kolomnya tetap dinormalisasi.
+
+217
+00:12:26,000 --> 00:12:27,540
+Proses ini disebut masking.
+
+218
+00:12:27,540 --> 00:12:30,271
+Ada beberapa versi perhatian di mana Anda tidak menerapkannya, 
+
+219
+00:12:30,271 --> 00:12:34,131
+tetapi dalam contoh GPT kami, meskipun ini lebih relevan selama fase pelatihan daripada, 
+
+220
+00:12:34,131 --> 00:12:36,733
+katakanlah, menjalankannya sebagai chatbot atau semacamnya, 
+
+221
+00:12:36,733 --> 00:12:39,985
+Anda selalu menerapkan penyamaran ini untuk mencegah token yang lebih baru 
+
+222
+00:12:39,985 --> 00:12:41,460
+memengaruhi token yang lebih awal.
+
+223
+00:12:42,480 --> 00:12:46,541
+Fakta lain yang patut direnungkan mengenai pola perhatian ini adalah, 
+
+224
+00:12:46,541 --> 00:12:49,500
+bahwa ukurannya sama dengan kuadrat ukuran konteks.
+
+225
+00:12:49,900 --> 00:12:52,778
+Jadi, inilah mengapa ukuran konteks dapat menjadi hambatan yang sangat besar 
+
+226
+00:12:52,778 --> 00:12:55,620
+untuk model bahasa yang besar, dan meningkatkannya bukanlah hal yang sepele.
+
+227
+00:12:56,300 --> 00:12:59,344
+Seperti yang Anda bayangkan, termotivasi oleh keinginan untuk jendela konteks 
+
+228
+00:12:59,344 --> 00:13:02,505
+yang lebih besar dan lebih besar, beberapa tahun terakhir ini telah ada beberapa 
+
+229
+00:13:02,505 --> 00:13:05,822
+variasi pada mekanisme perhatian yang bertujuan untuk membuat konteks lebih terukur, 
+
+230
+00:13:05,822 --> 00:13:08,320
+tetapi di sini, Anda dan saya tetap fokus pada hal-hal mendasar.
+
+231
+00:13:10,560 --> 00:13:12,928
+Oke, bagus, dengan menghitung pola ini, model dapat 
+
+232
+00:13:12,928 --> 00:13:15,480
+menyimpulkan kata mana yang relevan dengan kata lainnya.
+
+233
+00:13:16,020 --> 00:13:18,874
+Sekarang Anda harus benar-benar memperbarui penyematan, 
+
+234
+00:13:18,874 --> 00:13:22,800
+sehingga kata-kata dapat meneruskan informasi ke kata-kata lain yang relevan.
+
+235
+00:13:22,800 --> 00:13:26,901
+Misalnya, Anda ingin penyematan Fluffy entah bagaimana menyebabkan perubahan 
+
+236
+00:13:26,901 --> 00:13:30,631
+pada Makhluk yang memindahkannya ke bagian lain dari ruang penyematan 
+
+237
+00:13:30,631 --> 00:13:34,520
+12.000 dimensi ini yang secara lebih spesifik mengkodekan makhluk Fluffy.
+
+238
+00:13:35,460 --> 00:13:38,077
+Apa yang akan saya lakukan di sini, pertama-tama saya akan menunjukkan 
+
+239
+00:13:38,077 --> 00:13:40,142
+kepada Anda cara yang paling mudah untuk melakukan ini, 
+
+240
+00:13:40,142 --> 00:13:43,460
+meskipun ada sedikit cara untuk memodifikasi hal ini dalam konteks perhatian multi-kepala.
+
+241
+00:13:44,080 --> 00:13:47,434
+Cara yang paling mudah adalah dengan menggunakan matriks ketiga, 
+
+242
+00:13:47,434 --> 00:13:51,614
+yang kami sebut matriks nilai, yang Anda kalikan dengan penyematan kata pertama, 
+
+243
+00:13:51,614 --> 00:13:52,440
+misalnya Fluffy.
+
+244
+00:13:53,300 --> 00:13:56,100
+Hasil dari ini adalah apa yang Anda sebut sebagai vektor nilai, 
+
+245
+00:13:56,100 --> 00:13:59,119
+dan ini adalah sesuatu yang Anda tambahkan ke penyematan kata kedua, 
+
+246
+00:13:59,119 --> 00:14:01,920
+dalam hal ini sesuatu yang Anda tambahkan ke penyematan Makhluk.
+
+247
+00:14:02,600 --> 00:14:04,868
+Jadi, vektor nilai ini berada dalam ruang dimensi 
+
+248
+00:14:04,868 --> 00:14:07,000
+yang sangat tinggi yang sama dengan penyematan.
+
+249
+00:14:07,460 --> 00:14:10,838
+Ketika Anda mengalikan matriks nilai ini dengan penyematan sebuah kata, 
+
+250
+00:14:10,838 --> 00:14:14,263
+Anda dapat menganggapnya sebagai mengatakan, jika kata ini relevan untuk 
+
+251
+00:14:14,263 --> 00:14:17,828
+menyesuaikan makna sesuatu yang lain, apa yang sebenarnya harus ditambahkan 
+
+252
+00:14:17,828 --> 00:14:21,160
+pada penyematan sesuatu yang lain tersebut untuk merefleksikan hal ini?
+
+253
+00:14:22,140 --> 00:14:25,978
+Melihat kembali ke diagram kita, mari kita sisihkan semua kunci dan kueri, 
+
+254
+00:14:25,978 --> 00:14:29,662
+karena setelah Anda menghitung pola perhatian, Anda selesai dengan itu, 
+
+255
+00:14:29,662 --> 00:14:33,142
+maka Anda akan mengambil matriks nilai ini dan mengalikannya dengan 
+
+256
+00:14:33,142 --> 00:14:36,060
+setiap penyematan untuk menghasilkan urutan vektor nilai.
+
+257
+00:14:37,120 --> 00:14:41,120
+Anda mungkin berpikir bahwa vektor nilai ini terkait dengan kunci yang sesuai.
+
+258
+00:14:42,320 --> 00:14:45,927
+Untuk setiap kolom dalam diagram ini, Anda mengalikan setiap 
+
+259
+00:14:45,927 --> 00:14:49,240
+vektor nilai dengan bobot yang sesuai di kolom tersebut.
+
+260
+00:14:50,080 --> 00:14:53,018
+Sebagai contoh di sini, di bawah penyematan Creature, 
+
+261
+00:14:53,018 --> 00:14:56,989
+Anda akan menambahkan sebagian besar vektor nilai untuk Fluffy dan Blue, 
+
+262
+00:14:56,989 --> 00:15:01,560
+sementara semua vektor nilai lainnya akan dinolkan, atau setidaknya hampir dinolkan.
+
+263
+00:15:02,120 --> 00:15:05,557
+Dan akhirnya, cara untuk benar-benar memperbarui penyematan yang terkait 
+
+264
+00:15:05,557 --> 00:15:09,748
+dengan kolom ini, yang sebelumnya mengkodekan beberapa makna bebas konteks dari Makhluk, 
+
+265
+00:15:09,748 --> 00:15:12,808
+Anda menambahkan semua nilai yang diskalakan ulang ini di kolom, 
+
+266
+00:15:12,808 --> 00:15:16,811
+menghasilkan perubahan yang ingin Anda tambahkan, yang akan saya beri label delta-e, 
+
+267
+00:15:16,811 --> 00:15:19,260
+dan kemudian Anda menambahkannya ke penyematan asli.
+
+268
+00:15:19,680 --> 00:15:22,996
+Semoga yang dihasilkan adalah vektor yang lebih halus yang mengkodekan 
+
+269
+00:15:22,996 --> 00:15:26,500
+makna yang lebih kaya secara kontekstual, seperti makhluk biru yang lembut.
+
+270
+00:15:27,380 --> 00:15:30,723
+Dan tentu saja, Anda tidak hanya melakukan ini pada satu embedding, 
+
+271
+00:15:30,723 --> 00:15:34,608
+Anda menerapkan jumlah tertimbang yang sama pada semua kolom dalam gambar ini, 
+
+272
+00:15:34,608 --> 00:15:38,591
+menghasilkan urutan perubahan, menambahkan semua perubahan tersebut ke embedding 
+
+273
+00:15:38,591 --> 00:15:41,886
+yang sesuai, menghasilkan urutan penuh embedding yang lebih halus, 
+
+274
+00:15:41,886 --> 00:15:43,460
+yang muncul dari blok perhatian.
+
+275
+00:15:44,860 --> 00:15:46,913
+Dengan memperkecil ukuran, seluruh proses ini 
+
+276
+00:15:46,913 --> 00:15:49,100
+bisa Anda gambarkan sebagai satu pusat perhatian.
+
+277
+00:15:49,600 --> 00:15:54,243
+Seperti yang telah saya jelaskan sejauh ini, proses ini diparameterkan oleh tiga matriks 
+
+278
+00:15:54,243 --> 00:15:58,940
+yang berbeda, semuanya diisi dengan parameter yang dapat disetel, kunci, kueri, dan nilai.
+
+279
+00:15:59,500 --> 00:16:02,386
+Saya ingin mengambil waktu sejenak untuk melanjutkan apa yang telah kita 
+
+280
+00:16:02,386 --> 00:16:05,232
+mulai di bab sebelumnya, dengan pencatatan skor di mana kita menghitung 
+
+281
+00:16:05,232 --> 00:16:08,040
+jumlah total parameter model dengan menggunakan angka-angka dari GPT-3.
+
+282
+00:16:09,300 --> 00:16:12,998
+Matriks kunci dan kueri ini masing-masing memiliki 12.288 kolom, 
+
+283
+00:16:12,998 --> 00:16:16,071
+yang sesuai dengan dimensi penyematan, dan 128 baris, 
+
+284
+00:16:16,071 --> 00:16:19,600
+yang sesuai dengan dimensi ruang kueri kunci yang lebih kecil.
+
+285
+00:16:20,260 --> 00:16:24,220
+Hal ini memberi kita tambahan sekitar 1,5 juta parameter untuk setiap parameter.
+
+286
+00:16:24,860 --> 00:16:28,314
+Jika Anda melihat matriks nilai tersebut secara kontras, 
+
+287
+00:16:28,314 --> 00:16:33,647
+cara saya menggambarkannya sejauh ini akan menunjukkan bahwa ini adalah matriks persegi 
+
+288
+00:16:33,647 --> 00:16:38,798
+yang memiliki 12.288 kolom dan 12.288 baris, karena input dan outputnya berada dalam 
+
+289
+00:16:38,798 --> 00:16:40,920
+ruang penyisipan yang sangat besar.
+
+290
+00:16:41,500 --> 00:16:45,140
+Jika benar, itu berarti sekitar 150 juta parameter yang ditambahkan.
+
+291
+00:16:45,660 --> 00:16:47,300
+Dan untuk lebih jelasnya, Anda bisa melakukannya.
+
+292
+00:16:47,420 --> 00:16:51,740
+Anda dapat mencurahkan lebih banyak parameter pada peta nilai daripada kunci dan kueri.
+
+293
+00:16:52,060 --> 00:16:55,107
+Namun dalam praktiknya, akan jauh lebih efisien jika Anda membuatnya 
+
+294
+00:16:55,107 --> 00:16:57,977
+agar jumlah parameter yang dikhususkan untuk peta nilai ini sama 
+
+295
+00:16:57,977 --> 00:17:00,760
+dengan jumlah parameter yang dikhususkan untuk kunci dan kueri.
+
+296
+00:17:01,460 --> 00:17:03,579
+Hal ini khususnya relevan dalam pengaturan menjalankan 
+
+297
+00:17:03,579 --> 00:17:05,160
+beberapa kepala perhatian secara paralel.
+
+298
+00:17:06,240 --> 00:17:08,150
+Tampilannya adalah bahwa peta nilai difaktorkan 
+
+299
+00:17:08,150 --> 00:17:10,099
+sebagai produk dari dua matriks yang lebih kecil.
+
+300
+00:17:11,180 --> 00:17:14,167
+Secara konseptual, saya masih akan mendorong Anda untuk memikirkan 
+
+301
+00:17:14,167 --> 00:17:17,066
+tentang keseluruhan peta linear, yang memiliki input dan output, 
+
+302
+00:17:17,066 --> 00:17:19,474
+keduanya dalam ruang penyematan yang lebih besar ini, 
+
+303
+00:17:19,474 --> 00:17:22,506
+misalnya mengambil penyematan warna biru ke arah kebiruan yang akan 
+
+304
+00:17:22,506 --> 00:17:23,800
+Anda tambahkan ke kata benda.
+
+305
+00:17:27,040 --> 00:17:30,273
+Hanya saja, jumlah barisnya lebih sedikit, biasanya 
+
+306
+00:17:30,273 --> 00:17:32,760
+berukuran sama dengan ruang kueri kunci.
+
+307
+00:17:33,100 --> 00:17:35,867
+Artinya, Anda bisa menganggapnya sebagai pemetaan vektor 
+
+308
+00:17:35,867 --> 00:17:38,440
+penyematan yang besar ke ruang yang jauh lebih kecil.
+
+309
+00:17:39,040 --> 00:17:40,851
+Ini bukanlah penamaan konvensional, tetapi saya 
+
+310
+00:17:40,851 --> 00:17:42,700
+akan menyebutnya sebagai matriks penurunan nilai.
+
+311
+00:17:43,400 --> 00:17:47,144
+Matriks kedua memetakan dari ruang yang lebih kecil ini kembali ke ruang penyematan, 
+
+312
+00:17:47,144 --> 00:17:50,580
+menghasilkan vektor yang Anda gunakan untuk membuat pembaruan yang sebenarnya.
+
+313
+00:17:51,000 --> 00:17:54,740
+Saya akan menyebutnya sebagai matriks nilai naik, yang sekali lagi tidak konvensional.
+
+314
+00:17:55,160 --> 00:17:58,080
+Cara Anda melihat tulisan ini di sebagian besar koran, terlihat sedikit berbeda.
+
+315
+00:17:58,380 --> 00:17:59,520
+Saya akan membicarakannya sebentar lagi.
+
+316
+00:17:59,700 --> 00:18:01,107
+Menurut pendapat saya, hal ini cenderung membuat segala 
+
+317
+00:18:01,107 --> 00:18:02,540
+sesuatunya sedikit lebih membingungkan secara konseptual.
+
+318
+00:18:03,260 --> 00:18:05,441
+Untuk menggunakan jargon aljabar linier di sini, 
+
+319
+00:18:05,441 --> 00:18:09,004
+pada dasarnya yang kita lakukan adalah membatasi peta nilai keseluruhan menjadi 
+
+320
+00:18:09,004 --> 00:18:10,340
+transformasi peringkat rendah.
+
+321
+00:18:11,420 --> 00:18:15,431
+Kembali ke hitungan parameter, keempat matriks ini memiliki ukuran yang sama, 
+
+322
+00:18:15,431 --> 00:18:18,465
+dan dengan menjumlahkan semuanya, kita mendapatkan sekitar 
+
+323
+00:18:18,465 --> 00:18:20,780
+6,3 juta parameter untuk satu attention head.
+
+324
+00:18:22,040 --> 00:18:24,146
+Sebagai catatan tambahan, agar sedikit lebih akurat, 
+
+325
+00:18:24,146 --> 00:18:27,167
+semua yang dijelaskan sejauh ini adalah apa yang orang sebut sebagai kepala 
+
+326
+00:18:27,167 --> 00:18:30,307
+perhatian diri, untuk membedakannya dari variasi yang muncul dalam model lain, 
+
+327
+00:18:30,307 --> 00:18:31,500
+yang disebut perhatian silang.
+
+328
+00:18:32,300 --> 00:18:35,782
+Hal ini tidak relevan dengan contoh GPT kami, tetapi jika Anda penasaran, 
+
+329
+00:18:35,782 --> 00:18:39,452
+perhatian silang melibatkan model yang memproses dua jenis data yang berbeda, 
+
+330
+00:18:39,452 --> 00:18:43,452
+seperti teks dalam satu bahasa dan teks dalam bahasa lain yang merupakan bagian dari 
+
+331
+00:18:43,452 --> 00:18:47,546
+pembuatan terjemahan yang sedang berlangsung, atau mungkin input audio dari ucapan dan 
+
+332
+00:18:47,546 --> 00:18:49,240
+transkripsi yang sedang berlangsung.
+
+333
+00:18:50,400 --> 00:18:52,700
+Kepala yang saling silang terlihat hampir sama.
+
+334
+00:18:52,980 --> 00:18:55,238
+Satu-satunya perbedaan adalah bahwa peta kunci 
+
+335
+00:18:55,238 --> 00:18:57,400
+dan kueri bekerja pada set data yang berbeda.
+
+336
+00:18:57,840 --> 00:19:00,549
+Dalam sebuah model yang melakukan penerjemahan, misalnya, 
+
+337
+00:19:00,549 --> 00:19:04,380
+kunci mungkin berasal dari satu bahasa, sementara kueri berasal dari bahasa lain, 
+
+338
+00:19:04,380 --> 00:19:08,351
+dan pola perhatian dapat menggambarkan kata mana dari satu bahasa yang sesuai dengan 
+
+339
+00:19:08,351 --> 00:19:09,660
+kata mana dalam bahasa lain.
+
+340
+00:19:10,340 --> 00:19:12,659
+Dan dalam pengaturan ini biasanya tidak akan ada masking, 
+
+341
+00:19:12,659 --> 00:19:15,699
+karena tidak ada gagasan bahwa token yang lebih baru akan memengaruhi token 
+
+342
+00:19:15,699 --> 00:19:16,340
+yang lebih awal.
+
+343
+00:19:17,180 --> 00:19:19,245
+Namun, dengan tetap fokus pada perhatian diri, 
+
+344
+00:19:19,245 --> 00:19:22,410
+jika Anda memahami semuanya sejauh ini, dan jika Anda berhenti di sini, 
+
+345
+00:19:22,410 --> 00:19:25,180
+Anda akan mendapatkan esensi dari apa sebenarnya perhatian itu.
+
+346
+00:19:25,760 --> 00:19:28,626
+Yang tersisa bagi kita hanyalah menjabarkan pengertian 
+
+347
+00:19:28,626 --> 00:19:31,440
+tentang bagaimana Anda melakukan hal ini berkali-kali.
+
+348
+00:19:32,100 --> 00:19:35,860
+Dalam contoh utama kita, kita berfokus pada kata sifat yang memperbarui kata benda, 
+
+349
+00:19:35,860 --> 00:19:39,800
+tetapi tentu saja ada banyak cara yang berbeda yang dapat mempengaruhi arti sebuah kata.
+
+350
+00:19:40,360 --> 00:19:43,072
+Jika kata mereka menabrak didahului kata mobil, 
+
+351
+00:19:43,072 --> 00:19:46,520
+hal ini berimplikasi pada bentuk dan struktur mobil tersebut.
+
+352
+00:19:47,200 --> 00:19:49,280
+Dan banyak asosiasi yang mungkin kurang gramatikal.
+
+353
+00:19:49,760 --> 00:19:52,990
+Jika kata penyihir ada di bagian yang sama dengan Harry, 
+
+354
+00:19:52,990 --> 00:19:57,978
+ini menunjukkan bahwa ini mungkin merujuk pada Harry Potter, sedangkan jika kata Queen, 
+
+355
+00:19:57,978 --> 00:20:02,852
+Sussex, dan William ada di bagian itu, maka mungkin penyematan Harry harus diperbarui 
+
+356
+00:20:02,852 --> 00:20:04,440
+untuk merujuk pada pangeran.
+
+357
+00:20:05,040 --> 00:20:09,270
+Untuk setiap jenis pembaruan kontekstual yang berbeda yang dapat Anda bayangkan, 
+
+358
+00:20:09,270 --> 00:20:13,813
+parameter matriks kunci dan kueri ini akan berbeda untuk menangkap pola perhatian yang 
+
+359
+00:20:13,813 --> 00:20:17,938
+berbeda, dan parameter peta nilai kami akan berbeda berdasarkan apa yang harus 
+
+360
+00:20:17,938 --> 00:20:19,140
+ditambahkan ke sematan.
+
+361
+00:20:19,980 --> 00:20:23,353
+Dan sekali lagi, dalam praktiknya, perilaku sebenarnya dari peta-peta ini jauh lebih 
+
+362
+00:20:23,353 --> 00:20:26,568
+sulit untuk ditafsirkan, di mana bobot-bobot diatur untuk melakukan apa pun yang 
+
+363
+00:20:26,568 --> 00:20:30,140
+dibutuhkan oleh model untuk mencapai tujuan terbaiknya dalam memprediksi token berikutnya.
+
+364
+00:20:31,400 --> 00:20:35,132
+Seperti yang saya katakan sebelumnya, semua yang kami jelaskan adalah satu kepala 
+
+365
+00:20:35,132 --> 00:20:38,819
+perhatian, dan blok perhatian penuh di dalam transformator terdiri dari apa yang 
+
+366
+00:20:38,819 --> 00:20:42,278
+disebut perhatian multi-kepala, di mana Anda menjalankan banyak operasi ini 
+
+367
+00:20:42,278 --> 00:20:45,920
+secara paralel, masing-masing dengan kueri kunci dan peta nilainya yang berbeda.
+
+368
+00:20:47,420 --> 00:20:51,700
+GPT-3 misalnya menggunakan 96 kepala perhatian di dalam setiap blok.
+
+369
+00:20:52,020 --> 00:20:54,381
+Mengingat masing-masing sudah agak membingungkan, 
+
+370
+00:20:54,381 --> 00:20:56,460
+tentu saja banyak hal yang harus dipikirkan.
+
+371
+00:20:56,760 --> 00:21:00,910
+Untuk lebih jelasnya, ini berarti Anda memiliki 96 matriks kunci dan 
+
+372
+00:21:00,910 --> 00:21:05,000
+kueri yang berbeda yang menghasilkan 96 pola perhatian yang berbeda.
+
+373
+00:21:05,440 --> 00:21:08,868
+Kemudian setiap kepala memiliki matriks nilai yang berbeda 
+
+374
+00:21:08,868 --> 00:21:12,180
+yang digunakan untuk menghasilkan 96 urutan vektor nilai.
+
+375
+00:21:12,460 --> 00:21:14,858
+Semua ini ditambahkan bersama-sama dengan menggunakan 
+
+376
+00:21:14,858 --> 00:21:16,680
+pola perhatian yang sesuai sebagai bobot.
+
+377
+00:21:17,480 --> 00:21:20,833
+Artinya, untuk setiap posisi dalam konteks, setiap token, 
+
+378
+00:21:20,833 --> 00:21:25,285
+setiap kepala ini menghasilkan perubahan yang diusulkan untuk ditambahkan ke 
+
+379
+00:21:25,285 --> 00:21:27,020
+penyematan di posisi tersebut.
+
+380
+00:21:27,660 --> 00:21:31,328
+Jadi, yang Anda lakukan adalah menjumlahkan semua perubahan yang diusulkan, 
+
+381
+00:21:31,328 --> 00:21:35,480
+satu untuk setiap kepala, dan menambahkan hasilnya ke penyematan asli posisi tersebut.
+
+382
+00:21:36,660 --> 00:21:40,201
+Keseluruhan jumlah di sini akan menjadi satu irisan dari apa 
+
+383
+00:21:40,201 --> 00:21:43,569
+yang dihasilkan dari blok perhatian berkepala banyak ini, 
+
+384
+00:21:43,569 --> 00:21:47,460
+satu dari sekian banyak penyematan halus yang keluar dari ujungnya.
+
+385
+00:21:48,320 --> 00:21:50,211
+Sekali lagi, ini adalah hal yang perlu dipikirkan, 
+
+386
+00:21:50,211 --> 00:21:52,140
+jadi jangan khawatir jika perlu waktu untuk meresap.
+
+387
+00:21:52,380 --> 00:21:55,603
+Ide keseluruhannya adalah bahwa dengan menjalankan banyak kepala yang 
+
+388
+00:21:55,603 --> 00:21:58,458
+berbeda secara paralel, Anda memberikan model kapasitas untuk 
+
+389
+00:21:58,458 --> 00:22:01,820
+mempelajari berbagai cara yang berbeda dalam konteks yang mengubah makna.
+
+390
+00:22:03,700 --> 00:22:07,631
+Menarik penghitungan berjalan kami untuk jumlah parameter dengan 96 kepala, 
+
+391
+00:22:07,631 --> 00:22:11,045
+masing-masing termasuk variasinya sendiri dari empat matriks ini, 
+
+392
+00:22:11,045 --> 00:22:15,080
+setiap blok perhatian multi-kepala berakhir dengan sekitar 600 juta parameter.
+
+393
+00:22:16,420 --> 00:22:19,046
+Ada satu hal tambahan yang sedikit mengganggu yang harus saya 
+
+394
+00:22:19,046 --> 00:22:21,800
+sebutkan bagi Anda yang membaca lebih lanjut tentang transformer.
+
+395
+00:22:22,080 --> 00:22:25,672
+Anda ingat bagaimana saya mengatakan bahwa peta nilai diperhitungkan ke dalam dua 
+
+396
+00:22:25,672 --> 00:22:29,440
+matriks yang berbeda, yang saya beri label sebagai matriks nilai turun dan nilai naik.
+
+397
+00:22:29,960 --> 00:22:33,993
+Cara saya membingkai berbagai hal akan menyarankan agar Anda melihat sepasang 
+
+398
+00:22:33,993 --> 00:22:38,440
+matriks di dalam setiap kepala perhatian, dan Anda bisa menerapkannya dengan cara ini.
+
+399
+00:22:38,640 --> 00:22:39,920
+Itu akan menjadi desain yang valid.
+
+400
+00:22:40,260 --> 00:22:43,906
+Tetapi, cara Anda melihat hal ini tertulis di kertas dan cara penerapannya dalam praktik, 
+
+401
+00:22:43,906 --> 00:22:44,920
+terlihat sedikit berbeda.
+
+402
+00:22:45,340 --> 00:22:50,860
+Semua matriks nilai untuk setiap kepala ini tampak disatukan dalam satu matriks raksasa 
+
+403
+00:22:50,860 --> 00:22:56,380
+yang kita sebut matriks output, yang terkait dengan seluruh blok perhatian multi-kepala.
+
+404
+00:22:56,820 --> 00:23:00,684
+Dan ketika Anda melihat orang merujuk ke matriks nilai untuk kepala perhatian tertentu, 
+
+405
+00:23:00,684 --> 00:23:03,055
+mereka biasanya hanya merujuk ke langkah pertama ini, 
+
+406
+00:23:03,055 --> 00:23:06,393
+langkah yang saya beri label sebagai proyeksi nilai ke bawah ke dalam ruang 
+
+407
+00:23:06,393 --> 00:23:07,140
+yang lebih kecil.
+
+408
+00:23:08,340 --> 00:23:11,040
+Bagi Anda yang penasaran, saya telah meninggalkan catatan di layar mengenai hal ini.
+
+409
+00:23:11,260 --> 00:23:13,699
+Ini adalah salah satu detail yang berisiko mengalihkan perhatian 
+
+410
+00:23:13,699 --> 00:23:16,025
+dari poin konseptual utama, tetapi saya ingin menyebutkannya, 
+
+411
+00:23:16,025 --> 00:23:18,540
+supaya Anda tahu, jika Anda membaca tentang hal ini di sumber lain.
+
+412
+00:23:19,240 --> 00:23:22,614
+Mengesampingkan semua nuansa teknis, dalam pratinjau dari bab sebelumnya, 
+
+413
+00:23:22,614 --> 00:23:25,805
+kita telah melihat bagaimana data yang mengalir melalui transformator 
+
+414
+00:23:25,805 --> 00:23:28,040
+tidak hanya mengalir melalui satu blok perhatian.
+
+415
+00:23:28,640 --> 00:23:32,700
+Untuk satu hal, ini juga melalui operasi lain yang disebut multi-layer perceptron.
+
+416
+00:23:33,120 --> 00:23:34,880
+Kita akan membahas lebih lanjut tentang hal itu di bab berikutnya.
+
+417
+00:23:35,180 --> 00:23:39,320
+Dan kemudian berulang kali melalui banyak salinan dari kedua operasi ini.
+
+418
+00:23:39,980 --> 00:23:43,441
+Artinya, setelah sebuah kata menyerap sebagian dari konteksnya, 
+
+419
+00:23:43,441 --> 00:23:47,011
+ada lebih banyak kesempatan untuk penyematan yang lebih bernuansa 
+
+420
+00:23:47,011 --> 00:23:50,040
+ini dipengaruhi oleh lingkungannya yang lebih bernuansa.
+
+421
+00:23:50,940 --> 00:23:55,122
+Semakin jauh Anda masuk ke dalam jaringan, dengan setiap penyematan mengambil lebih 
+
+422
+00:23:55,122 --> 00:23:58,507
+banyak makna dari semua penyematan lainnya, yang semakin bernuansa, 
+
+423
+00:23:58,507 --> 00:24:02,590
+harapannya adalah bahwa ada kapasitas untuk menyandikan ide yang lebih tinggi dan 
+
+424
+00:24:02,590 --> 00:24:06,722
+lebih abstrak tentang input yang diberikan di luar sekadar deskriptor dan struktur 
+
+425
+00:24:06,722 --> 00:24:07,320
+tata bahasa.
+
+426
+00:24:07,880 --> 00:24:11,276
+Hal-hal seperti sentimen dan nada, dan apakah itu sebuah puisi dan 
+
+427
+00:24:11,276 --> 00:24:15,130
+kebenaran ilmiah apa yang mendasari karya tersebut, dan hal-hal seperti itu.
+
+428
+00:24:16,700 --> 00:24:21,623
+Kembali lagi ke pencatatan skor kami, GPT-3 mencakup 96 lapisan yang berbeda, 
+
+429
+00:24:21,623 --> 00:24:26,862
+sehingga jumlah total kueri kunci dan parameter nilai dikalikan dengan 96 lainnya, 
+
+430
+00:24:26,862 --> 00:24:31,217
+yang membuat jumlah totalnya menjadi kurang dari 58 miliar parameter 
+
+431
+00:24:31,217 --> 00:24:34,500
+yang berbeda yang dikhususkan untuk semua perhatian.
+
+432
+00:24:34,980 --> 00:24:37,667
+Jumlahnya memang banyak, tetapi hanya sekitar 
+
+433
+00:24:37,667 --> 00:24:40,940
+sepertiga dari total 175 miliar yang ada dalam jaringan.
+
+434
+00:24:41,520 --> 00:24:43,897
+Jadi, meskipun perhatian mendapat semua perhatian, 
+
+435
+00:24:43,897 --> 00:24:47,207
+namun sebagian besar parameter berasal dari blok yang berada di antara 
+
+436
+00:24:47,207 --> 00:24:48,140
+langkah-langkah ini.
+
+437
+00:24:48,560 --> 00:24:51,023
+Di bab berikutnya, Anda dan saya akan membahas lebih banyak tentang 
+
+438
+00:24:51,023 --> 00:24:53,560
+blok-blok lainnya dan juga lebih banyak lagi tentang proses pelatihan.
+
+439
+00:24:54,120 --> 00:24:58,714
+Bagian terbesar dari keberhasilan mekanisme perhatian bukanlah jenis perilaku tertentu 
+
+440
+00:24:58,714 --> 00:25:02,887
+yang dimungkinkan, tetapi fakta bahwa mekanisme ini sangat dapat diparalelkan, 
+
+441
+00:25:02,887 --> 00:25:07,534
+yang berarti Anda dapat menjalankan sejumlah besar komputasi dalam waktu singkat dengan 
+
+442
+00:25:07,534 --> 00:25:08,380
+menggunakan GPU.
+
+443
+00:25:09,460 --> 00:25:12,251
+Mengingat bahwa salah satu pelajaran besar tentang deep learning dalam 
+
+444
+00:25:12,251 --> 00:25:15,201
+satu atau dua dekade terakhir adalah bahwa skala saja tampaknya memberikan 
+
+445
+00:25:15,201 --> 00:25:17,638
+peningkatan kualitatif yang sangat besar dalam kinerja model, 
+
+446
+00:25:17,638 --> 00:25:21,060
+ada keuntungan besar untuk arsitektur paralel yang memungkinkan Anda melakukan hal ini.
+
+447
+00:25:22,040 --> 00:25:23,748
+Jika Anda ingin mempelajari lebih lanjut tentang hal ini, 
+
+448
+00:25:23,748 --> 00:25:25,340
+saya telah meninggalkan banyak tautan dalam deskripsi.
+
+449
+00:25:25,920 --> 00:25:27,902
+Secara khusus, apa pun yang diproduksi oleh Andrej 
+
+450
+00:25:27,902 --> 00:25:30,040
+Karpathy atau Chris Ola cenderung merupakan emas murni.
+
+451
+00:25:30,560 --> 00:25:33,428
+Dalam video ini, saya hanya ingin memberikan perhatian pada bentuknya yang sekarang, 
+
+452
+00:25:33,428 --> 00:25:36,364
+tetapi jika Anda ingin tahu lebih banyak tentang sejarah bagaimana kami sampai di sini 
+
+453
+00:25:36,364 --> 00:25:39,334
+dan bagaimana Anda dapat menemukan kembali ide ini untuk diri Anda sendiri, teman saya, 
+
+454
+00:25:39,334 --> 00:25:42,236
+Vivek, baru saja mengunggah beberapa video yang memberikan lebih banyak lagi motivasi 
+
+455
+00:25:42,236 --> 00:25:42,540
+tersebut.
+
+456
+00:25:43,120 --> 00:25:45,870
+Selain itu, Britt Cruz dari saluran The Art of the Problem memiliki 
+
+457
+00:25:45,870 --> 00:25:48,460
+video yang sangat bagus tentang sejarah model bahasa yang besar.
+
+458
+00:26:04,960 --> 00:26:09,200
+Terima kasih.
+

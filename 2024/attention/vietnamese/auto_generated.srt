@@ -1,0 +1,1668 @@
+1
+00:00:00,000 --> 00:00:04,019
+Trong chương trước, bạn và tôi đã bắt đầu tìm hiểu hoạt động bên trong của máy biến áp.
+
+2
+00:00:04,560 --> 00:00:07,277
+Đây là một trong những phần công nghệ quan trọng bên trong các mô 
+
+3
+00:00:07,277 --> 00:00:10,200
+hình ngôn ngữ lớn và rất nhiều công cụ khác trong làn sóng AI hiện đại.
+
+4
+00:00:10,980 --> 00:00:14,500
+Nó lần đầu tiên xuất hiện trong một bài báo nổi tiếng năm 2017 có 
+
+5
+00:00:14,500 --> 00:00:17,486
+tên Chú ý là tất cả những gì bạn cần. Trong chương này, 
+
+6
+00:00:17,486 --> 00:00:21,700
+bạn và tôi sẽ tìm hiểu cơ chế chú ý này là gì, hình dung cách nó xử lý dữ liệu.
+
+7
+00:00:26,140 --> 00:00:29,540
+Tóm tắt nhanh, đây là bối cảnh quan trọng mà tôi muốn bạn ghi nhớ.
+
+8
+00:00:30,000 --> 00:00:32,930
+Mục tiêu của mô hình mà bạn và tôi đang nghiên cứu là tiếp 
+
+9
+00:00:32,930 --> 00:00:36,060
+nhận một đoạn văn bản và dự đoán từ nào sẽ xuất hiện tiếp theo.
+
+10
+00:00:36,860 --> 00:00:41,138
+Văn bản đầu vào được chia thành các phần nhỏ mà chúng ta gọi là mã thông báo và đây 
+
+11
+00:00:41,138 --> 00:00:45,670
+thường là các từ hoặc đoạn từ nhưng để giúp bạn và tôi dễ dàng suy nghĩ hơn về các ví dụ 
+
+12
+00:00:45,670 --> 00:00:50,152
+trong video này, hãy đơn giản hóa bằng cách giả vờ rằng các mã thông báo là luôn chỉ là 
+
+13
+00:00:50,152 --> 00:00:50,560
+lời nói.
+
+14
+00:00:51,480 --> 00:00:56,105
+Bước đầu tiên trong máy biến áp là liên kết từng mã thông báo với một vectơ chiều cao, 
+
+15
+00:00:56,105 --> 00:00:57,700
+cái mà chúng tôi gọi là nhúng.
+
+16
+00:00:57,700 --> 00:01:02,375
+Ý tưởng quan trọng nhất mà tôi muốn bạn ghi nhớ là làm thế nào các hướng trong không gian 
+
+17
+00:01:02,375 --> 00:01:07,000
+chiều cao của tất cả các phần nhúng có thể có này có thể tương ứng với ý nghĩa ngữ nghĩa.
+
+18
+00:01:07,680 --> 00:01:11,683
+Trong chương trước chúng ta đã thấy một ví dụ về cách hướng có thể tương ứng với 
+
+19
+00:01:11,683 --> 00:01:15,636
+giới tính, theo nghĩa là việc thêm một bước nhất định vào không gian này có thể 
+
+20
+00:01:15,636 --> 00:01:19,640
+đưa bạn từ việc nhúng danh từ nam tính sang việc nhúng danh từ nữ tính tương ứng.
+
+21
+00:01:20,160 --> 00:01:23,825
+Đó chỉ là một ví dụ mà bạn có thể tưởng tượng có bao nhiêu hướng khác trong không 
+
+22
+00:01:23,825 --> 00:01:27,580
+gian nhiều chiều này có thể tương ứng với nhiều khía cạnh khác của nghĩa của một từ.
+
+23
+00:01:28,800 --> 00:01:33,959
+Mục đích của máy biến áp là điều chỉnh dần dần các phần nhúng này để chúng không chỉ 
+
+24
+00:01:33,959 --> 00:01:39,180
+mã hóa một từ riêng lẻ mà thay vào đó chúng mang ý nghĩa ngữ cảnh phong phú hơn nhiều.
+
+25
+00:01:40,140 --> 00:01:43,021
+Tôi phải nói trước rằng rất nhiều người thấy cơ chế chú ý, 
+
+26
+00:01:43,021 --> 00:01:45,756
+bộ phận quan trọng này trong máy biến áp, rất khó hiểu, 
+
+27
+00:01:45,756 --> 00:01:48,980
+vì vậy đừng lo lắng nếu phải mất một thời gian để mọi thứ hiểu rõ.
+
+28
+00:01:49,440 --> 00:01:52,768
+Tôi nghĩ rằng trước khi chúng ta đi sâu vào chi tiết tính toán 
+
+29
+00:01:52,768 --> 00:01:56,043
+và tất cả các phép nhân ma trận, chúng ta nên suy nghĩ về một 
+
+30
+00:01:56,043 --> 00:01:59,160
+vài ví dụ về loại hành vi mà chúng ta muốn chú ý kích hoạt.
+
+31
+00:02:00,140 --> 00:02:03,117
+Hãy xem xét các cụm từ nốt ruồi thực sự của Mỹ, 
+
+32
+00:02:03,117 --> 00:02:06,220
+một mol carbon dioxide và lấy sinh thiết nốt ruồi.
+
+33
+00:02:06,700 --> 00:02:10,095
+Bạn và tôi đều biết rằng từ nốt ruồi có ý nghĩa khác nhau trong mỗi từ này, 
+
+34
+00:02:10,095 --> 00:02:10,900
+tùy theo ngữ cảnh.
+
+35
+00:02:11,360 --> 00:02:15,114
+Nhưng sau bước đầu tiên của biến áp, bước chia nhỏ văn bản và liên kết 
+
+36
+00:02:15,114 --> 00:02:18,816
+từng mã thông báo với một vectơ, vectơ liên kết với nốt ruồi sẽ giống 
+
+37
+00:02:18,816 --> 00:02:22,465
+nhau trong tất cả các trường hợp này, vì việc nhúng mã thông báo ban 
+
+38
+00:02:22,465 --> 00:02:26,220
+đầu này thực sự là một bảng tra cứu không có sự tham khảo đến bối cảnh.
+
+39
+00:02:26,620 --> 00:02:29,800
+Chỉ ở bước tiếp theo của máy biến áp, các phần nhúng 
+
+40
+00:02:29,800 --> 00:02:33,100
+xung quanh mới có cơ hội truyền thông tin vào phần này.
+
+41
+00:02:33,820 --> 00:02:38,315
+Hình ảnh mà bạn có thể nghĩ đến là có nhiều hướng riêng biệt trong không gian 
+
+42
+00:02:38,315 --> 00:02:42,752
+nhúng này mã hóa nhiều ý nghĩa riêng biệt của từ nốt ruồi và khối chú ý được 
+
+43
+00:02:42,752 --> 00:02:47,247
+đào tạo bài bản sẽ tính toán những gì bạn cần thêm vào phần nhúng chung để di 
+
+44
+00:02:47,247 --> 00:02:51,800
+chuyển nó đến một trong những hướng cụ thể này, như một chức năng của bối cảnh.
+
+45
+00:02:53,300 --> 00:02:56,180
+Lấy một ví dụ khác, hãy xem xét việc nhúng tháp từ.
+
+46
+00:02:57,060 --> 00:03:01,055
+Đây có lẽ là một hướng rất chung chung, không cụ thể nào đó trong không gian, 
+
+47
+00:03:01,055 --> 00:03:03,720
+được liên kết với rất nhiều danh từ lớn và cao khác.
+
+48
+00:03:04,020 --> 00:03:09,144
+Nếu từ này ngay trước Eiffel, bạn có thể tưởng tượng muốn có cơ chế cập nhật 
+
+49
+00:03:09,144 --> 00:03:13,270
+vectơ này để nó chỉ theo hướng mã hóa cụ thể hơn tháp Eiffel, 
+
+50
+00:03:13,270 --> 00:03:19,060
+có thể tương quan với các vectơ liên quan đến Paris và Pháp và những thứ làm bằng thép.
+
+51
+00:03:19,920 --> 00:03:23,620
+Nếu trước nó cũng là từ thu nhỏ, thì vectơ phải được cập nhật 
+
+52
+00:03:23,620 --> 00:03:27,500
+hơn nữa để nó không còn tương quan với những thứ to lớn, cao lớn.
+
+53
+00:03:29,480 --> 00:03:32,277
+Tổng quát hơn là chỉ tinh chỉnh nghĩa của một từ, 
+
+54
+00:03:32,277 --> 00:03:36,865
+khối chú ý cho phép mô hình di chuyển thông tin được mã hóa từ phần này sang phần 
+
+55
+00:03:36,865 --> 00:03:41,509
+nhúng khác, có thể là những thông tin ở khá xa và có khả năng chứa thông tin phong 
+
+56
+00:03:41,509 --> 00:03:43,300
+phú hơn nhiều so với chỉ một từ.
+
+57
+00:03:43,300 --> 00:03:48,692
+Những gì chúng ta đã thấy trong chương trước là sau khi tất cả các vectơ truyền qua mạng, 
+
+58
+00:03:48,692 --> 00:03:53,726
+bao gồm nhiều khối chú ý khác nhau, phép tính mà bạn thực hiện để tạo ra dự đoán về 
+
+59
+00:03:53,726 --> 00:03:58,280
+mã thông báo tiếp theo hoàn toàn là một hàm của vectơ cuối cùng trong chuỗi.
+
+60
+00:03:59,100 --> 00:04:03,478
+Ví dụ, hãy tưởng tượng rằng văn bản bạn nhập gần như là toàn bộ một cuốn tiểu 
+
+61
+00:04:03,478 --> 00:04:07,800
+thuyết bí ẩn, cho đến điểm gần cuối, nội dung này có nội dung là kẻ sát nhân.
+
+62
+00:04:08,400 --> 00:04:13,169
+Nếu mô hình dự đoán chính xác từ tiếp theo, thì vectơ cuối cùng trong chuỗi, 
+
+63
+00:04:13,169 --> 00:04:18,000
+bắt đầu tồn tại chỉ bằng việc nhúng từ đó, sẽ phải được tất cả các khối chú ý 
+
+64
+00:04:18,000 --> 00:04:21,406
+cập nhật để thể hiện nhiều hơn bất kỳ cá nhân nào. từ, 
+
+65
+00:04:21,406 --> 00:04:26,361
+bằng cách nào đó mã hóa tất cả thông tin từ cửa sổ ngữ cảnh đầy đủ có liên quan 
+
+66
+00:04:26,361 --> 00:04:28,220
+đến việc dự đoán từ tiếp theo.
+
+67
+00:04:29,500 --> 00:04:32,580
+Tuy nhiên, để thực hiện các bước tính toán, hãy lấy một ví dụ đơn giản hơn nhiều.
+
+68
+00:04:32,980 --> 00:04:35,042
+Hãy tưởng tượng rằng dữ liệu đầu vào bao gồm cụm từ, 
+
+69
+00:04:35,042 --> 00:04:37,960
+một sinh vật có lông màu xanh lam đang lang thang trong khu rừng xanh tươi.
+
+70
+00:04:38,460 --> 00:04:42,560
+Và hiện tại, giả sử rằng loại cập nhật duy nhất mà chúng ta quan tâm 
+
+71
+00:04:42,560 --> 00:04:46,780
+là việc các tính từ điều chỉnh ý nghĩa của danh từ tương ứng của chúng.
+
+72
+00:04:47,000 --> 00:04:50,564
+Điều tôi sắp mô tả là cái mà chúng ta gọi là một đầu chú ý duy nhất, 
+
+73
+00:04:50,564 --> 00:04:54,800
+và sau này chúng ta sẽ thấy khối chú ý bao gồm nhiều đầu khác nhau chạy song song 
+
+74
+00:04:54,800 --> 00:04:55,420
+như thế nào.
+
+75
+00:04:56,140 --> 00:04:59,646
+Một lần nữa, phần nhúng ban đầu cho mỗi từ là một vectơ chiều 
+
+76
+00:04:59,646 --> 00:05:03,380
+cao nào đó chỉ mã hóa nghĩa của từ cụ thể đó mà không có ngữ cảnh.
+
+77
+00:05:04,000 --> 00:05:05,220
+Trên thực tế, điều đó không hoàn toàn đúng.
+
+78
+00:05:05,380 --> 00:05:07,640
+Họ cũng mã hóa vị trí của từ.
+
+79
+00:05:07,980 --> 00:05:11,178
+Còn rất nhiều điều để nói về cách các vị trí được mã hóa, 
+
+80
+00:05:11,178 --> 00:05:14,708
+nhưng ngay bây giờ, tất cả những gì bạn cần biết là các mục của 
+
+81
+00:05:14,708 --> 00:05:18,900
+vectơ này đủ để cho bạn biết từ đó là gì và nó tồn tại ở đâu trong ngữ cảnh.
+
+82
+00:05:19,500 --> 00:05:21,660
+Hãy tiếp tục và biểu thị các phần nhúng này bằng chữ e.
+
+83
+00:05:22,420 --> 00:05:26,143
+Mục tiêu là để một loạt các phép tính tạo ra một tập hợp các phần 
+
+84
+00:05:26,143 --> 00:05:29,866
+nhúng mới được tinh chỉnh, chẳng hạn như những phần tương ứng với 
+
+85
+00:05:29,866 --> 00:05:33,420
+danh từ đã tiếp thu ý nghĩa từ các tính từ tương ứng của chúng.
+
+86
+00:05:33,900 --> 00:05:37,245
+Và khi chơi trò chơi deep learning, chúng tôi muốn hầu hết các tính toán liên 
+
+87
+00:05:37,245 --> 00:05:40,634
+quan trông giống như các tích vectơ ma trận, trong đó các ma trận chứa đầy các 
+
+88
+00:05:40,634 --> 00:05:43,980
+trọng số có thể điều chỉnh được, những thứ mà mô hình sẽ học dựa trên dữ liệu.
+
+89
+00:05:44,660 --> 00:05:48,506
+Để cho rõ ràng, tôi đang tạo ra ví dụ về tính từ cập nhật danh từ chỉ để minh họa 
+
+90
+00:05:48,506 --> 00:05:52,260
+loại hành vi mà bạn có thể tưởng tượng rằng một người đang chú ý đang thực hiện.
+
+91
+00:05:52,860 --> 00:05:55,747
+Cũng như rất nhiều hoạt động học sâu, hành vi thực sự khó phân 
+
+92
+00:05:55,747 --> 00:05:58,498
+tích hơn nhiều vì nó dựa trên việc tinh chỉnh và điều chỉnh 
+
+93
+00:05:58,498 --> 00:06:01,340
+một số lượng lớn các tham số để giảm thiểu một số hàm chi phí.
+
+94
+00:06:01,680 --> 00:06:05,578
+Chỉ là khi chúng ta xem qua tất cả các ma trận khác nhau chứa đầy các tham 
+
+95
+00:06:05,578 --> 00:06:09,425
+số liên quan đến quá trình này, tôi nghĩ sẽ thực sự hữu ích nếu có một ví 
+
+96
+00:06:09,425 --> 00:06:13,220
+dụ tưởng tượng về điều gì đó mà nó có thể làm để giúp mọi thứ cụ thể hơn.
+
+97
+00:06:14,140 --> 00:06:17,942
+Ở bước đầu tiên của quá trình này, bạn có thể tưởng tượng mỗi danh từ, 
+
+98
+00:06:17,942 --> 00:06:21,960
+giống như sinh vật, đặt câu hỏi, này, có tính từ nào ở trước mặt tôi không?
+
+99
+00:06:22,160 --> 00:06:26,009
+Và đối với những từ có lông tơ và xanh lam, mỗi người có thể trả lời là ừ, 
+
+100
+00:06:26,009 --> 00:06:27,960
+tôi là một tính từ và tôi ở vị trí đó.
+
+101
+00:06:28,960 --> 00:06:32,530
+Câu hỏi đó bằng cách nào đó được mã hóa dưới dạng một vectơ khác, 
+
+102
+00:06:32,530 --> 00:06:36,100
+một danh sách các số khác mà chúng tôi gọi là truy vấn cho từ này.
+
+103
+00:06:36,980 --> 00:06:41,033
+Vectơ truy vấn này mặc dù có kích thước nhỏ hơn nhiều so với vectơ nhúng, 
+
+104
+00:06:41,033 --> 00:06:42,020
+chẳng hạn như 128.
+
+105
+00:06:42,940 --> 00:06:46,237
+Việc tính toán truy vấn này giống như lấy một ma trận 
+
+106
+00:06:46,237 --> 00:06:49,780
+nhất định mà tôi sẽ gắn nhãn wq và nhân nó với phép nhúng.
+
+107
+00:06:50,960 --> 00:06:54,252
+Nén mọi thứ lại một chút, hãy viết vectơ truy vấn đó là q, 
+
+108
+00:06:54,252 --> 00:06:59,163
+và sau đó bất cứ khi nào bạn thấy tôi đặt một ma trận bên cạnh một mũi tên như thế này, 
+
+109
+00:06:59,163 --> 00:07:03,572
+nó nhằm biểu thị rằng việc nhân ma trận này với vectơ ở đầu mũi tên sẽ cho bạn 
+
+110
+00:07:03,572 --> 00:07:04,800
+vectơ tại đầu mũi tên.
+
+111
+00:07:05,860 --> 00:07:10,187
+Trong trường hợp này, bạn nhân ma trận này với tất cả các phần nhúng trong ngữ cảnh, 
+
+112
+00:07:10,187 --> 00:07:12,580
+tạo ra một vectơ truy vấn cho mỗi mã thông báo.
+
+113
+00:07:13,740 --> 00:07:16,086
+Các mục của ma trận này là các tham số của mô hình, 
+
+114
+00:07:16,086 --> 00:07:19,063
+có nghĩa là hành vi thực sự được học từ dữ liệu và trong thực tế, 
+
+115
+00:07:19,063 --> 00:07:22,266
+những gì ma trận này thực hiện trong một đầu chú ý cụ thể là một thách 
+
+116
+00:07:22,266 --> 00:07:23,440
+thức để phân tích cú pháp.
+
+117
+00:07:23,900 --> 00:07:27,379
+Nhưng vì lợi ích của chúng ta, hãy tưởng tượng một ví dụ mà chúng ta có thể hy 
+
+118
+00:07:27,379 --> 00:07:30,815
+vọng rằng nó sẽ học được, chúng ta sẽ giả sử rằng ma trận truy vấn này ánh xạ 
+
+119
+00:07:30,815 --> 00:07:34,251
+các phần nhúng của danh từ theo các hướng nhất định trong không gian truy vấn 
+
+120
+00:07:34,251 --> 00:07:38,040
+nhỏ hơn này bằng cách nào đó mã hóa khái niệm tìm kiếm tính từ ở các vị trí trước đó .
+
+121
+00:07:38,780 --> 00:07:41,440
+Về những gì nó làm với các phần nhúng khác, ai biết được?
+
+122
+00:07:41,720 --> 00:07:44,340
+Có thể nó đồng thời cố gắng hoàn thành một số mục tiêu khác với những mục tiêu đó.
+
+123
+00:07:44,540 --> 00:07:47,160
+Hiện tại, chúng tôi đang tập trung vào các danh từ.
+
+124
+00:07:47,280 --> 00:07:52,302
+Đồng thời, liên kết với điều này là ma trận thứ hai được gọi là ma trận khóa, 
+
+125
+00:07:52,302 --> 00:07:54,620
+mà bạn cũng nhân với mỗi phần nhúng.
+
+126
+00:07:55,280 --> 00:07:58,500
+Điều này tạo ra chuỗi vectơ thứ hai mà chúng ta gọi là khóa.
+
+127
+00:07:59,420 --> 00:08:03,140
+Về mặt khái niệm, bạn muốn coi các khóa có khả năng trả lời các truy vấn.
+
+128
+00:08:03,840 --> 00:08:07,620
+Ma trận khóa này cũng chứa đầy các tham số có thể điều chỉnh được và giống như ma 
+
+129
+00:08:07,620 --> 00:08:11,400
+trận truy vấn, nó ánh xạ các vectơ nhúng vào cùng một không gian chiều nhỏ hơn đó.
+
+130
+00:08:12,200 --> 00:08:17,020
+Bạn coi các khóa giống như các truy vấn bất cứ khi nào chúng liên kết chặt chẽ với nhau.
+
+131
+00:08:17,460 --> 00:08:22,072
+Trong ví dụ của chúng tôi, bạn sẽ tưởng tượng rằng ma trận khóa ánh xạ các tính từ 
+
+132
+00:08:22,072 --> 00:08:26,740
+như bông và xanh lam tới các vectơ được liên kết chặt chẽ với truy vấn do từ tạo ra.
+
+133
+00:08:27,200 --> 00:08:30,514
+Để đo lường mức độ phù hợp của mỗi khóa với mỗi truy vấn, 
+
+134
+00:08:30,514 --> 00:08:34,000
+bạn tính toán tích chấm giữa mỗi cặp khóa-truy vấn có thể có.
+
+135
+00:08:34,480 --> 00:08:36,861
+Tôi muốn hình dung một lưới chứa đầy các dấu chấm, 
+
+136
+00:08:36,861 --> 00:08:40,364
+trong đó các dấu chấm lớn hơn tương ứng với các sản phẩm dấu chấm lớn hơn, 
+
+137
+00:08:40,364 --> 00:08:42,559
+những vị trí mà các khóa và truy vấn căn chỉnh.
+
+138
+00:08:43,280 --> 00:08:48,534
+Đối với ví dụ về danh từ tính từ của chúng ta, nó sẽ trông giống thế này hơn một chút, 
+
+139
+00:08:48,534 --> 00:08:53,427
+trong đó nếu các khóa được tạo ra bởi Fluff và Blue thực sự phù hợp chặt chẽ với 
+
+140
+00:08:53,427 --> 00:08:58,320
+truy vấn do sinh vật tạo ra, thì tích chấm ở hai điểm này sẽ là một số dương lớn.
+
+141
+00:08:59,100 --> 00:09:02,192
+Trong biệt ngữ, những người học máy sẽ nói rằng điều này có nghĩa là 
+
+142
+00:09:02,192 --> 00:09:05,420
+việc nhúng lông tơ và màu xanh lam có liên quan đến việc nhúng sinh vật.
+
+143
+00:09:06,040 --> 00:09:11,385
+Ngược lại, tích số chấm giữa khóa của một số từ khác như the và truy vấn dành cho 
+
+144
+00:09:11,385 --> 00:09:16,600
+sinh vật sẽ là một giá trị nhỏ hoặc âm nào đó phản ánh không liên quan đến nhau.
+
+145
+00:09:17,700 --> 00:09:21,254
+Vì vậy, chúng ta có lưới các giá trị này có thể là bất kỳ số 
+
+146
+00:09:21,254 --> 00:09:24,750
+thực nào từ âm vô cực đến vô cùng, cho chúng ta điểm về mức 
+
+147
+00:09:24,750 --> 00:09:28,480
+độ liên quan của mỗi từ với việc cập nhật nghĩa của mọi từ khác.
+
+148
+00:09:29,200 --> 00:09:32,366
+Cách chúng tôi sắp sử dụng những điểm số này là lấy một tổng có 
+
+149
+00:09:32,366 --> 00:09:35,780
+trọng số nhất định dọc theo mỗi cột, được tính theo mức độ liên quan.
+
+150
+00:09:36,520 --> 00:09:40,587
+Vì vậy, thay vì có các giá trị nằm trong phạm vi từ vô cực âm đến vô cùng, 
+
+151
+00:09:40,587 --> 00:09:44,329
+điều chúng ta muốn là các số trong các cột này nằm trong khoảng từ 0 
+
+152
+00:09:44,329 --> 00:09:48,180
+đến 1 và mỗi cột có tổng bằng 1, như thể chúng là một phân bố xác suất.
+
+153
+00:09:49,280 --> 00:09:52,220
+Nếu bạn đến từ chương trước, bạn sẽ biết chúng tôi cần phải làm gì.
+
+154
+00:09:52,620 --> 00:09:57,300
+Chúng tôi tính toán softmax dọc theo mỗi cột này để chuẩn hóa các giá trị.
+
+155
+00:10:00,060 --> 00:10:03,513
+Trong hình ảnh của chúng tôi, sau khi bạn áp dụng softmax cho tất cả các cột, 
+
+156
+00:10:03,513 --> 00:10:05,860
+chúng tôi sẽ điền vào lưới các giá trị chuẩn hóa này.
+
+157
+00:10:06,780 --> 00:10:10,733
+Tại thời điểm này, bạn có thể an toàn khi coi mỗi cột đều có trọng số tùy 
+
+158
+00:10:10,733 --> 00:10:14,580
+theo mức độ liên quan của từ bên trái với giá trị tương ứng ở trên cùng.
+
+159
+00:10:15,080 --> 00:10:16,840
+Chúng tôi gọi lưới này là một mẫu chú ý.
+
+160
+00:10:18,080 --> 00:10:20,280
+Bây giờ, nếu bạn nhìn vào tờ giấy biến thế ban đầu, 
+
+161
+00:10:20,280 --> 00:10:22,820
+có một cách rất nhỏ gọn để họ viết tất cả những điều này ra.
+
+162
+00:10:23,880 --> 00:10:28,816
+Ở đây, các biến q và k lần lượt biểu thị toàn bộ mảng truy vấn và vectơ khóa, 
+
+163
+00:10:28,816 --> 00:10:34,323
+những vectơ nhỏ mà bạn nhận được bằng cách nhân các phần nhúng với truy vấn và ma trận 
+
+164
+00:10:34,323 --> 00:10:34,640
+khóa.
+
+165
+00:10:35,160 --> 00:10:38,950
+Biểu thức ở phần tử số này là một cách thực sự nhỏ gọn để biểu diễn 
+
+166
+00:10:38,950 --> 00:10:43,020
+lưới của tất cả các tích số chấm có thể có giữa các cặp khóa và truy vấn.
+
+167
+00:10:44,000 --> 00:10:47,809
+Một chi tiết kỹ thuật nhỏ mà tôi chưa đề cập đến là để ổn định về số, 
+
+168
+00:10:47,809 --> 00:10:51,020
+sẽ rất hữu ích nếu chia tất cả các giá trị này cho căn bậc 
+
+169
+00:10:51,020 --> 00:10:53,960
+hai của thứ nguyên trong không gian truy vấn chính đó.
+
+170
+00:10:54,480 --> 00:11:00,800
+Sau đó, softmax này bao quanh biểu thức đầy đủ được hiểu là áp dụng theo từng cột.
+
+171
+00:11:01,640 --> 00:11:04,700
+Về thuật ngữ v đó, chúng ta sẽ nói về nó chỉ sau một giây.
+
+172
+00:11:05,020 --> 00:11:08,460
+Trước đó, có một chi tiết kỹ thuật khác mà cho đến nay tôi đã bỏ qua.
+
+173
+00:11:09,040 --> 00:11:13,574
+Trong quá trình huấn luyện, khi bạn chạy mô hình này trên một ví dụ văn bản nhất định và 
+
+174
+00:11:13,574 --> 00:11:18,160
+tất cả các trọng số được điều chỉnh và điều chỉnh một chút để khen thưởng hoặc trừng phạt 
+
+175
+00:11:18,160 --> 00:11:22,338
+nó dựa trên xác suất nó gán cho từ đúng tiếp theo trong đoạn văn cao đến mức nào. 
+
+176
+00:11:22,338 --> 00:11:26,872
+hóa ra lại làm cho toàn bộ quá trình đào tạo hiệu quả hơn rất nhiều nếu bạn đồng thời dự 
+
+177
+00:11:26,872 --> 00:11:31,356
+đoán mọi mã thông báo tiếp theo có thể có sau mỗi chuỗi mã thông báo ban đầu trong đoạn 
+
+178
+00:11:31,356 --> 00:11:31,560
+này.
+
+179
+00:11:31,940 --> 00:11:34,715
+Ví dụ: với cụm từ mà chúng ta đang tập trung vào, 
+
+180
+00:11:34,715 --> 00:11:39,100
+nó cũng có thể dự đoán những từ nào theo sau sinh vật và những từ nào theo sau.
+
+181
+00:11:39,940 --> 00:11:42,728
+Điều này thực sự rất hay, bởi vì nó có nghĩa là nếu không thì một 
+
+182
+00:11:42,728 --> 00:11:45,560
+ví dụ huấn luyện đơn lẻ sẽ hoạt động hiệu quả như nhiều ví dụ khác.
+
+183
+00:11:46,100 --> 00:11:49,350
+Vì mục đích của mô hình chú ý của chúng tôi, điều đó có nghĩa là bạn 
+
+184
+00:11:49,350 --> 00:11:52,836
+không bao giờ muốn cho phép những từ sau ảnh hưởng đến những từ trước đó, 
+
+185
+00:11:52,836 --> 00:11:56,040
+vì nếu không chúng có thể đưa ra câu trả lời cho những gì tiếp theo.
+
+186
+00:11:56,560 --> 00:11:59,454
+Điều này có nghĩa là chúng tôi muốn tất cả các điểm này ở đây, 
+
+187
+00:11:59,454 --> 00:12:03,037
+những điểm đại diện cho các mã thông báo sau ảnh hưởng đến các điểm trước đó, 
+
+188
+00:12:03,037 --> 00:12:04,600
+bằng cách nào đó buộc phải bằng 0.
+
+189
+00:12:05,920 --> 00:12:08,416
+Điều đơn giản nhất mà bạn có thể nghĩ đến là đặt chúng bằng 0, 
+
+190
+00:12:08,416 --> 00:12:11,230
+nhưng nếu bạn làm như vậy thì các cột sẽ không cộng lại thành một nữa, 
+
+191
+00:12:11,230 --> 00:12:12,420
+chúng sẽ không được chuẩn hóa.
+
+192
+00:12:13,120 --> 00:12:17,099
+Vì vậy, thay vào đó, cách phổ biến để thực hiện việc này là trước khi áp dụng softmax, 
+
+193
+00:12:17,099 --> 00:12:19,020
+bạn đặt tất cả các mục đó thành âm vô cực.
+
+194
+00:12:19,680 --> 00:12:21,934
+Nếu bạn làm điều đó, thì sau khi áp dụng softmax, 
+
+195
+00:12:21,934 --> 00:12:25,180
+tất cả những thứ đó sẽ chuyển thành 0, nhưng các cột vẫn được chuẩn hóa.
+
+196
+00:12:26,000 --> 00:12:27,540
+Quá trình này được gọi là mặt nạ.
+
+197
+00:12:27,540 --> 00:12:31,384
+Có những phiên bản chú ý mà bạn không áp dụng nó, nhưng trong ví dụ GPT của chúng tôi, 
+
+198
+00:12:31,384 --> 00:12:34,787
+mặc dù điều này phù hợp hơn trong giai đoạn đào tạo so với việc chạy nó dưới 
+
+199
+00:12:34,787 --> 00:12:38,189
+dạng chatbot hoặc thứ gì đó tương tự, bạn vẫn luôn áp dụng việc che giấu này 
+
+200
+00:12:38,189 --> 00:12:41,460
+để ngăn chặn các mã thông báo sau ảnh hưởng đến các mã thông báo trước đó.
+
+201
+00:12:42,480 --> 00:12:46,018
+Một thực tế khác đáng để suy ngẫm về mô hình chú ý này là kích 
+
+202
+00:12:46,018 --> 00:12:49,500
+thước của nó bằng bình phương kích thước bối cảnh như thế nào.
+
+203
+00:12:49,900 --> 00:12:52,776
+Vì vậy, đây là lý do tại sao kích thước ngữ cảnh có thể là một nút cổ chai thực sự lớn 
+
+204
+00:12:52,776 --> 00:12:55,620
+đối với các mô hình ngôn ngữ lớn và việc mở rộng quy mô ngữ cảnh là điều không hề nhỏ.
+
+205
+00:12:56,300 --> 00:12:59,271
+Như bạn tưởng tượng, được thúc đẩy bởi mong muốn có các cửa sổ ngữ 
+
+206
+00:12:59,271 --> 00:13:02,287
+cảnh ngày càng lớn hơn, những năm gần đây đã chứng kiến một số biến 
+
+207
+00:13:02,287 --> 00:13:05,303
+thể của cơ chế chú ý nhằm làm cho ngữ cảnh có khả năng mở rộng hơn, 
+
+208
+00:13:05,303 --> 00:13:08,320
+nhưng ngay tại đây, bạn và tôi đang tập trung vào những điều cơ bản.
+
+209
+00:13:10,560 --> 00:13:13,067
+Được rồi, tuyệt vời, việc tính toán mẫu này cho phép 
+
+210
+00:13:13,067 --> 00:13:15,480
+mô hình suy ra từ nào có liên quan đến từ nào khác.
+
+211
+00:13:16,020 --> 00:13:19,355
+Bây giờ bạn thực sự cần cập nhật phần nhúng, cho phép các từ 
+
+212
+00:13:19,355 --> 00:13:22,800
+truyền thông tin đến bất kỳ từ nào khác có liên quan đến chúng.
+
+213
+00:13:22,800 --> 00:13:26,593
+Ví dụ: bạn muốn việc nhúng Fluffy bằng cách nào đó gây ra một thay 
+
+214
+00:13:26,593 --> 00:13:30,613
+đổi đối với Sinh vật khiến nó di chuyển nó đến một phần khác của không 
+
+215
+00:13:30,613 --> 00:13:34,520
+gian nhúng 12.000 chiều này để mã hóa cụ thể hơn một sinh vật Fluffy.
+
+216
+00:13:35,460 --> 00:13:38,023
+Điều tôi sắp làm ở đây trước tiên là chỉ cho bạn cách đơn 
+
+217
+00:13:38,023 --> 00:13:40,763
+giản nhất mà bạn có thể làm điều này, mặc dù có một chút cách 
+
+218
+00:13:40,763 --> 00:13:43,460
+để điều này được sửa đổi trong bối cảnh có sự chú ý đa chiều.
+
+219
+00:13:44,080 --> 00:13:46,848
+Cách đơn giản nhất này là sử dụng ma trận thứ ba, 
+
+220
+00:13:46,848 --> 00:13:51,498
+cái mà chúng tôi gọi là ma trận giá trị, mà bạn nhân với việc nhúng từ đầu tiên đó, 
+
+221
+00:13:51,498 --> 00:13:52,440
+ví dụ như Fluffy.
+
+222
+00:13:53,300 --> 00:13:57,634
+Kết quả của việc này là cái mà bạn gọi là vectơ giá trị và đây là thứ bạn thêm vào phần 
+
+223
+00:13:57,634 --> 00:14:01,920
+nhúng của từ thứ hai, trong trường hợp này là thứ bạn thêm vào phần nhúng của Sinh vật.
+
+224
+00:14:02,600 --> 00:14:04,845
+Vì vậy, vectơ giá trị này tồn tại trong cùng một 
+
+225
+00:14:04,845 --> 00:14:07,000
+không gian có chiều rất cao như các phần nhúng.
+
+226
+00:14:07,460 --> 00:14:12,255
+Khi bạn nhân ma trận giá trị này với việc nhúng một từ, bạn có thể nghĩ nó như nói, 
+
+227
+00:14:12,255 --> 00:14:16,593
+nếu từ này có liên quan đến việc điều chỉnh ý nghĩa của một cái gì đó khác, 
+
+228
+00:14:16,593 --> 00:14:21,160
+thì chính xác thì cần thêm gì vào việc nhúng cái gì đó khác để phản ánh cái này?
+
+229
+00:14:22,140 --> 00:14:26,469
+Nhìn lại sơ đồ của chúng ta, hãy đặt tất cả các khóa và truy vấn sang một bên, 
+
+230
+00:14:26,469 --> 00:14:30,415
+vì sau khi bạn tính toán mẫu chú ý mà bạn đã hoàn thành với các mẫu đó, 
+
+231
+00:14:30,415 --> 00:14:35,073
+bạn sẽ lấy ma trận giá trị này và nhân nó với từng phần nhúng đó để tạo ra một chuỗi 
+
+232
+00:14:35,073 --> 00:14:36,060
+các vectơ giá trị.
+
+233
+00:14:37,120 --> 00:14:41,120
+Bạn có thể nghĩ các vectơ giá trị này được liên kết với các khóa tương ứng.
+
+234
+00:14:42,320 --> 00:14:45,672
+Đối với mỗi cột trong sơ đồ này, bạn nhân từng 
+
+235
+00:14:45,672 --> 00:14:49,240
+vectơ giá trị với trọng số tương ứng trong cột đó.
+
+236
+00:14:50,080 --> 00:14:55,819
+Ví dụ ở đây, khi nhúng Sinh vật, bạn sẽ thêm tỷ lệ lớn các vectơ giá trị cho Fluffy 
+
+237
+00:14:55,819 --> 00:15:01,560
+và Blue, trong khi tất cả các vectơ giá trị khác bị loại bỏ hoặc ít nhất gần bằng 0.
+
+238
+00:15:02,120 --> 00:15:06,133
+Và cuối cùng, cách cập nhật thực sự phần nhúng được liên kết với cột này, 
+
+239
+00:15:06,133 --> 00:15:09,550
+trước đó mã hóa một số ý nghĩa không có ngữ cảnh của Sinh vật, 
+
+240
+00:15:09,550 --> 00:15:12,751
+bạn cộng tất cả các giá trị đã thay đổi tỷ lệ này vào cột, 
+
+241
+00:15:12,751 --> 00:15:16,981
+tạo ra một thay đổi mà bạn muốn thêm, đó là tôi&#39; Tôi sẽ gắn nhãn delta-e, 
+
+242
+00:15:16,981 --> 00:15:19,260
+sau đó bạn thêm nó vào phần nhúng ban đầu.
+
+243
+00:15:19,680 --> 00:15:23,112
+Hy vọng rằng kết quả là một vectơ tinh tế hơn sẽ mã hóa ý nghĩa phong phú hơn 
+
+244
+00:15:23,112 --> 00:15:26,500
+về mặt ngữ cảnh, chẳng hạn như ý nghĩa của một sinh vật có lông màu xanh lam.
+
+245
+00:15:27,380 --> 00:15:30,492
+Và tất nhiên, bạn không chỉ làm điều này với một lần nhúng, 
+
+246
+00:15:30,492 --> 00:15:34,641
+bạn áp dụng tổng có trọng số giống nhau trên tất cả các cột trong hình ảnh này, 
+
+247
+00:15:34,641 --> 00:15:38,480
+tạo ra một chuỗi các thay đổi, thêm tất cả những thay đổi đó vào các phần 
+
+248
+00:15:38,480 --> 00:15:42,474
+nhúng tương ứng, tạo ra một chuỗi đầy đủ các các phần nhúng tinh tế hơn xuất 
+
+249
+00:15:42,474 --> 00:15:43,460
+hiện từ khối chú ý.
+
+250
+00:15:44,860 --> 00:15:49,100
+Thu nhỏ lại, toàn bộ quá trình này là những gì bạn có thể mô tả như một sự chú ý duy nhất.
+
+251
+00:15:49,600 --> 00:15:54,731
+Như tôi đã mô tả cho đến nay, quy trình này được tham số hóa bằng ba ma trận riêng biệt, 
+
+252
+00:15:54,731 --> 00:15:58,940
+tất cả đều chứa các tham số có thể điều chỉnh, khóa, truy vấn và giá trị.
+
+253
+00:15:59,500 --> 00:16:03,385
+Tôi muốn dành chút thời gian để tiếp tục những gì chúng ta đã bắt đầu ở chương trước, 
+
+254
+00:16:03,385 --> 00:16:06,277
+với tính năng ghi điểm trong đó chúng ta đếm tổng số tham số mô 
+
+255
+00:16:06,277 --> 00:16:08,040
+hình bằng cách sử dụng các số từ GPT-3.
+
+256
+00:16:09,300 --> 00:16:15,395
+Mỗi ma trận khóa và truy vấn này có 12.288 cột, khớp với thứ nguyên nhúng và 128 hàng, 
+
+257
+00:16:15,395 --> 00:16:19,600
+khớp với thứ nguyên của không gian truy vấn khóa nhỏ hơn đó.
+
+258
+00:16:20,260 --> 00:16:24,220
+Điều này mang lại cho chúng tôi thêm 1,5 triệu thông số cho mỗi tham số.
+
+259
+00:16:24,860 --> 00:16:28,719
+Nếu bạn nhìn vào ma trận giá trị đó một cách ngược lại, 
+
+260
+00:16:28,719 --> 00:16:33,958
+cách tôi mô tả mọi thứ cho đến nay sẽ gợi ý rằng đó là một ma trận vuông có 
+
+261
+00:16:33,958 --> 00:16:39,334
+12.288 cột và 12.288 hàng, vì cả đầu vào và đầu ra của nó đều nằm trong không 
+
+262
+00:16:39,334 --> 00:16:40,920
+gian nhúng rất lớn này.
+
+263
+00:16:41,500 --> 00:16:45,140
+Nếu đúng, điều đó có nghĩa là có khoảng 150 triệu tham số được thêm vào.
+
+264
+00:16:45,660 --> 00:16:47,300
+Và để rõ ràng, bạn có thể làm điều đó.
+
+265
+00:16:47,420 --> 00:16:51,740
+Bạn có thể dành nhiều tham số cho bản đồ giá trị hơn là cho khóa và truy vấn.
+
+266
+00:16:52,060 --> 00:16:56,333
+Nhưng trong thực tế, sẽ hiệu quả hơn nhiều nếu thay vào đó bạn thực hiện sao cho số 
+
+267
+00:16:56,333 --> 00:17:00,760
+lượng tham số dành cho bản đồ giá trị này giống với số lượng dành cho khóa và truy vấn.
+
+268
+00:17:01,460 --> 00:17:05,160
+Điều này đặc biệt có liên quan trong cài đặt chạy song song nhiều đầu chú ý.
+
+269
+00:17:06,240 --> 00:17:10,099
+Giao diện này có nghĩa là bản đồ giá trị được tính thành tích của hai ma trận nhỏ hơn.
+
+270
+00:17:11,180 --> 00:17:15,618
+Về mặt khái niệm, tôi vẫn khuyến khích bạn suy nghĩ về bản đồ tuyến tính tổng thể, 
+
+271
+00:17:15,618 --> 00:17:19,468
+một bản đồ có đầu vào và đầu ra, cả trong không gian nhúng lớn hơn này, 
+
+272
+00:17:19,468 --> 00:17:23,800
+chẳng hạn như đưa màu xanh lam vào hướng màu xanh lam mà bạn sẽ thêm vào danh từ.
+
+273
+00:17:27,040 --> 00:17:29,900
+Chỉ là nó có số lượng hàng nhỏ hơn, thường có 
+
+274
+00:17:29,900 --> 00:17:32,760
+cùng kích thước với không gian truy vấn chính.
+
+275
+00:17:33,100 --> 00:17:35,642
+Điều này có nghĩa là bạn có thể coi nó như ánh xạ 
+
+276
+00:17:35,642 --> 00:17:38,440
+các vectơ nhúng lớn xuống một không gian nhỏ hơn nhiều.
+
+277
+00:17:39,040 --> 00:17:42,700
+Đây không phải là cách đặt tên thông thường, nhưng tôi sẽ gọi đây là ma trận giảm giá trị.
+
+278
+00:17:43,400 --> 00:17:47,219
+Ma trận thứ hai ánh xạ từ không gian nhỏ hơn này trở lại không gian nhúng, 
+
+279
+00:17:47,219 --> 00:17:50,580
+tạo ra các vectơ mà bạn sử dụng để thực hiện các cập nhật thực tế.
+
+280
+00:17:51,000 --> 00:17:52,930
+Tôi sẽ gọi ma trận này là ma trận tăng giá trị, 
+
+281
+00:17:52,930 --> 00:17:54,740
+điều này một lần nữa không mang tính quy ước.
+
+282
+00:17:55,160 --> 00:17:58,080
+Cách bạn thấy điều này được viết trên hầu hết các tờ báo có vẻ hơi khác một chút.
+
+283
+00:17:58,380 --> 00:17:59,520
+Tôi sẽ nói về nó trong một phút.
+
+284
+00:17:59,700 --> 00:18:02,540
+Theo tôi, nó có xu hướng khiến mọi thứ trở nên khó hiểu hơn một chút về mặt khái niệm.
+
+285
+00:18:03,260 --> 00:18:06,708
+Để đưa vào thuật ngữ đại số tuyến tính ở đây, về cơ bản những gì chúng tôi 
+
+286
+00:18:06,708 --> 00:18:10,340
+đang làm là hạn chế bản đồ giá trị tổng thể là một phép biến đổi thứ hạng thấp.
+
+287
+00:18:11,420 --> 00:18:16,218
+Quay trở lại số lượng tham số, cả bốn ma trận này đều có cùng kích thước và cộng 
+
+288
+00:18:16,218 --> 00:18:20,780
+tất cả chúng lại chúng ta có được khoảng 6,3 triệu tham số cho một đầu chú ý.
+
+289
+00:18:22,040 --> 00:18:25,208
+Xin lưu ý nhanh, chính xác hơn một chút, mọi thứ được mô tả cho đến 
+
+290
+00:18:25,208 --> 00:18:27,492
+nay đều là thứ mà mọi người gọi là đầu tự chú ý, 
+
+291
+00:18:27,492 --> 00:18:31,500
+để phân biệt với một biến thể xuất hiện trong các mô hình khác được gọi là chú ý chéo.
+
+292
+00:18:32,300 --> 00:18:36,081
+Điều này không liên quan đến ví dụ GPT của chúng tôi, nhưng nếu bạn tò mò, 
+
+293
+00:18:36,081 --> 00:18:40,064
+thì sự chú ý chéo liên quan đến các mô hình xử lý hai loại dữ liệu riêng biệt, 
+
+294
+00:18:40,064 --> 00:18:44,299
+như văn bản bằng một ngôn ngữ và văn bản bằng một ngôn ngữ khác là một phần của quá 
+
+295
+00:18:44,299 --> 00:18:48,635
+trình tạo bản dịch đang diễn ra, hoặc có thể là đầu vào âm thanh của lời nói và phiên 
+
+296
+00:18:48,635 --> 00:18:49,240
+âm liên tục.
+
+297
+00:18:50,400 --> 00:18:52,700
+Một cái đầu gây chú ý chéo trông gần như giống hệt nhau.
+
+298
+00:18:52,980 --> 00:18:55,121
+Sự khác biệt duy nhất là bản đồ khóa và bản đồ 
+
+299
+00:18:55,121 --> 00:18:57,400
+truy vấn hoạt động trên các tập dữ liệu khác nhau.
+
+300
+00:18:57,840 --> 00:19:02,029
+Ví dụ: trong một mô hình thực hiện dịch thuật, các khóa có thể đến từ một ngôn ngữ, 
+
+301
+00:19:02,029 --> 00:19:06,019
+trong khi các truy vấn đến từ một ngôn ngữ khác và mẫu chú ý có thể mô tả những 
+
+302
+00:19:06,019 --> 00:19:09,660
+từ nào trong một ngôn ngữ tương ứng với những từ nào trong ngôn ngữ khác.
+
+303
+00:19:10,340 --> 00:19:12,259
+Và trong cài đặt này thường sẽ không có mặt nạ, 
+
+304
+00:19:12,259 --> 00:19:15,300
+vì thực sự không có bất kỳ khái niệm nào về việc mã thông báo sau ảnh hưởng 
+
+305
+00:19:15,300 --> 00:19:16,340
+đến mã thông báo trước đó.
+
+306
+00:19:17,180 --> 00:19:19,701
+Tuy nhiên, hãy tập trung vào sự chú ý của bản thân, 
+
+307
+00:19:19,701 --> 00:19:22,610
+nếu bạn hiểu mọi thứ cho đến nay và nếu bạn dừng lại ở đây, 
+
+308
+00:19:22,610 --> 00:19:25,180
+bạn sẽ hiểu được bản chất của sự chú ý thực sự là gì.
+
+309
+00:19:25,760 --> 00:19:28,484
+Tất cả những gì thực sự còn lại đối với chúng tôi là trình 
+
+310
+00:19:28,484 --> 00:19:31,440
+bày ý nghĩa của việc bạn thực hiện việc này nhiều lần khác nhau.
+
+311
+00:19:32,100 --> 00:19:35,760
+Trong ví dụ trung tâm của chúng tôi, chúng tôi tập trung vào tính từ cập nhật danh từ, 
+
+312
+00:19:35,760 --> 00:19:38,243
+nhưng tất nhiên có rất nhiều cách khác nhau mà ngữ cảnh có 
+
+313
+00:19:38,243 --> 00:19:39,800
+thể ảnh hưởng đến ý nghĩa của một từ.
+
+314
+00:19:40,360 --> 00:19:43,506
+Nếu từ họ đâm đứng trước từ ô tô thì nó có hàm 
+
+315
+00:19:43,506 --> 00:19:46,520
+ý về hình dáng và cấu trúc của chiếc ô tô đó.
+
+316
+00:19:47,200 --> 00:19:49,280
+Và rất nhiều liên tưởng có thể ít ngữ pháp hơn.
+
+317
+00:19:49,760 --> 00:19:53,219
+Nếu từ phù thủy xuất hiện ở bất kỳ đâu trong cùng đoạn văn với Harry, 
+
+318
+00:19:53,219 --> 00:19:57,322
+điều đó gợi ý rằng điều này có thể đề cập đến Harry Potter, trong khi thay vào đó, 
+
+319
+00:19:57,322 --> 00:20:00,535
+nếu các từ Queen, Sussex và William xuất hiện trong đoạn văn đó, 
+
+320
+00:20:00,535 --> 00:20:04,440
+thì có lẽ việc đưa Harry vào thay vào đó nên được cập nhật. để ám chỉ hoàng tử.
+
+321
+00:20:05,040 --> 00:20:08,889
+Đối với mỗi loại cập nhật theo ngữ cảnh khác nhau mà bạn có thể tưởng tượng, 
+
+322
+00:20:08,889 --> 00:20:12,340
+các tham số của các ma trận khóa và truy vấn này sẽ khác nhau để thu 
+
+323
+00:20:12,340 --> 00:20:15,940
+hút các mẫu chú ý khác nhau và các tham số của bản đồ giá trị của chúng 
+
+324
+00:20:15,940 --> 00:20:19,140
+tôi sẽ khác nhau dựa trên những gì cần được thêm vào phần nhúng.
+
+325
+00:20:19,980 --> 00:20:23,293
+Và một lần nữa, trên thực tế, hành vi thực sự của những bản đồ này khó diễn 
+
+326
+00:20:23,293 --> 00:20:26,564
+giải hơn nhiều, trong đó các trọng số được đặt để làm bất cứ điều gì mà mô 
+
+327
+00:20:26,564 --> 00:20:30,140
+hình cần chúng làm để hoàn thành tốt nhất mục tiêu dự đoán mã thông báo tiếp theo.
+
+328
+00:20:31,400 --> 00:20:34,977
+Như tôi đã nói trước đây, mọi thứ chúng tôi mô tả là một khối chú ý 
+
+329
+00:20:34,977 --> 00:20:38,554
+duy nhất và một khối chú ý đầy đủ bên trong máy biến áp bao gồm cái 
+
+330
+00:20:38,554 --> 00:20:42,605
+được gọi là chú ý nhiều đầu, trong đó bạn chạy song song nhiều thao tác này, 
+
+331
+00:20:42,605 --> 00:20:45,920
+mỗi thao tác có một truy vấn khóa riêng biệt và bản đồ giá trị.
+
+332
+00:20:47,420 --> 00:20:51,700
+Ví dụ: GPT-3 sử dụng 96 đầu chú ý bên trong mỗi khối.
+
+333
+00:20:52,020 --> 00:20:54,334
+Vì mỗi câu chuyện đều hơi khó hiểu nên chắc chắn 
+
+334
+00:20:54,334 --> 00:20:56,460
+bạn sẽ phải ghi nhớ rất nhiều điều trong đầu.
+
+335
+00:20:56,760 --> 00:21:00,948
+Nói một cách rõ ràng, điều này có nghĩa là bạn có 96 ma trận 
+
+336
+00:21:00,948 --> 00:21:05,000
+khóa và truy vấn riêng biệt tạo ra 96 mẫu chú ý riêng biệt.
+
+337
+00:21:05,440 --> 00:21:08,950
+Sau đó, mỗi đầu có các ma trận giá trị riêng biệt 
+
+338
+00:21:08,950 --> 00:21:12,180
+được sử dụng để tạo ra 96 chuỗi vectơ giá trị.
+
+339
+00:21:12,460 --> 00:21:14,548
+Tất cả những thứ này được cộng lại với nhau bằng 
+
+340
+00:21:14,548 --> 00:21:16,680
+cách sử dụng các mẫu chú ý tương ứng làm trọng số.
+
+341
+00:21:17,480 --> 00:21:21,811
+Điều này có nghĩa là đối với mỗi vị trí trong ngữ cảnh, mỗi mã thông báo, 
+
+342
+00:21:21,811 --> 00:21:27,020
+mỗi đầu trong số này tạo ra một thay đổi được đề xuất để thêm vào phần nhúng ở vị trí đó.
+
+343
+00:21:27,660 --> 00:21:31,730
+Vì vậy, những gì bạn làm là tổng hợp tất cả những thay đổi được đề xuất đó lại với nhau, 
+
+344
+00:21:31,730 --> 00:21:35,480
+một thay đổi cho mỗi đầu và bạn thêm kết quả vào phần nhúng ban đầu của vị trí đó.
+
+345
+00:21:36,660 --> 00:21:42,187
+Toàn bộ số tiền này ở đây sẽ là một phần của những gì được xuất ra từ khối chú ý nhiều 
+
+346
+00:21:42,187 --> 00:21:47,460
+đầu này, một trong những phần nhúng được tinh chỉnh xuất hiện ở đầu bên kia của nó.
+
+347
+00:21:48,320 --> 00:21:50,152
+Một lần nữa, điều này có rất nhiều điều cần phải suy nghĩ, 
+
+348
+00:21:50,152 --> 00:21:52,140
+vì vậy đừng lo lắng nếu bạn phải mất chút thời gian để tìm hiểu.
+
+349
+00:21:52,380 --> 00:21:56,331
+Ý tưởng tổng thể là bằng cách chạy song song nhiều phần đầu riêng biệt, 
+
+350
+00:21:56,331 --> 00:22:01,161
+bạn sẽ cung cấp cho mô hình khả năng tìm hiểu nhiều cách riêng biệt khiến ngữ cảnh thay 
+
+351
+00:22:01,161 --> 00:22:01,820
+đổi ý nghĩa.
+
+352
+00:22:03,700 --> 00:22:07,631
+Tăng tổng số tham số đang chạy của chúng tôi với 96 đầu, 
+
+353
+00:22:07,631 --> 00:22:11,217
+mỗi đầu bao gồm biến thể riêng của bốn ma trận này, 
+
+354
+00:22:11,217 --> 00:22:15,080
+mỗi khối chú ý nhiều đầu sẽ có khoảng 600 triệu tham số.
+
+355
+00:22:16,420 --> 00:22:19,023
+Có thêm một điều hơi khó chịu mà tôi thực sự nên đề cập đến 
+
+356
+00:22:19,023 --> 00:22:21,800
+cho bất kỳ ai trong số các bạn tiếp tục đọc thêm về máy biến áp.
+
+357
+00:22:22,080 --> 00:22:26,320
+Bạn còn nhớ tôi đã nói rằng bản đồ giá trị được tính thành hai ma trận riêng biệt này, 
+
+358
+00:22:26,320 --> 00:22:29,440
+mà tôi gắn nhãn là ma trận giá trị giảm và ma trận giá trị tăng.
+
+359
+00:22:29,960 --> 00:22:34,200
+Cách tôi đóng khung mọi thứ sẽ gợi ý rằng bạn nên nhìn thấy cặp ma trận này 
+
+360
+00:22:34,200 --> 00:22:38,440
+bên trong mỗi đầu chú ý và bạn hoàn toàn có thể triển khai nó theo cách này.
+
+361
+00:22:38,640 --> 00:22:39,920
+Đó sẽ là một thiết kế hợp lệ.
+
+362
+00:22:40,260 --> 00:22:42,668
+Nhưng cách bạn nhìn thấy điều này được viết trên báo và cách 
+
+363
+00:22:42,668 --> 00:22:44,920
+nó được triển khai trong thực tế có vẻ hơi khác một chút.
+
+364
+00:22:45,340 --> 00:22:48,981
+Tất cả các ma trận tăng giá trị này cho mỗi đầu xuất hiện được 
+
+365
+00:22:48,981 --> 00:22:53,663
+ghim lại với nhau trong một ma trận khổng lồ mà chúng tôi gọi là ma trận đầu ra, 
+
+366
+00:22:53,663 --> 00:22:56,380
+được liên kết với toàn bộ khối chú ý nhiều đầu.
+
+367
+00:22:56,820 --> 00:23:01,115
+Và khi bạn thấy mọi người đề cập đến ma trận giá trị cho một đầu chú ý nhất định, 
+
+368
+00:23:01,115 --> 00:23:04,415
+họ thường chỉ đề cập đến bước đầu tiên này, bước mà tôi đã gắn 
+
+369
+00:23:04,415 --> 00:23:07,140
+nhãn là phép chiếu giá trị xuống không gian nhỏ hơn.
+
+370
+00:23:08,340 --> 00:23:11,040
+Đối với những ai tò mò, tôi đã để lại ghi chú trên màn hình về điều đó.
+
+371
+00:23:11,260 --> 00:23:14,945
+Đó là một trong những chi tiết có nguy cơ làm xao lãng các điểm khái niệm chính, 
+
+372
+00:23:14,945 --> 00:23:18,540
+nhưng tôi muốn nêu ra chỉ để bạn biết nếu bạn đọc về điều này ở các nguồn khác.
+
+373
+00:23:19,240 --> 00:23:21,487
+Đặt tất cả các sắc thái kỹ thuật sang một bên, 
+
+374
+00:23:21,487 --> 00:23:24,405
+trong phần xem trước của chương trước, chúng ta đã thấy cách 
+
+375
+00:23:24,405 --> 00:23:28,040
+dữ liệu truyền qua máy biến áp không chỉ truyền qua một khối chú ý duy nhất.
+
+376
+00:23:28,640 --> 00:23:32,700
+Thứ nhất, nó cũng trải qua các hoạt động khác được gọi là perceptron nhiều lớp.
+
+377
+00:23:33,120 --> 00:23:34,880
+Chúng ta sẽ nói nhiều hơn về những điều đó trong chương tiếp theo.
+
+378
+00:23:35,180 --> 00:23:39,320
+Và sau đó nó liên tục trải qua rất nhiều bản sao của cả hai hoạt động này.
+
+379
+00:23:39,980 --> 00:23:43,878
+Điều này có nghĩa là sau khi một từ nhất định thấm nhuần một số ngữ cảnh của nó, 
+
+380
+00:23:43,878 --> 00:23:47,103
+sẽ có nhiều cơ hội hơn để việc nhúng nhiều sắc thái hơn này bị ảnh 
+
+381
+00:23:47,103 --> 00:23:50,040
+hưởng bởi môi trường xung quanh có nhiều sắc thái hơn của nó.
+
+382
+00:23:50,940 --> 00:23:55,075
+Bạn càng đi sâu vào mạng, với mỗi phần nhúng ngày càng có nhiều ý nghĩa hơn 
+
+383
+00:23:55,075 --> 00:23:59,374
+từ tất cả các phần nhúng khác, bản thân chúng ngày càng có nhiều sắc thái hơn, 
+
+384
+00:23:59,374 --> 00:24:03,456
+hy vọng là có khả năng mã hóa các ý tưởng cấp cao hơn và trừu tượng hơn về 
+
+385
+00:24:03,456 --> 00:24:07,320
+một nội dung nhất định đầu vào không chỉ là mô tả và cấu trúc ngữ pháp.
+
+386
+00:24:07,880 --> 00:24:11,505
+Những thứ như tình cảm và giọng điệu, liệu đó có phải là một bài thơ hay không và 
+
+387
+00:24:11,505 --> 00:24:15,130
+những sự thật khoa học cơ bản nào có liên quan đến tác phẩm và những thứ tương tự.
+
+388
+00:24:16,700 --> 00:24:20,969
+Quay lại một lần nữa với quy trình ghi điểm của chúng tôi, 
+
+389
+00:24:20,969 --> 00:24:26,974
+GPT-3 bao gồm 96 lớp riêng biệt, do đó, tổng số thông số giá trị và truy vấn chính 
+
+390
+00:24:26,974 --> 00:24:32,980
+được nhân với 96 khác, đưa tổng số lên chỉ dưới 58 tỷ thông số riêng biệt dành cho 
+
+391
+00:24:32,980 --> 00:24:34,500
+tất cả các đầu chú ý.
+
+392
+00:24:34,980 --> 00:24:37,874
+Đó là điều chắc chắn rất nhiều, nhưng nó chỉ chiếm 
+
+393
+00:24:37,874 --> 00:24:40,940
+khoảng một phần ba trong tổng số 175 tỷ có trong mạng.
+
+394
+00:24:41,520 --> 00:24:44,711
+Vì vậy, mặc dù mọi sự chú ý đều được chú ý nhưng phần 
+
+395
+00:24:44,711 --> 00:24:48,140
+lớn các tham số đều đến từ các khối nằm giữa các bước này.
+
+396
+00:24:48,560 --> 00:24:51,123
+Trong chương tiếp theo, bạn và tôi sẽ nói nhiều hơn về những 
+
+397
+00:24:51,123 --> 00:24:53,560
+khối khác đó cũng như nhiều điều hơn về quá trình đào tạo.
+
+398
+00:24:54,120 --> 00:24:57,659
+Phần lớn câu chuyện tạo nên sự thành công của cơ chế chú ý không nằm 
+
+399
+00:24:57,659 --> 00:25:00,224
+ở bất kỳ loại hành vi cụ thể nào mà nó kích hoạt, 
+
+400
+00:25:00,224 --> 00:25:03,045
+mà thực tế là nó có khả năng song song hóa cực kỳ cao, 
+
+401
+00:25:03,045 --> 00:25:06,687
+nghĩa là bạn có thể chạy một số lượng lớn các phép tính trong một thời 
+
+402
+00:25:06,687 --> 00:25:08,380
+gian ngắn bằng cách sử dụng GPU .
+
+403
+00:25:09,460 --> 00:25:12,442
+Cho rằng một trong những bài học lớn về học sâu trong một hoặc hai thập 
+
+404
+00:25:12,442 --> 00:25:15,342
+kỷ qua là chỉ riêng quy mô đó dường như đã mang lại những cải tiến to 
+
+405
+00:25:15,342 --> 00:25:18,242
+lớn về chất lượng trong hiệu suất mô hình, nên có một lợi thế rất lớn 
+
+406
+00:25:18,242 --> 00:25:21,060
+đối với các kiến trúc song song hóa cho phép bạn thực hiện điều này.
+
+407
+00:25:22,040 --> 00:25:23,725
+Nếu bạn muốn tìm hiểu thêm về nội dung này, tôi 
+
+408
+00:25:23,725 --> 00:25:25,340
+đã để lại rất nhiều liên kết trong phần mô tả.
+
+409
+00:25:25,920 --> 00:25:27,840
+Đặc biệt, bất cứ thứ gì do Andrej Karpathy hoặc 
+
+410
+00:25:27,840 --> 00:25:30,040
+Chris Ola sản xuất đều có xu hướng là vàng nguyên chất.
+
+411
+00:25:30,560 --> 00:25:33,566
+Trong video này, tôi chỉ muốn thu hút sự chú ý ở dạng hiện tại, 
+
+412
+00:25:33,566 --> 00:25:37,466
+nhưng nếu bạn muốn biết thêm về lịch sử lý do chúng tôi đến đây và cách bạn có thể 
+
+413
+00:25:37,466 --> 00:25:41,459
+sáng tạo lại ý tưởng này cho chính mình, bạn tôi Vivek vừa đưa ra một vài video mang 
+
+414
+00:25:41,459 --> 00:25:42,540
+lại nhiều động lực hơn.
+
+415
+00:25:43,120 --> 00:25:45,812
+Ngoài ra, Britt Cruz từ kênh The Art of the problem có một 
+
+416
+00:25:45,812 --> 00:25:48,460
+video thực sự hay về lịch sử của các mô hình ngôn ngữ lớn.
+
+417
+00:26:04,960 --> 00:26:09,200
+Cảm ơn.
+

@@ -1,0 +1,1872 @@
+1
+00:00:00,000 --> 00:00:01,973
+Dans le dernier chapitre, toi et moi avons commencé à 
+
+2
+00:00:01,973 --> 00:00:04,019
+parcourir le fonctionnement interne d'un transformateur.
+
+3
+00:00:04,560 --> 00:00:07,285
+C'est l'un des éléments clés de la technologie à l'intérieur des grands 
+
+4
+00:00:07,285 --> 00:00:10,200
+modèles de langage, et de nombreux autres outils de la vague moderne de l'IA.
+
+5
+00:00:10,980 --> 00:00:14,351
+Il est apparu pour la première fois dans un article désormais célèbre de 2017 
+
+6
+00:00:14,351 --> 00:00:16,815
+intitulé Attention is All You Need, et dans ce chapitre, 
+
+7
+00:00:16,815 --> 00:00:19,495
+toi et moi allons creuser ce qu'est ce mécanisme d'attention, 
+
+8
+00:00:19,495 --> 00:00:21,700
+en visualisant la façon dont il traite les données.
+
+9
+00:00:26,140 --> 00:00:27,978
+En guise de récapitulation rapide, voici le contexte 
+
+10
+00:00:27,978 --> 00:00:29,540
+important que je veux que tu aies à l'esprit.
+
+11
+00:00:30,000 --> 00:00:32,969
+L'objectif du modèle que toi et moi étudions est 
+
+12
+00:00:32,969 --> 00:00:36,060
+d'assimiler un texte et de prédire le mot qui suit.
+
+13
+00:00:36,860 --> 00:00:40,510
+Le texte d'entrée est décomposé en petits morceaux que nous appelons des tokens, 
+
+14
+00:00:40,510 --> 00:00:43,124
+et ce sont très souvent des mots ou des morceaux de mots, 
+
+15
+00:00:43,124 --> 00:00:46,504
+mais pour que les exemples de cette vidéo soient plus faciles à comprendre 
+
+16
+00:00:46,504 --> 00:00:50,560
+pour toi et moi, simplifions en faisant comme si les tokens n'étaient jamais que des mots.
+
+17
+00:00:51,480 --> 00:00:54,612
+La première étape d'un transformateur consiste à associer chaque jeton 
+
+18
+00:00:54,612 --> 00:00:57,700
+à un vecteur de haute dimension, ce que nous appelons son intégration.
+
+19
+00:00:57,700 --> 00:01:00,870
+L'idée la plus importante que je veux que tu aies à l'esprit est de savoir 
+
+20
+00:01:00,870 --> 00:01:03,787
+comment les directions dans cet espace à haute dimension de tous les 
+
+21
+00:01:03,787 --> 00:01:07,000
+enchâssements possibles peuvent correspondre à une signification sémantique.
+
+22
+00:01:07,680 --> 00:01:11,503
+Dans le dernier chapitre, nous avons vu un exemple de la façon dont la direction peut 
+
+23
+00:01:11,503 --> 00:01:15,416
+correspondre au genre, dans le sens où l'ajout d'un certain pas dans cet espace peut te 
+
+24
+00:01:15,416 --> 00:01:19,017
+faire passer de l'encastrement d'un nom masculin à l'encastrement du nom féminin 
+
+25
+00:01:19,017 --> 00:01:19,640
+correspondant.
+
+26
+00:01:20,160 --> 00:01:22,594
+Ce n'est qu'un exemple, tu pourrais imaginer combien d'autres 
+
+27
+00:01:22,594 --> 00:01:25,302
+directions dans cet espace à haute dimension pourraient correspondre 
+
+28
+00:01:25,302 --> 00:01:27,580
+à de nombreux autres aspects de la signification d'un mot.
+
+29
+00:01:28,800 --> 00:01:31,952
+L'objectif d'un transformateur est d'ajuster progressivement ces 
+
+30
+00:01:31,952 --> 00:01:35,639
+enchâssements afin qu'ils ne se contentent pas d'encoder un mot individuel, 
+
+31
+00:01:35,639 --> 00:01:39,180
+mais qu'ils intègrent une signification contextuelle beaucoup plus riche.
+
+32
+00:01:40,140 --> 00:01:43,332
+Je dois dire d'emblée que beaucoup de gens trouvent le mécanisme d'attention, 
+
+33
+00:01:43,332 --> 00:01:45,746
+cette pièce maîtresse d'un transformateur, très déroutant, 
+
+34
+00:01:45,746 --> 00:01:48,980
+alors ne t'inquiète pas s'il te faut un peu de temps pour assimiler les choses.
+
+35
+00:01:49,440 --> 00:01:52,665
+Je pense qu'avant de nous plonger dans les détails informatiques et toutes 
+
+36
+00:01:52,665 --> 00:01:55,934
+les multiplications de matrices, cela vaut la peine de réfléchir à quelques 
+
+37
+00:01:55,934 --> 00:01:59,160
+exemples du type de comportement que nous voulons que l'attention permette.
+
+38
+00:02:00,140 --> 00:02:02,783
+Considère les phrases Une vraie taupe américaine, 
+
+39
+00:02:02,783 --> 00:02:06,220
+une taupe de dioxyde de carbone, et fais une biopsie de la taupe.
+
+40
+00:02:06,700 --> 00:02:08,660
+Toi et moi savons que le mot taupe a des significations 
+
+41
+00:02:08,660 --> 00:02:10,900
+différentes dans chacune d'entre elles, en fonction du contexte.
+
+42
+00:02:11,360 --> 00:02:13,967
+Mais après la première étape d'un transformateur, 
+
+43
+00:02:13,967 --> 00:02:17,460
+celle qui décompose le texte et associe chaque jeton à un vecteur, 
+
+44
+00:02:17,460 --> 00:02:20,640
+le vecteur associé à taupe serait le même dans tous ces cas, 
+
+45
+00:02:20,640 --> 00:02:24,290
+parce que cet enchâssement initial de jetons est en fait une table de 
+
+46
+00:02:24,290 --> 00:02:26,220
+recherche sans référence au contexte.
+
+47
+00:02:26,620 --> 00:02:29,771
+Ce n'est qu'à l'étape suivante du transformateur que les enchâssements 
+
+48
+00:02:29,771 --> 00:02:33,100
+environnants ont la possibilité de transmettre des informations à celui-ci.
+
+49
+00:02:33,820 --> 00:02:38,151
+L'image que tu peux avoir à l'esprit est qu'il existe plusieurs directions distinctes 
+
+50
+00:02:38,151 --> 00:02:42,381
+dans cet espace d'intégration codant les multiples significations distinctes du mot 
+
+51
+00:02:42,381 --> 00:02:46,411
+taupe, et qu'un bloc d'attention bien entraîné calcule ce que tu dois ajouter à 
+
+52
+00:02:46,411 --> 00:02:50,591
+l'intégration générique pour la déplacer vers l'une de ces directions spécifiques, 
+
+53
+00:02:50,591 --> 00:02:51,800
+en fonction du contexte.
+
+54
+00:02:53,300 --> 00:02:56,180
+Pour prendre un autre exemple, considère l'encastrement du mot tour.
+
+55
+00:02:57,060 --> 00:03:00,364
+Il s'agit vraisemblablement d'une direction très générique et non 
+
+56
+00:03:00,364 --> 00:03:03,720
+spécifique dans l'espace, associée à beaucoup d'autres grands noms.
+
+57
+00:03:04,020 --> 00:03:06,397
+Si ce mot était immédiatement précédé de Eiffel, 
+
+58
+00:03:06,397 --> 00:03:10,036
+tu pourrais imaginer vouloir que le mécanisme mette à jour ce vecteur pour 
+
+59
+00:03:10,036 --> 00:03:13,868
+qu'il pointe dans une direction qui encode plus spécifiquement la tour Eiffel, 
+
+60
+00:03:13,868 --> 00:03:17,653
+peut-être en corrélation avec des vecteurs associés à Paris et à la France et 
+
+61
+00:03:17,653 --> 00:03:19,060
+à des choses faites en acier.
+
+62
+00:03:19,920 --> 00:03:21,967
+S'il était également précédé du mot miniature, 
+
+63
+00:03:21,967 --> 00:03:24,319
+alors le vecteur devrait être encore plus mis à jour, 
+
+64
+00:03:24,319 --> 00:03:27,500
+afin qu'il ne soit plus en corrélation avec des choses grandes et hautes.
+
+65
+00:03:29,480 --> 00:03:32,179
+Plus généralement que le simple affinage du sens d'un mot, 
+
+66
+00:03:32,179 --> 00:03:35,703
+le bloc d'attention permet au modèle de faire passer des informations codées 
+
+67
+00:03:35,703 --> 00:03:39,684
+dans un encastrement à celui d'un autre, potentiellement ceux qui sont assez éloignés, 
+
+68
+00:03:39,684 --> 00:03:43,300
+et potentiellement avec des informations beaucoup plus riches qu'un simple mot.
+
+69
+00:03:43,300 --> 00:03:45,654
+Ce que nous avons vu dans le dernier chapitre, 
+
+70
+00:03:45,654 --> 00:03:49,011
+c'est qu'après que tous les vecteurs aient circulé dans le réseau, 
+
+71
+00:03:49,011 --> 00:03:51,616
+y compris de nombreux blocs d'attention différents, 
+
+72
+00:03:51,616 --> 00:03:55,324
+le calcul que tu effectues pour produire une prédiction du prochain jeton 
+
+73
+00:03:55,324 --> 00:03:58,280
+est entièrement fonction du dernier vecteur de la séquence.
+
+74
+00:03:59,100 --> 00:04:03,375
+Imagine, par exemple, que le texte que tu saisis est la plus grande partie d'un roman 
+
+75
+00:04:03,375 --> 00:04:07,800
+policier, jusqu'à un point situé vers la fin, où l'on peut lire, donc le meurtrier était.
+
+76
+00:04:08,400 --> 00:04:11,452
+Pour que le modèle puisse prédire avec précision le mot suivant, 
+
+77
+00:04:11,452 --> 00:04:15,398
+ce dernier vecteur de la séquence, qui a commencé sa vie en intégrant simplement le 
+
+78
+00:04:15,398 --> 00:04:19,437
+mot était, devra avoir été mis à jour par tous les blocs d'attention pour représenter 
+
+79
+00:04:19,437 --> 00:04:21,738
+beaucoup plus que n'importe quel mot individuel, 
+
+80
+00:04:21,738 --> 00:04:25,495
+en encodant en quelque sorte toutes les informations de la fenêtre contextuelle 
+
+81
+00:04:25,495 --> 00:04:28,220
+complète qui sont pertinentes pour prédire le mot suivant.
+
+82
+00:04:29,500 --> 00:04:32,580
+Mais pour mieux comprendre les calculs, prenons un exemple beaucoup plus simple.
+
+83
+00:04:32,980 --> 00:04:35,665
+Imagine que l'entrée comprenne la phrase, une créature 
+
+84
+00:04:35,665 --> 00:04:37,960
+bleue duveteuse parcourait la forêt verdoyante.
+
+85
+00:04:38,460 --> 00:04:42,593
+Et pour l'instant, suppose que le seul type de mise à jour qui nous intéresse 
+
+86
+00:04:42,593 --> 00:04:46,780
+est que les adjectifs ajustent les significations de leurs noms correspondants.
+
+87
+00:04:47,000 --> 00:04:50,384
+Ce que je vais décrire est ce que nous appellerions une seule tête d'attention, 
+
+88
+00:04:50,384 --> 00:04:53,135
+et nous verrons plus tard comment le bloc d'attention se compose 
+
+89
+00:04:53,135 --> 00:04:55,420
+de plusieurs têtes différentes exécutées en parallèle.
+
+90
+00:04:56,140 --> 00:04:59,668
+Encore une fois, l'intégration initiale de chaque mot est un vecteur à haute 
+
+91
+00:04:59,668 --> 00:05:03,380
+dimension qui n'encode que la signification de ce mot particulier, sans contexte.
+
+92
+00:05:04,000 --> 00:05:05,220
+En fait, ce n'est pas tout à fait vrai.
+
+93
+00:05:05,380 --> 00:05:07,640
+Ils codent également la position du mot.
+
+94
+00:05:07,980 --> 00:05:11,181
+Il y a beaucoup plus à dire sur la façon dont les positions sont codées, 
+
+95
+00:05:11,181 --> 00:05:13,681
+mais pour l'instant, tout ce que tu as besoin de savoir, 
+
+96
+00:05:13,681 --> 00:05:17,321
+c'est que les entrées de ce vecteur suffisent à te dire à la fois ce qu'est le mot 
+
+97
+00:05:17,321 --> 00:05:18,900
+et où il se trouve dans le contexte.
+
+98
+00:05:19,500 --> 00:05:21,660
+Allons-y et désignons ces encastrements par la lettre e.
+
+99
+00:05:22,420 --> 00:05:26,104
+L'objectif est de faire en sorte qu'une série de calculs produise un 
+
+100
+00:05:26,104 --> 00:05:29,148
+nouvel ensemble raffiné d'enchâssements où, par exemple, 
+
+101
+00:05:29,148 --> 00:05:33,420
+ceux qui correspondent aux noms ont ingéré le sens des adjectifs correspondants.
+
+102
+00:05:33,900 --> 00:05:35,835
+Et en jouant le jeu de l'apprentissage profond, 
+
+103
+00:05:35,835 --> 00:05:38,940
+nous voulons que la plupart des calculs impliqués ressemblent à des produits 
+
+104
+00:05:38,940 --> 00:05:41,601
+matrice-vecteur, où les matrices sont pleines de poids réglables, 
+
+105
+00:05:41,601 --> 00:05:43,980
+des choses que le modèle apprendra en fonction des données.
+
+106
+00:05:44,660 --> 00:05:48,311
+Pour être clair, j'invente cet exemple d'adjectifs mettant à jour des noms juste pour 
+
+107
+00:05:48,311 --> 00:05:51,750
+illustrer le type de comportement que tu pourrais imaginer de la part d'une tête 
+
+108
+00:05:51,750 --> 00:05:52,260
+d'attention.
+
+109
+00:05:52,860 --> 00:05:54,480
+Comme pour une grande partie du deep learning, 
+
+110
+00:05:54,480 --> 00:05:57,272
+le véritable comportement est beaucoup plus difficile à analyser parce qu'il est 
+
+111
+00:05:57,272 --> 00:05:59,961
+basé sur le réglage et l'ajustement d'un très grand nombre de paramètres pour 
+
+112
+00:05:59,961 --> 00:06:01,340
+minimiser une certaine fonction de coût.
+
+113
+00:06:01,680 --> 00:06:04,635
+C'est juste qu'au fur et à mesure que nous avançons dans les différentes 
+
+114
+00:06:04,635 --> 00:06:07,470
+matrices remplies de paramètres qui sont impliqués dans ce processus, 
+
+115
+00:06:07,470 --> 00:06:10,385
+je pense qu'il est vraiment utile d'avoir un exemple imaginé de quelque 
+
+116
+00:06:10,385 --> 00:06:13,220
+chose qu'il pourrait faire pour aider à garder tout cela plus concret.
+
+117
+00:06:14,140 --> 00:06:17,707
+Pour la première étape de ce processus, tu peux imaginer que chaque nom, 
+
+118
+00:06:17,707 --> 00:06:21,960
+comme la créature, pose la question suivante : "Hé, y a-t-il des adjectifs devant moi ?
+
+119
+00:06:22,160 --> 00:06:25,253
+Et pour les mots pelucheux et bleu, que chacun puisse répondre, 
+
+120
+00:06:25,253 --> 00:06:27,960
+oui, je suis un adjectif et je suis dans cette position.
+
+121
+00:06:28,960 --> 00:06:32,651
+Cette question est en quelque sorte codée sous la forme d'un autre vecteur, 
+
+122
+00:06:32,651 --> 00:06:36,100
+d'une autre liste de nombres, que nous appelons la requête pour ce mot.
+
+123
+00:06:36,980 --> 00:06:39,591
+Ce vecteur de requête a cependant une dimension beaucoup 
+
+124
+00:06:39,591 --> 00:06:42,020
+plus petite que le vecteur d'intégration, disons 128.
+
+125
+00:06:42,940 --> 00:06:46,699
+Pour calculer cette requête, il suffit de prendre une certaine matrice, 
+
+126
+00:06:46,699 --> 00:06:49,780
+que j'appellerai wq, et de la multiplier par l'intégration.
+
+127
+00:06:50,960 --> 00:06:54,250
+En comprimant un peu les choses, écrivons ce vecteur de requête comme q, 
+
+128
+00:06:54,250 --> 00:06:58,082
+et chaque fois que tu me vois mettre une matrice à côté d'une flèche comme celle-ci, 
+
+129
+00:06:58,082 --> 00:07:01,554
+c'est pour représenter le fait que la multiplication de cette matrice par le 
+
+130
+00:07:01,554 --> 00:07:04,800
+vecteur au début de la flèche te donne le vecteur à la fin de la flèche.
+
+131
+00:07:05,860 --> 00:07:09,862
+Dans ce cas, tu multiplies cette matrice par tous les enchâssements du contexte, 
+
+132
+00:07:09,862 --> 00:07:12,580
+ce qui produit un vecteur de requête pour chaque token.
+
+133
+00:07:13,740 --> 00:07:16,068
+Les entrées de cette matrice sont des paramètres du modèle, 
+
+134
+00:07:16,068 --> 00:07:19,133
+ce qui signifie que le véritable comportement est appris à partir des données, 
+
+135
+00:07:19,133 --> 00:07:22,469
+et dans la pratique, ce que cette matrice fait dans une tête d'attention particulière 
+
+136
+00:07:22,469 --> 00:07:23,440
+est difficile à analyser.
+
+137
+00:07:23,900 --> 00:07:27,667
+Mais pour notre bien, en imaginant un exemple que nous pourrions espérer qu'il apprenne, 
+
+138
+00:07:27,667 --> 00:07:31,139
+nous supposerons que cette matrice de requête fait correspondre les enchâssements 
+
+139
+00:07:31,139 --> 00:07:34,653
+de noms à certaines directions dans cet espace de requête plus petit qui encode en 
+
+140
+00:07:34,653 --> 00:07:38,040
+quelque sorte la notion de recherche d'adjectifs dans les positions précédentes.
+
+141
+00:07:38,780 --> 00:07:41,440
+Quant à savoir ce qu'il fait à d'autres encastrements, qui sait ?
+
+142
+00:07:41,720 --> 00:07:44,340
+Peut-être qu'il essaie en même temps d'atteindre un autre objectif avec ceux-ci.
+
+143
+00:07:44,540 --> 00:07:47,160
+Pour l'instant, nous nous concentrons sur les noms.
+
+144
+00:07:47,280 --> 00:07:51,747
+En même temps, associée à cela, il y a une deuxième matrice appelée la matrice clé, 
+
+145
+00:07:51,747 --> 00:07:54,620
+que tu multiplies également par chacun des embeddings.
+
+146
+00:07:55,280 --> 00:07:58,500
+Cela produit une deuxième séquence de vecteurs que nous appelons les clés.
+
+147
+00:07:59,420 --> 00:08:01,297
+D'un point de vue conceptuel, tu dois considérer que 
+
+148
+00:08:01,297 --> 00:08:03,140
+les clés sont susceptibles de répondre aux requêtes.
+
+149
+00:08:03,840 --> 00:08:06,424
+Cette matrice de clé est également pleine de paramètres réglables, 
+
+150
+00:08:06,424 --> 00:08:08,892
+et tout comme la matrice de requête, elle fait correspondre les 
+
+151
+00:08:08,892 --> 00:08:11,400
+vecteurs d'intégration à ce même espace de plus petite dimension.
+
+152
+00:08:12,200 --> 00:08:14,552
+Tu considères que les clés correspondent aux requêtes chaque 
+
+153
+00:08:14,552 --> 00:08:17,020
+fois qu'elles sont étroitement alignées les unes sur les autres.
+
+154
+00:08:17,460 --> 00:08:20,276
+Dans notre exemple, tu peux imaginer que la matrice clé fait 
+
+155
+00:08:20,276 --> 00:08:23,323
+correspondre les adjectifs comme pelucheux et bleu à des vecteurs 
+
+156
+00:08:23,323 --> 00:08:26,740
+qui sont étroitement alignés avec la requête produite par le mot créature.
+
+157
+00:08:27,200 --> 00:08:30,428
+Pour mesurer à quel point chaque clé correspond à chaque requête, 
+
+158
+00:08:30,428 --> 00:08:34,000
+tu calcules un produit de points entre chaque paire clé-requête possible.
+
+159
+00:08:34,480 --> 00:08:36,916
+J'aime visualiser une grille remplie d'un tas de points, 
+
+160
+00:08:36,916 --> 00:08:40,336
+où les points les plus gros correspondent aux produits de points les plus gros, 
+
+161
+00:08:40,336 --> 00:08:42,559
+les endroits où les clés et les requêtes s'alignent.
+
+162
+00:08:43,280 --> 00:08:47,251
+Pour notre exemple de nom adjectif, cela ressemblerait un peu plus à ceci, 
+
+163
+00:08:47,251 --> 00:08:50,694
+où si les clés produites par peluche et bleu s'alignent vraiment 
+
+164
+00:08:50,694 --> 00:08:53,394
+étroitement avec la requête produite par créature, 
+
+165
+00:08:53,394 --> 00:08:57,260
+alors les produits de points dans ces deux endroits seraient des nombres 
+
+166
+00:08:57,260 --> 00:08:58,320
+positifs importants.
+
+167
+00:08:59,100 --> 00:09:02,166
+Dans le jargon, les spécialistes de l'apprentissage automatique diraient que cela 
+
+168
+00:09:02,166 --> 00:09:05,420
+signifie que l'intégration de peluche et de bleu s'occupe de l'intégration de créature.
+
+169
+00:09:06,040 --> 00:09:09,360
+Par contre, le produit de points entre la clé d'un autre mot 
+
+170
+00:09:09,360 --> 00:09:12,898
+comme le et la requête pour créature serait une valeur petite ou 
+
+171
+00:09:12,898 --> 00:09:16,600
+négative qui reflète le fait qu'ils ne sont pas liés l'un à l'autre.
+
+172
+00:09:17,700 --> 00:09:21,262
+Nous avons donc cette grille de valeurs qui peut être n'importe quel nombre 
+
+173
+00:09:21,262 --> 00:09:24,777
+réel allant de l'infini négatif à l'infini, ce qui nous donne une note sur 
+
+174
+00:09:24,777 --> 00:09:28,480
+la pertinence de chaque mot pour mettre à jour le sens de tous les autres mots.
+
+175
+00:09:29,200 --> 00:09:32,648
+La façon dont nous allons utiliser ces scores consiste à faire une certaine 
+
+176
+00:09:32,648 --> 00:09:35,780
+somme pondérée le long de chaque colonne, pondérée par la pertinence.
+
+177
+00:09:36,520 --> 00:09:39,903
+Ainsi, au lieu d'avoir des valeurs allant de l'infini négatif à l'infini, 
+
+178
+00:09:39,903 --> 00:09:43,287
+nous voulons que les nombres de ces colonnes soient compris entre 0 et 1, 
+
+179
+00:09:43,287 --> 00:09:45,573
+et que la somme de chaque colonne soit égale à 1, 
+
+180
+00:09:45,573 --> 00:09:48,180
+comme s'il s'agissait d'une distribution de probabilités.
+
+181
+00:09:49,280 --> 00:09:52,220
+Si tu viens du dernier chapitre, tu sais ce qu'il faut faire à ce moment-là.
+
+182
+00:09:52,620 --> 00:09:57,300
+Nous calculons un softmax le long de chacune de ces colonnes pour normaliser les valeurs.
+
+183
+00:10:00,060 --> 00:10:03,308
+Dans notre image, après avoir appliqué softmax à toutes les colonnes, 
+
+184
+00:10:03,308 --> 00:10:05,860
+nous remplirons la grille avec ces valeurs normalisées.
+
+185
+00:10:06,780 --> 00:10:10,605
+À ce stade, tu peux considérer que chaque colonne donne un poids en fonction 
+
+186
+00:10:10,605 --> 00:10:14,580
+de la pertinence du mot à gauche par rapport à la valeur correspondante en haut.
+
+187
+00:10:15,080 --> 00:10:16,840
+Nous appelons cette grille un modèle d'attention.
+
+188
+00:10:18,080 --> 00:10:20,411
+Si tu regardes le document original sur les transformateurs, 
+
+189
+00:10:20,411 --> 00:10:22,820
+tu verras qu'il y a une façon très compacte d'écrire tout cela.
+
+190
+00:10:23,880 --> 00:10:27,248
+Ici, les variables q et k représentent respectivement les tableaux 
+
+191
+00:10:27,248 --> 00:10:30,818
+complets des vecteurs de requête et de clé, ces petits vecteurs que tu 
+
+192
+00:10:30,818 --> 00:10:34,640
+obtiens en multipliant les embeddings par les matrices de requête et de clé.
+
+193
+00:10:35,160 --> 00:10:39,044
+Cette expression dans le numérateur est une façon vraiment compacte de représenter la 
+
+194
+00:10:39,044 --> 00:10:43,020
+grille de tous les produits de points possibles entre les paires de clés et de requêtes.
+
+195
+00:10:44,000 --> 00:10:48,241
+Un petit détail technique que je n'ai pas mentionné est que pour la stabilité numérique, 
+
+196
+00:10:48,241 --> 00:10:51,481
+il s'avère utile de diviser toutes ces valeurs par la racine carrée 
+
+197
+00:10:51,481 --> 00:10:53,960
+de la dimension dans cet espace d'interrogation clé.
+
+198
+00:10:54,480 --> 00:10:57,500
+Ensuite, cette softmax qui est enveloppée autour de l'expression 
+
+199
+00:10:57,500 --> 00:11:00,800
+complète est censée être comprise pour s'appliquer colonne par colonne.
+
+200
+00:11:01,640 --> 00:11:04,700
+Quant à ce terme v, nous en parlerons dans un instant.
+
+201
+00:11:05,020 --> 00:11:08,460
+Avant cela, il y a un autre détail technique que jusqu'à présent j'ai zappé.
+
+202
+00:11:09,040 --> 00:11:12,785
+Pendant le processus de formation, lorsque tu exécutes ce modèle sur un exemple 
+
+203
+00:11:12,785 --> 00:11:16,531
+de texte donné, et que tous les poids sont légèrement ajustés et réglés pour le 
+
+204
+00:11:16,531 --> 00:11:20,323
+récompenser ou le punir en fonction de la probabilité qu'il attribue au vrai mot 
+
+205
+00:11:20,323 --> 00:11:24,115
+suivant dans le passage, il s'avère que l'ensemble du processus de formation est 
+
+206
+00:11:24,115 --> 00:11:27,861
+beaucoup plus efficace si tu lui demandes simultanément de prédire chaque jeton 
+
+207
+00:11:27,861 --> 00:11:31,560
+suivant possible après chaque sous-séquence initiale de jetons dans ce passage.
+
+208
+00:11:31,940 --> 00:11:35,092
+Par exemple, avec la phrase sur laquelle nous nous sommes concentrés, 
+
+209
+00:11:35,092 --> 00:11:39,100
+il pourrait aussi s'agir de prédire quels mots suivent créature et quels mots suivent le.
+
+210
+00:11:39,940 --> 00:11:42,524
+C'est vraiment bien, parce que cela signifie que ce qui serait 
+
+211
+00:11:42,524 --> 00:11:45,560
+autrement un seul exemple de formation agit effectivement comme plusieurs.
+
+212
+00:11:46,100 --> 00:11:49,252
+Dans le cadre de notre modèle d'attention, cela signifie que tu ne dois 
+
+213
+00:11:49,252 --> 00:11:52,361
+jamais permettre aux mots ultérieurs d'influencer les mots antérieurs, 
+
+214
+00:11:52,361 --> 00:11:56,040
+car sinon, ils pourraient en quelque sorte donner la réponse à ce qui vient ensuite.
+
+215
+00:11:56,560 --> 00:11:59,631
+Ce que cela signifie, c'est que nous voulons que toutes ces taches, 
+
+216
+00:11:59,631 --> 00:12:03,290
+celles qui représentent les jetons ultérieurs influençant les jetons antérieurs, 
+
+217
+00:12:03,290 --> 00:12:04,600
+soient forcées d'être nulles.
+
+218
+00:12:05,920 --> 00:12:08,685
+La chose la plus simple que tu puisses penser à faire est de les mettre à zéro, 
+
+219
+00:12:08,685 --> 00:12:11,244
+mais si tu faisais cela, la somme des colonnes ne serait plus égale à un, 
+
+220
+00:12:11,244 --> 00:12:12,420
+elles ne seraient pas normalisées.
+
+221
+00:12:13,120 --> 00:12:16,069
+Au lieu de cela, une façon courante de procéder consiste à définir toutes 
+
+222
+00:12:16,069 --> 00:12:19,020
+ces entrées comme étant des infinis négatifs avant d'appliquer le softmax.
+
+223
+00:12:19,680 --> 00:12:21,676
+Si tu fais cela, après l'application de softmax, 
+
+224
+00:12:21,676 --> 00:12:25,180
+tous ces éléments seront transformés en zéro, mais les colonnes resteront normalisées.
+
+225
+00:12:26,000 --> 00:12:27,540
+Ce processus s'appelle le masquage.
+
+226
+00:12:27,540 --> 00:12:30,078
+Il existe des versions de l'attention où tu ne l'appliques pas, 
+
+227
+00:12:30,078 --> 00:12:33,568
+mais dans notre exemple GPT, même si c'est plus pertinent pendant la phase de formation 
+
+228
+00:12:33,568 --> 00:12:37,018
+que ça ne le serait, disons, en l'exécutant en tant que chatbot ou quelque chose comme 
+
+229
+00:12:37,018 --> 00:12:40,587
+ça, tu appliques toujours ce masquage pour éviter que les tokens ultérieurs n'influencent 
+
+230
+00:12:40,587 --> 00:12:41,460
+les tokens antérieurs.
+
+231
+00:12:42,480 --> 00:12:46,177
+Un autre fait qui mérite réflexion à propos de ce modèle d'attention 
+
+232
+00:12:46,177 --> 00:12:49,500
+est que sa taille est égale au carré de la taille du contexte.
+
+233
+00:12:49,900 --> 00:12:52,691
+C'est pourquoi la taille du contexte peut être un goulot d'étranglement vraiment 
+
+234
+00:12:52,691 --> 00:12:55,620
+énorme pour les grands modèles de langage, et la mise à l'échelle n'est pas triviale.
+
+235
+00:12:56,300 --> 00:12:59,295
+Comme tu l'imagines, motivées par le désir d'avoir des fenêtres de contexte 
+
+236
+00:12:59,295 --> 00:13:02,172
+de plus en plus grandes, ces dernières années ont vu apparaître quelques 
+
+237
+00:13:02,172 --> 00:13:05,285
+variations du mécanisme d'attention visant à rendre le contexte plus évolutif, 
+
+238
+00:13:05,285 --> 00:13:08,320
+mais pour l'instant, toi et moi restons concentrés sur les principes de base.
+
+239
+00:13:10,560 --> 00:13:12,884
+D'accord, super, le calcul de ce schéma permet au modèle de 
+
+240
+00:13:12,884 --> 00:13:15,480
+déduire quels mots sont pertinents par rapport à quels autres mots.
+
+241
+00:13:16,020 --> 00:13:18,350
+Il te faut maintenant mettre à jour les enchâssements, 
+
+242
+00:13:18,350 --> 00:13:21,571
+ce qui permet aux mots de transmettre des informations aux autres mots avec 
+
+243
+00:13:21,571 --> 00:13:22,800
+lesquels ils sont pertinents.
+
+244
+00:13:22,800 --> 00:13:26,741
+Par exemple, tu veux que l'intégration de Fluffy entraîne une modification 
+
+245
+00:13:26,741 --> 00:13:30,788
+de Creature qui la déplace dans une autre partie de cet espace d'intégration 
+
+246
+00:13:30,788 --> 00:13:34,520
+à 12 000 dimensions qui encode plus spécifiquement une créature Fluffy.
+
+247
+00:13:35,460 --> 00:13:39,392
+Ce que je vais faire ici, c'est d'abord te montrer la façon la plus simple de procéder, 
+
+248
+00:13:39,392 --> 00:13:43,191
+bien qu'il y ait une légère modification dans le contexte de l'attention à plusieurs 
+
+249
+00:13:43,191 --> 00:13:43,460
+têtes.
+
+250
+00:13:44,080 --> 00:13:47,065
+La façon la plus simple serait d'utiliser une troisième matrice, 
+
+251
+00:13:47,065 --> 00:13:49,867
+que nous appelons la matrice de valeur, que tu multiplierais 
+
+252
+00:13:49,867 --> 00:13:52,440
+par l'intégration de ce premier mot, par exemple Fluffy.
+
+253
+00:13:53,300 --> 00:13:55,886
+Le résultat est ce que tu appellerais un vecteur de valeur, 
+
+254
+00:13:55,886 --> 00:13:58,946
+et c'est quelque chose que tu ajoutes à l'intégration du deuxième mot, 
+
+255
+00:13:58,946 --> 00:14:01,920
+dans ce cas quelque chose que tu ajoutes à l'intégration de Créature.
+
+256
+00:14:02,600 --> 00:14:04,937
+Ce vecteur de valeurs vit donc dans le même espace 
+
+257
+00:14:04,937 --> 00:14:07,000
+à très haute dimension que les encastrements.
+
+258
+00:14:07,460 --> 00:14:11,381
+Lorsque tu multiplies cette matrice de valeurs par l'intégration d'un mot, 
+
+259
+00:14:11,381 --> 00:14:15,878
+tu peux penser que cela revient à dire : si ce mot est pertinent pour ajuster le sens 
+
+260
+00:14:15,878 --> 00:14:20,480
+d'autre chose, que faut-il ajouter exactement à l'intégration de cette autre chose pour 
+
+261
+00:14:20,480 --> 00:14:21,160
+le refléter ?
+
+262
+00:14:22,140 --> 00:14:25,653
+En regardant notre diagramme, mettons de côté toutes les clés et les requêtes, 
+
+263
+00:14:25,653 --> 00:14:29,655
+car une fois que tu as calculé le modèle d'attention, tu en as terminé avec ces éléments, 
+
+264
+00:14:29,655 --> 00:14:33,035
+puis tu vas prendre cette matrice de valeurs et la multiplier par chacun de 
+
+265
+00:14:33,035 --> 00:14:36,060
+ces enchâssements pour produire une séquence de vecteurs de valeurs.
+
+266
+00:14:37,120 --> 00:14:39,139
+Tu peux considérer que ces vecteurs de valeurs sont 
+
+267
+00:14:39,139 --> 00:14:41,120
+en quelque sorte associés aux clés correspondantes.
+
+268
+00:14:42,320 --> 00:14:45,671
+Pour chaque colonne de ce diagramme, tu multiplies chacun des 
+
+269
+00:14:45,671 --> 00:14:49,240
+vecteurs de valeurs par le poids correspondant dans cette colonne.
+
+270
+00:14:50,080 --> 00:14:52,672
+Par exemple ici, sous l'intégration de Créature, 
+
+271
+00:14:52,672 --> 00:14:56,957
+tu ajouterais de grandes proportions de vecteurs de valeurs pour Fluffy et Blue, 
+
+272
+00:14:56,957 --> 00:15:01,560
+alors que tous les autres vecteurs de valeurs sont réduits à zéro, ou du moins presque.
+
+273
+00:15:02,120 --> 00:15:05,711
+Enfin, pour mettre à jour l'intégration associée à cette colonne, 
+
+274
+00:15:05,711 --> 00:15:09,302
+qui codait auparavant une signification contextuelle de Creature, 
+
+275
+00:15:09,302 --> 00:15:12,839
+tu additionnes toutes ces valeurs rééchelonnées dans la colonne, 
+
+276
+00:15:12,839 --> 00:15:16,974
+ce qui produit un changement que tu veux ajouter, que j'appellerai delta-e, 
+
+277
+00:15:16,974 --> 00:15:19,260
+et tu l'ajoutes à l'intégration d'origine.
+
+278
+00:15:19,680 --> 00:15:23,043
+Avec un peu de chance, il en résulte un vecteur plus raffiné qui code le 
+
+279
+00:15:23,043 --> 00:15:26,500
+sens le plus riche en contexte, comme celui d'une créature bleue duveteuse.
+
+280
+00:15:27,380 --> 00:15:31,629
+Tu appliques la même somme pondérée à toutes les colonnes de cette image, 
+
+281
+00:15:31,629 --> 00:15:35,362
+ce qui produit une séquence de changements. En ajoutant tous ces 
+
+282
+00:15:35,362 --> 00:15:39,382
+changements aux encastrements correspondants, tu obtiens une séquence 
+
+283
+00:15:39,382 --> 00:15:43,460
+complète d'encastrements plus raffinés qui sortent du bloc d'attention.
+
+284
+00:15:44,860 --> 00:15:46,918
+En faisant un zoom arrière, tout ce processus est 
+
+285
+00:15:46,918 --> 00:15:49,100
+ce que tu décrirais comme une seule tête d'attention.
+
+286
+00:15:49,600 --> 00:15:54,242
+Comme je l'ai décrit jusqu'à présent, ce processus est paramétré par trois matrices 
+
+287
+00:15:54,242 --> 00:15:58,940
+distinctes, toutes remplies de paramètres réglables, la clé, la requête et la valeur.
+
+288
+00:15:59,500 --> 00:16:02,320
+Je voudrais prendre un moment pour continuer ce que nous avons commencé 
+
+289
+00:16:02,320 --> 00:16:05,101
+dans le dernier chapitre, avec le décompte des points où nous comptons 
+
+290
+00:16:05,101 --> 00:16:08,040
+le nombre total de paramètres du modèle en utilisant les chiffres de GPT-3.
+
+291
+00:16:09,300 --> 00:16:12,503
+Ces matrices de clés et de requêtes ont chacune 12 288 colonnes, 
+
+292
+00:16:12,503 --> 00:16:15,755
+ce qui correspond à la dimension de l'intégration, et 128 lignes, 
+
+293
+00:16:15,755 --> 00:16:19,600
+ce qui correspond à la dimension de cet espace de requêtes de clés plus petit.
+
+294
+00:16:20,260 --> 00:16:24,220
+Cela nous donne environ 1,5 million de paramètres supplémentaires pour chacun d'entre eux.
+
+295
+00:16:24,860 --> 00:16:28,060
+Si tu regardes cette matrice de valeurs par contraste, 
+
+296
+00:16:28,060 --> 00:16:32,191
+la façon dont j'ai décrit les choses jusqu'à présent suggérerait qu'il 
+
+297
+00:16:32,191 --> 00:16:36,148
+s'agit d'une matrice carrée qui a 12 288 colonnes et 12 288 lignes, 
+
+298
+00:16:36,148 --> 00:16:40,920
+puisque ses entrées et ses sorties vivent dans ce très grand espace d'intégration.
+
+299
+00:16:41,500 --> 00:16:45,140
+Si c'est vrai, cela signifierait environ 150 millions de paramètres supplémentaires.
+
+300
+00:16:45,660 --> 00:16:47,300
+Et pour être clair, tu pourrais le faire.
+
+301
+00:16:47,420 --> 00:16:49,487
+Tu pourrais consacrer des ordres de grandeur de plus de 
+
+302
+00:16:49,487 --> 00:16:51,740
+paramètres à la carte de valeurs qu'à la clé et à la requête.
+
+303
+00:16:52,060 --> 00:16:54,884
+Mais dans la pratique, il est beaucoup plus efficace de faire 
+
+304
+00:16:54,884 --> 00:16:57,799
+en sorte que le nombre de paramètres consacrés à cette carte de 
+
+305
+00:16:57,799 --> 00:17:00,760
+valeurs soit le même que celui consacré à la clé et à la requête.
+
+306
+00:17:01,460 --> 00:17:03,259
+Ceci est particulièrement pertinent dans le cadre de 
+
+307
+00:17:03,259 --> 00:17:05,160
+l'exécution de plusieurs têtes d'attention en parallèle.
+
+308
+00:17:06,240 --> 00:17:08,384
+Cela signifie que la carte des valeurs est transformée 
+
+309
+00:17:08,384 --> 00:17:10,099
+en un produit de deux matrices plus petites.
+
+310
+00:17:11,180 --> 00:17:14,212
+D'un point de vue conceptuel, je t'encourage toujours à penser à la 
+
+311
+00:17:14,212 --> 00:17:16,754
+carte linéaire globale, avec des entrées et des sorties, 
+
+312
+00:17:16,754 --> 00:17:19,162
+toutes deux dans cet espace d'intégration plus large, 
+
+313
+00:17:19,162 --> 00:17:22,239
+par exemple en prenant l'intégration du bleu dans cette direction de 
+
+314
+00:17:22,239 --> 00:17:23,800
+bleuité que tu ajouterais aux noms.
+
+315
+00:17:27,040 --> 00:17:29,676
+C'est juste qu'il s'agit d'un plus petit nombre de lignes, 
+
+316
+00:17:29,676 --> 00:17:32,760
+généralement de la même taille que l'espace d'interrogation des clés.
+
+317
+00:17:33,100 --> 00:17:35,599
+Ce que cela signifie, c'est que tu peux considérer que les grands 
+
+318
+00:17:35,599 --> 00:17:38,440
+vecteurs d'intégration sont représentés dans un espace beaucoup plus petit.
+
+319
+00:17:39,040 --> 00:17:40,833
+Ce n'est pas l'appellation conventionnelle, mais 
+
+320
+00:17:40,833 --> 00:17:42,700
+je vais l'appeler la matrice de valeur vers le bas.
+
+321
+00:17:43,400 --> 00:17:46,969
+La deuxième matrice fait remonter cet espace plus petit vers l'espace d'intégration, 
+
+322
+00:17:46,969 --> 00:17:50,580
+produisant ainsi les vecteurs que tu utilises pour effectuer les mises à jour réelles.
+
+323
+00:17:51,000 --> 00:17:52,831
+Je vais appeler celle-ci la matrice de valeur, 
+
+324
+00:17:52,831 --> 00:17:54,740
+ce qui, une fois encore, n'est pas conventionnel.
+
+325
+00:17:55,160 --> 00:17:58,080
+La façon dont tu verrais cela écrit dans la plupart des journaux est un peu différente.
+
+326
+00:17:58,380 --> 00:17:59,520
+J'en parlerai dans une minute.
+
+327
+00:17:59,700 --> 00:18:01,181
+À mon avis, cela a tendance à rendre les choses 
+
+328
+00:18:01,181 --> 00:18:02,540
+un peu plus confuses sur le plan conceptuel.
+
+329
+00:18:03,260 --> 00:18:06,697
+Pour utiliser le jargon de l'algèbre linéaire, ce que nous faisons essentiellement, 
+
+330
+00:18:06,697 --> 00:18:10,340
+c'est contraindre la carte de valeur globale à être une transformation de rang inférieur.
+
+331
+00:18:11,420 --> 00:18:15,474
+Pour en revenir au nombre de paramètres, ces quatre matrices ont la même taille, 
+
+332
+00:18:15,474 --> 00:18:18,777
+et en les additionnant toutes, nous obtenons environ 6,3 millions 
+
+333
+00:18:18,777 --> 00:18:20,780
+de paramètres pour une tête d'attention.
+
+334
+00:18:22,040 --> 00:18:25,193
+Pour être un peu plus précis, tout ce qui a été décrit jusqu'à présent est 
+
+335
+00:18:25,193 --> 00:18:28,472
+ce qu'on appelle une tête d'auto-attention, pour la distinguer d'une variante 
+
+336
+00:18:28,472 --> 00:18:31,500
+qui apparaît dans d'autres modèles et qu'on appelle l'attention croisée.
+
+337
+00:18:32,300 --> 00:18:35,366
+Cela ne concerne pas notre exemple GPT, mais si tu es curieux, 
+
+338
+00:18:35,366 --> 00:18:39,601
+l'attention croisée implique des modèles qui traitent deux types de données distincts, 
+
+339
+00:18:39,601 --> 00:18:43,836
+comme du texte dans une langue et du texte dans une autre langue qui fait partie d'une 
+
+340
+00:18:43,836 --> 00:18:48,120
+génération continue d'une traduction, ou peut-être une entrée audio de la parole et une 
+
+341
+00:18:48,120 --> 00:18:49,240
+transcription en cours.
+
+342
+00:18:50,400 --> 00:18:52,700
+Une tête d'attention croisée a un aspect presque identique.
+
+343
+00:18:52,980 --> 00:18:55,152
+La seule différence est que les cartes clés et les cartes 
+
+344
+00:18:55,152 --> 00:18:57,400
+de requête agissent sur des ensembles de données différents.
+
+345
+00:18:57,840 --> 00:19:01,979
+Dans un modèle de traduction, par exemple, les clés peuvent provenir d'une langue, 
+
+346
+00:19:01,979 --> 00:19:05,769
+tandis que les requêtes viennent d'une autre, et le modèle d'attention peut 
+
+347
+00:19:05,769 --> 00:19:09,660
+décrire quels mots d'une langue correspondent à quels mots d'une autre langue.
+
+348
+00:19:10,340 --> 00:19:12,718
+Et dans ce contexte, il n'y aurait généralement pas de masquage, 
+
+349
+00:19:12,718 --> 00:19:15,681
+puisqu'il n'y a pas vraiment de notion d'influence des jetons ultérieurs sur les 
+
+350
+00:19:15,681 --> 00:19:16,340
+jetons antérieurs.
+
+351
+00:19:17,180 --> 00:19:21,155
+En restant concentré sur l'attention à soi, si tu as tout compris jusqu'à présent 
+
+352
+00:19:21,155 --> 00:19:25,180
+et si tu t'arrêtes ici, tu comprendras l'essence de ce qu'est vraiment l'attention.
+
+353
+00:19:25,760 --> 00:19:28,649
+Tout ce qu'il nous reste à faire, c'est d'exposer le sens 
+
+354
+00:19:28,649 --> 00:19:31,440
+dans lequel tu fais cela de nombreuses fois différentes.
+
+355
+00:19:32,100 --> 00:19:34,527
+Dans notre exemple central, nous nous sommes concentrés sur les 
+
+356
+00:19:34,527 --> 00:19:37,182
+adjectifs actualisant les noms, mais il existe bien sûr de nombreuses 
+
+357
+00:19:37,182 --> 00:19:39,800
+façons différentes dont le contexte peut influencer le sens d'un mot.
+
+358
+00:19:40,360 --> 00:19:43,124
+Si les mots qu'ils ont écrasés précèdent le mot voiture, 
+
+359
+00:19:43,124 --> 00:19:46,520
+cela a des implications sur la forme et la structure de cette voiture.
+
+360
+00:19:47,200 --> 00:19:49,280
+Et beaucoup d'associations pourraient être moins grammaticales.
+
+361
+00:19:49,760 --> 00:19:52,916
+Si le mot sorcier se trouve dans le même passage que Harry, 
+
+362
+00:19:52,916 --> 00:19:57,178
+cela suggère qu'il pourrait s'agir de Harry Potter, alors que si les mots Reine, 
+
+363
+00:19:57,178 --> 00:19:59,757
+Sussex et William se trouvaient dans ce passage, 
+
+364
+00:19:59,757 --> 00:20:04,440
+l'intégration de Harry devrait peut-être être mise à jour pour faire référence au prince.
+
+365
+00:20:05,040 --> 00:20:08,511
+Pour chaque type différent de mise à jour contextuelle que tu pourrais imaginer, 
+
+366
+00:20:08,511 --> 00:20:11,897
+les paramètres de ces matrices de clés et de requêtes seraient différents pour 
+
+367
+00:20:11,897 --> 00:20:15,368
+capturer les différents modèles d'attention, et les paramètres de notre carte de 
+
+368
+00:20:15,368 --> 00:20:19,140
+valeurs seraient différents en fonction de ce qui devrait être ajouté aux enchâssements.
+
+369
+00:20:19,980 --> 00:20:23,272
+Et encore une fois, dans la pratique, le véritable comportement de ces cartes est 
+
+370
+00:20:23,272 --> 00:20:26,726
+beaucoup plus difficile à interpréter, les poids étant réglés pour faire tout ce dont 
+
+371
+00:20:26,726 --> 00:20:30,140
+le modèle a besoin pour accomplir au mieux son objectif de prédire le prochain jeton.
+
+372
+00:20:31,400 --> 00:20:34,988
+Comme je l'ai déjà dit, tout ce que nous avons décrit est une seule tête d'attention, 
+
+373
+00:20:34,988 --> 00:20:38,576
+et un bloc d'attention complet à l'intérieur d'un transformateur consiste en ce qu'on 
+
+374
+00:20:38,576 --> 00:20:42,331
+appelle une attention à plusieurs têtes, où tu exécutes un grand nombre de ces opérations 
+
+375
+00:20:42,331 --> 00:20:45,920
+en parallèle, chacune avec sa propre requête de clé distincte et ses cartes de valeur.
+
+376
+00:20:47,420 --> 00:20:51,700
+GPT-3, par exemple, utilise 96 têtes d'attention à l'intérieur de chaque bloc.
+
+377
+00:20:52,020 --> 00:20:54,507
+Si l'on considère que chacun d'entre eux est déjà un peu confus, 
+
+378
+00:20:54,507 --> 00:20:56,460
+c'est certainement beaucoup à retenir dans ta tête.
+
+379
+00:20:56,760 --> 00:21:00,931
+Pour l'expliquer de façon très explicite, cela signifie que tu as 96 matrices de 
+
+380
+00:21:00,931 --> 00:21:05,000
+clés et de requêtes distinctes qui produisent 96 modèles d'attention distincts.
+
+381
+00:21:05,440 --> 00:21:08,970
+Ensuite, chaque tête a ses propres matrices de valeurs distinctes 
+
+382
+00:21:08,970 --> 00:21:12,180
+utilisées pour produire 96 séquences de vecteurs de valeurs.
+
+383
+00:21:12,460 --> 00:21:16,680
+Ils sont tous additionnés en utilisant les modèles d'attention correspondants comme poids.
+
+384
+00:21:17,480 --> 00:21:21,306
+Cela signifie que pour chaque position dans le contexte, chaque token, 
+
+385
+00:21:21,306 --> 00:21:25,942
+chacune de ces têtes produit une proposition de changement à ajouter à l'encastrement 
+
+386
+00:21:25,942 --> 00:21:27,020
+dans cette position.
+
+387
+00:21:27,660 --> 00:21:31,114
+Ce que tu fais, c'est que tu additionnes tous ces changements proposés, 
+
+388
+00:21:31,114 --> 00:21:35,048
+un pour chaque tête, et tu ajoutes le résultat à l'intégration originale de cette 
+
+389
+00:21:35,048 --> 00:21:35,480
+position.
+
+390
+00:21:36,660 --> 00:21:41,997
+La somme totale ici serait une tranche de ce qui est produit par ce bloc d'attention 
+
+391
+00:21:41,997 --> 00:21:47,460
+à plusieurs têtes, un seul de ces enchâssements raffinés qui sort de l'autre extrémité.
+
+392
+00:21:48,320 --> 00:21:49,965
+Encore une fois, cela fait beaucoup de choses à penser, 
+
+393
+00:21:49,965 --> 00:21:52,140
+alors ne t'inquiète pas du tout si cela prend un peu de temps à assimiler.
+
+394
+00:21:52,380 --> 00:21:56,309
+L'idée générale est qu'en exécutant plusieurs têtes distinctes en parallèle, 
+
+395
+00:21:56,309 --> 00:21:59,268
+tu donnes au modèle la capacité d'apprendre de nombreuses 
+
+396
+00:21:59,268 --> 00:22:01,820
+façons distinctes dont le contexte change le sens.
+
+397
+00:22:03,700 --> 00:22:06,652
+Si l'on fait le décompte des paramètres avec 96 têtes, 
+
+398
+00:22:06,652 --> 00:22:10,034
+chacune comprenant sa propre variation de ces quatre matrices, 
+
+399
+00:22:10,034 --> 00:22:13,845
+chaque bloc d'attention à têtes multiples se retrouve avec environ 600 
+
+400
+00:22:13,845 --> 00:22:15,080
+millions de paramètres.
+
+401
+00:22:16,420 --> 00:22:18,193
+Il y a une chose supplémentaire légèrement ennuyeuse que je 
+
+402
+00:22:18,193 --> 00:22:19,967
+devrais vraiment mentionner pour tous ceux d'entre vous qui 
+
+403
+00:22:19,967 --> 00:22:21,800
+continueront à lire d'autres articles sur les transformateurs.
+
+404
+00:22:22,080 --> 00:22:25,451
+Tu te souviens que j'ai dit que la carte des valeurs est divisée en deux matrices 
+
+405
+00:22:25,451 --> 00:22:29,111
+distinctes, que j'ai appelées les matrices de la valeur vers le bas et de la valeur vers 
+
+406
+00:22:29,111 --> 00:22:29,440
+le haut.
+
+407
+00:22:29,960 --> 00:22:33,939
+La façon dont j'ai formulé les choses suggère que tu vois cette paire de matrices à 
+
+408
+00:22:33,939 --> 00:22:38,155
+l'intérieur de chaque tête d'attention, et tu pourrais absolument l'implémenter de cette 
+
+409
+00:22:38,155 --> 00:22:38,440
+façon.
+
+410
+00:22:38,640 --> 00:22:39,920
+Ce serait une conception valable.
+
+411
+00:22:40,260 --> 00:22:42,572
+Mais la façon dont tu vois cela écrit dans les journaux et la façon 
+
+412
+00:22:42,572 --> 00:22:44,920
+dont c'est mis en œuvre dans la pratique semblent un peu différentes.
+
+413
+00:22:45,340 --> 00:22:49,111
+Toutes ces matrices de valeur pour chaque tête apparaissent agrafées 
+
+414
+00:22:49,111 --> 00:22:53,100
+ensemble dans une matrice géante que nous appelons la matrice de sortie, 
+
+415
+00:22:53,100 --> 00:22:56,380
+associée à l'ensemble du bloc d'attention à plusieurs têtes.
+
+416
+00:22:56,820 --> 00:23:00,088
+Et lorsque tu vois les gens se référer à la matrice de valeur pour une tête 
+
+417
+00:23:00,088 --> 00:23:03,485
+d'attention donnée, ils ne se réfèrent généralement qu'à cette première étape, 
+
+418
+00:23:03,485 --> 00:23:07,140
+celle que j'appelais la projection de la valeur vers le bas dans l'espace plus petit.
+
+419
+00:23:08,340 --> 00:23:11,040
+Pour les plus curieux d'entre vous, j'ai laissé une note à l'écran à ce sujet.
+
+420
+00:23:11,260 --> 00:23:13,674
+C'est l'un de ces détails qui risquent de détourner l'attention des 
+
+421
+00:23:13,674 --> 00:23:16,089
+principaux points conceptuels, mais je tiens à le signaler pour que 
+
+422
+00:23:16,089 --> 00:23:18,540
+tu le saches si tu lis des articles à ce sujet dans d'autres sources.
+
+423
+00:23:19,240 --> 00:23:21,418
+En mettant de côté toutes les nuances techniques, 
+
+424
+00:23:21,418 --> 00:23:24,380
+nous avons vu dans l'aperçu du dernier chapitre que les données qui 
+
+425
+00:23:24,380 --> 00:23:28,040
+passent par un transformateur ne passent pas seulement par un seul bloc d'attention.
+
+426
+00:23:28,640 --> 00:23:32,700
+D'une part, il passe aussi par ces autres opérations appelées perceptrons multicouches.
+
+427
+00:23:33,120 --> 00:23:34,880
+Nous en parlerons plus en détail dans le prochain chapitre.
+
+428
+00:23:35,180 --> 00:23:39,320
+Et ensuite, il passe par de nombreuses copies de ces deux opérations.
+
+429
+00:23:39,980 --> 00:23:44,334
+Cela signifie qu'une fois qu'un mot donné s'est imprégné d'une partie de son contexte, 
+
+430
+00:23:44,334 --> 00:23:47,587
+il y a beaucoup plus de chances pour que cet ancrage plus nuancé 
+
+431
+00:23:47,587 --> 00:23:50,040
+soit influencé par son environnement plus nuancé.
+
+432
+00:23:50,940 --> 00:23:55,058
+Plus on descend dans le réseau, plus chaque intégration prend du sens à partir de toutes 
+
+433
+00:23:55,058 --> 00:23:58,667
+les autres intégrations, qui elles-mêmes deviennent de plus en plus nuancées, 
+
+434
+00:23:58,667 --> 00:24:02,600
+plus on espère avoir la capacité d'encoder des idées plus abstraites et de plus haut 
+
+435
+00:24:02,600 --> 00:24:06,718
+niveau à propos d'une entrée donnée, au-delà des simples descripteurs et de la structure 
+
+436
+00:24:06,718 --> 00:24:07,320
+grammaticale.
+
+437
+00:24:07,880 --> 00:24:11,592
+Des choses comme le sentiment et le ton et s'il s'agit d'un poème et quelles vérités 
+
+438
+00:24:11,592 --> 00:24:15,130
+scientifiques sous-jacentes sont pertinentes pour l'œuvre et des choses comme ça.
+
+439
+00:24:16,700 --> 00:24:21,793
+En revenant une fois de plus à notre comptabilité, GPT-3 comprend 96 couches distinctes, 
+
+440
+00:24:21,793 --> 00:24:26,258
+le nombre total de paramètres clés de requête et de valeur est donc multiplié 
+
+441
+00:24:26,258 --> 00:24:30,722
+par 96 autres, ce qui porte la somme totale à un peu moins de 58 milliards de 
+
+442
+00:24:30,722 --> 00:24:34,500
+paramètres distincts consacrés à l'ensemble des têtes d'attention.
+
+443
+00:24:34,980 --> 00:24:37,912
+C'est beaucoup, certes, mais cela ne représente qu'environ un 
+
+444
+00:24:37,912 --> 00:24:40,940
+tiers des 175 milliards qui se trouvent au total dans le réseau.
+
+445
+00:24:41,520 --> 00:24:44,357
+Ainsi, même si l'attention retient toute l'attention, 
+
+446
+00:24:44,357 --> 00:24:48,140
+la majorité des paramètres proviennent des blocs assis entre ces étapes.
+
+447
+00:24:48,560 --> 00:24:50,961
+Dans le prochain chapitre, toi et moi parlerons davantage de 
+
+448
+00:24:50,961 --> 00:24:53,560
+ces autres blocs et aussi beaucoup plus du processus de formation.
+
+449
+00:24:54,120 --> 00:24:58,371
+Une grande partie du succès du mécanisme d'attention n'est pas tant un type de 
+
+450
+00:24:58,371 --> 00:25:03,160
+comportement spécifique qu'il permet, mais le fait qu'il est extrêmement parallélisable, 
+
+451
+00:25:03,160 --> 00:25:07,949
+ce qui signifie que tu peux exécuter un grand nombre de calculs en peu de temps à l'aide 
+
+452
+00:25:07,949 --> 00:25:08,380
+des GPU.
+
+453
+00:25:09,460 --> 00:25:12,360
+Étant donné que l'une des grandes leçons sur l'apprentissage profond au cours 
+
+454
+00:25:12,360 --> 00:25:15,111
+des dix ou vingt dernières années a été que l'échelle seule semble donner 
+
+455
+00:25:15,111 --> 00:25:17,639
+d'énormes améliorations qualitatives dans la performance du modèle, 
+
+456
+00:25:17,639 --> 00:25:20,539
+il y a un énorme avantage aux architectures parallélisables qui te permettent 
+
+457
+00:25:20,539 --> 00:25:21,060
+de faire cela.
+
+458
+00:25:22,040 --> 00:25:25,340
+Si tu veux en savoir plus, j'ai laissé de nombreux liens dans la description.
+
+459
+00:25:25,920 --> 00:25:27,960
+En particulier, tout ce qui est produit par Andrej 
+
+460
+00:25:27,960 --> 00:25:30,040
+Karpathy ou Chris Ola a tendance à être de l'or pur.
+
+461
+00:25:30,560 --> 00:25:33,960
+Dans cette vidéo, je voulais simplement parler de l'attention sous sa forme actuelle, 
+
+462
+00:25:33,960 --> 00:25:37,004
+mais si tu es curieux de savoir comment nous en sommes arrivés là et comment 
+
+463
+00:25:37,004 --> 00:25:38,942
+tu pourrais réinventer cette idée pour toi-même, 
+
+464
+00:25:38,942 --> 00:25:41,986
+mon ami Vivek vient de mettre en ligne deux vidéos qui donnent beaucoup plus 
+
+465
+00:25:41,986 --> 00:25:42,540
+de motivation.
+
+466
+00:25:43,120 --> 00:25:45,887
+Par ailleurs, Britt Cruz de la chaîne The Art of the Problem a réalisé 
+
+467
+00:25:45,887 --> 00:25:48,460
+une très belle vidéo sur l'histoire des grands modèles de langage.
+
+468
+00:26:04,960 --> 00:26:09,200
+Merci.
+

@@ -1,0 +1,1620 @@
+1
+00:00:00,000 --> 00:00:04,019
+Son bölümde, siz ve ben bir transformatörün iç işleyişini adım adım incelemeye başladık.
+
+2
+00:00:04,560 --> 00:00:07,226
+Bu, büyük dil modellerinin ve modern yapay zeka dalgasındaki 
+
+3
+00:00:07,226 --> 00:00:10,200
+diğer birçok aracın içindeki önemli teknoloji parçalarından biridir.
+
+4
+00:00:10,980 --> 00:00:14,478
+İlk olarak 2017'de yayınlanan Attention is All You Need (İhtiyacınız Olan Tek 
+
+5
+00:00:14,478 --> 00:00:18,022
+Şey Dikkat) adlı ünlü makalede ortaya çıktı ve bu bölümde siz ve ben bu dikkat 
+
+6
+00:00:18,022 --> 00:00:21,700
+mekanizmasının ne olduğunu araştırıp verileri nasıl işlediğini görselleştireceğiz.
+
+7
+00:00:26,140 --> 00:00:29,540
+Kısa bir özet olarak, aklınızda tutmanızı istediğim önemli bağlam şudur.
+
+8
+00:00:30,000 --> 00:00:32,442
+Sizin ve benim üzerinde çalıştığımız modelin amacı, 
+
+9
+00:00:32,442 --> 00:00:36,060
+bir metin parçasını alıp ardından hangi kelimenin geleceğini tahmin etmektir.
+
+10
+00:00:36,860 --> 00:00:40,322
+Girdi metni, belirteçler dediğimiz küçük parçalara ayrılır ve bunlar 
+
+11
+00:00:40,322 --> 00:00:42,681
+genellikle kelimeler veya kelime parçalarıdır, 
+
+12
+00:00:42,681 --> 00:00:46,695
+ancak bu videodaki örnekleri sizin ve benim için düşünmeyi kolaylaştırmak için, 
+
+13
+00:00:46,695 --> 00:00:50,560
+belirteçlerin her zaman sadece kelimeler olduğunu varsayarak basitleştirelim.
+
+14
+00:00:51,480 --> 00:00:54,539
+Bir dönüştürücünün ilk adımı, her bir belirteci gömme olarak 
+
+15
+00:00:54,539 --> 00:00:57,700
+adlandırdığımız yüksek boyutlu bir vektörle ilişkilendirmektir.
+
+16
+00:00:57,700 --> 00:01:00,449
+Aklınızda tutmanızı istediğim en önemli fikir, 
+
+17
+00:01:00,449 --> 00:01:05,186
+tüm olası yerleştirmelerin bu yüksek boyutlu uzaydaki yönlerinin anlamsal anlama 
+
+18
+00:01:05,186 --> 00:01:07,000
+nasıl karşılık gelebileceğidir.
+
+19
+00:01:07,680 --> 00:01:12,570
+Geçen bölümde, yönün cinsiyete nasıl karşılık gelebileceğinin bir örneğini gördük; 
+
+20
+00:01:12,570 --> 00:01:16,635
+bu uzayda belirli bir adım eklemek sizi eril bir ismin gömülmesinden 
+
+21
+00:01:16,635 --> 00:01:19,640
+karşılık gelen dişil ismin gömülmesine götürebilir.
+
+22
+00:01:20,160 --> 00:01:24,012
+Bu sadece bir örnek, bu yüksek boyutlu uzaydaki diğer birçok yönün bir kelimenin 
+
+23
+00:01:24,012 --> 00:01:27,580
+anlamının sayısız başka yönüne karşılık gelebileceğini hayal edebilirsiniz.
+
+24
+00:01:28,800 --> 00:01:32,852
+Bir dönüştürücünün amacı, bu katıştırmaları aşamalı olarak ayarlamaktır, 
+
+25
+00:01:32,852 --> 00:01:35,960
+böylece yalnızca tek bir kelimeyi kodlamakla kalmazlar, 
+
+26
+00:01:35,960 --> 00:01:39,180
+bunun yerine çok daha zengin bir bağlamsal anlam katarlar.
+
+27
+00:01:40,140 --> 00:01:42,838
+Baştan söylemeliyim ki birçok insan dikkat mekanizmasını, 
+
+28
+00:01:42,838 --> 00:01:45,862
+transformatördeki bu kilit parçayı çok kafa karıştırıcı buluyor, 
+
+29
+00:01:45,862 --> 00:01:48,980
+bu yüzden bazı şeylerin oturması biraz zaman alırsa endişelenmeyin.
+
+30
+00:01:49,440 --> 00:01:52,945
+Hesaplama ayrıntılarına ve tüm matris çarpımlarına dalmadan önce, 
+
+31
+00:01:52,945 --> 00:01:56,026
+dikkatin etkinleştirmesini istediğimiz davranış türü için 
+
+32
+00:01:56,026 --> 00:01:59,160
+birkaç örnek üzerinde düşünmeye değer olduğunu düşünüyorum.
+
+33
+00:02:00,140 --> 00:02:06,220
+Amerikan gerçek beni, bir mol karbondioksit ifadelerini düşünün ve benin biyopsisini alın.
+
+34
+00:02:06,700 --> 00:02:08,880
+Siz ve ben, köstebek kelimesinin bunların her birinde 
+
+35
+00:02:08,880 --> 00:02:10,900
+bağlama göre farklı anlamlar taşıdığını biliyoruz.
+
+36
+00:02:11,360 --> 00:02:16,410
+Ancak dönüştürücünün metni parçalayan ve her bir belirteci bir vektörle ilişkilendiren 
+
+37
+00:02:16,410 --> 00:02:21,460
+ilk adımından sonra, ben ile ilişkilendirilen vektör tüm bu durumlarda aynı olacaktır, 
+
+38
+00:02:21,460 --> 00:02:26,220
+çünkü bu ilk belirteç gömme işlemi bağlama referans vermeyen bir arama tablosudur.
+
+39
+00:02:26,620 --> 00:02:29,669
+Yalnızca dönüştürücünün bir sonraki adımında, çevredeki 
+
+40
+00:02:29,669 --> 00:02:33,100
+katıştırmalar bu katıştırmaya bilgi aktarma şansına sahip olur.
+
+41
+00:02:33,820 --> 00:02:38,521
+Aklınızdaki resim, köstebek kelimesinin çoklu farklı anlamlarını kodlayan 
+
+42
+00:02:38,521 --> 00:02:43,794
+bu gömme uzayında çoklu farklı yönler olduğu ve iyi eğitilmiş bir dikkat bloğunun, 
+
+43
+00:02:43,794 --> 00:02:48,369
+bağlamın bir fonksiyonu olarak bu belirli yönlerden birine taşımak için 
+
+44
+00:02:48,369 --> 00:02:51,800
+genel gömmeye ne eklemeniz gerektiğini hesapladığıdır.
+
+45
+00:02:53,300 --> 00:02:56,180
+Başka bir örnek vermek gerekirse, kule kelimesinin gömülmesini ele alalım.
+
+46
+00:02:57,060 --> 00:03:02,226
+Bu muhtemelen uzayda çok genel, spesifik olmayan bir yöndür ve diğer birçok büyük, 
+
+47
+00:03:02,226 --> 00:03:03,720
+uzun isimle ilişkilidir.
+
+48
+00:03:04,020 --> 00:03:06,725
+Bu kelimeden hemen önce Eyfel kelimesi geliyorsa, 
+
+49
+00:03:06,725 --> 00:03:10,457
+mekanizmanın bu vektörü Eyfel kulesini daha spesifik olarak kodlayan 
+
+50
+00:03:10,457 --> 00:03:13,920
+bir yöne işaret edecek şekilde güncellemesini isteyebilirsiniz, 
+
+51
+00:03:13,920 --> 00:03:17,923
+belki de Paris, Fransa ve çelikten yapılmış şeylerle ilişkili vektörlerle 
+
+52
+00:03:17,923 --> 00:03:19,060
+ilişkilendirilebilir.
+
+53
+00:03:19,920 --> 00:03:24,435
+Eğer öncesinde minyatür kelimesi de varsa, o zaman vektör daha da güncellenmelidir, 
+
+54
+00:03:24,435 --> 00:03:27,500
+böylece artık büyük, uzun şeylerle ilişkili olmayacaktır.
+
+55
+00:03:29,480 --> 00:03:33,307
+Dikkat bloğu, bir kelimenin anlamını iyileştirmekten daha genel olarak, 
+
+56
+00:03:33,307 --> 00:03:38,090
+modelin bir gömüde kodlanmış bilgiyi, potansiyel olarak oldukça uzakta olan ve potansiyel 
+
+57
+00:03:38,090 --> 00:03:42,609
+olarak tek bir kelimeden çok daha zengin bilgiler içeren başka bir gömüye taşımasına 
+
+58
+00:03:42,609 --> 00:03:43,300
+olanak tanır.
+
+59
+00:03:43,300 --> 00:03:48,335
+Son bölümde gördüğümüz şey, birçok farklı dikkat bloğu da dahil olmak üzere tüm 
+
+60
+00:03:48,335 --> 00:03:53,307
+vektörler ağdan geçtikten sonra, bir sonraki belirtecin tahminini üretmek için 
+
+61
+00:03:53,307 --> 00:03:58,280
+yaptığınız hesaplamanın tamamen dizideki son vektörün bir fonksiyonu olduğuydu.
+
+62
+00:03:59,100 --> 00:04:04,430
+Örneğin, girdiğiniz metnin bütün bir gizem romanının büyük bir kısmı olduğunu düşünün, 
+
+63
+00:04:04,430 --> 00:04:07,800
+sonuna yakın bir noktaya kadar, bu nedenle katil şuydu.
+
+64
+00:04:08,400 --> 00:04:11,979
+Eğer model bir sonraki kelimeyi doğru bir şekilde tahmin edecekse, 
+
+65
+00:04:11,979 --> 00:04:16,039
+hayatına sadece "was" kelimesini gömerek başlayan dizideki bu son vektörün, 
+
+66
+00:04:16,039 --> 00:04:19,939
+tüm dikkat blokları tarafından herhangi bir kelimeden çok daha fazlasını 
+
+67
+00:04:19,939 --> 00:04:24,052
+temsil edecek şekilde güncellenmesi, bir şekilde bir sonraki kelimeyi tahmin 
+
+68
+00:04:24,052 --> 00:04:28,220
+etmekle ilgili tüm bağlam penceresindeki tüm bilgileri kodlaması gerekecektir.
+
+69
+00:04:29,500 --> 00:04:32,580
+Hesaplamaların üzerinden geçmek için çok daha basit bir örnek ele alalım.
+
+70
+00:04:32,980 --> 00:04:37,960
+Girdinin, yemyeşil ormanda dolaşan kabarık mavi bir yaratık ifadesini içerdiğini düşünün.
+
+71
+00:04:38,460 --> 00:04:42,707
+Ve şimdilik, önemsediğimiz tek güncelleme türünün sıfatların kendilerine 
+
+72
+00:04:42,707 --> 00:04:46,780
+karşılık gelen isimlerin anlamlarını değiştirmesi olduğunu varsayalım.
+
+73
+00:04:47,000 --> 00:04:49,566
+Anlatmak üzere olduğum şey, tek bir dikkat kafası olarak 
+
+74
+00:04:49,566 --> 00:04:52,448
+adlandırabileceğimiz şeydir ve daha sonra dikkat bloğunun nasıl 
+
+75
+00:04:52,448 --> 00:04:55,420
+paralel olarak çalışan birçok farklı kafadan oluştuğunu göreceğiz.
+
+76
+00:04:56,140 --> 00:04:59,650
+Yine, her kelime için ilk gömme, bağlam olmaksızın yalnızca söz 
+
+77
+00:04:59,650 --> 00:05:03,380
+konusu kelimenin anlamını kodlayan bazı yüksek boyutlu vektörlerdir.
+
+78
+00:05:04,000 --> 00:05:05,220
+Aslında, bu tam olarak doğru değil.
+
+79
+00:05:05,380 --> 00:05:07,640
+Ayrıca kelimenin konumunu da kodlarlar.
+
+80
+00:05:07,980 --> 00:05:10,853
+Konumların kodlanma şekliyle ilgili söylenecek çok şey var, 
+
+81
+00:05:10,853 --> 00:05:14,397
+ancak şu anda bilmeniz gereken tek şey, bu vektörün girdilerinin size hem 
+
+82
+00:05:14,397 --> 00:05:18,037
+kelimenin ne olduğunu hem de bağlam içinde nerede bulunduğunu söylemek için 
+
+83
+00:05:18,037 --> 00:05:18,900
+yeterli olduğudur.
+
+84
+00:05:19,500 --> 00:05:21,660
+Devam edelim ve bu yerleştirmeleri e harfi ile gösterelim.
+
+85
+00:05:22,420 --> 00:05:28,059
+Amaç, bir dizi hesaplamanın, örneğin isimlere karşılık gelenlerin karşılık gelen 
+
+86
+00:05:28,059 --> 00:05:33,420
+sıfatlardan anlam aldığı yeni bir rafine gömme kümesi üretmesini sağlamaktır.
+
+87
+00:05:33,900 --> 00:05:37,020
+Ve derin öğrenme oyununu oynarken, ilgili hesaplamaların çoğunun 
+
+88
+00:05:37,020 --> 00:05:40,428
+matris-vektör çarpımları gibi görünmesini istiyoruz; burada matrisler, 
+
+89
+00:05:40,428 --> 00:05:43,980
+modelin verilere dayalı olarak öğreneceği ayarlanabilir ağırlıklarla dolu.
+
+90
+00:05:44,660 --> 00:05:48,352
+Açık olmak gerekirse, sıfatların isimleri güncellemesine ilişkin bu örneği sadece bir 
+
+91
+00:05:48,352 --> 00:05:51,744
+dikkat kafasının yaptığını hayal edebileceğiniz davranış türünü göstermek için 
+
+92
+00:05:51,744 --> 00:05:52,260
+uyduruyorum.
+
+93
+00:05:52,860 --> 00:05:55,744
+Pek çok derin öğrenmede olduğu gibi, gerçek davranışı ayrıştırmak 
+
+94
+00:05:55,744 --> 00:05:58,673
+çok daha zordur çünkü bazı maliyet fonksiyonlarını en aza indirmek 
+
+95
+00:05:58,673 --> 00:06:01,340
+için çok sayıda parametreyi ayarlamaya ve ayarlamaya dayanır.
+
+96
+00:06:01,680 --> 00:06:06,057
+Sadece, bu sürece dahil olan parametrelerle dolu farklı matrisler boyunca adım atarken, 
+
+97
+00:06:06,057 --> 00:06:09,937
+her şeyi daha somut tutmaya yardımcı olmak için yapabileceği bir şeyin hayali 
+
+98
+00:06:09,937 --> 00:06:13,220
+bir örneğine sahip olmanın gerçekten yararlı olduğunu düşünüyorum.
+
+99
+00:06:14,140 --> 00:06:18,273
+Bu sürecin ilk adımı için, yaratık gibi her bir ismin şu soruyu sorduğunu 
+
+100
+00:06:18,273 --> 00:06:21,960
+hayal edebilirsiniz: Hey, önümde oturan herhangi bir sıfat var mı?
+
+101
+00:06:22,160 --> 00:06:25,956
+Ve kabarık ve mavi kelimeleri için, her birinin cevap verebilmesi için, 
+
+102
+00:06:25,956 --> 00:06:27,960
+evet, ben bir sıfatım ve o konumdayım.
+
+103
+00:06:28,960 --> 00:06:32,472
+Bu soru bir şekilde başka bir vektör, başka bir sayı listesi 
+
+104
+00:06:32,472 --> 00:06:36,100
+olarak kodlanır ve biz buna bu kelime için sorgu adını veririz.
+
+105
+00:06:36,980 --> 00:06:42,020
+Ancak bu sorgu vektörü gömme vektöründen çok daha küçük bir boyuta sahiptir, örneğin 128.
+
+106
+00:06:42,940 --> 00:06:46,330
+Bu sorguyu hesaplamak, wq olarak etiketleyeceğim belirli 
+
+107
+00:06:46,330 --> 00:06:49,780
+bir matrisi almak ve onu gömme ile çarpmak gibi görünüyor.
+
+108
+00:06:50,960 --> 00:06:55,573
+İşleri biraz sıkıştırarak, bu sorgu vektörünü q olarak yazalım ve sonra bunun gibi 
+
+109
+00:06:55,573 --> 00:06:58,408
+bir okun yanına bir matris koyduğumu gördüğünüzde, 
+
+110
+00:06:58,408 --> 00:07:03,076
+bu matrisin okun başlangıcındaki vektörle çarpılmasının size okun sonundaki vektörü 
+
+111
+00:07:03,076 --> 00:07:04,800
+verdiğini temsil etmek içindir.
+
+112
+00:07:05,860 --> 00:07:09,129
+Bu durumda, bu matrisi bağlamdaki tüm katıştırmalarla 
+
+113
+00:07:09,129 --> 00:07:12,580
+çarparak her belirteç için bir sorgu vektörü üretirsiniz.
+
+114
+00:07:13,740 --> 00:07:16,400
+Bu matrisin girdileri modelin parametreleridir, 
+
+115
+00:07:16,400 --> 00:07:21,112
+yani gerçek davranış verilerden öğrenilir ve pratikte bu matrisin belirli bir dikkat 
+
+116
+00:07:21,112 --> 00:07:23,440
+kafasında ne yaptığını ayrıştırmak zordur.
+
+117
+00:07:23,900 --> 00:07:28,318
+Ancak bizim iyiliğimiz için, öğrenmesini umabileceğimiz bir örnek hayal ederek, 
+
+118
+00:07:28,318 --> 00:07:32,847
+bu sorgu matrisinin, isimlerin gömülmelerini, bir şekilde önceki konumlarda sıfat 
+
+119
+00:07:32,847 --> 00:07:37,321
+arama kavramını kodlayan bu daha küçük sorgu uzayında belirli yönlere eşlediğini 
+
+120
+00:07:37,321 --> 00:07:38,040
+varsayacağız.
+
+121
+00:07:38,780 --> 00:07:41,440
+Diğer yerleştirmelere ne yaptığını ise kim bilebilir?
+
+122
+00:07:41,720 --> 00:07:44,340
+Belki de bunlarla aynı anda başka bir hedefi gerçekleştirmeye çalışıyordur.
+
+123
+00:07:44,540 --> 00:07:47,160
+Şu anda isimlere odaklanmış durumdayız.
+
+124
+00:07:47,280 --> 00:07:50,950
+Aynı zamanda, bununla ilişkili olarak anahtar matrisi adı verilen 
+
+125
+00:07:50,950 --> 00:07:54,620
+ikinci bir matris vardır ve bunu da her bir gömme ile çarparsınız.
+
+126
+00:07:55,280 --> 00:07:58,500
+Bu, anahtar olarak adlandırdığımız ikinci bir vektör dizisi üretir.
+
+127
+00:07:59,420 --> 00:08:01,280
+Kavramsal olarak, anahtarları potansiyel olarak 
+
+128
+00:08:01,280 --> 00:08:03,140
+sorguları yanıtlıyor olarak düşünmek istersiniz.
+
+129
+00:08:03,840 --> 00:08:07,592
+Bu anahtar matrisi de ayarlanabilir parametrelerle doludur ve tıpkı 
+
+130
+00:08:07,592 --> 00:08:11,400
+sorgu matrisi gibi gömme vektörlerini aynı küçük boyutlu uzaya eşler.
+
+131
+00:08:12,200 --> 00:08:14,871
+Anahtarları, birbirleriyle yakın hizalandıklarında 
+
+132
+00:08:14,871 --> 00:08:17,020
+sorgularla eşleşiyor olarak düşünürsünüz.
+
+133
+00:08:17,460 --> 00:08:20,995
+Örneğimizde, anahtar matrisinin kabarık ve mavi gibi sıfatları, 
+
+134
+00:08:20,995 --> 00:08:25,635
+yaratık kelimesinin ürettiği sorguyla yakından hizalanan vektörlerle eşleştirdiğini 
+
+135
+00:08:25,635 --> 00:08:26,740
+hayal edebilirsiniz.
+
+136
+00:08:27,200 --> 00:08:30,554
+Her bir anahtarın her bir sorguyla ne kadar iyi eşleştiğini ölçmek için, 
+
+137
+00:08:30,554 --> 00:08:34,000
+her bir olası anahtar-sorgu çifti arasında bir nokta çarpımı hesaplarsınız.
+
+138
+00:08:34,480 --> 00:08:38,427
+Büyük noktaların daha büyük nokta ürünlerine, anahtarların ve sorguların hizalandığı 
+
+139
+00:08:38,427 --> 00:08:42,559
+yerlere karşılık geldiği bir grup nokta ile dolu bir ızgarayı görselleştirmeyi seviyorum.
+
+140
+00:08:43,280 --> 00:08:46,464
+Sıfat isim örneğimiz için, bu biraz daha şuna benzer; 
+
+141
+00:08:46,464 --> 00:08:51,242
+eğer fluffy ve blue tarafından üretilen anahtarlar gerçekten creature tarafından 
+
+142
+00:08:51,242 --> 00:08:54,132
+üretilen sorguyla yakın bir şekilde hizalanırsa, 
+
+143
+00:08:54,132 --> 00:08:58,320
+bu iki noktadaki nokta çarpımları bazı büyük pozitif sayılar olacaktır.
+
+144
+00:08:59,100 --> 00:09:02,307
+Makine öğrenimi uzmanları bunun, kabarık ve mavinin gömülmelerinin 
+
+145
+00:09:02,307 --> 00:09:05,420
+yaratığın gömülmesine katıldığı anlamına geldiğini söyleyecektir.
+
+146
+00:09:06,040 --> 00:09:11,108
+Bunun aksine, the gibi başka bir kelimenin anahtarı ile creature sorgusu arasındaki 
+
+147
+00:09:11,108 --> 00:09:15,996
+nokta çarpımı, birbiriyle ilgisiz olduğunu yansıtan küçük veya negatif bir değer 
+
+148
+00:09:15,996 --> 00:09:16,600
+olacaktır.
+
+149
+00:09:17,700 --> 00:09:21,246
+Böylece, negatif sonsuzdan sonsuza kadar herhangi bir gerçek sayı olabilen 
+
+150
+00:09:21,246 --> 00:09:24,744
+ve bize her bir kelimenin diğer tüm kelimelerin anlamını güncellemekle ne 
+
+151
+00:09:24,744 --> 00:09:28,480
+kadar ilgili olduğuna dair bir puan veren bu değerler tablosuna sahip oluyoruz.
+
+152
+00:09:29,200 --> 00:09:32,516
+Bu puanları kullanmanın yolu, her sütun boyunca alaka düzeyine 
+
+153
+00:09:32,516 --> 00:09:35,780
+göre ağırlıklandırılmış belirli bir ağırlıklı toplam almaktır.
+
+154
+00:09:36,520 --> 00:09:40,692
+Dolayısıyla, değerlerin negatif sonsuzdan sonsuza kadar uzanması yerine, 
+
+155
+00:09:40,692 --> 00:09:44,636
+istediğimiz şey bu sütunlardaki sayıların 0 ile 1 arasında olması ve 
+
+156
+00:09:44,636 --> 00:09:48,180
+her sütunun bir olasılık dağılımı gibi toplamının 1 olmasıdır.
+
+157
+00:09:49,280 --> 00:09:52,220
+Eğer son bölümden geliyorsanız, o zaman ne yapmamız gerektiğini biliyorsunuz.
+
+158
+00:09:52,620 --> 00:09:57,300
+Değerleri normalleştirmek için bu sütunların her biri boyunca bir softmax hesaplıyoruz.
+
+159
+00:10:00,060 --> 00:10:02,960
+Resmimizde, tüm sütunlara softmax uyguladıktan sonra, 
+
+160
+00:10:02,960 --> 00:10:05,860
+ızgarayı bu normalleştirilmiş değerlerle dolduracağız.
+
+161
+00:10:06,780 --> 00:10:10,463
+Bu noktada, her bir sütuna soldaki kelimenin üstteki karşılık gelen 
+
+162
+00:10:10,463 --> 00:10:14,580
+değerle ne kadar alakalı olduğuna göre ağırlık verdiğinizi düşünebilirsiniz.
+
+163
+00:10:15,080 --> 00:10:16,840
+Bu ızgaraya dikkat örüntüsü diyoruz.
+
+164
+00:10:18,080 --> 00:10:20,404
+Şimdi orijinal transformatör belgesine bakarsanız, 
+
+165
+00:10:20,404 --> 00:10:22,820
+tüm bunları yazdıkları gerçekten kompakt bir yol var.
+
+166
+00:10:23,880 --> 00:10:29,290
+Burada q ve k değişkenleri sırasıyla sorgu ve anahtar vektörlerinin tam dizilerini temsil 
+
+167
+00:10:29,290 --> 00:10:34,640
+eder; gömülmeleri sorgu ve anahtar matrisleriyle çarparak elde ettiğiniz küçük vektörler.
+
+168
+00:10:35,160 --> 00:10:39,117
+Paydaki bu ifade, anahtar ve sorgu çiftleri arasındaki tüm olası nokta 
+
+169
+00:10:39,117 --> 00:10:43,020
+çarpımlarının ızgarasını temsil etmenin gerçekten kompakt bir yoludur.
+
+170
+00:10:44,000 --> 00:10:48,980
+Bahsetmediğim küçük bir teknik ayrıntı, sayısal istikrar için bu değerlerin tümünü 
+
+171
+00:10:48,980 --> 00:10:53,960
+söz konusu anahtar sorgu alanındaki boyutun kareköküne bölmenin yararlı olacağıdır.
+
+172
+00:10:54,480 --> 00:10:58,110
+Ardından, tam ifadenin etrafına sarılan bu softmax'ın 
+
+173
+00:10:58,110 --> 00:11:00,800
+sütun sütun uygulanacağı anlaşılmalıdır.
+
+174
+00:11:01,640 --> 00:11:04,700
+Bu terim hakkında birazdan konuşacağız.
+
+175
+00:11:05,020 --> 00:11:08,460
+Bundan önce, şimdiye kadar atladığım bir teknik ayrıntı daha var.
+
+176
+00:11:09,040 --> 00:11:12,477
+Eğitim süreci sırasında, bu modeli belirli bir metin örneği üzerinde 
+
+177
+00:11:12,477 --> 00:11:16,214
+çalıştırdığınızda ve tüm ağırlıklar, pasajdaki bir sonraki gerçek kelimeye 
+
+178
+00:11:16,214 --> 00:11:19,951
+ne kadar yüksek bir olasılık atadığına bağlı olarak onu ödüllendirmek veya 
+
+179
+00:11:19,951 --> 00:11:23,787
+cezalandırmak için hafifçe ayarlandığında, bu pasajdaki her bir ilk belirteç 
+
+180
+00:11:23,787 --> 00:11:27,673
+dizisini takip eden olası her bir sonraki belirteci aynı anda tahmin etmesini 
+
+181
+00:11:27,673 --> 00:11:31,560
+sağlarsanız, tüm eğitim sürecini çok daha verimli hale getirdiği ortaya çıkar.
+
+182
+00:11:31,940 --> 00:11:35,376
+Örneğin, üzerinde durduğumuz ifadede, creature kelimesinden sonra hangi kelimelerin 
+
+183
+00:11:35,376 --> 00:11:38,731
+geleceğini ve the kelimesinden sonra hangi kelimelerin geleceğini tahmin etmek de 
+
+184
+00:11:38,731 --> 00:11:39,100
+olabilir.
+
+185
+00:11:39,940 --> 00:11:42,750
+Bu gerçekten güzel, çünkü aksi takdirde tek bir eğitim örneğinin etkili 
+
+186
+00:11:42,750 --> 00:11:45,560
+bir şekilde birçok eğitim örneği olarak işlev göreceği anlamına geliyor.
+
+187
+00:11:46,100 --> 00:11:48,176
+Dikkat modelimizin amaçları doğrultusunda, bu, 
+
+188
+00:11:48,176 --> 00:11:51,180
+sonraki kelimelerin önceki kelimeleri etkilemesine asla izin vermek 
+
+189
+00:11:51,180 --> 00:11:54,361
+istemediğiniz anlamına gelir, çünkü aksi takdirde bir sonraki kelimenin 
+
+190
+00:11:54,361 --> 00:11:56,040
+cevabını bir şekilde ele verebilirler.
+
+191
+00:11:56,560 --> 00:12:00,502
+Bunun anlamı, buradaki tüm bu noktaların, daha öncekileri etkileyen sonraki 
+
+192
+00:12:00,502 --> 00:12:04,600
+belirteçleri temsil edenlerin, bir şekilde sıfır olmaya zorlanmasını istiyoruz.
+
+193
+00:12:05,920 --> 00:12:08,926
+Yapmayı düşünebileceğiniz en basit şey bunları sıfıra eşitlemektir, 
+
+194
+00:12:08,926 --> 00:12:12,420
+ancak bunu yaparsanız sütunların toplamı artık bir olmaz, normalleştirilmezler.
+
+195
+00:12:13,120 --> 00:12:16,263
+Bunun yerine, bunu yapmanın yaygın bir yolu, softmax uygulamadan 
+
+196
+00:12:16,263 --> 00:12:19,020
+önce tüm bu girişleri negatif sonsuz olarak ayarlamaktır.
+
+197
+00:12:19,680 --> 00:12:23,172
+Bunu yaparsanız, softmax uygulandıktan sonra bunların tümü sıfıra dönüştürülür, 
+
+198
+00:12:23,172 --> 00:12:25,180
+ancak sütunlar normalleştirilmiş olarak kalır.
+
+199
+00:12:26,000 --> 00:12:27,540
+Bu işleme maskeleme adı verilir.
+
+200
+00:12:27,540 --> 00:12:31,032
+Bunu uygulamadığınız dikkat versiyonları vardır, ancak GPT örneğimizde, 
+
+201
+00:12:31,032 --> 00:12:34,378
+bu eğitim aşamasında, örneğin bir sohbet robotu veya benzeri bir şey 
+
+202
+00:12:34,378 --> 00:12:37,822
+olarak çalıştırmaktan daha alakalı olsa da, daha sonraki belirteçlerin 
+
+203
+00:12:37,822 --> 00:12:41,460
+öncekileri etkilemesini önlemek için her zaman bu maskelemeyi uygularsınız.
+
+204
+00:12:42,480 --> 00:12:46,046
+Bu dikkat örüntüsü hakkında üzerinde düşünmeye değer bir başka 
+
+205
+00:12:46,046 --> 00:12:49,500
+gerçek de boyutunun bağlam boyutunun karesine eşit olmasıdır.
+
+206
+00:12:49,900 --> 00:12:52,673
+İşte bu yüzden bağlam boyutu büyük dil modelleri için gerçekten 
+
+207
+00:12:52,673 --> 00:12:55,620
+büyük bir darboğaz olabilir ve bunu ölçeklendirmek önemsiz değildir.
+
+208
+00:12:56,300 --> 00:13:00,355
+Tahmin edebileceğiniz gibi, daha büyük ve daha büyük bağlam pencereleri arzusuyla, 
+
+209
+00:13:00,355 --> 00:13:04,655
+son yıllarda bağlamı daha ölçeklenebilir hale getirmeyi amaçlayan dikkat mekanizmasında 
+
+210
+00:13:04,655 --> 00:13:08,320
+bazı varyasyonlar görüldü, ancak burada siz ve ben temellere odaklanıyoruz.
+
+211
+00:13:10,560 --> 00:13:13,119
+Tamam, harika, bu örüntüyü hesaplamak modelin hangi kelimelerin 
+
+212
+00:13:13,119 --> 00:13:15,480
+hangi diğer kelimelerle ilgili olduğunu çıkarmasını sağlar.
+
+213
+00:13:16,020 --> 00:13:19,073
+Şimdi, kelimelerin ilgili oldukları diğer kelimelere bilgi 
+
+214
+00:13:19,073 --> 00:13:22,800
+aktarmasına izin vererek katıştırmaları gerçekten güncellemeniz gerekir.
+
+215
+00:13:22,800 --> 00:13:26,688
+Örneğin, Fluffy'nin gömülmesinin bir şekilde Creature'da bir değişikliğe 
+
+216
+00:13:26,688 --> 00:13:30,737
+neden olmasını ve onu bu 12.000 boyutlu gömme uzayının daha spesifik olarak 
+
+217
+00:13:30,737 --> 00:13:34,520
+Fluffy yaratığını kodlayan farklı bir bölümüne taşımasını istiyorsunuz.
+
+218
+00:13:35,460 --> 00:13:39,604
+Burada yapacağım şey, öncelikle size bunu yapabileceğiniz en basit yolu göstermektir, 
+
+219
+00:13:39,604 --> 00:13:43,460
+ancak bunun çok başlı dikkat bağlamında değiştirilmesinin küçük bir yolu vardır.
+
+220
+00:13:44,080 --> 00:13:47,687
+Bunun en basit yolu, değer matrisi dediğimiz ve ilk kelimenin, 
+
+221
+00:13:47,687 --> 00:13:52,440
+örneğin Fluffy'nin gömülmesiyle çarpacağınız üçüncü bir matris kullanmak olacaktır.
+
+222
+00:13:53,300 --> 00:13:55,971
+Bunun sonucunda bir değer vektörü elde edilir ve bu, 
+
+223
+00:13:55,971 --> 00:13:58,592
+ikinci sözcüğün gömülmesine eklediğiniz bir şeydir, 
+
+224
+00:13:58,592 --> 00:14:01,920
+bu durumda Creature sözcüğünün gömülmesine eklediğiniz bir şeydir.
+
+225
+00:14:02,600 --> 00:14:07,000
+Dolayısıyla bu değer vektörü, gömülmelerle aynı çok yüksek boyutlu uzayda yaşar.
+
+226
+00:14:07,460 --> 00:14:11,157
+Bu değer matrisini bir kelimenin gömülmesiyle çarptığınızda, 
+
+227
+00:14:11,157 --> 00:14:15,340
+bunu şöyle düşünebilirsiniz: Eğer bu kelime başka bir şeyin anlamını 
+
+228
+00:14:15,340 --> 00:14:19,765
+ayarlamakla ilgiliyse, bunu yansıtmak için o başka şeyin gömülmesine tam 
+
+229
+00:14:19,765 --> 00:14:21,160
+olarak ne eklenmelidir?
+
+230
+00:14:22,140 --> 00:14:26,342
+Diyagramımıza geri dönersek, tüm anahtarları ve sorguları bir kenara bırakalım, 
+
+231
+00:14:26,342 --> 00:14:29,966
+çünkü dikkat örüntüsünü hesapladıktan sonra bunlarla işiniz bitecek, 
+
+232
+00:14:29,966 --> 00:14:34,694
+sonra bu değer matrisini alacak ve bir dizi değer vektörü üretmek için bu katıştırmaların 
+
+233
+00:14:34,694 --> 00:14:36,060
+her biriyle çarpacaksınız.
+
+234
+00:14:37,120 --> 00:14:41,120
+Bu değer vektörlerini ilgili anahtarlarla ilişkilendirilmiş olarak düşünebilirsiniz.
+
+235
+00:14:42,320 --> 00:14:45,780
+Bu diyagramdaki her sütun için, değer vektörlerinin her 
+
+236
+00:14:45,780 --> 00:14:49,240
+birini o sütundaki karşılık gelen ağırlıkla çarparsınız.
+
+237
+00:14:50,080 --> 00:14:53,824
+Örneğin burada, Yaratık'ın gömülmesi altında, Fluffy ve Blue 
+
+238
+00:14:53,824 --> 00:14:57,385
+için büyük oranda değer vektörü eklerken, diğer tüm değer 
+
+239
+00:14:57,385 --> 00:15:01,560
+vektörlerini sıfırlarsınız ya da en azından neredeyse sıfırlarsınız.
+
+240
+00:15:02,120 --> 00:15:06,554
+Ve son olarak, daha önce Creature'ın bağlamdan bağımsız bir anlamını kodlayan bu sütunla 
+
+241
+00:15:06,554 --> 00:15:09,145
+ilişkili katıştırmayı gerçekten güncellemenin yolu, 
+
+242
+00:15:09,145 --> 00:15:13,131
+sütundaki tüm bu yeniden ölçeklendirilmiş değerleri bir araya getirerek eklemek 
+
+243
+00:15:13,131 --> 00:15:17,366
+istediğiniz bir değişiklik üretirsiniz, bunu delta-e olarak etiketleyeceğim ve sonra 
+
+244
+00:15:17,366 --> 00:15:19,260
+bunu orijinal katıştırmaya eklersiniz.
+
+245
+00:15:19,680 --> 00:15:23,186
+Sonuç olarak, kabarık mavi bir yaratık gibi bağlamsal açıdan daha zengin 
+
+246
+00:15:23,186 --> 00:15:26,500
+bir anlamı kodlayan daha rafine bir vektör ortaya çıkmasını umuyoruz.
+
+247
+00:15:27,380 --> 00:15:30,200
+Ve elbette bunu sadece bir gömüye yapmazsınız, 
+
+248
+00:15:30,200 --> 00:15:34,040
+aynı ağırlıklı toplamı bu resimdeki tüm sütunlara uygularsınız, 
+
+249
+00:15:34,040 --> 00:15:39,020
+bir dizi değişiklik üretirsiniz, tüm bu değişiklikleri ilgili gömülere eklersiniz, 
+
+250
+00:15:39,020 --> 00:15:43,460
+dikkat bloğundan çıkan daha rafine gömülerin tam bir dizisini üretirsiniz.
+
+251
+00:15:44,860 --> 00:15:49,100
+Uzaklaştırıldığında, tüm bu süreç tek bir dikkat olarak tanımlanabilir.
+
+252
+00:15:49,600 --> 00:15:54,673
+Şimdiye kadar anlattığım gibi, bu süreç üç farklı matris tarafından parametrelendirilir 
+
+253
+00:15:54,673 --> 00:15:58,940
+ve hepsi ayarlanabilir parametrelerle doldurulur: anahtar, sorgu ve değer.
+
+254
+00:15:59,500 --> 00:16:03,867
+GPT-3'teki sayıları kullanarak model parametrelerinin toplam sayısını saydığımız puanlama 
+
+255
+00:16:03,867 --> 00:16:08,040
+ile geçen bölümde başladığımız şeye devam etmek için bir dakikanızı ayırmak istiyorum.
+
+256
+00:16:09,300 --> 00:16:14,578
+Bu anahtar ve sorgu matrislerinin her biri, gömme boyutuyla eşleşen 12.288 sütuna 
+
+257
+00:16:14,578 --> 00:16:19,600
+ve bu daha küçük anahtar sorgu uzayının boyutuyla eşleşen 128 satıra sahiptir.
+
+258
+00:16:20,260 --> 00:16:24,220
+Bu da bize her biri için 1,5 milyon civarında ek parametre sağlar.
+
+259
+00:16:24,860 --> 00:16:30,045
+Buna karşın değer matrisine bakarsanız, şu ana kadar anlattığım şekilde 
+
+260
+00:16:30,045 --> 00:16:35,302
+12.288 sütun ve 12.288 satıra sahip bir kare matris olduğunu görürsünüz, 
+
+261
+00:16:35,302 --> 00:16:40,920
+çünkü hem girdileri hem de çıktıları bu çok büyük gömme uzayında yaşamaktadır.
+
+262
+00:16:41,500 --> 00:16:45,140
+Eğer doğruysa, bu yaklaşık 150 milyon ilave parametre anlamına gelecektir.
+
+263
+00:16:45,660 --> 00:16:47,300
+Ve açık olmak gerekirse, bunu yapabilirsiniz.
+
+264
+00:16:47,420 --> 00:16:51,740
+Değer haritasına anahtar ve sorgudan çok daha fazla parametre ayırabilirsiniz.
+
+265
+00:16:52,060 --> 00:16:56,220
+Ancak pratikte, bunun yerine bu değer haritasına ayrılan parametre sayısının 
+
+266
+00:16:56,220 --> 00:17:00,760
+anahtar ve sorguya ayrılan sayı ile aynı olmasını sağlarsanız çok daha verimli olur.
+
+267
+00:17:01,460 --> 00:17:03,403
+Bu, özellikle birden fazla dikkat kafasının paralel 
+
+268
+00:17:03,403 --> 00:17:05,160
+olarak çalıştırıldığı ortamlar için geçerlidir.
+
+269
+00:17:06,240 --> 00:17:08,463
+Bunun görünüşü, değer haritasının iki küçük matrisin 
+
+270
+00:17:08,463 --> 00:17:10,099
+çarpımı olarak çarpanlara ayrılmasıdır.
+
+271
+00:17:11,180 --> 00:17:15,601
+Kavramsal olarak, sizi yine de genel doğrusal harita hakkında düşünmeye teşvik ediyorum, 
+
+272
+00:17:15,601 --> 00:17:19,676
+her ikisi de bu daha büyük gömme uzayında girdileri ve çıktıları olan bir harita, 
+
+273
+00:17:19,676 --> 00:17:23,800
+örneğin mavinin gömülmesini isimlere ekleyeceğiniz bu mavilik yönüne götürmek gibi.
+
+274
+00:17:27,040 --> 00:17:32,760
+Sadece daha az sayıda satırdır, tipik olarak anahtar sorgu alanıyla aynı boyuttadır.
+
+275
+00:17:33,100 --> 00:17:35,770
+Bunun anlamı, büyük gömme vektörlerini çok daha 
+
+276
+00:17:35,770 --> 00:17:38,440
+küçük bir uzaya eşlemek olarak düşünebilirsiniz.
+
+277
+00:17:39,040 --> 00:17:42,700
+Bu geleneksel bir adlandırma değil, ancak ben buna değer aşağı matrisi diyeceğim.
+
+278
+00:17:43,400 --> 00:17:46,990
+İkinci matris, bu daha küçük uzaydan gömme uzayına geri eşlenerek 
+
+279
+00:17:46,990 --> 00:17:50,580
+gerçek güncellemeleri yapmak için kullandığınız vektörleri üretir.
+
+280
+00:17:51,000 --> 00:17:54,740
+Ben buna yine geleneksel olmayan değer yukarı matrisi diyeceğim.
+
+281
+00:17:55,160 --> 00:17:58,080
+Bunun çoğu gazetede yazılış şekli biraz farklıdır.
+
+282
+00:17:58,380 --> 00:17:59,520
+Birazdan bundan bahsedeceğim.
+
+283
+00:17:59,700 --> 00:18:02,540
+Bana göre bu, işleri kavramsal olarak biraz daha kafa karıştırıcı hale getirme eğiliminde.
+
+284
+00:18:03,260 --> 00:18:05,696
+Burada doğrusal cebir jargonunu kullanmak gerekirse, 
+
+285
+00:18:05,696 --> 00:18:09,328
+temelde yaptığımız şey genel değer haritasını düşük rütbeli bir dönüşüm olacak 
+
+286
+00:18:09,328 --> 00:18:10,340
+şekilde kısıtlamaktır.
+
+287
+00:18:11,420 --> 00:18:16,126
+Parametre sayısına geri dönecek olursak, bu matrislerin dördü de aynı boyuta sahiptir ve 
+
+288
+00:18:16,126 --> 00:18:20,780
+hepsini topladığımızda bir dikkat kafası için yaklaşık 6,3 milyon parametre elde ederiz.
+
+289
+00:18:22,040 --> 00:18:25,242
+Kısa bir not olarak, biraz daha doğru olmak gerekirse, şu ana kadar açıklanan her şey, 
+
+290
+00:18:25,242 --> 00:18:28,334
+diğer modellerde ortaya çıkan ve çapraz dikkat olarak adlandırılan bir varyasyondan 
+
+291
+00:18:28,334 --> 00:18:31,500
+ayırt etmek için insanların kendi kendine dikkat kafası olarak adlandırdıkları şeydir.
+
+292
+00:18:32,300 --> 00:18:36,914
+Bu bizim GPT örneğimizle ilgili değil, ancak merak ediyorsanız, çapraz dikkat, 
+
+293
+00:18:36,914 --> 00:18:41,178
+bir dildeki metin ve devam eden bir çeviri üretiminin parçası olan başka 
+
+294
+00:18:41,178 --> 00:18:45,267
+bir dildeki metin veya belki de konuşma sesi girişi ve devam eden bir 
+
+295
+00:18:45,267 --> 00:18:49,240
+transkripsiyon gibi iki farklı veri türünü işleyen modelleri içerir.
+
+296
+00:18:50,400 --> 00:18:52,700
+Bir çapraz dikkat kafası neredeyse aynı görünür.
+
+297
+00:18:52,980 --> 00:18:57,400
+Tek fark, anahtar ve sorgu eşlemelerinin farklı veri kümeleri üzerinde hareket etmesidir.
+
+298
+00:18:57,840 --> 00:19:01,908
+Örneğin çeviri yapan bir modelde, anahtarlar bir dilden gelirken sorgular 
+
+299
+00:19:01,908 --> 00:19:06,086
+başka bir dilden gelebilir ve dikkat örüntüsü bir dildeki hangi kelimelerin 
+
+300
+00:19:06,086 --> 00:19:09,660
+diğer dildeki hangi kelimelere karşılık geldiğini tanımlayabilir.
+
+301
+00:19:10,340 --> 00:19:12,807
+Ve bu ortamda tipik olarak maskeleme olmayacaktır, 
+
+302
+00:19:12,807 --> 00:19:16,340
+çünkü sonraki belirteçlerin öncekileri etkilemesi gibi bir kavram yoktur.
+
+303
+00:19:17,180 --> 00:19:21,180
+Öz-dikkate odaklanmaya devam edersek, buraya kadar her şeyi anladıysanız ve 
+
+304
+00:19:21,180 --> 00:19:25,180
+burada duracak olsaydınız, dikkatin gerçekte ne olduğunun özüne ulaşırdınız.
+
+305
+00:19:25,760 --> 00:19:31,440
+Bize kalan tek şey, bunu birçok farklı kez yapmanın anlamını ortaya koymaktır.
+
+306
+00:19:32,100 --> 00:19:35,169
+Ana örneğimizde isimleri güncelleyen sıfatlara odaklandık, 
+
+307
+00:19:35,169 --> 00:19:39,800
+ancak elbette bağlamın bir kelimenin anlamını etkileyebileceği pek çok farklı yol vardır.
+
+308
+00:19:40,360 --> 00:19:43,624
+Eğer çarptıkları kelimeler araba kelimesinden önce geliyorsa, 
+
+309
+00:19:43,624 --> 00:19:46,520
+bu arabanın şekli ve yapısıyla ilgili sonuçlar doğurur.
+
+310
+00:19:47,200 --> 00:19:49,280
+Ve birçok çağrışım daha az dilbilgisel olabilir.
+
+311
+00:19:49,760 --> 00:19:53,758
+Eğer büyücü kelimesi Harry ile aynı pasajın herhangi bir yerinde geçiyorsa, 
+
+312
+00:19:53,758 --> 00:19:57,862
+bu Harry Potter'a atıfta bulunulduğunu düşündürür; oysa bunun yerine Kraliçe, 
+
+313
+00:19:57,862 --> 00:20:00,546
+Sussex ve William kelimeleri bu pasajda geçiyorsa, 
+
+314
+00:20:00,546 --> 00:20:04,440
+belki de Harry'nin gömülmesi prensi ifade edecek şekilde güncellenmelidir.
+
+315
+00:20:05,040 --> 00:20:08,274
+Hayal edebileceğiniz her farklı bağlamsal güncelleme türü için, 
+
+316
+00:20:08,274 --> 00:20:12,014
+bu anahtar ve sorgu matrislerinin parametreleri farklı dikkat kalıplarını 
+
+317
+00:20:12,014 --> 00:20:15,450
+yakalamak için farklı olacaktır ve değer haritamızın parametreleri, 
+
+318
+00:20:15,450 --> 00:20:19,140
+katıştırmalara neyin eklenmesi gerektiğine bağlı olarak farklı olacaktır.
+
+319
+00:20:19,980 --> 00:20:23,515
+Ve yine pratikte bu haritaların gerçek davranışını yorumlamak çok daha zordur; 
+
+320
+00:20:23,515 --> 00:20:26,827
+burada ağırlıklar, modelin bir sonraki jetonu tahmin etme hedefine en iyi 
+
+321
+00:20:26,827 --> 00:20:30,140
+şekilde ulaşmak için ne yapması gerekiyorsa onu yapacak şekilde ayarlanır.
+
+322
+00:20:31,400 --> 00:20:35,228
+Daha önce de söylediğim gibi, anlattığımız her şey tek bir dikkat başlığıdır 
+
+323
+00:20:35,228 --> 00:20:37,715
+ve bir dönüştürücü içindeki tam bir dikkat bloğu, 
+
+324
+00:20:37,715 --> 00:20:41,494
+her biri kendi farklı anahtar sorgusu ve değer eşlemeleri ile bu işlemlerin 
+
+325
+00:20:41,494 --> 00:20:45,920
+çoğunu paralel olarak çalıştırdığınız çok başlı dikkat olarak adlandırılan şeyden oluşur.
+
+326
+00:20:47,420 --> 00:20:51,700
+Örneğin GPT-3, her blok içinde 96 dikkat başlığı kullanır.
+
+327
+00:20:52,020 --> 00:20:54,557
+Her birinin zaten biraz kafa karıştırıcı olduğu düşünüldüğünde, 
+
+328
+00:20:54,557 --> 00:20:56,460
+kafanızda tutmanız gereken çok şey olduğu kesin.
+
+329
+00:20:56,760 --> 00:20:59,577
+Her şeyi çok açık bir şekilde ifade etmek gerekirse, 
+
+330
+00:20:59,577 --> 00:21:03,670
+bu 96 farklı dikkat modeli üreten 96 farklı anahtar ve sorgu matrisine sahip 
+
+331
+00:21:03,670 --> 00:21:05,000
+olduğunuz anlamına gelir.
+
+332
+00:21:05,440 --> 00:21:08,541
+Daha sonra her bir başlığın 96 değer vektörü dizisi 
+
+333
+00:21:08,541 --> 00:21:12,180
+üretmek için kullanılan kendi farklı değer matrisleri vardır.
+
+334
+00:21:12,460 --> 00:21:16,680
+Bunların hepsi, karşılık gelen dikkat kalıpları ağırlık olarak kullanılarak toplanır.
+
+335
+00:21:17,480 --> 00:21:22,967
+Bunun anlamı, bağlamdaki her bir konum için, her bir belirteç, bu başlıkların her biri, 
+
+336
+00:21:22,967 --> 00:21:27,020
+o konumdaki gömüye eklenmek üzere önerilen bir değişiklik üretir.
+
+337
+00:21:27,660 --> 00:21:31,237
+Yaptığınız şey, her bir başlık için bir tane olmak üzere önerilen tüm 
+
+338
+00:21:31,237 --> 00:21:35,480
+değişiklikleri toplamak ve sonucu o pozisyonun orijinal yerleştirmesine eklemektir.
+
+339
+00:21:36,660 --> 00:21:42,983
+Buradaki toplamın tamamı, bu çok başlı dikkat bloğundan elde edilen çıktının bir dilimi, 
+
+340
+00:21:42,983 --> 00:21:47,460
+diğer ucundan çıkan rafine gömülerden tek bir tanesi olacaktır.
+
+341
+00:21:48,320 --> 00:21:50,042
+Tekrar söylüyorum, bunlar düşünülmesi gereken çok şey, 
+
+342
+00:21:50,042 --> 00:21:52,140
+bu yüzden kafanızda oturması biraz zaman alırsa hiç endişelenmeyin.
+
+343
+00:21:52,380 --> 00:21:56,407
+Genel fikir, birçok farklı başlığı paralel olarak çalıştırarak, 
+
+344
+00:21:56,407 --> 00:22:01,820
+modele bağlamın anlamı değiştirdiği birçok farklı yolu öğrenme kapasitesi vermenizdir.
+
+345
+00:22:03,700 --> 00:22:07,434
+Her biri bu dört matrisin kendi varyasyonunu içeren 96 başlıkla 
+
+346
+00:22:07,434 --> 00:22:10,761
+parametre sayısı için çalışan çetelemizi çıkardığımızda, 
+
+347
+00:22:10,761 --> 00:22:15,080
+çok başlı dikkatin her bloğu yaklaşık 600 milyon parametre ile sonuçlanır.
+
+348
+00:22:16,420 --> 00:22:19,306
+Transformers hakkında daha fazla okumaya devam edecek olanlarınız 
+
+349
+00:22:19,306 --> 00:22:21,800
+için bahsetmem gereken biraz can sıkıcı bir şey daha var.
+
+350
+00:22:22,080 --> 00:22:26,062
+Değer haritasının, değer aşağı ve değer yukarı matrisleri olarak etiketlediğim 
+
+351
+00:22:26,062 --> 00:22:29,440
+bu iki farklı matrise ayrıştırıldığını söylediğimi hatırlıyorsunuz.
+
+352
+00:22:29,960 --> 00:22:34,170
+Olayları çerçeveleme şeklim, bu matris çiftini her bir dikkat kafasının 
+
+353
+00:22:34,170 --> 00:22:38,440
+içinde görmenizi önerir ve bunu kesinlikle bu şekilde uygulayabilirsiniz.
+
+354
+00:22:38,640 --> 00:22:39,920
+Bu geçerli bir tasarım olurdu.
+
+355
+00:22:40,260 --> 00:22:44,920
+Ancak bunun makalelerde yazılma şekli ile pratikte uygulanma şekli biraz farklı görünüyor.
+
+356
+00:22:45,340 --> 00:22:49,138
+Her bir kafa için tüm bu değer matrisleri, çıktı matrisi olarak 
+
+357
+00:22:49,138 --> 00:22:52,937
+adlandırdığımız ve çok başlı dikkat bloğunun tamamıyla ilişkili 
+
+358
+00:22:52,937 --> 00:22:56,380
+olan dev bir matriste bir araya getirilmiş olarak görünür.
+
+359
+00:22:56,820 --> 00:23:00,071
+Ve insanların belirli bir dikkat başlığı için değer matrisine atıfta 
+
+360
+00:23:00,071 --> 00:23:03,040
+bulunduklarını gördüğünüzde, genellikle yalnızca bu ilk adıma, 
+
+361
+00:23:03,040 --> 00:23:07,140
+daha küçük alana değer aşağı projeksiyonu olarak etiketlediğim adıma atıfta bulunurlar.
+
+362
+00:23:08,340 --> 00:23:11,040
+Aranızdaki meraklılar için ekrana bununla ilgili bir not bıraktım.
+
+363
+00:23:11,260 --> 00:23:15,089
+Bu, ana kavramsal noktaların dikkatini dağıtma riski taşıyan ayrıntılardan biri, 
+
+364
+00:23:15,089 --> 00:23:18,540
+ancak bunu başka kaynaklarda okursanız bilmeniz için belirtmek istiyorum.
+
+365
+00:23:19,240 --> 00:23:23,230
+Tüm teknik nüansları bir kenara bırakırsak, son bölümdeki önizlemede bir 
+
+366
+00:23:23,230 --> 00:23:28,040
+transformatörden akan verilerin nasıl sadece tek bir dikkat bloğundan akmadığını gördük.
+
+367
+00:23:28,640 --> 00:23:32,700
+Bir kere, çok katmanlı algılayıcılar adı verilen diğer işlemlerden de geçiyor.
+
+368
+00:23:33,120 --> 00:23:34,880
+Bir sonraki bölümde bunlar hakkında daha fazla konuşacağız.
+
+369
+00:23:35,180 --> 00:23:39,320
+Ve sonra bu işlemlerin her ikisinin de birçok kopyasından tekrar tekrar geçer.
+
+370
+00:23:39,980 --> 00:23:44,251
+Bunun anlamı, belirli bir kelime bağlamının bir kısmını özümsedikten sonra, 
+
+371
+00:23:44,251 --> 00:23:49,196
+bu daha nüanslı yerleştirmenin daha nüanslı çevresinden etkilenmesi için çok daha fazla 
+
+372
+00:23:49,196 --> 00:23:50,040
+şans olduğudur.
+
+373
+00:23:50,940 --> 00:23:55,181
+Ağda ne kadar aşağıya inerseniz, her bir katıştırma diğer tüm katıştırmalardan giderek 
+
+374
+00:23:55,181 --> 00:23:59,324
+daha fazla anlam alır ve bu katıştırmaların kendileri de giderek daha incelikli hale 
+
+375
+00:23:59,324 --> 00:24:03,419
+gelir; umut, belirli bir girdi hakkında yalnızca tanımlayıcılar ve gramer yapısının 
+
+376
+00:24:03,419 --> 00:24:07,320
+ötesinde daha üst düzey ve daha soyut fikirleri kodlama kapasitesinin olmasıdır.
+
+377
+00:24:07,880 --> 00:24:11,543
+Duygu, ton, şiir olup olmadığı, eserin altında 
+
+378
+00:24:11,543 --> 00:24:15,130
+yatan bilimsel gerçekler ve bunun gibi şeyler.
+
+379
+00:24:16,700 --> 00:24:21,974
+Puanlamamıza bir kez daha dönecek olursak, GPT-3 96 farklı katman içermektedir, 
+
+380
+00:24:21,974 --> 00:24:27,380
+dolayısıyla anahtar sorgu ve değer parametrelerinin toplam sayısı bir 96 ile daha 
+
+381
+00:24:27,380 --> 00:24:33,115
+çarpılır, bu da toplamı tüm dikkat başlıklarına ayrılmış 58 milyar farklı parametrenin 
+
+382
+00:24:33,115 --> 00:24:34,500
+biraz altına getirir.
+
+383
+00:24:34,980 --> 00:24:40,940
+Bu elbette çok fazla, ancak toplamda ağda bulunan 175 milyarın yalnızca üçte biri.
+
+384
+00:24:41,520 --> 00:24:45,013
+Dolayısıyla, tüm dikkati dikkat çekse de, parametrelerin 
+
+385
+00:24:45,013 --> 00:24:48,140
+çoğu bu adımlar arasında yer alan bloklardan gelir.
+
+386
+00:24:48,560 --> 00:24:51,060
+Bir sonraki bölümde, siz ve ben bu diğer bloklar 
+
+387
+00:24:51,060 --> 00:24:53,560
+ve eğitim süreci hakkında daha fazla konuşacağız.
+
+388
+00:24:54,120 --> 00:24:58,148
+Dikkat mekanizmasının başarısının hikayesinin büyük bir kısmı, 
+
+389
+00:24:58,148 --> 00:25:03,647
+sağladığı belirli bir davranış türünden çok, son derece paralelleştirilebilir olması, 
+
+390
+00:25:03,647 --> 00:25:08,380
+yani GPU'ları kullanarak kısa sürede çok sayıda hesaplama yapabilmenizdir.
+
+391
+00:25:09,460 --> 00:25:12,737
+Son on ya da iki yılda derin öğrenmeyle ilgili en büyük derslerden birinin, 
+
+392
+00:25:12,737 --> 00:25:16,575
+ölçeğin tek başına model performansında büyük niteliksel gelişmeler sağladığı olduğu göz 
+
+393
+00:25:16,575 --> 00:25:20,370
+önüne alındığında, bunu yapmanıza izin veren paralelleştirilebilir mimariler için büyük 
+
+394
+00:25:20,370 --> 00:25:21,060
+bir avantaj var.
+
+395
+00:25:22,040 --> 00:25:23,707
+Bu konuda daha fazla bilgi edinmek isterseniz, 
+
+396
+00:25:23,707 --> 00:25:25,340
+açıklama kısmına çok sayıda bağlantı bıraktım.
+
+397
+00:25:25,920 --> 00:25:28,106
+Özellikle Andrej Karpathy veya Chris Ola tarafından 
+
+398
+00:25:28,106 --> 00:25:30,040
+üretilen her şey saf altın olma eğilimindedir.
+
+399
+00:25:30,560 --> 00:25:33,414
+Bu videoda, mevcut haliyle dikkat konusuna değinmek istedim, 
+
+400
+00:25:33,414 --> 00:25:36,924
+ancak bu noktaya nasıl geldiğimizi ve bu fikri kendiniz için nasıl yeniden 
+
+401
+00:25:36,924 --> 00:25:40,714
+keşfedebileceğinizi merak ediyorsanız, arkadaşım Vivek bu motivasyondan çok daha 
+
+402
+00:25:40,714 --> 00:25:42,540
+fazlasını veren birkaç video yayınladı.
+
+403
+00:25:43,120 --> 00:25:45,726
+Ayrıca, The Art of the Problem kanalından Britt Cruz'un büyük 
+
+404
+00:25:45,726 --> 00:25:48,460
+dil modellerinin tarihi hakkında gerçekten güzel bir videosu var.
+
+405
+00:26:04,960 --> 00:26:09,200
+Teşekkür ederim.
+

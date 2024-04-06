@@ -1,0 +1,1458 @@
+[
+ {
+  "input": "In the last chapter, you and I started to step through the internal workings of a transformer.",
+  "translatedText": "В прошлой главе мы с тобой начали пошагово разбирать внутреннее устройство трансформатора.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 0.0,
+  "end": 4.02
+ },
+ {
+  "input": "This is one of the key pieces of technology inside large language models, and a lot of other tools in the modern wave of AI.",
+  "translatedText": "Это одна из ключевых частей технологии внутри больших языковых моделей и множества других инструментов современной волны ИИ.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 4.56,
+  "end": 10.2
+ },
+ {
+  "input": "It first hit the scene in a now-famous 2017 paper called Attention is All You Need, and in this chapter you and I will dig into what this attention mechanism is, visualizing how it processes data.",
+  "translatedText": "Впервые о нем заговорили в нашумевшей статье 2017 года под названием Attention is All You Need, и в этой главе мы с тобой покопаемся в том, что представляет собой этот механизм внимания, визуализируя, как он обрабатывает данные.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 10.98,
+  "end": 21.7
+ },
+ {
+  "input": "As a quick recap, here's the important context I want you to have in mind.",
+  "translatedText": "В качестве краткого резюме вот важный контекст, который я хочу, чтобы ты имел в виду.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 26.14,
+  "end": 29.54
+ },
+ {
+  "input": "The goal of the model that you and I are studying is to take in a piece of text and predict what word comes next.",
+  "translatedText": "Цель модели, которую мы с тобой изучаем, - взять кусок текста и предсказать, какое слово будет следующим.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 30.0,
+  "end": 36.06
+ },
+ {
+  "input": "The input text is broken up into little pieces that we call tokens, and these are very often words or pieces of words, but just to make the examples in this video easier for you and me to think about, let's simplify by pretending that tokens are always just words.",
+  "translatedText": "Вводимый текст разбивается на маленькие кусочки, которые мы называем лексемами, и очень часто это слова или части слов, но чтобы нам с тобой было легче воспринимать примеры в этом видео, давай упростим ситуацию, представив, что лексемы - это всегда только слова.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 36.86,
+  "end": 50.56
+ },
+ {
+  "input": "The first step in a transformer is to associate each token with a high-dimensional vector, what we call its embedding.",
+  "translatedText": "Первый шаг в трансформаторе - связать каждый токен с высокоразмерным вектором, который мы называем его вкраплением.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 51.48,
+  "end": 57.7
+ },
+ {
+  "input": "The most important idea I want you to have in mind is how directions in this high-dimensional space of all possible embeddings can correspond with semantic meaning.",
+  "translatedText": "Самая важная идея, которую я хочу, чтобы ты держал в голове, - это то, как направления в этом высокоразмерном пространстве всех возможных вкраплений могут соотноситься с семантическим значением.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 57.7,
+  "end": 67.0
+ },
+ {
+  "input": "In the last chapter we saw an example for how direction can correspond to gender, in the sense that adding a certain step in this space can take you from the embedding of a masculine noun to the embedding of the corresponding feminine noun.",
+  "translatedText": "В прошлой главе мы видели пример того, как направление может соответствовать полу, в том смысле, что добавление определенного шага в этом пространстве может перенести тебя от вкрапления существительного мужского рода к вкраплению соответствующего существительного женского рода.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 67.68,
+  "end": 79.64
+ },
+ {
+  "input": "That's just one example you could imagine how many other directions in this high-dimensional space could correspond to numerous other aspects of a word's meaning.",
+  "translatedText": "Это лишь один пример, ты можешь представить, сколько других направлений в этом высокоразмерном пространстве могут соответствовать множеству других аспектов значения слова.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 80.16,
+  "end": 87.58
+ },
+ {
+  "input": "The aim of a transformer is to progressively adjust these embeddings so that they don't merely encode an individual word, but instead they bake in some much, much richer contextual meaning.",
+  "translatedText": "Задача трансформатора - постепенно корректировать эти вкрапления так, чтобы они не просто кодировали отдельное слово, а встраивали в него гораздо, гораздо более богатый контекстуальный смысл.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 88.8,
+  "end": 99.18
+ },
+ {
+  "input": "I should say up front that a lot of people find the attention mechanism, this key piece in a transformer, very confusing, so don't worry if it takes some time for things to sink in.",
+  "translatedText": "Сразу скажу, что многим людям механизм внимания, эта ключевая деталь в трансформаторе, кажется очень запутанным, так что не переживай, если потребуется некоторое время, чтобы все стало понятно.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 100.14,
+  "end": 108.98
+ },
+ {
+  "input": "I think that before we dive into the computational details and all the matrix multiplications, it's worth thinking about a couple examples for the kind of behavior that we want attention to enable.",
+  "translatedText": "Думаю, прежде чем мы погрузимся в вычислительные детали и все матричные умножения, стоит подумать о паре примеров такого поведения, которое мы хотим обеспечить вниманием.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 109.44,
+  "end": 119.16
+ },
+ {
+  "input": "Consider the phrases American true mole, one mole of carbon dioxide, and take a biopsy of the mole.",
+  "translatedText": "Рассмотри фразы Американская настоящая родинка, один моль углекислого газа и возьми биопсию родинки.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 120.14,
+  "end": 126.22
+ },
+ {
+  "input": "You and I know that the word mole has different meanings in each one of these, based on the context.",
+  "translatedText": "Мы с тобой знаем, что слово \"крот\" в каждом из них имеет разное значение в зависимости от контекста.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 126.7,
+  "end": 130.9
+ },
+ {
+  "input": "But after the first step of a transformer, the one that breaks up the text and associates each token with a vector, the vector that's associated with mole would be the same in all of these cases, because this initial token embedding is effectively a lookup table with no reference to the context.",
+  "translatedText": "Но после первого шага трансформатора, который разбивает текст и связывает каждую лексему с вектором, вектор, связанный с кротом, будет одинаковым во всех этих случаях, потому что это первоначальное встраивание лексем - фактически таблица поиска без ссылок на контекст.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 131.36,
+  "end": 146.22
+ },
+ {
+  "input": "It's only in the next step of the transformer that the surrounding embeddings have the chance to pass information into this one.",
+  "translatedText": "Только на следующем этапе трансформации окружающие вкрапления получают шанс передать информацию в это вкрапление.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 146.62,
+  "end": 153.1
+ },
+ {
+  "input": "The picture you might have in mind is that there are multiple distinct directions in this embedding space encoding the multiple distinct meanings of the word mole, and that a well-trained attention block calculates what you need to add to the generic embedding to move it to one of these specific directions, as a function of the context.",
+  "translatedText": "Ты можешь представить себе, что в этом пространстве вкраплений есть несколько разных направлений, кодирующих несколько разных значений слова \"крот\", и что хорошо натренированный блок внимания вычисляет, что нужно добавить к общему вкраплению, чтобы переместить его в одно из этих конкретных направлений, в зависимости от контекста.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 153.82,
+  "end": 171.8
+ },
+ {
+  "input": "To take another example, consider the embedding of the word tower.",
+  "translatedText": "В качестве другого примера рассмотрим встраивание слова tower.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 173.3,
+  "end": 176.18
+ },
+ {
+  "input": "This is presumably some very generic, non-specific direction in the space, associated with lots of other large, tall nouns.",
+  "translatedText": "Предположительно, это какое-то очень общее, неспецифическое направление в пространстве, связанное с множеством других больших, высоких существительных.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 177.06,
+  "end": 183.72
+ },
+ {
+  "input": "If this word was immediately preceded by Eiffel, you could imagine wanting the mechanism to update this vector so that it points in a direction that more specifically encodes the Eiffel tower, maybe correlated with vectors associated with Paris and France and things made of steel.",
+  "translatedText": "Если бы этому слову сразу предшествовало слово Eiffel, можно было бы представить, что механизм хочет обновить этот вектор так, чтобы он указывал в направлении, которое более конкретно кодирует Эйфелеву башню, возможно, коррелируя с векторами, связанными с Парижем, Францией и вещами, сделанными из стали.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 184.02,
+  "end": 199.06
+ },
+ {
+  "input": "If it was also preceded by the word miniature, then the vector should be updated even further, so that it no longer correlates with large, tall things.",
+  "translatedText": "Если ему также предшествовало слово miniature, то вектор должен быть обновлен еще больше, чтобы он больше не соотносился с большими, высокими вещами.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 199.92,
+  "end": 207.5
+ },
+ {
+  "input": "More generally than just refining the meaning of a word, the attention block allows the model to move information encoded in one embedding to that of another, potentially ones that are quite far away, and potentially with information that's much richer than just a single word.",
+  "translatedText": "В более общем смысле, чем просто уточнение значения слова, блок внимания позволяет модели перемещать информацию, закодированную в одном вложении, в другое, потенциально находящееся довольно далеко, и потенциально с информацией, которая намного богаче, чем просто одно слово.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 209.48,
+  "end": 223.3
+ },
+ {
+  "input": "What we saw in the last chapter was how after all of the vectors flow through the network, including many different attention blocks, the computation you perform to produce a prediction of the next token is entirely a function of the last vector in the sequence.",
+  "translatedText": "В прошлой главе мы видели, как после того, как все векторы проходят через сеть, включая множество различных блоков внимания, вычисления, которые ты выполняешь для получения предсказания следующего маркера, полностью зависят от последнего вектора в последовательности.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 223.3,
+  "end": 238.28
+ },
+ {
+  "input": "Imagine, for example, that the text you input is most of an entire mystery novel, all the way up to a point near the end, which reads, therefore the murderer was.",
+  "translatedText": "Представь, например, что вводимый тобой текст - это большая часть всего таинственного романа, вплоть до точки ближе к концу, которая гласит: \"Следовательно, убийца был\".",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 239.1,
+  "end": 247.8
+ },
+ {
+  "input": "If the model is going to accurately predict the next word, that final vector in the sequence, which began its life simply embedding the word was, will have to have been updated by all of the attention blocks to represent much, much more than any individual word, somehow encoding all of the information from the full context window that's relevant to predicting the next word.",
+  "translatedText": "Если модель собирается точно предсказать следующее слово, то последний вектор в последовательности, который начинал свою жизнь просто с встраивания слова was, должен быть обновлен всеми блоками внимания, чтобы представлять гораздо, гораздо больше, чем любое отдельное слово, каким-то образом кодируя всю информацию из полного контекстного окна, которая имеет отношение к предсказанию следующего слова.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 248.4,
+  "end": 268.22
+ },
+ {
+  "input": "To step through the computations, though, let's take a much simpler example.",
+  "translatedText": "Однако чтобы разобраться с вычислениями, давай рассмотрим более простой пример.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 269.5,
+  "end": 272.58
+ },
+ {
+  "input": "Imagine that the input includes the phrase, a fluffy blue creature roamed the verdant forest.",
+  "translatedText": "Представь, что в исходном тексте есть фраза: \"Пушистое голубое существо бродило по зеленеющему лесу\".",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 272.98,
+  "end": 277.96
+ },
+ {
+  "input": "And for the moment, suppose that the only type of update that we care about is having the adjectives adjust the meanings of their corresponding nouns.",
+  "translatedText": "А пока предположим, что единственный тип обновления, который нас волнует, - это то, что прилагательные корректируют значения соответствующих им существительных.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 278.46,
+  "end": 286.78
+ },
+ {
+  "input": "What I'm about to describe is what we would call a single head of attention, and later we will see how the attention block consists of many different heads run in parallel.",
+  "translatedText": "То, что я сейчас опишу, мы бы назвали одной головкой внимания, а позже мы увидим, как блок внимания состоит из множества разных головок, работающих параллельно.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 287.0,
+  "end": 295.42
+ },
+ {
+  "input": "Again, the initial embedding for each word is some high dimensional vector that only encodes the meaning of that particular word with no context.",
+  "translatedText": "Опять же, начальное вложение для каждого слова - это некоторый высокоразмерный вектор, который кодирует только значение этого конкретного слова без контекста.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 296.14,
+  "end": 303.38
+ },
+ {
+  "input": "Actually, that's not quite true.",
+  "translatedText": "На самом деле, это не совсем так.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 304.0,
+  "end": 305.22
+ },
+ {
+  "input": "They also encode the position of the word.",
+  "translatedText": "Они также кодируют позицию слова.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 305.38,
+  "end": 307.64
+ },
+ {
+  "input": "There's a lot more to say way that positions are encoded, but right now, all you need to know is that the entries of this vector are enough to tell you both what the word is and where it exists in the context.",
+  "translatedText": "Можно еще много чего сказать о том, как кодируются позиции, но сейчас тебе достаточно знать, что записей этого вектора достаточно, чтобы сказать тебе, что это за слово и где оно находится в контексте.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 307.98,
+  "end": 318.9
+ },
+ {
+  "input": "Let's go ahead and denote these embeddings with the letter e.",
+  "translatedText": "Давай обозначим эти вкрапления буквой e.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 319.5,
+  "end": 321.66
+ },
+ {
+  "input": "The goal is to have a series of computations produce a new refined set of embeddings where, for example, those corresponding to the nouns have ingested the meaning from their corresponding adjectives.",
+  "translatedText": "Цель состоит в том, чтобы в результате серии вычислений получить новый уточненный набор вкраплений, в котором, например, те, что соответствуют существительным, проглотили значение соответствующих прилагательных.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 322.42,
+  "end": 333.42
+ },
+ {
+  "input": "And playing the deep learning game, we want most of the computations involved to look like matrix-vector products, where the matrices are full of tunable weights, things that the model will learn based on data.",
+  "translatedText": "А играя в игру глубокого обучения, мы хотим, чтобы большинство вычислений выглядело как матрично-векторные произведения, где матрицы полны настраиваемых весов - того, чему модель будет учиться на основе данных.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 333.9,
+  "end": 343.98
+ },
+ {
+  "input": "To be clear, I'm making up this example of adjectives updating nouns just to illustrate the type of behavior that you could imagine an attention head doing.",
+  "translatedText": "Чтобы было понятно, я придумал этот пример с прилагательными, обновляющими существительные, только для того, чтобы проиллюстрировать тип поведения, который ты можешь представить себе, как поступает голова внимания.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 344.66,
+  "end": 352.26
+ },
+ {
+  "input": "As with so much deep learning, the true behavior is much harder to parse because it's based on tweaking and tuning a huge number of parameters to minimize some cost function.",
+  "translatedText": "Как и во многих других случаях глубокого обучения, истинное поведение гораздо сложнее разобрать, потому что оно основано на подстройке и настройке огромного количества параметров для минимизации некоторой функции стоимости.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 352.86,
+  "end": 361.34
+ },
+ {
+  "input": "It's just that as we step through all of different matrices filled with parameters that are involved in this process, I think it's really helpful to have an imagined example of something that it could be doing to help keep it all more concrete.",
+  "translatedText": "Просто, когда мы проходим через всевозможные матрицы, наполненные параметрами, которые участвуют в этом процессе, я думаю, что очень полезно иметь воображаемый пример того, что он может делать, чтобы помочь сделать все это более конкретным.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 361.68,
+  "end": 373.22
+ },
+ {
+  "input": "For the first step of this process, you might imagine each noun, like creature, asking the question, hey, are there any adjectives sitting in front of me?",
+  "translatedText": "На первом этапе этого процесса ты можешь представить, что каждое существительное, например creature, задает вопрос: \"Эй, есть ли прилагательные, сидящие передо мной?",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 374.14,
+  "end": 381.96
+ },
+ {
+  "input": "And for the words fluffy and blue, to each be able to answer, yeah, I'm an adjective and I'm in that position.",
+  "translatedText": "А на слова пушистый и голубой, чтобы каждый смог ответить, да, я прилагательное и нахожусь в таком положении.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 382.16,
+  "end": 387.96
+ },
+ {
+  "input": "That question is somehow encoded as yet another vector, another list of numbers, which we call the query for this word.",
+  "translatedText": "Этот вопрос каким-то образом закодирован в виде еще одного вектора, еще одного списка чисел, который мы называем запросом на это слово.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 388.96,
+  "end": 396.1
+ },
+ {
+  "input": "This query vector though has a much smaller dimension than the embedding vector, say 128.",
+  "translatedText": "Однако этот вектор запроса имеет гораздо меньшую размерность, чем вектор встраивания, скажем, 128.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 396.98,
+  "end": 402.02
+ },
+ {
+  "input": "Computing this query looks like taking a certain matrix, which I'll label wq, and multiplying it by the embedding.",
+  "translatedText": "Вычисление этого запроса выглядит как взятие некоторой матрицы, которую я обозначу wq, и умножение ее на вкрапления.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 402.94,
+  "end": 409.78
+ },
+ {
+  "input": "Compressing things a bit, let's write that query vector as q, and then anytime you see me put a matrix next to an arrow like this one, it's meant to represent that multiplying this matrix by the vector at the arrow's start gives you the vector at the arrow's end.",
+  "translatedText": "Если немного сжать, то запишем этот вектор запроса как q, и каждый раз, когда ты видишь, что я ставлю матрицу рядом со стрелкой, как здесь, это означает, что умножение этой матрицы на вектор в начале стрелки дает вектор в конце стрелки.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 410.96,
+  "end": 424.8
+ },
+ {
+  "input": "In this case, you multiply this matrix by all of the embeddings in the context, producing one query vector for each token.",
+  "translatedText": "В этом случае ты умножаешь эту матрицу на все вкрапления в контексте, получая один вектор запроса для каждого токена.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 425.86,
+  "end": 432.58
+ },
+ {
+  "input": "The entries of this matrix are parameters of the model, which means the true behavior is learned from data, and in practice, what this matrix does in a particular attention head is challenging to parse.",
+  "translatedText": "Записи этой матрицы являются параметрами модели, то есть истинное поведение узнается из данных, и на практике то, что делает эта матрица в конкретной голове внимания, разобрать довольно сложно.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 433.74,
+  "end": 443.44
+ },
+ {
+  "input": "But for our sake, imagining an example that we might hope that it would learn, we'll suppose that this query matrix maps the embeddings of nouns to certain directions in this smaller query space that somehow encodes the notion of looking for adjectives in preceding positions.",
+  "translatedText": "Но ради интереса, представляя пример, который, как мы надеемся, он сможет выучить, мы предположим, что эта матрица запросов сопоставляет вкрапления существительных с определенными направлениями в этом меньшем пространстве запросов, которое каким-то образом кодирует понятие поиска прилагательных в предшествующих позициях.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 443.9,
+  "end": 458.04
+ },
+ {
+  "input": "As to what it does to other embeddings, who knows?",
+  "translatedText": "Что касается того, как это влияет на другие вкрапления, кто знает?",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 458.78,
+  "end": 461.44
+ },
+ {
+  "input": "Maybe it simultaneously tries to accomplish some other goal with those.",
+  "translatedText": "Может быть, он одновременно пытается достичь с их помощью какой-то другой цели.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 461.72,
+  "end": 464.34
+ },
+ {
+  "input": "Right now, we're laser focused on the nouns.",
+  "translatedText": "Сейчас мы сосредоточены на существительных.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 464.54,
+  "end": 467.16
+ },
+ {
+  "input": "At the same time, associated with this is a second matrix called the key matrix, which you also multiply by every one of the embeddings.",
+  "translatedText": "В то же время с ней связана вторая матрица, называемая матрицей ключей, которую ты также умножаешь на каждое из вкраплений.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 467.28,
+  "end": 474.62
+ },
+ {
+  "input": "This produces a second sequence of vectors that we call the keys.",
+  "translatedText": "В результате получается вторая последовательность векторов, которую мы называем ключами.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 475.28,
+  "end": 478.5
+ },
+ {
+  "input": "Conceptually, you want to think of the keys as potentially answering the queries.",
+  "translatedText": "Концептуально ты хочешь думать о ключах как о потенциальных ответах на запросы.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 479.42,
+  "end": 483.14
+ },
+ {
+  "input": "This key matrix is also full of tunable parameters, and just like the query matrix, it maps the embedding vectors to that same smaller dimensional space.",
+  "translatedText": "Эта ключевая матрица также полна настраиваемых параметров, и, как и матрица запросов, она отображает векторы встраивания в то же самое пространство меньшей размерности.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 483.84,
+  "end": 491.4
+ },
+ {
+  "input": "You think of the keys as matching the queries whenever they closely align with each other.",
+  "translatedText": "Считай, что ключи совпадают с запросами всякий раз, когда они близко подходят друг к другу.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 492.2,
+  "end": 497.02
+ },
+ {
+  "input": "In our example, you would imagine that the key matrix maps the adjectives like fluffy and blue to vectors that are closely aligned with the query produced by the word creature.",
+  "translatedText": "В нашем примере ты можешь представить, что ключевая матрица сопоставляет прилагательные типа \"пушистый\" и \"голубой\" с векторами, которые тесно связаны с запросом, порожденным словом creature.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 497.46,
+  "end": 506.74
+ },
+ {
+  "input": "To measure how well each key matches each query, you compute a dot product between each possible key-query pair.",
+  "translatedText": "Чтобы измерить, насколько хорошо каждый ключ соответствует каждому запросу, ты вычисляешь точечное произведение между каждой возможной парой ключ-запрос.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 507.2,
+  "end": 514.0
+ },
+ {
+  "input": "I like to visualize a grid full of a bunch of dots, where the bigger dots correspond to the larger dot products, the places where the keys and queries align.",
+  "translatedText": "Мне нравится представлять себе сетку, заполненную кучей точек, где более крупные точки соответствуют более крупным точечным продуктам - местам, где ключи и запросы выравниваются.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 514.48,
+  "end": 522.56
+ },
+ {
+  "input": "For our adjective noun example, that would look a little more like this, where if the keys produced by fluffy and blue really do align closely with the query produced by creature, then the dot products in these two spots would be some large positive numbers.",
+  "translatedText": "Для нашего примера с прилагательным существительным это выглядело бы примерно так: если ключи, произведенные fluffy и blue, действительно тесно связаны с запросом, произведенным creature, то точечные произведения в этих двух местах будут представлять собой большие положительные числа.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 523.28,
+  "end": 538.32
+ },
+ {
+  "input": "In the lingo, machine learning people would say that this means the embeddings of fluffy and blue attend to the embedding of creature.",
+  "translatedText": "На жаргоне люди, занимающиеся машинным обучением, сказали бы, что это означает, что вкрапления пушистого и голубого присутствуют во вкраплении существа.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 539.1,
+  "end": 545.42
+ },
+ {
+  "input": "By contrast to the dot product between the key for some other word like the and the query for creature would be some small or negative value that reflects that are unrelated to each other.",
+  "translatedText": "В отличие от этого, точечное произведение между ключом для какого-то другого слова, например the, и запросом creature будет представлять собой некую маленькую или отрицательную величину, отражающую то, что они не связаны друг с другом.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 546.04,
+  "end": 556.6
+ },
+ {
+  "input": "So we have this grid of values that can be any real number from negative infinity to infinity, giving us a score for how relevant each word is to updating the meaning of every other word.",
+  "translatedText": "Таким образом, у нас есть сетка значений, которая может быть любым реальным числом от отрицательной бесконечности до бесконечности, давая нам оценку того, насколько каждое слово релевантно для обновления значения всех остальных слов.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 557.7,
+  "end": 568.48
+ },
+ {
+  "input": "The way we're about to use these scores is to take a certain weighted sum along each column, weighted by the relevance.",
+  "translatedText": "Способ, которым мы собираемся использовать эти баллы, заключается в том, чтобы взять некую взвешенную сумму по каждому столбцу, взвешенную по релевантности.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 569.2,
+  "end": 575.78
+ },
+ {
+  "input": "So instead of having values range from negative infinity to infinity, what we want is for the numbers in these columns to be between 0 and 1, and for each column to add up to 1, as if they were a probability distribution.",
+  "translatedText": "Поэтому вместо того, чтобы значения варьировались от отрицательной бесконечности до бесконечности, мы хотим, чтобы числа в этих столбцах находились между 0 и 1, и чтобы каждый столбец складывался в 1, как если бы это было распределение вероятностей.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 576.52,
+  "end": 588.18
+ },
+ {
+  "input": "If you're coming in from the last chapter, you know what we need to do then.",
+  "translatedText": "Если ты зашел с прошлой главы, то знаешь, что нам нужно сделать тогда.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 589.28,
+  "end": 592.22
+ },
+ {
+  "input": "We compute a softmax along each one of these columns to normalize the values.",
+  "translatedText": "Мы вычисляем softmax вдоль каждого из этих столбцов, чтобы нормализовать значения.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 592.62,
+  "end": 597.3
+ },
+ {
+  "input": "In our picture, after you apply softmax to all of the columns, we'll fill in the grid with these normalized values.",
+  "translatedText": "На нашем рисунке, после того как ты применишь softmax ко всем столбцам, мы заполним сетку этими нормализованными значениями.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 600.06,
+  "end": 605.86
+ },
+ {
+  "input": "At this point you're safe to think about each column as giving weights according to how relevant the word on the left is to the corresponding value at the top.",
+  "translatedText": "На этом этапе ты можешь считать, что каждый столбец имеет вес в зависимости от того, насколько слово слева соответствует соответствующему значению вверху.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 606.78,
+  "end": 614.58
+ },
+ {
+  "input": "We call this grid an attention pattern.",
+  "translatedText": "Мы называем эту сетку паттерном внимания.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 615.08,
+  "end": 616.84
+ },
+ {
+  "input": "Now if you look at the original transformer paper, there's a really compact way that they write this all down.",
+  "translatedText": "Если ты посмотришь на оригинальный документ о трансформаторах, то увидишь там очень компактный способ, которым они все это записали.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 618.08,
+  "end": 622.82
+ },
+ {
+  "input": "Here the variables q and k represent the full arrays of query and key vectors respectively, those little vectors you get by multiplying the embeddings by the query and the key matrices.",
+  "translatedText": "Здесь переменные q и k представляют собой полные массивы векторов запросов и ключей соответственно, те маленькие векторы, которые ты получаешь, умножая вкрапления на матрицы запросов и ключей.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 623.88,
+  "end": 634.64
+ },
+ {
+  "input": "This expression up in the numerator is a really compact way to represent the grid of all possible dot products between pairs of keys and queries.",
+  "translatedText": "Это выражение в числителе - действительно компактный способ представить сетку всех возможных точечных произведений между парами ключей и запросов.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 635.16,
+  "end": 643.02
+ },
+ {
+  "input": "A small technical detail that I didn't mention is that for numerical stability, it happens to be helpful to divide all of these values by the square root of the dimension in that key query space.",
+  "translatedText": "Небольшая техническая деталь, о которой я не упомянул, заключается в том, что для численной стабильности полезно делить все эти значения на квадратный корень из размерности в пространстве ключевых запросов.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 644.0,
+  "end": 653.96
+ },
+ {
+  "input": "Then this softmax that's wrapped around the full expression is meant to be understood to apply column by column.",
+  "translatedText": "Тогда этот softmax, обернутый вокруг полного выражения, должен быть понят так, чтобы применяться по столбцам.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 654.48,
+  "end": 660.8
+ },
+ {
+  "input": "As to that v term, we'll talk about it in just a second.",
+  "translatedText": "Что касается этого термина v, то мы поговорим о нем буквально через секунду.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 661.64,
+  "end": 664.7
+ },
+ {
+  "input": "Before that, there's one other technical detail that so far I've skipped.",
+  "translatedText": "Перед этим есть еще одна техническая деталь, которую до сих пор я пропускал.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 665.02,
+  "end": 668.46
+ },
+ {
+  "input": "During the training process, when you run this model on a given text example, and all of the weights are slightly adjusted and tuned to either reward or punish it based on how high a probability it assigns to the true next word in the passage, it turns out to make the whole training process a lot more efficient if you simultaneously have it predict every possible next token following each initial subsequence of tokens in this passage.",
+  "translatedText": "В процессе обучения, когда ты запускаешь эту модель на заданном текстовом примере, а все веса немного корректируются и настраиваются, чтобы либо вознаградить, либо наказать ее в зависимости от того, насколько высокую вероятность она приписывает истинному следующему слову в отрывке, оказывается, что весь процесс обучения станет намного эффективнее, если ты одновременно попросишь ее предсказать все возможные следующие лексемы, следующие за каждой начальной подпоследовательностью лексем в этом отрывке.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 669.04,
+  "end": 691.56
+ },
+ {
+  "input": "For example, with the phrase that we've been focusing on, it might also be predicting what words follow creature and what words follow the.",
+  "translatedText": "Например, на примере фразы, на которой мы остановились, можно также предсказать, какие слова следуют за creature, а какие - за the.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 691.94,
+  "end": 699.1
+ },
+ {
+  "input": "This is really nice, because it means what would otherwise be a single training example effectively acts as many.",
+  "translatedText": "Это очень здорово, потому что это означает, что то, что в противном случае было бы одним тренировочным примером, эффективно действует как множество.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 699.94,
+  "end": 705.56
+ },
+ {
+  "input": "For the purposes of our attention pattern, it means that you never want to allow later words to influence earlier words, since otherwise they could kind of give away the answer for what comes next.",
+  "translatedText": "Для целей нашего шаблона внимания это означает, что ты никогда не хочешь позволять более поздним словам влиять на более ранние, так как в противном случае они могут как бы выдать ответ на то, что будет дальше.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 706.1,
+  "end": 716.04
+ },
+ {
+  "input": "What this means is that we want all of these spots here, the ones representing later tokens influencing earlier ones, to somehow be forced to be zero.",
+  "translatedText": "Это означает, что мы хотим, чтобы все эти места, представляющие более поздние токены, влияющие на более ранние, каким-то образом были принудительно равны нулю.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 716.56,
+  "end": 724.6
+ },
+ {
+  "input": "The simplest thing you might think to do is to set them equal to zero, but if you did that the columns wouldn't add up to one anymore, they wouldn't be normalized.",
+  "translatedText": "Самое простое, что ты можешь придумать, - это установить их равными нулю, но если ты сделаешь это, то столбцы больше не будут складываться в единицу, они не будут нормализованы.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 725.92,
+  "end": 732.42
+ },
+ {
+  "input": "So instead, a common way to do this is that before applying softmax, you set all of those entries to be negative infinity.",
+  "translatedText": "Так что вместо этого, как правило, перед применением softmax ты устанавливаешь для всех этих записей значение отрицательной бесконечности.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 733.12,
+  "end": 739.02
+ },
+ {
+  "input": "If you do that, then after applying softmax, all of those get turned into zero, but the columns stay normalized.",
+  "translatedText": "Если ты сделаешь это, то после применения softmax все эти показатели превратятся в ноль, но столбцы останутся нормализованными.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 739.68,
+  "end": 745.18
+ },
+ {
+  "input": "This process is called masking.",
+  "translatedText": "Этот процесс называется маскировкой.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 746.0,
+  "end": 747.54
+ },
+ {
+  "input": "There are versions of attention where you don't apply it, but in our GPT example, even though this is more relevant during the training phase than it would be, say, running it as a chatbot or something like that, you do always apply this masking to prevent later tokens from influencing earlier ones.",
+  "translatedText": "Есть версии внимания, где ты не применяешь его, но в нашем примере с GPT, несмотря на то что на этапе обучения это более актуально, чем, скажем, при запуске чатбота или чего-то подобного, ты всегда применяешь маскировку, чтобы предотвратить влияние более поздних токенов на более ранние.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 747.54,
+  "end": 761.46
+ },
+ {
+  "input": "Another fact that's worth reflecting on about this attention pattern is how its size is equal to the square of the context size.",
+  "translatedText": "Еще один факт, над которым стоит задуматься в связи с этим паттерном внимания, - это то, что его размер равен квадрату размера контекста.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 762.48,
+  "end": 769.5
+ },
+ {
+  "input": "So this is why context size can be a really huge bottleneck for large language models, and scaling it up is non-trivial.",
+  "translatedText": "Вот почему размер контекста может быть действительно огромным узким местом для больших языковых моделей, и масштабирование его нетривиально.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 769.9,
+  "end": 775.62
+ },
+ {
+  "input": "As you imagine, motivated by a desire for bigger and bigger context windows, recent years have seen some variations to the attention mechanism aimed at making context more scalable, but right here, you and I are staying focused on the basics.",
+  "translatedText": "Как ты понимаешь, мотивированные желанием иметь все большие и большие окна контекста, в последние годы появились некоторые вариации механизма внимания, направленные на то, чтобы сделать контекст более масштабируемым, но сейчас мы с тобой сосредоточимся на основах.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 776.3,
+  "end": 788.32
+ },
+ {
+  "input": "Okay, great, computing this pattern lets the model deduce which words are relevant to which other words.",
+  "translatedText": "Отлично, вычисление этого шаблона позволяет модели сделать вывод о том, какие слова имеют отношение к каким другим словам.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 790.56,
+  "end": 795.48
+ },
+ {
+  "input": "Now you need to actually update the embeddings, allowing words to pass information to whichever other words they're relevant to.",
+  "translatedText": "Теперь тебе нужно обновить вкрапления, позволяя словам передавать информацию тем другим словам, к которым они относятся.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 796.02,
+  "end": 802.8
+ },
+ {
+  "input": "For example, you want the embedding of Fluffy to somehow cause a change to Creature that moves it to a different part of this 12,000-dimensional embedding space that more specifically encodes a Fluffy creature.",
+  "translatedText": "Например, ты хочешь, чтобы встраивание Fluffy каким-то образом вызывало изменение Creature, которое перемещало бы его в другую часть этого 12 000-мерного пространства встраивания, более конкретно кодирующую существо Fluffy.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 802.8,
+  "end": 814.52
+ },
+ {
+  "input": "What I'm going to do here is first show you the most straightforward way that you could do this, though there's a slight way that this gets modified in the context of multi-headed attention.",
+  "translatedText": "Сначала я покажу тебе самый простой способ, как это можно сделать, хотя в контексте многоголового внимания он немного видоизменяется.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 815.46,
+  "end": 823.46
+ },
+ {
+  "input": "This most straightforward way would be to use a third matrix, what we call the value matrix, which you multiply by the embedding of that first word, for example Fluffy.",
+  "translatedText": "Самым простым способом было бы использование третьей матрицы, которую мы называем матрицей значений, и которую ты умножаешь на вкрапление первого слова, например Fluffy.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 824.08,
+  "end": 832.44
+ },
+ {
+  "input": "The result of this is what you would call a value vector, and this is something that you add to the embedding of the second word, in this case something you add to the embedding of Creature.",
+  "translatedText": "В результате получается то, что можно назвать вектором значений, и это то, что ты добавляешь к вкраплению второго слова, в данном случае к вкраплению Creature.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 833.3,
+  "end": 841.92
+ },
+ {
+  "input": "So this value vector lives in the same very high-dimensional space as the embeddings.",
+  "translatedText": "Так что этот вектор значений живет в том же очень высокоразмерном пространстве, что и эмбеддинги.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 842.6,
+  "end": 847.0
+ },
+ {
+  "input": "When you multiply this value matrix by the embedding of a word, you might think of it as saying, if this word is relevant to adjusting the meaning of something else, what exactly should be added to the embedding of that something else in order to reflect this?",
+  "translatedText": "Когда ты умножаешь эту матрицу значений на вложенность слова, ты можешь подумать, что это означает: если это слово имеет отношение к корректировке значения чего-то другого, то что именно нужно добавить к вложенности этого другого, чтобы отразить это?",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 847.46,
+  "end": 861.16
+ },
+ {
+  "input": "Looking back in our diagram, let's set aside all of the keys and the queries, since after you compute the attention pattern you're done with those, then you're going to take this value matrix and multiply it by every one of those embeddings to produce a sequence of value vectors.",
+  "translatedText": "Оглядываясь назад на нашу схему, давай отложим в сторону все ключи и запросы, так как после вычисления паттерна внимания ты закончишь с ними, а затем возьмешь эту матрицу значений и умножишь ее на каждое из этих вкраплений, чтобы получить последовательность векторов значений.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 862.14,
+  "end": 876.06
+ },
+ {
+  "input": "You might think of these value vectors as being kind of associated with the corresponding keys.",
+  "translatedText": "Ты можешь считать, что эти векторы значений как бы связаны с соответствующими ключами.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 877.12,
+  "end": 881.12
+ },
+ {
+  "input": "For each column in this diagram, you multiply each of the value vectors by the corresponding weight in that column.",
+  "translatedText": "Для каждого столбца этой диаграммы ты умножаешь каждый из векторов значений на соответствующий вес в этом столбце.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 882.32,
+  "end": 889.24
+ },
+ {
+  "input": "For example here, under the embedding of Creature, you would be adding large proportions of the value vectors for Fluffy and Blue, while all of the other value vectors get zeroed out, or at least nearly zeroed out.",
+  "translatedText": "Например, здесь, при встраивании Creature, ты добавляешь большую долю векторов значений для Fluffy и Blue, в то время как все остальные векторы значений обнуляются или, по крайней мере, почти обнуляются.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 890.08,
+  "end": 901.56
+ },
+ {
+  "input": "And then finally, the way to actually update the embedding associated with this column, previously encoding some context-free meaning of Creature, you add together all of these rescaled values in the column, producing a change that you want to add, that I'll label delta-e, and then you add that to the original embedding.",
+  "translatedText": "И наконец, чтобы обновить вложение, связанное с этим столбцом, ранее кодировавшим некое контекстно-свободное значение Creature, ты складываешь все эти измененные значения в столбце, получая изменение, которое ты хочешь добавить и которое я обозначу как delta-e, и затем добавляешь его к исходному вложению.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 902.12,
+  "end": 919.26
+ },
+ {
+  "input": "Hopefully what results is a more refined vector encoding the more contextually rich meaning, like that of a fluffy blue creature.",
+  "translatedText": "Надеюсь, в результате получится более изысканный вектор, кодирующий более контекстуально насыщенный смысл, например, пушистое голубое существо.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 919.68,
+  "end": 926.5
+ },
+ {
+  "input": "And of course you don't just do this to one embedding, you apply the same weighted sum across all of the columns in this picture, producing a sequence of changes, adding all of those changes to the corresponding embeddings, produces a full sequence of more refined embeddings popping out of the attention block.",
+  "translatedText": "И, конечно, ты делаешь это не только с одним вкраплением, ты применяешь ту же взвешенную сумму ко всем столбцам на этой картинке, создавая последовательность изменений, добавляя все эти изменения к соответствующим вкраплениям, получаешь полную последовательность более утонченных вкраплений, выскакивающих из блока внимания.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 927.38,
+  "end": 943.46
+ },
+ {
+  "input": "Zooming out, this whole process is what you would describe as a single head of attention.",
+  "translatedText": "Если увеличить масштаб, то весь этот процесс можно описать как единую голову внимания.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 944.86,
+  "end": 949.1
+ },
+ {
+  "input": "As I've described things so far, this process is parameterized by three distinct matrices, all filled with tunable parameters, the key, the query, and the value.",
+  "translatedText": "Как я описывал до сих пор, этот процесс параметризован тремя отдельными матрицами, заполненными настраиваемыми параметрами: ключ, запрос и значение.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 949.6,
+  "end": 958.94
+ },
+ {
+  "input": "I want to take a moment to continue what we started in the last chapter, with the scorekeeping where we count up the total number of model parameters using the numbers from GPT-3.",
+  "translatedText": "Я хочу уделить немного времени продолжению того, что мы начали в прошлой главе, - подсчету очков, когда мы подсчитываем общее количество параметров модели, используя числа из GPT-3.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 959.5,
+  "end": 968.04
+ },
+ {
+  "input": "These key and query matrices each have 12,288 columns, matching the embedding dimension, and 128 rows, matching the dimension of that smaller key query space.",
+  "translatedText": "Эти матрицы ключей и запросов имеют по 12 288 столбцов, что соответствует размерности встраивания, и 128 строк, что соответствует размерности меньшего пространства запросов ключей.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 969.3,
+  "end": 979.6
+ },
+ {
+  "input": "This gives us an additional 1.5 million or so parameters for each one.",
+  "translatedText": "Это дает нам дополнительные 1,5 миллиона или около того параметров для каждого из них.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 980.26,
+  "end": 984.22
+ },
+ {
+  "input": "If you look at that value matrix by contrast, the way I've described things so far would suggest that it's a square matrix that has 12,288 columns and 12,288 rows, since both its inputs and outputs live in this very large embedding space.",
+  "translatedText": "Если ты посмотришь на эту матрицу значений, то, как я описывал до сих пор, можно предположить, что это квадратная матрица, имеющая 12 288 столбцов и 12 288 строк, поскольку и входы, и выходы находятся в этом очень большом пространстве встраивания.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 984.86,
+  "end": 1000.92
+ },
+ {
+  "input": "If true, that would mean about 150 million added parameters.",
+  "translatedText": "Если это правда, то это будет означать около 150 миллионов дополнительных параметров.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1001.5,
+  "end": 1005.14
+ },
+ {
+  "input": "And to be clear, you could do that.",
+  "translatedText": "И если говорить начистоту, то ты можешь это сделать.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1005.66,
+  "end": 1007.3
+ },
+ {
+  "input": "You could devote orders of magnitude more parameters to the value map than to the key and query.",
+  "translatedText": "Ты можешь посвятить карте значений на порядки больше параметров, чем ключу и запросу.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1007.42,
+  "end": 1011.74
+ },
+ {
+  "input": "But in practice, it is much more efficient if instead you make it so that the number of parameters devoted to this value map is the same as the number devoted to the key and the query.",
+  "translatedText": "Но на практике гораздо эффективнее, если вместо этого ты сделаешь так, чтобы количество параметров, отведенных под эту карту значений, было таким же, как и количество параметров, отведенных под ключ и запрос.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1012.06,
+  "end": 1020.76
+ },
+ {
+  "input": "This is especially relevant in the setting of running multiple attention heads in parallel.",
+  "translatedText": "Это особенно актуально в условиях параллельного запуска нескольких головок внимания.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1021.46,
+  "end": 1025.16
+ },
+ {
+  "input": "The way this looks is that the value map is factored as a product of two smaller matrices.",
+  "translatedText": "Выглядит это так: карта значений разлагается как произведение двух меньших матриц.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1026.24,
+  "end": 1030.1
+ },
+ {
+  "input": "Conceptually, I would still encourage you to think about the overall linear map, one with inputs and outputs, both in this larger embedding space, for example taking the embedding of blue to this blueness direction that you would add to nouns.",
+  "translatedText": "Концептуально я бы все еще призывал тебя думать об общей линейной карте, с входами и выходами, как в этом большем пространстве вкраплений, например, взять вкрапление синего в это направление синевы, которое ты бы добавил к существительным.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1031.18,
+  "end": 1043.8
+ },
+ {
+  "input": "It's just that it's a smaller number of rows, typically the same size as the key query space.",
+  "translatedText": "Просто это меньшее количество строк, обычно такого же размера, как и пространство ключевого запроса.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1047.04,
+  "end": 1052.76
+ },
+ {
+  "input": "What this means is you can think of it as mapping the large embedding vectors down to a much smaller space.",
+  "translatedText": "Это означает, что ты можешь считать, что отображаешь большие векторы встраивания в гораздо меньшее пространство.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1053.1,
+  "end": 1058.44
+ },
+ {
+  "input": "This is not the conventional naming, but I'm going to call this the value down matrix.",
+  "translatedText": "Это не совсем обычное название, но я буду называть это матрицей снижения стоимости.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1059.04,
+  "end": 1062.7
+ },
+ {
+  "input": "The second matrix maps from this smaller space back up to the embedding space, producing the vectors that you use to make the actual updates.",
+  "translatedText": "Вторая матрица переходит из этого меньшего пространства обратно в пространство встраивания, создавая векторы, которые ты используешь для выполнения обновлений.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1063.4,
+  "end": 1070.58
+ },
+ {
+  "input": "I'm going to call this one the value up matrix, which again is not conventional.",
+  "translatedText": "Я назову эту матрицу \"ценность вверх\", что, опять же, не совсем обычно.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1071.0,
+  "end": 1074.74
+ },
+ {
+  "input": "The way that you would see this written in most papers looks a little different.",
+  "translatedText": "То, как это написано в большинстве газет, выглядит немного иначе.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1075.16,
+  "end": 1078.08
+ },
+ {
+  "input": "I'll talk about it in a minute.",
+  "translatedText": "Я расскажу об этом через минуту.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1078.38,
+  "end": 1079.52
+ },
+ {
+  "input": "In my opinion, it tends to make things a little more conceptually confusing.",
+  "translatedText": "На мой взгляд, это делает вещи немного более концептуально запутанными.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1079.7,
+  "end": 1082.54
+ },
+ {
+  "input": "To throw in linear algebra jargon here, what we're basically doing is constraining the overall value map to be a low rank transformation.",
+  "translatedText": "Если говорить на жаргоне линейной алгебры, то, по сути, мы ограничиваем общую карту значений преобразованием низкого ранга.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1083.26,
+  "end": 1090.34
+ },
+ {
+  "input": "Turning back to the parameter count, all four of these matrices have the same size, and adding them all up we get about 6.3 million parameters for one attention head.",
+  "translatedText": "Если вернуться к подсчету параметров, то все четыре матрицы имеют одинаковый размер, и, сложив их все, мы получим около 6,3 миллиона параметров для одной головы внимания.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1091.42,
+  "end": 1100.78
+ },
+ {
+  "input": "As a quick side note, to be a little more accurate, everything described so far is what people would call a self-attention head, to distinguish it from a variation that comes up in other models that's called cross-attention.",
+  "translatedText": "Небольшое примечание, чтобы быть немного более точным, все описанное до сих пор - это то, что люди называют головой самовнушения, чтобы отличить ее от вариации, которая встречается в других моделях и называется перекрестным вниманием.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1102.04,
+  "end": 1111.5
+ },
+ {
+  "input": "This isn't relevant to our GPT example, but if you're curious, cross-attention involves models that process two distinct types of data, like text in one language and text in another language that's part of an ongoing generation of a translation, or maybe audio input of speech and an ongoing transcription.",
+  "translatedText": "Это не относится к нашему примеру с GPT, но если тебе интересно, то кросс-внимание включает в себя модели, которые обрабатывают два разных типа данных, например, текст на одном языке и текст на другом языке, который является частью продолжающейся генерации перевода, или, может быть, аудиовход речи и продолжающаяся транскрипция.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1112.3,
+  "end": 1129.24
+ },
+ {
+  "input": "A cross-attention head looks almost identical.",
+  "translatedText": "Насадка для перекрестного захвата выглядит практически идентично.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1130.4,
+  "end": 1132.7
+ },
+ {
+  "input": "The only difference is that the key and query maps act on different data sets.",
+  "translatedText": "Разница лишь в том, что карты ключей и запросов действуют на разных наборах данных.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1132.98,
+  "end": 1137.4
+ },
+ {
+  "input": "In a model doing translation, for example, the keys might come from one language, while the queries come from another, and the attention pattern could describe which words from one language correspond to which words in another.",
+  "translatedText": "Например, в модели, выполняющей перевод, ключи могут быть из одного языка, а запросы - из другого, и паттерн внимания может описывать, какие слова из одного языка соответствуют каким словам в другом.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1137.84,
+  "end": 1149.66
+ },
+ {
+  "input": "And in this setting there would typically be no masking, since there's not really any notion of later tokens affecting earlier ones.",
+  "translatedText": "И в этом случае, как правило, не будет никакого маскирования, так как нет никакого понятия о том, что более поздние токены влияют на более ранние.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1150.34,
+  "end": 1156.34
+ },
+ {
+  "input": "Staying focused on self-attention though, if you understood everything so far, and if you were to stop here, you would come away with the essence of what attention really is.",
+  "translatedText": "Если бы ты понял все до конца и остановился на этом, ты бы понял, что такое внимание.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1157.18,
+  "end": 1165.18
+ },
+ {
+  "input": "All that's really left to us is to lay out the sense in which you do this many many different times.",
+  "translatedText": "Все, что нам остается, - это изложить смысл, в котором ты делаешь это много-много раз.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1165.76,
+  "end": 1171.44
+ },
+ {
+  "input": "In our central example we focused on adjectives updating nouns, but of course there are lots of different ways that context can influence the meaning of a word.",
+  "translatedText": "В нашем центральном примере мы сосредоточились на прилагательных, обновляющих существительные, но, конечно же, существует множество различных способов, с помощью которых контекст может повлиять на значение слова.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1172.1,
+  "end": 1179.8
+ },
+ {
+  "input": "If the words they crashed the preceded the word car, it has implications for the shape and structure of that car.",
+  "translatedText": "Если слова, которые они разбили, предшествовали слову \"автомобиль\", то это имеет отношение к форме и структуре этого автомобиля.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1180.36,
+  "end": 1186.52
+ },
+ {
+  "input": "And a lot of associations might be less grammatical.",
+  "translatedText": "И многие ассоциации могут быть менее грамматичными.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1187.2,
+  "end": 1189.28
+ },
+ {
+  "input": "If the word wizard is anywhere in the same passage as Harry, it suggests that this might be referring to Harry Potter, whereas if instead the words Queen, Sussex, and William were in that passage, then perhaps the embedding of Harry should instead be updated to refer to the prince.",
+  "translatedText": "Если слово wizard встречается в том же отрывке, что и Harry, это наводит на мысль, что речь может идти о Гарри Поттере, тогда как если бы вместо этого в отрывке были слова Queen, Sussex и William, то, возможно, вставку Harry следовало бы обновить, чтобы она относилась к принцу.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1189.76,
+  "end": 1204.44
+ },
+ {
+  "input": "For every different type of contextual updating that you might imagine, the parameters of these key and query matrices would be different to capture the different attention patterns, and the parameters of our value map would be different based on what should be added to the embeddings.",
+  "translatedText": "Для каждого типа контекстного обновления, который ты можешь себе представить, параметры этих матриц ключей и запросов будут разными, чтобы улавливать различные паттерны внимания, а параметры нашей карты значений будут отличаться в зависимости от того, что должно быть добавлено в эмбеддинги.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1205.04,
+  "end": 1219.14
+ },
+ {
+  "input": "And again, in practice the true behavior of these maps is much more difficult to interpret, where the weights are set to do whatever the model needs them to do to best accomplish its goal of predicting the next token.",
+  "translatedText": "И опять же, на практике истинное поведение этих карт гораздо сложнее интерпретировать, где веса устанавливаются так, чтобы делать все, что нужно модели для наилучшего достижения ее цели - предсказания следующего токена.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1219.98,
+  "end": 1230.14
+ },
+ {
+  "input": "As I said before, everything we described is a single head of attention, and a full attention block inside a transformer consists of what's called multi-headed attention, where you run a lot of these operations in parallel, each with its own distinct key query and value maps.",
+  "translatedText": "Как я уже говорил, все, что мы описали, - это одна голова внимания, а полный блок внимания внутри трансформатора состоит из так называемого многоголового внимания, где ты выполняешь множество этих операций параллельно, каждая со своими отдельными ключевыми запросами и картами значений.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1231.4,
+  "end": 1245.92
+ },
+ {
+  "input": "GPT-3 for example uses 96 attention heads inside each block.",
+  "translatedText": "Например, GPT-3 использует 96 головок внимания внутри каждого блока.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1247.42,
+  "end": 1251.7
+ },
+ {
+  "input": "Considering that each one is already a bit confusing, it's certainly a lot to hold in your head.",
+  "translatedText": "Учитывая, что каждый из них и так немного запутан, это, конечно, много, чтобы удержать в голове.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1252.02,
+  "end": 1256.46
+ },
+ {
+  "input": "Just to spell it all out very explicitly, this means you have 96 distinct key and query matrices producing 96 distinct attention patterns.",
+  "translatedText": "Если говорить прямо, то это означает, что у тебя есть 96 разных матриц ключей и запросов, создающих 96 разных паттернов внимания.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1256.76,
+  "end": 1265.0
+ },
+ {
+  "input": "Then each head has its own distinct value matrices used to produce 96 sequences of value vectors.",
+  "translatedText": "Затем у каждой головы есть свои собственные матрицы значений, которые используются для создания 96 последовательностей векторов значений.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1265.44,
+  "end": 1272.18
+ },
+ {
+  "input": "These are all added together using the corresponding attention patterns as weights.",
+  "translatedText": "Все это складывается вместе, используя соответствующие паттерны внимания в качестве весов.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1272.46,
+  "end": 1276.68
+ },
+ {
+  "input": "What this means is that for each position in the context, each token, every one of these heads produces a proposed change to be added to the embedding in that position.",
+  "translatedText": "Это означает, что для каждой позиции в контексте, для каждого токена, каждая из этих голов производит предлагаемое изменение, которое должно быть добавлено к вкраплениям в этой позиции.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1277.48,
+  "end": 1287.02
+ },
+ {
+  "input": "So what you do is you sum together all of those proposed changes, one for each head, and you add the result to the original embedding of that position.",
+  "translatedText": "Итак, ты суммируешь все эти предложенные изменения, по одному для каждой головы, и добавляешь результат к оригинальному вложению этой позиции.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1287.66,
+  "end": 1295.48
+ },
+ {
+  "input": "This entire sum here would be one slice of what's outputted from this multi-headed attention block, a single one of those refined embeddings that pops out the other end of it.",
+  "translatedText": "Вся эта сумма будет одним кусочком того, что выводится из этого многоголового блока внимания, одним из тех уточненных вкраплений, которые выходят с другого конца.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1296.66,
+  "end": 1307.46
+ },
+ {
+  "input": "Again, this is a lot to think about, so don't worry at all if it takes some time to sink in.",
+  "translatedText": "Опять же, об этом нужно много думать, так что не переживай, если тебе понадобится время, чтобы это осознать.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1308.32,
+  "end": 1312.14
+ },
+ {
+  "input": "The overall idea is that by running many distinct heads in parallel, you're giving the model the capacity to learn many distinct ways that context changes meaning.",
+  "translatedText": "Общая идея заключается в том, что, запуская параллельно множество разных голов, ты даешь модели возможность узнать множество разных способов, которыми контекст меняет смысл.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1312.38,
+  "end": 1321.82
+ },
+ {
+  "input": "Pulling up our running tally for parameter count with 96 heads, each including its own variation of these four matrices, each block of multi-headed attention ends up with around 600 million parameters.",
+  "translatedText": "Если поднять наш бегущий счетчик количества параметров с 96 головами, каждая из которых включает свою собственную вариацию этих четырех матриц, то каждый блок многоголового внимания в итоге имеет около 600 миллионов параметров.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1323.7,
+  "end": 1335.08
+ },
+ {
+  "input": "There's one added slightly annoying thing that I should really mention for any of you who go on to read more about transformers.",
+  "translatedText": "Есть одна дополнительная слегка раздражающая вещь, о которой я действительно должен упомянуть для тех из вас, кто продолжит читать дальше о трансформерах.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1336.42,
+  "end": 1341.8
+ },
+ {
+  "input": "You remember how I said that the value map is factored out into these two distinct matrices, which I labeled as the value down and the value up matrices.",
+  "translatedText": "Помнишь, я говорил, что карта ценностей раскладывается на две разные матрицы, которые я обозначил как матрицы \"ценность вниз\" и \"ценность вверх\".",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1342.08,
+  "end": 1349.44
+ },
+ {
+  "input": "The way that I framed things would suggest that you see this pair of matrices inside each attention head, and you could absolutely implement it this way.",
+  "translatedText": "То, как я изложил ситуацию, предполагает, что ты видишь эту пару матриц внутри каждой головы внимания, и ты абсолютно точно можешь реализовать это таким образом.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1349.96,
+  "end": 1358.44
+ },
+ {
+  "input": "That would be a valid design.",
+  "translatedText": "Это был бы правильный дизайн.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1358.64,
+  "end": 1359.92
+ },
+ {
+  "input": "But the way that you see this written in papers and the way that it's implemented in practice looks a little different.",
+  "translatedText": "Но то, как ты видишь это в бумагах, и то, как это реализуется на практике, выглядит немного по-разному.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1360.26,
+  "end": 1364.92
+ },
+ {
+  "input": "All of these value up matrices for each head appear stapled together in one giant matrix that we call the output matrix, associated with the entire multi-headed attention block.",
+  "translatedText": "Все эти матрицы значений для каждой головы оказываются сшитыми вместе в одну гигантскую матрицу, которую мы называем матрицей выхода, связанной со всем многоголовым блоком внимания.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1365.34,
+  "end": 1376.38
+ },
+ {
+  "input": "And when you see people refer to the value matrix for a given attention head, they're typically only referring to this first step, the one that I was labeling as the value down projection into the smaller space.",
+  "translatedText": "И когда ты видишь, что люди ссылаются на матрицу ценностей для данной головы внимания, они обычно имеют в виду только этот первый шаг, тот, который я обозначил как проекцию ценности вниз, в меньшее пространство.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1376.82,
+  "end": 1387.14
+ },
+ {
+  "input": "For the curious among you, I've left an on-screen note about it.",
+  "translatedText": "Для самых любопытных из вас я оставил заметку на экране об этом.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1388.34,
+  "end": 1391.04
+ },
+ {
+  "input": "It's one of those details that runs the risk of distracting from the main conceptual points, but I do want to call it out just so that you know if you read about this in other sources.",
+  "translatedText": "Это одна из тех деталей, которые рискуют отвлечь от основных концептуальных моментов, но я все же хочу обратить на нее внимание, чтобы ты знал, если прочитаешь об этом в других источниках.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1391.26,
+  "end": 1398.54
+ },
+ {
+  "input": "Setting aside all the technical nuances, in the preview from the last chapter we saw how data flowing through a transformer doesn't just flow through a single attention block.",
+  "translatedText": "Если отбросить все технические нюансы, то в превью из прошлой главы мы видели, как данные, проходящие через трансформатор, проходят не только через один блок внимания.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1399.24,
+  "end": 1408.04
+ },
+ {
+  "input": "For one thing, it also goes through these other operations called multi-layer perceptrons.",
+  "translatedText": "Во-первых, он также проходит через эти другие операции, называемые многослойными перцептронами.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1408.64,
+  "end": 1412.7
+ },
+ {
+  "input": "We'll talk more about those in the next chapter.",
+  "translatedText": "Подробнее о них мы поговорим в следующей главе.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1413.12,
+  "end": 1414.88
+ },
+ {
+  "input": "And then it repeatedly goes through many many copies of both of these operations.",
+  "translatedText": "А затем он многократно проходит через множество копий обеих этих операций.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1415.18,
+  "end": 1419.32
+ },
+ {
+  "input": "What this means is that after a given word imbibes some of its context, there are many more chances for this more nuanced embedding to be influenced by its more nuanced surroundings.",
+  "translatedText": "Это значит, что после того, как слово впитает в себя часть контекста, у него будет еще много шансов попасть под влияние более тонкого окружения.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1419.98,
+  "end": 1430.04
+ },
+ {
+  "input": "The further down the network you go, with each embedding taking in more and more meaning from all the other embeddings, which themselves are getting more and more nuanced, the hope is that there's the capacity to encode higher level and more abstract ideas about a given input beyond just descriptors and grammatical structure.",
+  "translatedText": "Чем дальше по сети ты продвигаешься, с каждым вкраплением принимая все больше и больше смысла от всех других вкраплений, которые сами становятся все более и более нюансированными, тем больше надежда на то, что появится способность кодировать более высокий уровень и более абстрактные идеи о данном вводе, выходящие за рамки простого описания и грамматической структуры.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1430.94,
+  "end": 1447.32
+ },
+ {
+  "input": "Things like sentiment and tone and whether it's a poem and what underlying scientific truths are relevant to the piece and things like that.",
+  "translatedText": "Такие вещи, как настроение и тон, а также то, является ли это стихотворением, какие научные истины лежат в основе произведения и тому подобные вещи.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1447.88,
+  "end": 1455.13
+ },
+ {
+  "input": "Turning back one more time to our scorekeeping, GPT-3 includes 96 distinct layers, so the total number of key query and value parameters is multiplied by another 96, which brings the total sum to just under 58 billion distinct parameters devoted to all of the attention heads.",
+  "translatedText": "Вернемся еще раз к нашему подсчету, GPT-3 включает 96 отдельных слоев, поэтому общее количество ключевых параметров запросов и значений умножается еще на 96, что в сумме дает чуть меньше 58 миллиардов отдельных параметров, посвященных всем головам внимания.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1456.7,
+  "end": 1474.5
+ },
+ {
+  "input": "That is a lot to be sure, but it's only about a third of the 175 billion that are in the network in total.",
+  "translatedText": "Это, конечно, много, но это всего лишь около трети от 175 миллиардов, которые в общей сложности находятся в сети.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1474.98,
+  "end": 1480.94
+ },
+ {
+  "input": "So even though attention gets all of the attention, the majority of parameters come from the blocks sitting in between these steps.",
+  "translatedText": "Поэтому, несмотря на то, что внимание достается всем, большинство параметров поступает из блоков, сидящих между этими ступенями.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1481.52,
+  "end": 1488.14
+ },
+ {
+  "input": "In the next chapter, you and I will talk more about those other blocks and also a lot more about the training process.",
+  "translatedText": "В следующей главе мы с тобой подробнее поговорим об этих других блоках, а также гораздо больше о тренировочном процессе.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1488.56,
+  "end": 1493.56
+ },
+ {
+  "input": "A big part of the story for the success of the attention mechanism is not so much any specific kind of behavior that it enables, but the fact that it's extremely parallelizable, meaning that you can run a huge number of computations in a short time using GPUs.",
+  "translatedText": "Большую роль в успехе механизма внимания играет не столько какой-то конкретный тип поведения, который он обеспечивает, сколько тот факт, что он чрезвычайно распараллеливается, то есть ты можешь выполнять огромное количество вычислений за короткое время с помощью графических процессоров.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1494.12,
+  "end": 1508.38
+ },
+ {
+  "input": "Given that one of the big lessons about deep learning in the last decade or two has been that scale alone seems to give huge qualitative improvements in model performance, there's a huge advantage to parallelizable architectures that let you do this.",
+  "translatedText": "Учитывая, что одним из главных уроков глубокого обучения в последние десять лет или два стало то, что только масштаб, похоже, дает огромное качественное улучшение производительности модели, есть огромное преимущество в распараллеливаемых архитектурах, которые позволяют тебе это делать.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1509.46,
+  "end": 1521.06
+ },
+ {
+  "input": "If you want to learn more about this stuff, I've left lots of links in the description.",
+  "translatedText": "Если ты хочешь узнать больше об этих вещах, я оставил множество ссылок в описании.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1522.04,
+  "end": 1525.34
+ },
+ {
+  "input": "In particular, anything produced by Andrej Karpathy or Chris Ola tend to be pure gold.",
+  "translatedText": "В частности, все, что создано Андреем Карпати или Крисом Олой, как правило, является чистым золотом.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1525.92,
+  "end": 1530.04
+ },
+ {
+  "input": "In this video, I wanted to just jump into attention in its current form, but if you're curious about more of the history for how we got here and how you might reinvent this idea for yourself, my friend Vivek just put up a couple videos giving a lot more of that motivation.",
+  "translatedText": "В этом видео я хотел просто рассказать о внимании в его нынешней форме, но если тебе интересно узнать больше об истории того, как мы пришли к этому и как ты можешь переосмыслить эту идею для себя, то мой друг Вивек только что выложил пару видео, в которых дается гораздо больше этой мотивации.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1530.56,
+  "end": 1542.54
+ },
+ {
+  "input": "Also, Britt Cruz from the channel The Art of the Problem has a really nice video about the history of large language models.",
+  "translatedText": "Кроме того, у Бритт Круз с канала The Art of the Problem есть очень хорошее видео об истории больших языковых моделей.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1543.12,
+  "end": 1548.46
+ },
+ {
+  "input": "Thank you.",
+  "translatedText": "Спасибо.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1564.96,
+  "end": 1569.2
+ }
+]

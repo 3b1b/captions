@@ -1,0 +1,1458 @@
+[
+ {
+  "input": "In the last chapter, you and I started to step through the internal workings of a transformer.",
+  "translatedText": "前章では、トランスの内部構造について説明した。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 0.0,
+  "end": 4.02
+ },
+ {
+  "input": "This is one of the key pieces of technology inside large language models, and a lot of other tools in the modern wave of AI.",
+  "translatedText": "これは、大規模な言語モデルや、現代のAIの波における他の多くのツールの中にある、重要な技術の1つである。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 4.56,
+  "end": 10.2
+ },
+ {
+  "input": "It first hit the scene in a now-famous 2017 paper called Attention is All You Need, and in this chapter you and I will dig into what this attention mechanism is, visualizing how it processes data.",
+  "translatedText": "そしてこの章では、この注意メカニズムがどのようにデータを処理するのかを可視化しながら、この注意メカニズムが何なのかを掘り下げていく。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 10.98,
+  "end": 21.7
+ },
+ {
+  "input": "As a quick recap, here's the important context I want you to have in mind.",
+  "translatedText": "簡単な復習として、私が心に留めておいてほしい重要な文脈はこうだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 26.14,
+  "end": 29.54
+ },
+ {
+  "input": "The goal of the model that you and I are studying is to take in a piece of text and predict what word comes next.",
+  "translatedText": "あなたと私が勉強しているモデルの目標は、テキストの一部分を取り込み、次に来る単語を予測することである。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 30.0,
+  "end": 36.06
+ },
+ {
+  "input": "The input text is broken up into little pieces that we call tokens, and these are very often words or pieces of words, but just to make the examples in this video easier for you and me to think about, let's simplify by pretending that tokens are always just words.",
+  "translatedText": "入力テキストはトークンと呼ばれる小さな断片に分割され、それらは単語や単語の一部であることが非常に多いが、このビデオの例をあなたや私に考えやすくするために、トークンは常に単語であると仮定して単純化してみよう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 36.86,
+  "end": 50.56
+ },
+ {
+  "input": "The first step in a transformer is to associate each token with a high-dimensional vector, what we call its embedding.",
+  "translatedText": "変換器の最初のステップは、各トークンを高次元ベクトルに関連付けることである。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 51.48,
+  "end": 57.7
+ },
+ {
+  "input": "The most important idea I want you to have in mind is how directions in this high-dimensional space of all possible embeddings can correspond with semantic meaning.",
+  "translatedText": "最も重要な考え方は、この高次元空間のあらゆる埋め込み可能な方向が、意味論的な意味とどのように対応しうるかということだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 57.7,
+  "end": 67.0
+ },
+ {
+  "input": "In the last chapter we saw an example for how direction can correspond to gender, in the sense that adding a certain step in this space can take you from the embedding of a masculine noun to the embedding of the corresponding feminine noun.",
+  "translatedText": "前章では、方向が性別に対応する例を見たが、それは、この空間にあるステップを追加することで、男性名詞の埋め込みから、対応する女性名詞の埋め込みに移行できるという意味である。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 67.68,
+  "end": 79.64
+ },
+ {
+  "input": "That's just one example you could imagine how many other directions in this high-dimensional space could correspond to numerous other aspects of a word's meaning.",
+  "translatedText": "これはほんの一例に過ぎないが、この高次元空間における他の多くの方向が、単語の意味の他の数多くの側面に対応しうることは想像に難くない。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 80.16,
+  "end": 87.58
+ },
+ {
+  "input": "The aim of a transformer is to progressively adjust these embeddings so that they don't merely encode an individual word, but instead they bake in some much, much richer contextual meaning.",
+  "translatedText": "トランスフォーマーの目的は、これらの埋め込みを段階的に調整することで、単に個々の単語をエンコードするだけでなく、その代わりにもっともっと豊かな文脈的意味を埋め込むようにすることだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 88.8,
+  "end": 99.18
+ },
+ {
+  "input": "I should say up front that a lot of people find the attention mechanism, this key piece in a transformer, very confusing, so don't worry if it takes some time for things to sink in.",
+  "translatedText": "先に言っておくが、多くの人は、トランスの重要な部品であるアテンション・メカニズムが非常にわかりにくいと感じている。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 100.14,
+  "end": 108.98
+ },
+ {
+  "input": "I think that before we dive into the computational details and all the matrix multiplications, it's worth thinking about a couple examples for the kind of behavior that we want attention to enable.",
+  "translatedText": "計算の詳細やすべての行列の乗算に飛び込む前に、私たちが注目してほしい動作の例をいくつか考えておく価値があると思う。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 109.44,
+  "end": 119.16
+ },
+ {
+  "input": "Consider the phrases American true mole, one mole of carbon dioxide, and take a biopsy of the mole.",
+  "translatedText": "アメリカの真のほくろ、二酸化炭素の1モルというフレーズを考え、ほくろの生検を行う。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 120.14,
+  "end": 126.22
+ },
+ {
+  "input": "You and I know that the word mole has different meanings in each one of these, based on the context.",
+  "translatedText": "モグラという言葉が、文脈によってそれぞれ異なる意味を持つことは、あなたも私も知っている。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 126.7,
+  "end": 130.9
+ },
+ {
+  "input": "But after the first step of a transformer, the one that breaks up the text and associates each token with a vector, the vector that's associated with mole would be the same in all of these cases, because this initial token embedding is effectively a lookup table with no reference to the context.",
+  "translatedText": "しかし、変換器の最初のステップ、つまりテキストを分割して各トークンをベクトルに関連付けるステップの後では、モグラに関連付けられるベクトルはこれらのケースですべて同じになる。なぜなら、この最初のトークン埋め込みは事実上、文脈を参照しないルックアップテーブルだからだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 131.36,
+  "end": 146.22
+ },
+ {
+  "input": "It's only in the next step of the transformer that the surrounding embeddings have the chance to pass information into this one.",
+  "translatedText": "周囲の埋め込みがこの埋め込みに情報を渡すチャンスがあるのは、変換器の次のステップのときだけだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 146.62,
+  "end": 153.1
+ },
+ {
+  "input": "The picture you might have in mind is that there are multiple distinct directions in this embedding space encoding the multiple distinct meanings of the word mole, and that a well-trained attention block calculates what you need to add to the generic embedding to move it to one of these specific directions, as a function of the context.",
+  "translatedText": "そして、よく訓練されたアテンション・ブロックは、一般的な埋め込みに何を付け加えれば、文脈の関数として、これらの特定の方向のひとつに移動させることができるかを計算する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 153.82,
+  "end": 171.8
+ },
+ {
+  "input": "To take another example, consider the embedding of the word tower.",
+  "translatedText": "別の例として、towerという単語の埋め込みを考えてみよう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 173.3,
+  "end": 176.18
+ },
+ {
+  "input": "This is presumably some very generic, non-specific direction in the space, associated with lots of other large, tall nouns.",
+  "translatedText": "これはおそらく、他の多くの大きくて背の高い名詞に関連する、非常に一般的で特定的でない空間の方向性なのだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 177.06,
+  "end": 183.72
+ },
+ {
+  "input": "If this word was immediately preceded by Eiffel, you could imagine wanting the mechanism to update this vector so that it points in a direction that more specifically encodes the Eiffel tower, maybe correlated with vectors associated with Paris and France and things made of steel.",
+  "translatedText": "もしこの単語の直前にエッフェル塔があったとしたら、このベクトルを更新して、より具体的にエッフェル塔を意味する方向に向け、パリやフランス、鉄でできたものに関連するベクトルと相関させるようなメカニズムにしたいと想像できるだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 184.02,
+  "end": 199.06
+ },
+ {
+  "input": "If it was also preceded by the word miniature, then the vector should be updated even further, so that it no longer correlates with large, tall things.",
+  "translatedText": "もしミニチュアという言葉が先行するのであれば、ベクトルはさらに更新され、大きくて背の高いものとの相関関係がなくなるはずだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 199.92,
+  "end": 207.5
+ },
+ {
+  "input": "More generally than just refining the meaning of a word, the attention block allows the model to move information encoded in one embedding to that of another, potentially ones that are quite far away, and potentially with information that's much richer than just a single word.",
+  "translatedText": "アテンション・ブロックは、単に単語の意味を洗練させるだけでなく、あるエンベッディングにエンコードされた情報を、別のエンベッディングに移動させることができる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 209.48,
+  "end": 223.3
+ },
+ {
+  "input": "What we saw in the last chapter was how after all of the vectors flow through the network, including many different attention blocks, the computation you perform to produce a prediction of the next token is entirely a function of the last vector in the sequence.",
+  "translatedText": "前章で見たのは、多くの異なるアテンション・ブロックを含むすべてのベクトルがネットワークを流れた後、次のトークンの予測を生成するために実行する計算が、完全にシーケンスの最後のベクトルの関数であるということだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 223.3,
+  "end": 238.28
+ },
+ {
+  "input": "Imagine, for example, that the text you input is most of an entire mystery novel, all the way up to a point near the end, which reads, therefore the murderer was.",
+  "translatedText": "たとえば、入力されたテキストが推理小説の大部分で、最後のほうにある「したがって、犯人はこうであった。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 239.1,
+  "end": 247.8
+ },
+ {
+  "input": "If the model is going to accurately predict the next word, that final vector in the sequence, which began its life simply embedding the word was, will have to have been updated by all of the attention blocks to represent much, much more than any individual word, somehow encoding all of the information from the full context window that's relevant to predicting the next word.",
+  "translatedText": "このモデルが次の単語を正確に予測しようとするならば、最初は単にwasという単語を埋め込んでいた配列の最後のベクトルが、すべての注意ブロックによって更新され、個々の単語よりもはるかに多くの情報を表すようにならなければならない。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 248.4,
+  "end": 268.22
+ },
+ {
+  "input": "To step through the computations, though, let's take a much simpler example.",
+  "translatedText": "しかし、計算を段階的に進めるために、もっと単純な例を挙げてみよう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 269.5,
+  "end": 272.58
+ },
+ {
+  "input": "Imagine that the input includes the phrase, a fluffy blue creature roamed the verdant forest.",
+  "translatedText": "ふわふわした青い生き物が緑豊かな森を歩き回っていた。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 272.98,
+  "end": 277.96
+ },
+ {
+  "input": "And for the moment, suppose that the only type of update that we care about is having the adjectives adjust the meanings of their corresponding nouns.",
+  "translatedText": "とりあえず、私たちが気にする唯一の更新は、形容詞が対応する名詞の意味を調整することだとしよう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 278.46,
+  "end": 286.78
+ },
+ {
+  "input": "What I'm about to describe is what we would call a single head of attention, and later we will see how the attention block consists of many different heads run in parallel.",
+  "translatedText": "これから説明するのは、私たちが注意の単一ヘッドと呼んでいるもので、注意のブロックがいかに多くの異なるヘッドから構成され、並行して実行されているかは後でわかるだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 287.0,
+  "end": 295.42
+ },
+ {
+  "input": "Again, the initial embedding for each word is some high dimensional vector that only encodes the meaning of that particular word with no context.",
+  "translatedText": "繰り返しになるが、各単語の初期埋め込みは、文脈のない特定の単語の意味だけをエンコードする高次元ベクトルである。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 296.14,
+  "end": 303.38
+ },
+ {
+  "input": "Actually, that's not quite true.",
+  "translatedText": "実は、それはちょっと違う。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 304.0,
+  "end": 305.22
+ },
+ {
+  "input": "They also encode the position of the word.",
+  "translatedText": "また、単語の位置も符号化される。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 305.38,
+  "end": 307.64
+ },
+ {
+  "input": "There's a lot more to say way that positions are encoded, but right now, all you need to know is that the entries of this vector are enough to tell you both what the word is and where it exists in the context.",
+  "translatedText": "位置がエンコードされる方法についてはもっとたくさんあるが、今知っておく必要があるのは、このベクトルのエントリーが、その単語が何であり、文脈のどこに存在するかを教えてくれるのに十分だということだけだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 307.98,
+  "end": 318.9
+ },
+ {
+  "input": "Let's go ahead and denote these embeddings with the letter e.",
+  "translatedText": "これらの埋め込みをeで表してみよう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 319.5,
+  "end": 321.66
+ },
+ {
+  "input": "The goal is to have a series of computations produce a new refined set of embeddings where, for example, those corresponding to the nouns have ingested the meaning from their corresponding adjectives.",
+  "translatedText": "目標は、一連の計算によって、例えば名詞に対応するものが対応する形容詞から意味を取り込んだ、新しい洗練された埋め込みセットを生成させることである。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 322.42,
+  "end": 333.42
+ },
+ {
+  "input": "And playing the deep learning game, we want most of the computations involved to look like matrix-vector products, where the matrices are full of tunable weights, things that the model will learn based on data.",
+  "translatedText": "ディープラーニングのゲームでは、ほとんどの計算を行列とベクトルの積のようにしたい。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 333.9,
+  "end": 343.98
+ },
+ {
+  "input": "To be clear, I'm making up this example of adjectives updating nouns just to illustrate the type of behavior that you could imagine an attention head doing.",
+  "translatedText": "誤解のないように言っておくが、形容詞が名詞を更新するというこの例は、アテンション・ヘッドがどのような行動を取るかを想像してもらうために作ったものだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 344.66,
+  "end": 352.26
+ },
+ {
+  "input": "As with so much deep learning, the true behavior is much harder to parse because it's based on tweaking and tuning a huge number of parameters to minimize some cost function.",
+  "translatedText": "多くのディープラーニングがそうであるように、真の挙動を解析するのはずっと難しい。なぜなら、あるコスト関数を最小化するために、膨大な数のパラメーターを微調整し、チューニングすることに基づいているからだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 352.86,
+  "end": 361.34
+ },
+ {
+  "input": "It's just that as we step through all of different matrices filled with parameters that are involved in this process, I think it's really helpful to have an imagined example of something that it could be doing to help keep it all more concrete.",
+  "translatedText": "ただ、このプロセスに関係するパラメータで満たされたさまざまなマトリックスをステップを踏んでいく中で、より具体的にするために、何かできることの想像例があると本当に助かると思う。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 361.68,
+  "end": 373.22
+ },
+ {
+  "input": "For the first step of this process, you might imagine each noun, like creature, asking the question, hey, are there any adjectives sitting in front of me?",
+  "translatedText": "このプロセスの最初のステップでは、クリーチャーのような名詞が、「ねえ、私の前に形容詞はある？",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 374.14,
+  "end": 381.96
+ },
+ {
+  "input": "And for the words fluffy and blue, to each be able to answer, yeah, I'm an adjective and I'm in that position.",
+  "translatedText": "そして、フワフワとブルーという言葉に対して、それぞれが答えられるように、そう、僕は形容詞で、そういうポジションにいるんだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 382.16,
+  "end": 387.96
+ },
+ {
+  "input": "That question is somehow encoded as yet another vector, another list of numbers, which we call the query for this word.",
+  "translatedText": "その質問は、別のベクトル、別の数字のリストとしてエンコードされる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 388.96,
+  "end": 396.1
+ },
+ {
+  "input": "This query vector though has a much smaller dimension than the embedding vector, say 128.",
+  "translatedText": "しかし、このクエリーベクトルは、埋め込みベクトルよりもはるかに小さい次元を持つ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 396.98,
+  "end": 402.02
+ },
+ {
+  "input": "Computing this query looks like taking a certain matrix, which I'll label wq, and multiplying it by the embedding.",
+  "translatedText": "このクエリを計算するのは、ある行列（ここではwqと呼ぶ）を取り出し、それに埋め込みを乗算するようなものだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 402.94,
+  "end": 409.78
+ },
+ {
+  "input": "Compressing things a bit, let's write that query vector as q, and then anytime you see me put a matrix next to an arrow like this one, it's meant to represent that multiplying this matrix by the vector at the arrow's start gives you the vector at the arrow's end.",
+  "translatedText": "このように矢印の横に行列を置くのは、この行列に矢印の始点のベクトルを掛けると、矢印の終点のベクトルが得られることを表している。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 410.96,
+  "end": 424.8
+ },
+ {
+  "input": "In this case, you multiply this matrix by all of the embeddings in the context, producing one query vector for each token.",
+  "translatedText": "この場合、この行列にコンテキスト内のすべての埋め込みを掛け合わせ、各トークンに対して1つのクエリベクトルを生成する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 425.86,
+  "end": 432.58
+ },
+ {
+  "input": "The entries of this matrix are parameters of the model, which means the true behavior is learned from data, and in practice, what this matrix does in a particular attention head is challenging to parse.",
+  "translatedText": "この行列のエントリーはモデルのパラメータであり、つまり真の挙動はデータから学習される。実際には、特定のアテンションヘッドでこの行列が何をするのかは解析が難しい。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 433.74,
+  "end": 443.44
+ },
+ {
+  "input": "But for our sake, imagining an example that we might hope that it would learn, we'll suppose that this query matrix maps the embeddings of nouns to certain directions in this smaller query space that somehow encodes the notion of looking for adjectives in preceding positions.",
+  "translatedText": "しかし、私たちのために、このクエリ行列が学習することを期待するような例を想像してみよう。このクエリ行列は、名詞の埋め込みをこの小さなクエリ空間のある方向にマッピングし、先行する位置にある形容詞を探すという概念を何らかの形でコード化していると仮定する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 443.9,
+  "end": 458.04
+ },
+ {
+  "input": "As to what it does to other embeddings, who knows?",
+  "translatedText": "それが他の埋め込みにどう影響するかは、誰にもわからない。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 458.78,
+  "end": 461.44
+ },
+ {
+  "input": "Maybe it simultaneously tries to accomplish some other goal with those.",
+  "translatedText": "もしかしたら、同時に他の目標も達成しようとしているのかもしれない。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 461.72,
+  "end": 464.34
+ },
+ {
+  "input": "Right now, we're laser focused on the nouns.",
+  "translatedText": "今は名詞に集中している。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 464.54,
+  "end": 467.16
+ },
+ {
+  "input": "At the same time, associated with this is a second matrix called the key matrix, which you also multiply by every one of the embeddings.",
+  "translatedText": "同時に、これと関連しているのがキー行列と呼ばれる2番目の行列で、これも埋め込みの1つ1つを掛け合わせる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 467.28,
+  "end": 474.62
+ },
+ {
+  "input": "This produces a second sequence of vectors that we call the keys.",
+  "translatedText": "これにより、キーと呼ぶ2番目のベクトル列が生成される。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 475.28,
+  "end": 478.5
+ },
+ {
+  "input": "Conceptually, you want to think of the keys as potentially answering the queries.",
+  "translatedText": "概念的には、キーはクエリーに答える可能性があると考えたい。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 479.42,
+  "end": 483.14
+ },
+ {
+  "input": "This key matrix is also full of tunable parameters, and just like the query matrix, it maps the embedding vectors to that same smaller dimensional space.",
+  "translatedText": "このキーマトリックスも調整可能なパラメーターでいっぱいで、クエリーマトリックスと同じように、埋め込みベクトルをより小さな次元の空間にマッピングする。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 483.84,
+  "end": 491.4
+ },
+ {
+  "input": "You think of the keys as matching the queries whenever they closely align with each other.",
+  "translatedText": "キーとクエリが密接に一致するときは、キーがクエリに一致すると考えるのだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 492.2,
+  "end": 497.02
+ },
+ {
+  "input": "In our example, you would imagine that the key matrix maps the adjectives like fluffy and blue to vectors that are closely aligned with the query produced by the word creature.",
+  "translatedText": "この例では、キーマトリクスはfluffyやblueといった形容詞を、creatureという単語が生成するクエリと密接に整合するベクトルにマッピングしていると想像できるだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 497.46,
+  "end": 506.74
+ },
+ {
+  "input": "To measure how well each key matches each query, you compute a dot product between each possible key-query pair.",
+  "translatedText": "各キーが各クエリにどの程度マッチするかを測定するために、可能性のある各キーとクエリのペア間のドット積を計算する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 507.2,
+  "end": 514.0
+ },
+ {
+  "input": "I like to visualize a grid full of a bunch of dots, where the bigger dots correspond to the larger dot products, the places where the keys and queries align.",
+  "translatedText": "大きなドットが大きなドット積、つまりキーとクエリが整列する場所に対応している。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 514.48,
+  "end": 522.56
+ },
+ {
+  "input": "For our adjective noun example, that would look a little more like this, where if the keys produced by fluffy and blue really do align closely with the query produced by creature, then the dot products in these two spots would be some large positive numbers.",
+  "translatedText": "もし、fluffyとblueが生成するキーが、creatureが生成するクエリと本当に密接に一致するのであれば、この2つの点のドット積は大きな正の数になるだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 523.28,
+  "end": 538.32
+ },
+ {
+  "input": "In the lingo, machine learning people would say that this means the embeddings of fluffy and blue attend to the embedding of creature.",
+  "translatedText": "機械学習の専門用語では、これはふわふわと青の埋め込みがクリーチャーの埋め込みに関与することを意味すると言うだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 539.1,
+  "end": 545.42
+ },
+ {
+  "input": "By contrast to the dot product between the key for some other word like the and the query for creature would be some small or negative value that reflects that are unrelated to each other.",
+  "translatedText": "対照的に、theのような他の単語のキーとcreatureのクエリとの間のドット積は、互いに無関係であることを反映する、小さいか負の値になるだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 546.04,
+  "end": 556.6
+ },
+ {
+  "input": "So we have this grid of values that can be any real number from negative infinity to infinity, giving us a score for how relevant each word is to updating the meaning of every other word.",
+  "translatedText": "つまり、負の無限大から無限大までの実数値をグリッド状に並べ、各単語が他のすべての単語の意味を更新するのにどれだけ関連性があるかをスコアで示すのだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 557.7,
+  "end": 568.48
+ },
+ {
+  "input": "The way we're about to use these scores is to take a certain weighted sum along each column, weighted by the relevance.",
+  "translatedText": "これらのスコアの使い方は、各列に沿って、関連性によって重み付けされた合計を取るというものだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 569.2,
+  "end": 575.78
+ },
+ {
+  "input": "So instead of having values range from negative infinity to infinity, what we want is for the numbers in these columns to be between 0 and 1, and for each column to add up to 1, as if they were a probability distribution.",
+  "translatedText": "つまり、負の無限大から無限大までの値を持つ代わりに、私たちが望むのは、これらの列の数値が0から1の間であり、あたかも確率分布であるかのように、各列を足して1になることである。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 576.52,
+  "end": 588.18
+ },
+ {
+  "input": "If you're coming in from the last chapter, you know what we need to do then.",
+  "translatedText": "前章からの参加者なら、その時に何をすべきか分かっているはずだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 589.28,
+  "end": 592.22
+ },
+ {
+  "input": "We compute a softmax along each one of these columns to normalize the values.",
+  "translatedText": "それぞれの列に沿ってソフトマックスを計算し、値を正規化する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 592.62,
+  "end": 597.3
+ },
+ {
+  "input": "In our picture, after you apply softmax to all of the columns, we'll fill in the grid with these normalized values.",
+  "translatedText": "この写真では、すべての列にソフトマックスを適用した後、これらの正規化された値でグリッドを埋める。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 600.06,
+  "end": 605.86
+ },
+ {
+  "input": "At this point you're safe to think about each column as giving weights according to how relevant the word on the left is to the corresponding value at the top.",
+  "translatedText": "この時点で、各列は、左側の単語が上側の対応する値にどれだけ関連しているかによって重みを与えていると考えてもいいだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 606.78,
+  "end": 614.58
+ },
+ {
+  "input": "We call this grid an attention pattern.",
+  "translatedText": "私たちはこのグリッドをアテンション・パターンと呼んでいる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 615.08,
+  "end": 616.84
+ },
+ {
+  "input": "Now if you look at the original transformer paper, there's a really compact way that they write this all down.",
+  "translatedText": "オリジナルのトランスフォーマーの論文を見ると、実にコンパクトに書かれている。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 618.08,
+  "end": 622.82
+ },
+ {
+  "input": "Here the variables q and k represent the full arrays of query and key vectors respectively, those little vectors you get by multiplying the embeddings by the query and the key matrices.",
+  "translatedText": "ここで変数qとkは、それぞれクエリーベクトルとキーベクトルの完全な配列を表す。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 623.88,
+  "end": 634.64
+ },
+ {
+  "input": "This expression up in the numerator is a really compact way to represent the grid of all possible dot products between pairs of keys and queries.",
+  "translatedText": "この分子式は、キーとクエリーのペア間のドット積のグリッドを表現する、実にコンパクトな方法である。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 635.16,
+  "end": 643.02
+ },
+ {
+  "input": "A small technical detail that I didn't mention is that for numerical stability, it happens to be helpful to divide all of these values by the square root of the dimension in that key query space.",
+  "translatedText": "技術的な細かいことだが、数値的に安定させるためには、これらの値をすべてそのキークエリー空間の次元の平方根で割るのが有効である。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 644.0,
+  "end": 653.96
+ },
+ {
+  "input": "Then this softmax that's wrapped around the full expression is meant to be understood to apply column by column.",
+  "translatedText": "そして、このソフトマックスは、列ごとに適用されることを意味する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 654.48,
+  "end": 660.8
+ },
+ {
+  "input": "As to that v term, we'll talk about it in just a second.",
+  "translatedText": "そのVタームについては、すぐ後で話そう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 661.64,
+  "end": 664.7
+ },
+ {
+  "input": "Before that, there's one other technical detail that so far I've skipped.",
+  "translatedText": "その前に、もうひとつ技術的なディテールがある。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 665.02,
+  "end": 668.46
+ },
+ {
+  "input": "During the training process, when you run this model on a given text example, and all of the weights are slightly adjusted and tuned to either reward or punish it based on how high a probability it assigns to the true next word in the passage, it turns out to make the whole training process a lot more efficient if you simultaneously have it predict every possible next token following each initial subsequence of tokens in this passage.",
+  "translatedText": "学習プロセスにおいて、与えられたテキスト例に対してこのモデルを実行し、すべての重みをわずかに調整し、パッセージ内の真の次の単語に割り当てる確率の高さに基づいて報酬を与えたり罰を与えたりするように調整すると、このパッセージ内の各トークンの最初の続きに続く可能性のあるすべての次のトークンを同時に予測させると、学習プロセス全体が非常に効率的になることが判明した。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 669.04,
+  "end": 691.56
+ },
+ {
+  "input": "For example, with the phrase that we've been focusing on, it might also be predicting what words follow creature and what words follow the.",
+  "translatedText": "例えば、私たちが注目しているフレーズでは、creatureの後にどんな単語が続き、theの後にどんな単語が続くかを予測することもできる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 691.94,
+  "end": 699.1
+ },
+ {
+  "input": "This is really nice, because it means what would otherwise be a single training example effectively acts as many.",
+  "translatedText": "これは本当に素晴らしいことで、そうでなければ1つのトレーニング例となるものが、効果的に多くのトレーニング例として機能することになる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 699.94,
+  "end": 705.56
+ },
+ {
+  "input": "For the purposes of our attention pattern, it means that you never want to allow later words to influence earlier words, since otherwise they could kind of give away the answer for what comes next.",
+  "translatedText": "私たちのアテンション・パターンの目的からすれば、後の言葉が前の言葉に影響を与えることを決して許さないということである。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 706.1,
+  "end": 716.04
+ },
+ {
+  "input": "What this means is that we want all of these spots here, the ones representing later tokens influencing earlier ones, to somehow be forced to be zero.",
+  "translatedText": "これが意味するのは、ここにあるすべてのスポット、つまり後のトークンが前のトークンに影響を与えたことを表すスポットを、何らかの方法で強制的にゼロにしたいということだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 716.56,
+  "end": 724.6
+ },
+ {
+  "input": "The simplest thing you might think to do is to set them equal to zero, but if you did that the columns wouldn't add up to one anymore, they wouldn't be normalized.",
+  "translatedText": "一番簡単なのは、これらの列をゼロにすることだが、そうすると列の足し算が1でなくなり、正規化されなくなってしまう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 725.92,
+  "end": 732.42
+ },
+ {
+  "input": "So instead, a common way to do this is that before applying softmax, you set all of those entries to be negative infinity.",
+  "translatedText": "その代わりに、ソフトマックスを適用する前に、これらのエントリーをすべて負の無限大に設定するのが一般的な方法だ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 733.12,
+  "end": 739.02
+ },
+ {
+  "input": "If you do that, then after applying softmax, all of those get turned into zero, but the columns stay normalized.",
+  "translatedText": "そうすれば、ソフトマックスを適用した後、それらの値はすべてゼロになるが、列は正規化されたままになる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 739.68,
+  "end": 745.18
+ },
+ {
+  "input": "This process is called masking.",
+  "translatedText": "このプロセスはマスキングと呼ばれる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 746.0,
+  "end": 747.54
+ },
+ {
+  "input": "There are versions of attention where you don't apply it, but in our GPT example, even though this is more relevant during the training phase than it would be, say, running it as a chatbot or something like that, you do always apply this masking to prevent later tokens from influencing earlier ones.",
+  "translatedText": "しかし、GPTの例では、例えばチャットボットとして実行する場合などよりも、トレーニング段階の方がより関連性が高いにもかかわらず、後のトークンが前のトークンに影響を与えるのを防ぐために、常にこのマスキングを適用している。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 747.54,
+  "end": 761.46
+ },
+ {
+  "input": "Another fact that's worth reflecting on about this attention pattern is how its size is equal to the square of the context size.",
+  "translatedText": "このアテンション・パターンについて考える価値のあるもうひとつの事実は、その大きさがコンテクストの大きさの2乗に等しいということだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 762.48,
+  "end": 769.5
+ },
+ {
+  "input": "So this is why context size can be a really huge bottleneck for large language models, and scaling it up is non-trivial.",
+  "translatedText": "コンテキストの大きさは、大規模な言語モデルにとって本当に大きなボトルネックになる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 769.9,
+  "end": 775.62
+ },
+ {
+  "input": "As you imagine, motivated by a desire for bigger and bigger context windows, recent years have seen some variations to the attention mechanism aimed at making context more scalable, but right here, you and I are staying focused on the basics.",
+  "translatedText": "ご想像の通り、コンテキスト・ウィンドウをより大きくしたいという欲求に突き動かされ、近年、コンテキストをよりスケーラブルにすることを目的としたアテンション・メカニズムにいくつかのバリエーションが見られるようになった。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 776.3,
+  "end": 788.32
+ },
+ {
+  "input": "Okay, great, computing this pattern lets the model deduce which words are relevant to which other words.",
+  "translatedText": "なるほど、このパターンを計算することで、モデルはどの単語が他のどの単語に関連しているかを推測することができる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 790.56,
+  "end": 795.48
+ },
+ {
+  "input": "Now you need to actually update the embeddings, allowing words to pass information to whichever other words they're relevant to.",
+  "translatedText": "あとは実際に埋め込みを更新して、単語が関連する他のどの単語にも情報を渡せるようにする必要がある。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 796.02,
+  "end": 802.8
+ },
+ {
+  "input": "For example, you want the embedding of Fluffy to somehow cause a change to Creature that moves it to a different part of this 12,000-dimensional embedding space that more specifically encodes a Fluffy creature.",
+  "translatedText": "例えば、「ふわふわ」を埋め込むことによって、「クリーチャー」に何らかの変化を与え、「ふわふわ」のクリーチャーをより具体的にエンコードする、この12,000次元の埋め込み空間の別の部分に移動させたいとする。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 802.8,
+  "end": 814.52
+ },
+ {
+  "input": "What I'm going to do here is first show you the most straightforward way that you could do this, though there's a slight way that this gets modified in the context of multi-headed attention.",
+  "translatedText": "ここでは、まず、最も簡単な方法をお見せしよう。ただし、多頭注目という文脈では、この方法を少し修正する必要がある。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 815.46,
+  "end": 823.46
+ },
+ {
+  "input": "This most straightforward way would be to use a third matrix, what we call the value matrix, which you multiply by the embedding of that first word, for example Fluffy.",
+  "translatedText": "この最も簡単な方法は、3番目の行列、いわゆる値行列を使うことで、これに最初の単語の埋め込み、例えばFluffyを掛ける。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 824.08,
+  "end": 832.44
+ },
+ {
+  "input": "The result of this is what you would call a value vector, and this is something that you add to the embedding of the second word, in this case something you add to the embedding of Creature.",
+  "translatedText": "この結果は値ベクトルと呼ばれるもので、これは2番目の単語の埋め込みに追加するもので、この場合はCreatureの埋め込みに追加するものである。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 833.3,
+  "end": 841.92
+ },
+ {
+  "input": "So this value vector lives in the same very high-dimensional space as the embeddings.",
+  "translatedText": "つまりこの値ベクトルは、埋め込みと同じ非常に高次元の空間に存在する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 842.6,
+  "end": 847.0
+ },
+ {
+  "input": "When you multiply this value matrix by the embedding of a word, you might think of it as saying, if this word is relevant to adjusting the meaning of something else, what exactly should be added to the embedding of that something else in order to reflect this?",
+  "translatedText": "このバリューマトリックスに単語のエンベッディングを掛け合わせるとき、この単語が他の何かの意味を調整するのに関連している場合、それを反映させるために、その他の何かのエンベッディングに具体的に何を加えるべきか、と考えることができるだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 847.46,
+  "end": 861.16
+ },
+ {
+  "input": "Looking back in our diagram, let's set aside all of the keys and the queries, since after you compute the attention pattern you're done with those, then you're going to take this value matrix and multiply it by every one of those embeddings to produce a sequence of value vectors.",
+  "translatedText": "図を振り返って、キーとクエリーはすべて脇に置いておこう。アテンション・パターンを計算した後は、この値行列を取り出し、埋め込みの1つ1つに掛け合わせて、一連の値ベクトルを生成することになるからだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 862.14,
+  "end": 876.06
+ },
+ {
+  "input": "You might think of these value vectors as being kind of associated with the corresponding keys.",
+  "translatedText": "これらの値ベクトルは、対応するキーに関連づけられたものだと考えてもいいかもしれない。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 877.12,
+  "end": 881.12
+ },
+ {
+  "input": "For each column in this diagram, you multiply each of the value vectors by the corresponding weight in that column.",
+  "translatedText": "この図の各列について、それぞれの値ベクトルにその列の対応するウェイトを掛ける。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 882.32,
+  "end": 889.24
+ },
+ {
+  "input": "For example here, under the embedding of Creature, you would be adding large proportions of the value vectors for Fluffy and Blue, while all of the other value vectors get zeroed out, or at least nearly zeroed out.",
+  "translatedText": "例えば、Creatureの埋め込みでは、FluffyとBlueの値ベクトルの大きな割合を追加することになるが、他の値ベクトルはすべてゼロになるか、少なくともほぼゼロになる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 890.08,
+  "end": 901.56
+ },
+ {
+  "input": "And then finally, the way to actually update the embedding associated with this column, previously encoding some context-free meaning of Creature, you add together all of these rescaled values in the column, producing a change that you want to add, that I'll label delta-e, and then you add that to the original embedding.",
+  "translatedText": "そして最後に、この列に関連する埋め込みを実際に更新する方法は、以前はCreatureの文脈自由な意味をエンコードしていたが、列内のこれらの再スケーリングされた値をすべて足し合わせて、追加したい変更（delta-eと呼ぶ）を生成し、それを元の埋め込みに追加する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 902.12,
+  "end": 919.26
+ },
+ {
+  "input": "Hopefully what results is a more refined vector encoding the more contextually rich meaning, like that of a fluffy blue creature.",
+  "translatedText": "うまくいけば、より洗練されたベクトルが、ふわふわした青い生き物のような、より文脈に富んだ意味を符号化することになる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 919.68,
+  "end": 926.5
+ },
+ {
+  "input": "And of course you don't just do this to one embedding, you apply the same weighted sum across all of the columns in this picture, producing a sequence of changes, adding all of those changes to the corresponding embeddings, produces a full sequence of more refined embeddings popping out of the attention block.",
+  "translatedText": "もちろん、1つのエンベッディングだけでなく、この写真の列すべてに同じ加重和を適用し、一連の変更を生み出し、対応するエンベッディングにそれらの変更をすべて加えることで、より洗練されたエンベッディングの完全なシーケンスがアテンション・ブロックから飛び出してくる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 927.38,
+  "end": 943.46
+ },
+ {
+  "input": "Zooming out, this whole process is what you would describe as a single head of attention.",
+  "translatedText": "ズームアウトしてみると、このプロセス全体が、一頭注目と表現できるものだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 944.86,
+  "end": 949.1
+ },
+ {
+  "input": "As I've described things so far, this process is parameterized by three distinct matrices, all filled with tunable parameters, the key, the query, and the value.",
+  "translatedText": "これまで説明してきたように、このプロセスは3つの異なるマトリックスによってパラメータ化されており、すべて調整可能なパラメータ、キー、クエリー、値で満たされている。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 949.6,
+  "end": 958.94
+ },
+ {
+  "input": "I want to take a moment to continue what we started in the last chapter, with the scorekeeping where we count up the total number of model parameters using the numbers from GPT-3.",
+  "translatedText": "GPT-3の数字を使ってモデル・パラメーターの総数をカウントアップするスコアキーピングについて、前章で始めたことの続きを少しやってみたい。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 959.5,
+  "end": 968.04
+ },
+ {
+  "input": "These key and query matrices each have 12,288 columns, matching the embedding dimension, and 128 rows, matching the dimension of that smaller key query space.",
+  "translatedText": "これらのキー行列とクエリ行列はそれぞれ、埋め込み次元に一致する12,288列と、より小さなキークエリ空間の次元に一致する128行を持つ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 969.3,
+  "end": 979.6
+ },
+ {
+  "input": "This gives us an additional 1.5 million or so parameters for each one.",
+  "translatedText": "これにより、1つにつき150万ほどのパラメータが追加されることになる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 980.26,
+  "end": 984.22
+ },
+ {
+  "input": "If you look at that value matrix by contrast, the way I've described things so far would suggest that it's a square matrix that has 12,288 columns and 12,288 rows, since both its inputs and outputs live in this very large embedding space.",
+  "translatedText": "対照的に、その値行列を見てみると、これまでの説明では、12,288の列と12,288の行を持つ正方行列であると思われる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 984.86,
+  "end": 1000.92
+ },
+ {
+  "input": "If true, that would mean about 150 million added parameters.",
+  "translatedText": "もしそれが本当なら、約1億5000万人分のパラメータが追加されることになる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1001.5,
+  "end": 1005.14
+ },
+ {
+  "input": "And to be clear, you could do that.",
+  "translatedText": "はっきり言って、それは可能だ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1005.66,
+  "end": 1007.3
+ },
+ {
+  "input": "You could devote orders of magnitude more parameters to the value map than to the key and query.",
+  "translatedText": "バリュー・マップには、キーやクエリよりも桁違いに多くのパラメーターを割くことができる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1007.42,
+  "end": 1011.74
+ },
+ {
+  "input": "But in practice, it is much more efficient if instead you make it so that the number of parameters devoted to this value map is the same as the number devoted to the key and the query.",
+  "translatedText": "しかし実際には、このバリュー・マップに割くパラメーターの数を、キーとクエリーに割く数と同じにする方がはるかに効率的である。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1012.06,
+  "end": 1020.76
+ },
+ {
+  "input": "This is especially relevant in the setting of running multiple attention heads in parallel.",
+  "translatedText": "これは、複数のアテンション・ヘッドを並行して走らせるという設定に特に関連している。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1021.46,
+  "end": 1025.16
+ },
+ {
+  "input": "The way this looks is that the value map is factored as a product of two smaller matrices.",
+  "translatedText": "このように見えるのは、バリュー・マップが2つの小さな行列の積として因数分解されるからだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1026.24,
+  "end": 1030.1
+ },
+ {
+  "input": "Conceptually, I would still encourage you to think about the overall linear map, one with inputs and outputs, both in this larger embedding space, for example taking the embedding of blue to this blueness direction that you would add to nouns.",
+  "translatedText": "概念的には、私はまだ、全体的な線形マップ、入力と出力を持つもの、この大きな埋め込み空間の両方、例えば、名詞に追加するこの青さの方向に青の埋め込みを取ることについて考えることを奨励する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1031.18,
+  "end": 1043.8
+ },
+ {
+  "input": "It's just that it's a smaller number of rows, typically the same size as the key query space.",
+  "translatedText": "行数が少ないだけで、通常はキークエリスペースと同じサイズだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1047.04,
+  "end": 1052.76
+ },
+ {
+  "input": "What this means is you can think of it as mapping the large embedding vectors down to a much smaller space.",
+  "translatedText": "これはどういうことかというと、大きな埋め込みベクトルをもっと小さな空間にマッピングしていると考えることができる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1053.1,
+  "end": 1058.44
+ },
+ {
+  "input": "This is not the conventional naming, but I'm going to call this the value down matrix.",
+  "translatedText": "これは従来のネーミングとは違うが、私はこれをバリューダウンマトリックスと呼ぶことにする。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1059.04,
+  "end": 1062.7
+ },
+ {
+  "input": "The second matrix maps from this smaller space back up to the embedding space, producing the vectors that you use to make the actual updates.",
+  "translatedText": "2番目の行列は、この小さな空間から埋め込み空間にマップし、実際の更新に使うベクトルを生成する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1063.4,
+  "end": 1070.58
+ },
+ {
+  "input": "I'm going to call this one the value up matrix, which again is not conventional.",
+  "translatedText": "これをバリューアップ・マトリックスと呼ぶことにする。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1071.0,
+  "end": 1074.74
+ },
+ {
+  "input": "The way that you would see this written in most papers looks a little different.",
+  "translatedText": "この書き方は、多くの新聞では少し違っている。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1075.16,
+  "end": 1078.08
+ },
+ {
+  "input": "I'll talk about it in a minute.",
+  "translatedText": "それについてはすぐに話す。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1078.38,
+  "end": 1079.52
+ },
+ {
+  "input": "In my opinion, it tends to make things a little more conceptually confusing.",
+  "translatedText": "個人的な意見だが、これは物事を少し概念的に混乱させる傾向がある。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1079.7,
+  "end": 1082.54
+ },
+ {
+  "input": "To throw in linear algebra jargon here, what we're basically doing is constraining the overall value map to be a low rank transformation.",
+  "translatedText": "ここで線形代数の専門用語を使うと、基本的にやっていることは、全体の値マップが低ランクの変換になるように制約することだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1083.26,
+  "end": 1090.34
+ },
+ {
+  "input": "Turning back to the parameter count, all four of these matrices have the same size, and adding them all up we get about 6.3 million parameters for one attention head.",
+  "translatedText": "パラメータ数に話を戻すと、これらの4つの行列はすべて同じサイズであり、それらをすべて足すと、1つのアテンションヘッドに対して約630万個のパラメータが得られる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1091.42,
+  "end": 1100.78
+ },
+ {
+  "input": "As a quick side note, to be a little more accurate, everything described so far is what people would call a self-attention head, to distinguish it from a variation that comes up in other models that's called cross-attention.",
+  "translatedText": "ちょっとした余談だが、もう少し正確に言うと、これまで説明したものはすべて、他のモデルで見られるクロスアテンションと呼ばれるバリエーションと区別するために、人々がセルフアテンションヘッドと呼ぶものである。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1102.04,
+  "end": 1111.5
+ },
+ {
+  "input": "This isn't relevant to our GPT example, but if you're curious, cross-attention involves models that process two distinct types of data, like text in one language and text in another language that's part of an ongoing generation of a translation, or maybe audio input of speech and an ongoing transcription.",
+  "translatedText": "これはGPTの例とは関係ないが、もし興味があれば、クロスアテンションは、2つの異なるタイプのデータを処理するモデルを含む。例えば、ある言語のテキストと、現在進行中の翻訳生成の一部である別の言語のテキスト、あるいは音声入力と現在進行中の書き起こしなどだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1112.3,
+  "end": 1129.24
+ },
+ {
+  "input": "A cross-attention head looks almost identical.",
+  "translatedText": "クロスアテンションヘッドもほとんど同じように見える。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1130.4,
+  "end": 1132.7
+ },
+ {
+  "input": "The only difference is that the key and query maps act on different data sets.",
+  "translatedText": "唯一の違いは、キー・マップとクエリ・マップが異なるデータセットに作用することだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1132.98,
+  "end": 1137.4
+ },
+ {
+  "input": "In a model doing translation, for example, the keys might come from one language, while the queries come from another, and the attention pattern could describe which words from one language correspond to which words in another.",
+  "translatedText": "例えば、翻訳モデルでは、キーはある言語から、クエリーは別の言語から来るかもしれず、アテンションパターンは、ある言語のどの単語が別の言語のどの単語に対応するかを記述することができる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1137.84,
+  "end": 1149.66
+ },
+ {
+  "input": "And in this setting there would typically be no masking, since there's not really any notion of later tokens affecting earlier ones.",
+  "translatedText": "そしてこの設定では、後のトークンが前のトークンに影響を与えるという概念がないため、通常マスキングは行われない。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1150.34,
+  "end": 1156.34
+ },
+ {
+  "input": "Staying focused on self-attention though, if you understood everything so far, and if you were to stop here, you would come away with the essence of what attention really is.",
+  "translatedText": "しかし、セルフ・アテンションに集中することで、これまでのすべてを理解し、ここで立ち止まれば、アテンションとは何かという本質を理解することができるだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1157.18,
+  "end": 1165.18
+ },
+ {
+  "input": "All that's really left to us is to lay out the sense in which you do this many many different times.",
+  "translatedText": "私たちに本当に残されているのは、これを何度も何度も行うセンスを並べることだけだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1165.76,
+  "end": 1171.44
+ },
+ {
+  "input": "In our central example we focused on adjectives updating nouns, but of course there are lots of different ways that context can influence the meaning of a word.",
+  "translatedText": "私たちの中心的な例では、名詞を更新する形容詞に焦点を当てたが、もちろん文脈が単語の意味に影響を与える方法はたくさんある。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1172.1,
+  "end": 1179.8
+ },
+ {
+  "input": "If the words they crashed the preceded the word car, it has implications for the shape and structure of that car.",
+  "translatedText": "クラッシュした言葉がクルマという言葉の前にあるのなら、そのクルマの形や構造にも意味がある。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1180.36,
+  "end": 1186.52
+ },
+ {
+  "input": "And a lot of associations might be less grammatical.",
+  "translatedText": "そして、多くの連想は文法的でないかもしれない。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1187.2,
+  "end": 1189.28
+ },
+ {
+  "input": "If the word wizard is anywhere in the same passage as Harry, it suggests that this might be referring to Harry Potter, whereas if instead the words Queen, Sussex, and William were in that passage, then perhaps the embedding of Harry should instead be updated to refer to the prince.",
+  "translatedText": "もしハリーと同じ箇所のどこかにwizardという単語があれば、これはハリー・ポッターを指している可能性を示唆している。一方、もしその箇所にQueen、Sussex、Williamという単語があれば、ハリーの埋め込みは王子を指すように更新されるべきかもしれない。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1189.76,
+  "end": 1204.44
+ },
+ {
+  "input": "For every different type of contextual updating that you might imagine, the parameters of these key and query matrices would be different to capture the different attention patterns, and the parameters of our value map would be different based on what should be added to the embeddings.",
+  "translatedText": "あなたが想像するような異なるタイプのコンテキストの更新のために、これらのキーとクエリ行列のパラメータは、異なる注意パターンをキャプチャするために異なるだろうし、私たちの値マップのパラメータは、埋め込みに追加されるべきものに基づいて異なるだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1205.04,
+  "end": 1219.14
+ },
+ {
+  "input": "And again, in practice the true behavior of these maps is much more difficult to interpret, where the weights are set to do whatever the model needs them to do to best accomplish its goal of predicting the next token.",
+  "translatedText": "重みは、次のトークンを予測するという目標を達成するためにモデルが必要とするものであれば何でも設定される。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1219.98,
+  "end": 1230.14
+ },
+ {
+  "input": "As I said before, everything we described is a single head of attention, and a full attention block inside a transformer consists of what's called multi-headed attention, where you run a lot of these operations in parallel, each with its own distinct key query and value maps.",
+  "translatedText": "トランスフォーマー内の完全なアテンション・ブロックは、マルチヘッド・アテンションと呼ばれるものから構成され、それぞれが独自のキークエリーとバリュー・マップを持ち、多くのオペレーションを並行して実行する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1231.4,
+  "end": 1245.92
+ },
+ {
+  "input": "GPT-3 for example uses 96 attention heads inside each block.",
+  "translatedText": "例えばGPT-3は、各ブロック内に96個のアテンション・ヘッドを使用している。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1247.42,
+  "end": 1251.7
+ },
+ {
+  "input": "Considering that each one is already a bit confusing, it's certainly a lot to hold in your head.",
+  "translatedText": "ひとつひとつがすでに少々混乱していることを考えれば、頭の中に抱えているものが多いのは確かだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1252.02,
+  "end": 1256.46
+ },
+ {
+  "input": "Just to spell it all out very explicitly, this means you have 96 distinct key and query matrices producing 96 distinct attention patterns.",
+  "translatedText": "つまり、96の異なるキーとクエリー行列があり、96の異なるアテンション・パターンがあるということだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1256.76,
+  "end": 1265.0
+ },
+ {
+  "input": "Then each head has its own distinct value matrices used to produce 96 sequences of value vectors.",
+  "translatedText": "そして各ヘッドは、96列の値ベクトルを生成するために使用される独自の値行列を持つ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1265.44,
+  "end": 1272.18
+ },
+ {
+  "input": "These are all added together using the corresponding attention patterns as weights.",
+  "translatedText": "これらはすべて、対応するアテンション・パターンを重みとして使って足し合わされる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1272.46,
+  "end": 1276.68
+ },
+ {
+  "input": "What this means is that for each position in the context, each token, every one of these heads produces a proposed change to be added to the embedding in that position.",
+  "translatedText": "これが意味するのは、コンテキストの各ポジション、各トークンについて、これらのヘッドのひとつひとつが、そのポジションのエンベッディングに加えるべき変更案を生み出すということだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1277.48,
+  "end": 1287.02
+ },
+ {
+  "input": "So what you do is you sum together all of those proposed changes, one for each head, and you add the result to the original embedding of that position.",
+  "translatedText": "つまり、これらの変更案を各ヘッドごとに1つずつ合計し、その結果を元のポジションの埋め込みに加えるのだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1287.66,
+  "end": 1295.48
+ },
+ {
+  "input": "This entire sum here would be one slice of what's outputted from this multi-headed attention block, a single one of those refined embeddings that pops out the other end of it.",
+  "translatedText": "この全体の合計は、この多頭の注目ブロックから出力されたものの一片であり、そのもう一方の端から飛び出してくる、洗練されたエンベッディングのひとつである。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1296.66,
+  "end": 1307.46
+ },
+ {
+  "input": "Again, this is a lot to think about, so don't worry at all if it takes some time to sink in.",
+  "translatedText": "繰り返しになるが、これは考えることが多いので、理解するのに時間がかかってもまったく心配する必要はない。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1308.32,
+  "end": 1312.14
+ },
+ {
+  "input": "The overall idea is that by running many distinct heads in parallel, you're giving the model the capacity to learn many distinct ways that context changes meaning.",
+  "translatedText": "全体的な考え方は、多くの異なるヘッドを並行して実行することで、文脈が意味を変える多くの異なる方法を学習する能力をモデルに与えるというものだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1312.38,
+  "end": 1321.82
+ },
+ {
+  "input": "Pulling up our running tally for parameter count with 96 heads, each including its own variation of these four matrices, each block of multi-headed attention ends up with around 600 million parameters.",
+  "translatedText": "この4つのマトリックスのそれぞれのバリエーションを含む96のヘッドでパラメータ数を集計すると、マルチヘッドの各ブロックには約6億のパラメータが含まれることになる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1323.7,
+  "end": 1335.08
+ },
+ {
+  "input": "There's one added slightly annoying thing that I should really mention for any of you who go on to read more about transformers.",
+  "translatedText": "トランスフォーマーについてもっと読みたいと思う人のために、本当に言っておかなければならない、ちょっと腹立たしいことが1つある。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1336.42,
+  "end": 1341.8
+ },
+ {
+  "input": "You remember how I said that the value map is factored out into these two distinct matrices, which I labeled as the value down and the value up matrices.",
+  "translatedText": "バリュー・マップは、バリュー・ダウン行列とバリュー・アップ行列という2つの異なる行列に分解されると言ったのを覚えているだろうか。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1342.08,
+  "end": 1349.44
+ },
+ {
+  "input": "The way that I framed things would suggest that you see this pair of matrices inside each attention head, and you could absolutely implement it this way.",
+  "translatedText": "私が説明した方法だと、それぞれのアテンション・ヘッドの中にマトリックスのペアを見ることになる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1349.96,
+  "end": 1358.44
+ },
+ {
+  "input": "That would be a valid design.",
+  "translatedText": "それは有効なデザインだろう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1358.64,
+  "end": 1359.92
+ },
+ {
+  "input": "But the way that you see this written in papers and the way that it's implemented in practice looks a little different.",
+  "translatedText": "しかし、論文に書かれていることと、実際に実施されることは少し違っているようだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1360.26,
+  "end": 1364.92
+ },
+ {
+  "input": "All of these value up matrices for each head appear stapled together in one giant matrix that we call the output matrix, associated with the entire multi-headed attention block.",
+  "translatedText": "各ヘッドのこれらのバリューアップ行列はすべて、出力行列と呼ぶ巨大な行列にまとめられ、マルチヘッドのアテンション・ブロック全体に関連づけられる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1365.34,
+  "end": 1376.38
+ },
+ {
+  "input": "And when you see people refer to the value matrix for a given attention head, they're typically only referring to this first step, the one that I was labeling as the value down projection into the smaller space.",
+  "translatedText": "そして、あるアテンション・ヘッドのバリュー・マトリックスに言及する人々を見るとき、彼らは通常、この最初のステップ、つまり、私がバリュー・ダウンの投影としてラベルを貼った、より小さな空間への投影に限って言及している。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1376.82,
+  "end": 1387.14
+ },
+ {
+  "input": "For the curious among you, I've left an on-screen note about it.",
+  "translatedText": "好奇心旺盛な皆さんのために、画面上にメモを残しておいた。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1388.34,
+  "end": 1391.04
+ },
+ {
+  "input": "It's one of those details that runs the risk of distracting from the main conceptual points, but I do want to call it out just so that you know if you read about this in other sources.",
+  "translatedText": "これは、主要なコンセプトのポイントから注意をそらす危険性がある細部のひとつだが、他の情報源でこのことについて読んだ場合に知ってもらえるように、念のため指摘しておきたい。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1391.26,
+  "end": 1398.54
+ },
+ {
+  "input": "Setting aside all the technical nuances, in the preview from the last chapter we saw how data flowing through a transformer doesn't just flow through a single attention block.",
+  "translatedText": "技術的なニュアンスはさておき、前章のプレビューでは、トランスフォーマーを流れるデータが、単一のアテンション・ブロックを流れるだけではないことを確認した。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1399.24,
+  "end": 1408.04
+ },
+ {
+  "input": "For one thing, it also goes through these other operations called multi-layer perceptrons.",
+  "translatedText": "ひとつは、多層パーセプトロンと呼ばれる他の演算を経ることだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1408.64,
+  "end": 1412.7
+ },
+ {
+  "input": "We'll talk more about those in the next chapter.",
+  "translatedText": "それらについては、次の章で詳しく説明しよう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1413.12,
+  "end": 1414.88
+ },
+ {
+  "input": "And then it repeatedly goes through many many copies of both of these operations.",
+  "translatedText": "そして、この2つのオペレーションを何度も何度も繰り返す。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1415.18,
+  "end": 1419.32
+ },
+ {
+  "input": "What this means is that after a given word imbibes some of its context, there are many more chances for this more nuanced embedding to be influenced by its more nuanced surroundings.",
+  "translatedText": "これが意味するのは、ある単語がその文脈の一部を吸収した後、よりニュアンスの強い埋め込みが、よりニュアンスの強い周囲の環境に影響される機会が多くなるということだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1419.98,
+  "end": 1430.04
+ },
+ {
+  "input": "The further down the network you go, with each embedding taking in more and more meaning from all the other embeddings, which themselves are getting more and more nuanced, the hope is that there's the capacity to encode higher level and more abstract ideas about a given input beyond just descriptors and grammatical structure.",
+  "translatedText": "ネットワークの下層に行くほど、各埋め込みが他のすべての埋め込みからより多くの意味を取り込むようになり、それ自体がよりニュアンスのあるものになっていく。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1430.94,
+  "end": 1447.32
+ },
+ {
+  "input": "Things like sentiment and tone and whether it's a poem and what underlying scientific truths are relevant to the piece and things like that.",
+  "translatedText": "心情やトーン、詩なのかどうか、その作品に関連する根本的な科学的真理は何かとか、そういうことだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1447.88,
+  "end": 1455.13
+ },
+ {
+  "input": "Turning back one more time to our scorekeeping, GPT-3 includes 96 distinct layers, so the total number of key query and value parameters is multiplied by another 96, which brings the total sum to just under 58 billion distinct parameters devoted to all of the attention heads.",
+  "translatedText": "GPT-3には96のレイヤーがあり、キーとなるクエリーパラメーターとバリューパラメーターの総数にさらに96をかけると、580億弱のパラメーターがすべてのアテンションヘッドに費やされることになる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1456.7,
+  "end": 1474.5
+ },
+ {
+  "input": "That is a lot to be sure, but it's only about a third of the 175 billion that are in the network in total.",
+  "translatedText": "これは確かに多いが、ネットワーク全体では1750億の3分の1に過ぎない。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1474.98,
+  "end": 1480.94
+ },
+ {
+  "input": "So even though attention gets all of the attention, the majority of parameters come from the blocks sitting in between these steps.",
+  "translatedText": "つまり、注目はすべて注目されるが、パラメータの大部分は、これらのステップの間に位置するブロックに由来する。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1481.52,
+  "end": 1488.14
+ },
+ {
+  "input": "In the next chapter, you and I will talk more about those other blocks and also a lot more about the training process.",
+  "translatedText": "次の章では、そのほかのブロックについて、またトレーニングのプロセスについて、あなたと私がもっと話をすることになる。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1488.56,
+  "end": 1493.56
+ },
+ {
+  "input": "A big part of the story for the success of the attention mechanism is not so much any specific kind of behavior that it enables, but the fact that it's extremely parallelizable, meaning that you can run a huge number of computations in a short time using GPUs.",
+  "translatedText": "アテンション・メカニズムが成功した理由の大部分は、それが可能にした特定の種類の動作というよりも、それが極めて並列化可能であること、つまりGPUを使って短時間で膨大な数の計算を実行できることにある。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1494.12,
+  "end": 1508.38
+ },
+ {
+  "input": "Given that one of the big lessons about deep learning in the last decade or two has been that scale alone seems to give huge qualitative improvements in model performance, there's a huge advantage to parallelizable architectures that let you do this.",
+  "translatedText": "ここ10年か20年のディープラーニングに関する大きな教訓のひとつは、スケールを大きくするだけで、モデルのパフォーマンスが質的に大きく向上するということであることを考えると、これを可能にする並列化可能なアーキテクチャには大きな利点がある。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1509.46,
+  "end": 1521.06
+ },
+ {
+  "input": "If you want to learn more about this stuff, I've left lots of links in the description.",
+  "translatedText": "このことについてもっと知りたければ、説明文にたくさんのリンクを残してある。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1522.04,
+  "end": 1525.34
+ },
+ {
+  "input": "In particular, anything produced by Andrej Karpathy or Chris Ola tend to be pure gold.",
+  "translatedText": "特に、アンドレイ・カルパシーやクリス・オラがプロデュースしたものは純金であることが多い。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1525.92,
+  "end": 1530.04
+ },
+ {
+  "input": "In this video, I wanted to just jump into attention in its current form, but if you're curious about more of the history for how we got here and how you might reinvent this idea for yourself, my friend Vivek just put up a couple videos giving a lot more of that motivation.",
+  "translatedText": "このビデオでは、現在のアテンションに飛びつきたかったのだが、もしあなたが、私たちがどのようにしてここにたどり着いたのか、また、あなた自身がこのアイデアをどのように再発明することができるのか、その歴史についてもっと知りたければ、私の友人であるヴィヴェックが、その動機付けについてもっと多くのことを語っているビデオをいくつかアップしたところだ。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1530.56,
+  "end": 1542.54
+ },
+ {
+  "input": "Also, Britt Cruz from the channel The Art of the Problem has a really nice video about the history of large language models.",
+  "translatedText": "また、The Art of the ProblemというチャンネルのBritt Cruzが、大規模な言語モデルの歴史についてとても素晴らしいビデオを見せてくれた。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1543.12,
+  "end": 1548.46
+ },
+ {
+  "input": "Thank you.",
+  "translatedText": "ありがとう。",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1564.96,
+  "end": 1569.2
+ }
+]
