@@ -1419,12 +1419,12 @@ provavelmente atribuiria um número alto à palavra Snape.
 Isso envolve duas etapas diferentes.
 
 356
-00:20:58,310 --> 00:21:03,156
+00:20:58,310 --> 00:21:03,225
 A primeira é usar outra matriz que mapeie o último vetor naquele contexto 
 
 357
-00:21:03,156 --> 00:21:07,610
-para uma lista de 50.000 valores, um para cada token do vocabulário.
+00:21:03,225 --> 00:21:07,610
+em uma lista de 50.000 valores, um para cada token do vocabulário.
 
 358
 00:21:08,170 --> 00:21:12,309
@@ -1527,278 +1527,282 @@ Como última minilição deste capítulo, quero falar mais sobre essa função s
 pois ela aparece novamente para nós quando mergulhamos nos bloqueios de atenção.
 
 383
-00:22:31,430 --> 00:22:35,732
-A ideia é que se você deseja que uma sequência de números atue como uma distribuição 
+00:22:31,430 --> 00:22:35,735
+A ideia é que se você deseja que uma sequência de números atue como uma distribuição de 
 
 384
-00:22:35,732 --> 00:22:40,186
-de probabilidade, digamos, uma distribuição sobre todas as próximas palavras possíveis, 
+00:22:35,735 --> 00:22:39,893
+probabilidade, digamos, uma distribuição sobre todas as próximas palavras possíveis, 
 
 385
-00:22:40,186 --> 00:22:44,590
-então cada valor deve estar entre 0 e 1, e você também precisa que todos eles somem 1 .
+00:22:39,893 --> 00:22:44,198
+então cada valor deve estar entre 0 e 1, e você também precisa que a soma de todos eles 
 
 386
+00:22:44,198 --> 00:22:44,590
+seja 1 .
+
+387
 00:22:45,250 --> 00:22:48,305
 No entanto, se você estiver jogando o jogo de aprendizagem em 
 
-387
+388
 00:22:48,305 --> 00:22:52,198
 que tudo o que você faz se parece com uma multiplicação de matrizes e vetores, 
 
-388
+389
 00:22:52,198 --> 00:22:54,810
 os resultados obtidos por padrão não obedecem a isso.
 
-389
+390
 00:22:55,330 --> 00:22:59,870
 Os valores costumam ser negativos ou muito maiores que 1 e quase certamente não somam 1.
 
-390
+391
 00:23:00,510 --> 00:23:03,930
 Softmax é a maneira padrão de transformar uma lista arbitrária de 
 
-391
+392
 00:23:03,930 --> 00:23:07,454
 números em uma distribuição válida, de forma que os valores maiores 
 
-392
+393
 00:23:07,454 --> 00:23:11,290
 fiquem mais próximos de 1 e os valores menores fiquem muito próximos de 0.
 
-393
+394
 00:23:11,830 --> 00:23:13,070
 Isso é tudo que você realmente precisa saber.
 
-394
+395
 00:23:13,090 --> 00:23:17,116
 Mas se você estiver curioso, a forma como funciona é primeiro elevar e à 
 
-395
+396
 00:23:17,116 --> 00:23:21,086
 potência de cada um dos números, o que significa que agora você tem uma 
 
-396
+397
 00:23:21,086 --> 00:23:25,278
 lista de valores positivos, e então você soma todos esses valores positivos 
 
-397
+398
 00:23:25,278 --> 00:23:29,470
 e divide cada termo por essa soma, o que o normaliza em uma lista de soma 1.
 
-398
+399
 00:23:30,170 --> 00:23:34,520
 Você notará que se um dos números na entrada for significativamente maior que o resto, 
 
-399
+400
 00:23:34,520 --> 00:23:38,070
 então na saída o termo correspondente domina a distribuição, portanto, 
 
-400
+401
 00:23:38,070 --> 00:23:42,470
 se você estivesse amostrando, quase certamente escolheria apenas a entrada maximizadora.
 
-401
+402
 00:23:42,990 --> 00:23:45,340
 Mas é mais suave do que apenas escolher o máximo, 
 
-402
+403
 00:23:45,340 --> 00:23:48,349
 no sentido de que quando outros valores são igualmente grandes, 
 
-403
+404
 00:23:48,349 --> 00:23:52,299
 eles também recebem um peso significativo na distribuição e tudo muda continuamente 
 
-404
+405
 00:23:52,299 --> 00:23:54,650
 à medida que você varia continuamente as entradas.
 
-405
+406
 00:23:55,130 --> 00:23:59,776
 Em algumas situações, como quando ChatGPT está usando esta distribuição para criar uma 
 
-406
+407
 00:23:59,776 --> 00:24:04,316
 próxima palavra, há espaço para um pouco de diversão extra adicionando um pouco mais 
 
-407
+408
 00:24:04,316 --> 00:24:08,910
 de tempero a esta função, com uma constante t lançada no denominador desses expoentes.
 
-408
+409
 00:24:09,550 --> 00:24:14,254
 Chamamos de temperatura, pois parece vagamente com o papel da temperatura em certas 
 
-409
+410
 00:24:14,254 --> 00:24:17,614
 equações termodinâmicas, e o efeito é que quando t é maior, 
 
-410
+411
 00:24:17,614 --> 00:24:22,150
 dá-se mais peso aos valores mais baixos, o que significa que a distribuição é um 
 
-411
+412
 00:24:22,150 --> 00:24:26,797
 pouco mais uniforme, e se t for menor, então os valores maiores dominarão de forma 
 
-412
+413
 00:24:26,797 --> 00:24:31,446
 mais agressiva, onde, no extremo, definir t igual a zero significa que todo o peso 
 
-413
+414
 00:24:31,446 --> 00:24:32,790
 vai para o valor máximo.
 
-414
+415
 00:24:33,470 --> 00:24:38,445
 Por exemplo, farei com que o GPT-3 gere uma história com o texto inicial: 
 
-415
+416
 00:24:38,445 --> 00:24:42,950
 "era uma vez uma", mas usarei temperaturas diferentes em cada caso.
 
-416
+417
 00:24:43,630 --> 00:24:48,030
 Temperatura zero significa que sempre vem com a palavra mais previsível, 
 
-417
+418
 00:24:48,030 --> 00:24:52,370
 e o que você recebe acaba sendo um derivado banal de Cachinhos Dourados.
 
-418
+419
 00:24:53,010 --> 00:24:56,971
 Uma temperatura mais alta dá a chance de escolher palavras menos prováveis, 
 
-419
+420
 00:24:56,971 --> 00:24:57,910
 mas traz um risco.
 
-420
+421
 00:24:58,230 --> 00:25:01,412
 Neste caso, a história começa de forma mais original, 
 
-421
+422
 00:25:01,412 --> 00:25:06,010
 sobre um jovem web-artista da Coreia do Sul, mas rapidamente decai ao absurdo.
 
-422
+423
 00:25:06,950 --> 00:25:10,830
 Tecnicamente falando, a API não permite escolher uma temperatura maior que 2.
 
-423
+424
 00:25:11,170 --> 00:25:15,341
 Não há razão matemática para isso, é apenas uma restrição arbitrária imposta 
 
-424
+425
 00:25:15,341 --> 00:25:19,350
 para evitar que essa ferramenta seja vista gerando coisas absurdas demais.
 
-425
+426
 00:25:19,870 --> 00:25:23,259
 Então, se você está curioso, para essa animação funcionar, 
 
-426
+427
 00:25:23,259 --> 00:25:26,822
 peguei os 20 próximos tokens mais prováveis que o GPT-3 gera, 
 
-427
+428
 00:25:26,822 --> 00:25:31,188
 que parece ser o máximo que eles me darão, e então ajusto as probabilidades 
 
-428
+429
 00:25:31,188 --> 00:25:32,970
 com base em um expoente de 1/5.
 
-429
+430
 00:25:33,130 --> 00:25:37,415
 Como outro jargão, da mesma forma que você pode chamar os componentes da saída 
 
-430
+431
 00:25:37,415 --> 00:25:41,647
 desta função de probabilidades, geralmente se refere às entradas como logits, 
 
-431
+432
 00:25:41,647 --> 00:25:46,150
 ou algumas pessoas dizem logits, algumas pessoas dizem logits, eu vou dizer logits.
 
-432
+433
 00:25:46,530 --> 00:25:48,791
 Então, por exemplo, quando você insere um texto, 
 
-433
+434
 00:25:48,791 --> 00:25:51,329
 todas essas incorporações de palavras fluem pela rede, 
 
-434
+435
 00:25:51,329 --> 00:25:54,421
 e se faz essa multiplicação final com a matriz de desincorporação, 
 
-435
+436
 00:25:54,421 --> 00:25:57,974
 o pessoal de aprendizado de máquina se referiria aos componentes dessa saída 
 
-436
+437
 00:25:57,974 --> 00:26:01,390
 bruta e não normalizada como os logits para a próxima previsão de palavra.
 
-437
+438
 00:26:03,330 --> 00:26:06,621
 Grande parte do objetivo deste capítulo foi estabelecer as bases para a 
 
-438
+439
 00:26:06,621 --> 00:26:10,370
 compreensão do mecanismo de atenção, estilo bota-casaco-tira-casado de Karate Kid.
 
-439
+440
 00:26:10,850 --> 00:26:14,881
 Se você tem uma forte intuição para incorporações de palavras, para softmax, 
 
-440
+441
 00:26:14,881 --> 00:26:17,708
 para como os produtos escalares medem a similaridade, 
 
-441
+442
 00:26:17,708 --> 00:26:21,948
 e também a premissa subjacente de que a maioria dos cálculos deve se parecer com 
 
-442
+443
 00:26:21,948 --> 00:26:25,822
 a multiplicação de matrizes com matrizes cheias de parâmetros ajustáveis, 
 
-443
+444
 00:26:25,822 --> 00:26:30,220
 então entender o mecanismo de atenção, esta peça fundamental de todo o boom moderno 
 
-444
+445
 00:26:30,220 --> 00:26:32,210
 da IA, deve ser relativamente simples.
 
-445
+446
 00:26:32,650 --> 00:26:34,510
 Para isso, junte-se a mim no próximo capítulo.
 
-446
+447
 00:26:36,390 --> 00:26:38,841
 Enquanto lanço este vídeo, um rascunho do próximo capítulo 
 
-447
+448
 00:26:38,841 --> 00:26:41,210
 está disponível para revisão pelos apoiadores do Patreon.
 
-448
+449
 00:26:41,770 --> 00:26:44,667
 Uma versão final deve estar disponível ao público em uma ou duas semanas, 
 
-449
+450
 00:26:44,667 --> 00:26:47,370
 geralmente depende de quanto eu acabo mudando com base nessa revisão.
 
-450
+451
 00:26:47,810 --> 00:26:51,427
 Enquanto isso, se você quiser chamar a atenção e quiser ajudar um pouco o canal, 
 
-451
+452
 00:26:51,427 --> 00:26:52,410
 ele está aí esperando.
 
