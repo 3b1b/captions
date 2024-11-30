@@ -1,0 +1,868 @@
+The most common question I get about 3Blue1Brown is, what do I use to animate the videos?
+The short answer is that I wrote a custom Python library, it's name is Manim, so it's all programmatic and it's also very bespoke.
+What I wanted to do with this video is offer a behind the scenes to show you, one, what Manim is for those who don't know, and even for those who do know, to show a little bit about how I use it and what the workflow is.
+Now the way I'm doing this is I sat down with Ben Sparks when I was in the UK a couple months ago, many of you may recognize him from his many great Numberphile videos.
+He wanted to know how Manim worked, I knew a number of other people had that same question, so I recorded the conversation, it's kind of a scrappy recording but we'll make do.
+And after a simple hello world example, we animate the famous Lorenz Attractor, which is very important in the foundations of chaos, it's also just a fun visual to get into.
+One quick thing I should mention before we dive in is that there are actually two versions of Manim.
+So the first has a history very intertwined with the history of the channel, the way I started the project, basically when I was finishing my undergrad, was that I wanted this coding project that would somehow let me illustrate mathematical functions better as transformations, made a super scrappy bit of Python code for that, used it to make the first video on this channel, as I made more videos the tool improved, as the tool improved I would make more videos, and that's just continued ever since.
+The most recent video I made, which was about holograms, if I do say so myself, I was pretty proud of the visuals in that, and that would have been dramatically harder to do even two or three years ago, but over the last month it was actually kind of a joy to make just because of a lot of the workflow improvements over the years.
+I've always posted all of the code that I make for videos, it's openly visible on GitHub, and I also made the tool itself, the underlying tool Manim open source.
+But I don't, as a personality type, really have the constitution to manage an open source project, I also don't really have the capacity for it while I'm making videos, so I wasn't the most attentive to issues and pull requests and things like that, but a community of people who wanted it to be a more robust tool for others forked the repo and created a version that is attentive to issues and pull requests and has better testing and better documentation, and it's called the Manim community version.
+So it's generally recommended people start with that, but in the meantime I often do make a bunch of changes or developments to my own, over the last couple years I've made it more interactive, more performant, things like that.
+The reason I bring this up is that what I'll be demoing with Ben is my own version, but you should be aware that there is this divide and that if you want the better documented and tested version, it's recommended to go with the community one for that.
+Without further ado, let's dive into the Hello World example.
+It's all in Python.
+Okay, and on the left is a Python, just a text file essentially with...
+Yep, so this is, it's Sublime text, I use Sublime, that's a text editor.
+We're going to be typing some Python here.
+I guess just as like a basic sense of what it even looks like to have something up on the screen.
+Let me get something there and then we can talk through what's going on.
+Here I've created a scene.
+So all of the scenes that I edit together take the form of a class in Python.
+And then inside a certain method of that called construct, this is where all the code that renders stuff is going to live.
+There's objects added like a circle, like, you know, we can add like a square in there too.
+We're also going to add that square.
+If I kind of ran all of that, we have the square.
+How did you just run that?
+Was there...
+Oh yeah, okay, okay, okay.
+So this is what...
+I think you just waved the magic wand and it happened, right?
+But you have a shortcut it looked like.
+Okay, so in principle, if over in this little terminal, it's a Python terminal such that we can call commands on the scene that are relevant.
+So I might say square.shift to the right, and then that square will shift to the right.
+And if I call it again, more things will happen.
+I could also say, you know, what's one plus two, just normal Python.
+Okay, it's a Python just entry box, basically.
+Yeah, but it's talking to this.
+And so while I'm creating a scene, it's nice to have a Python terminal that's talking to the scene itself.
+And then separately, so what might be nice as a workflow is to say, hey, I've got all this stuff that I'm going to do.
+Like maybe I want to take square and I'm going to put it to the top edge.
+And so a common thing that you might do is say, take that, copy that, go over to this, paste that, press enter.
+And that immediately tests that line.
+So then it tests that line.
+But I don't want to do that every time.
+I don't want to like do it and copy and paste.
+So instead I have a shortcut written and this is tied to some Sublime specific things.
+In my case, it's command R, I think the keyboard shortcut I have.
+It'll copy it and it'll run whatever the text that was copied in there.
+So you've got a shortcut which runs this code, outputs the visual, immediate check.
+I just want to jump in with a quick comment here because there's slightly more going on under the hood.
+Like all things, this is best motivated with an example.
+So if I pull up a scene from the most recent video on holograms, these can get quite long.
+So here, the final output was a four and a half minute MP4 file describing diffraction gradings and in particular, this one was about the double slit.
+It's really nice to have these long scenes because they share a bunch of context and as you're coding, you can kind of reference that context.
+But the code for something like that ends up being just a big, big, big pile of Python.
+Lots and lots of code.
+And it used to be the case I would break this all down into little subroutines, but historically it's proven to be nice as just to have it kind of all in one spot where all your local variables are shared.
+The thing I want to highlight is that if I'm working on the scene and I'm somewhere in the middle of it, so lots and lots of code has taken place, but we're in the middle at this point, while I'm iterating on just one little section, like here I might want to be able to run the code of this section and see what it does.
+As you can imagine, you might want to tweak it, you might want to change it a little bit.
+So in this case, let's see what's going on.
+We've got some graphs being drawn.
+This like wave kind of showing the red and blue wave is fading out a little bit.
+So maybe I could say, what if I don't want it to fade out as much?
+I want that to only be 0.8.
+I want the runtime here to be a little different.
+I want to be able to run that same section, but in order for that to work, when I'm pasting it in, it can't just literally be pasting the code.
+It has to revert to the state that the scene had at the start.
+So it's really running this little thing called checkpoint paste, which basically says if the thing that was copied starts with a certain comment, I'm going to see if I've seen that comment before and cached a state of the scene associated with that so that I can run it.
+Basically it's making it behave a little bit more like a notebook, like a Jupyter notebook.
+Some viewers might be wondering why I don't just have it all in a Jupyter notebook, but I really like having the scene in a single text file and being able to interact with it through scripts and things like that.
+But this is kind of like a hybridization between just the raw text file and a notebook itself.
+We could also have some like text on there that maybe literally says, hello world.
+This is like a good plan for hello world.
+Yeah, put that to the top.
+And that's also something, you know, it's not going to show up on this if we don't have this line.
+So the adding makes it appear.
+But it looks like, so this is me naively thinking, when you make an object, it puts it in the middle and unless you then do some two edges or some other movements, it moves it around.
+Most objects default to being in the center.
+Instead of adding it, a different thing you could do, anytime you're going to do some kind of animation, there's a method called play.
+And then instead of throwing in an object, I'll say there's something I want to do to that object.
+So in this case, maybe I want to write it to make it look like it's being written on And there's a function baked in here.
+Yeah.
+Nice.
+And I could have some parameters and like, hey, maybe I want that to happen a little bit longer, like with a runtime of three.
+And suddenly anyone who's watched any Manim videos recognizes that effect.
+Yeah.
+They're ready to go.
+That's really useful.
+Like I wrote that effect and like nothing else uses that particular effect of having the like edge come on and fade in.
+It's pretty.
+It's pretty.
+That's the signature look for it.
+A different philosophy also with Manim was like anything can transform into anything.
+So what I mean by that is let's say we've got this text.
+I might say, hey, I want to take the the H of that text and then I'm going to make it turn into the circle.
+So that's going to turn into a circle.
+So you defined the circle already, but you didn't add it anywhere.
+Exactly.
+Now you're going to transform the H into it.
+Yeah.
+So if we go to this point, the text gets written.
+What this line is going to do is say extract the H from that text.
+And then transform it into the circle.
+Oh, because the circle was in the middle it has moved it hasn't just put it away.
+And so these these built in functions like write and transform that we're just seeing.
+These are the ones that you sort of sculpted to make the jobs that you wanted to happen happen.
+Yeah, exactly.
+Exactly.
+And so a lot of things derive from transform.
+So usually like it doesn't really there's no pedagogical reason to have like an H turn into a circle.
+I enjoyed it.
+It looks nice and we can, you know, we can maybe make it a little bit slower.
+I mean, I have other questions like it didn't just transform.
+It looked like it had it was eased.
+There's all sorts of nice smoothing functions going on.
+Oh, yeah.
+OK, so let's play with that.
+So let's let's play with the transform.
+So here notice like the H is shrinking and the circle is growing.
+I don't actually want that.
+So when I extract the H, it creates a group of all of the H's that it found in this text.
+So if I take the first element of that, it'll have a thing of it.
+This is uglier than it needs to look.
+But if I want to use a matrix, it's like there's a hierarchy where you might have groups of objects like this whole text is a group of characters within.
+So if I just want the first character, actually a simpler way to do this.
+It's very dumb.
+I'm going to take the first character.
+So the zeroeth element in that Python list, then the actual points data of that H.
+That's fun.
+OK, right.
+So instead of taking the characters, just got the geometrical.
+Yeah.
+And so the smoothing there, there's an attribute I call like the rate function and it defaults to a thing called smooth, which just looks smooth.
+But if it's not the classic smooth step sort of profile, basically, yeah, it's a cubic bezier.
+I think that it'll be like a smooth step.
+But if it was linear, then just notice it's a little jerky.
+This will be easier if it's a runtime of one to see.
+It's like, yes, jerky start, jerky stop.
+Sometimes you want that.
+Yeah, sometimes you don't.
+This will come up for us later, actually, is only this to be linear when it defaults to smooth.
+I'm really excited to see that because it's those details that make the difference from like I've made something move to I've made something look good.
+Yeah, yeah.
+I really making that easy to do.
+It's a big part of what my name is doing, I think.
+We mentioned let's let's do a classic piece of sort of recreational interesting maths that a lot of people heard of.
+Yeah, I was like, I've never plotted a Lorenz attractor.
+And that was that was why I suggested.
+For those of you who don't know, the Lorenz attractor is this very bizarre shape that came up in the early history of chaos theory.
+Ben and I do talk more about it.
+But what you need to know is that it comes from a set of differential equations in three dimensions, which basically means if you have a point somewhere in 3D space, there's this set of deterministic rules that tells you how that point should change at a given moment in time.
+And what happens when you try this for a variety of starting conditions proves to be very interesting as you'll see.
+It's really nice fodder for animation.
+And if you want to learn more about it, I'm pretty sure there's a great Veritasium video on it.
+But also one of my favorite books, which I think I actually should have up here.
+Yes.
+OK.
+So one of my favorite books by one of my favorite authors, James Glick, describes, you know, kind of how this came about and the role that it had in early chaos theory.
+All of that's by the by.
+But some of you all want to know.
+So I figured I'd share.
+I guess maybe one thing I should mention before we dive into this.
+This is all in 2D.
+But the points are actually all in 2D.
+Whoa, that's a bug.
+This is a rendering bug, is it?
+Yes, actually, that's it.
+OK, there's the thing I was playing around with on the low level rendering recently.
+I know what's going on and why that's happening.
+And there's a dumb way to fix it, which is to.
+Yeah, just don't don't don't worry about that.
+Fun to see the back end.
+Don't worry about that.
+Sometimes I go and I try to make the rendering nicer.
+And then so that was that was always three dimensional.
+We just happen to be looking at everything's always through.
+So for example, if I add 3D axes, then it's like everything exists by default on the X, Y plane and just like ninety nine scenes out of one hundred.
+I'm just doing it in 2D because pedagogically you want it to feel like a blackboard.
+Only go up to 3D if you really need to.
+Now we really need to.
+So for the Lorenz Attractor, our setup, I just have some like axes with some coordinates around what we're around what we're going to want to be in.
+Actually, I'll be very honest with you.
+The way I started here, I went to chat GPT.
+What you want to do for the math underlying this is to basically feed some software, a differential equation and an initial condition and just say, how does this initial condition evolve?
+Obviously, people will have built software packages that do it with something smarter.
+So I just asked and I'm like, hey, write me a Python function using some numerical ODE solver to find, you know, find a solution of the Lorenz equations.
+The famous Lorenz equations.
+Well, you know, I just wanted to.
+Not the other ones.
+You know, sometimes I like it.
+As you've no doubt found, if you're trying to engage with some new library or something, it's just, you know, just kind of a nice way to see what it is.
+It solves a lot of the protocol issues that sometimes you take three hours to get past.
+So it's mentioning the SciPy integrate.
+So that's a nice library and it's got this solve initial value problem function.
+And then it gives some boilerplate for how to how that would look.
+And it's using Matplotlib to render it.
+Abundantly reasonable, but we're using Manim.
+So just adapt it.
+Yeah.
+And so essentially I've got a function here to describe the differential equation.
+It says for a given time and for a given state, which is going to have XYZ coordinates, just what's the derivative of that state.
+And you've got three parameters, which you've got Greek words for.
+And so that, you know, I guess if we go to the if we go to the Wikipedia page for Lorenz, this is a system that has some parameters on it that I guess we can kind of freely tune.
+There's some parameters that someone must have found makes for nice diagrams.
+And so let's just use them.
+Let's keep this page open.
+So if we want to render the equations onto our scene to do it, do it in that manner, maybe we can do it in a moment.
+So we've got that.
+I've just got a tiny little wrapper around the SciPy numerical integration solver for us because what I want to do is be able to say, hey, for a given initial condition, just give me all the points that are going to be the solution.
+So let me just check.
+And you kind of need to know what it's going to spit back at you.
+Yeah.
+It's giving you something called solution, which is going to have time values and X, Y, and Z values.
+So the way, yeah, this library is a little weird.
+It's kind of like it's treating Y as the output, but Y might be like a vector value, which is a little confusing, which is part of why I wanted a wrapper so that I'm just thinking in terms of states rather than like its language is involving like a Y.
+And I also wanted this matrix transposed for how I like it.
+Oh, gotcha.
+That's what that T is.
+Okay.
+Yeah.
+It's just all like, don't worry about the wrapper too much.
+Let's just actually see what it looks like.
+So let's say our initial condition is something like, let's just make it 0, 0, 0.
+Why not?
+And then we can take the solutions where I'm passing in a given function, which we want to be the Lorentz system and passing in that initial state, which is the initial state we just wrote down.
+How long do I want that to go?
+So let's see what, I don't know, 10 seconds of solution looks like.
+And this right here is just going to be a set of points basically.
+And so if I run this and I ask, you know, what are points?
+It gives a bunch of zeros.
+This is maybe predictable that 0 is going to be a bad initial condition.
+Initial condition, yes.
+Yeah.
+So let's make that like 10 or something like that.
+And so now if we look at the points.
+There's some interesting points rather than all zeros.
+Yeah.
+Yeah.
+Okay.
+So in this case, I could render a curve where the, like I said, I call everything a mobject for a mathematical object.
+Many of them are vectorized mobjects, which just tells you how it's rendering as opposed to being a surface or like a point cloud.
+And these are things like curves that have some sort of stroke thickness fill and all that.
+So that's interpreting the points and then drawing lines between them essentially.
+Well, so to do that, I'm basically going to say, hey, set your points as corners as if it was a polygon.
+All of those points that were just created.
+And then let's see what that curve looks like.
+If I knew how to spell self.
+So if I do that, we don't see it, but actually it's up there.
+No, because the thing is I was just adding the points, but I wasn't using the coordinate system of these axes in any way.
+And so.
+Ah, so they're not necessarily going to plot them according to those axes.
+Right.
+So what I actually want to do is take the axes and there's a function called like coordinates to points, which is basically going from whatever the coordinate system of the axes are to the like manum coordinate system.
+And there's an abbreviation for that because it's used a lot called chords to points.
+And I'll just pass that in.
+And I think actually it thinks of it in terms of you passing a list of X list of Y list of Z's.
+So I'm going to do a little transposing and don't worry about it too much.
+But this should be in the actual coordinate system.
+Can I check what that star is doing in that penultimate line on the code?
+OK, so yeah, if you have let's say I have a tuple, this like one, two, three.
+Right.
+And then if I have I define a function that takes in like X, Y, Z and it returns let's say like X plus Y plus two times.
+We'll do a non trivial.
+If I call function on that tuple, it'll be like type error.
+Ah, because it wanted them separated.
+That's a different kind of error.
+It wants them separated.
+So I could do it like oh, pass in like the zeroth element.
+But Python has a little little syntactical snazziness where if you put an asterisk in front of an iterable thing, it'll unpack it.
+OK, this is I mean, this is the most useful thing I've learned all day.
+I mean, manum is pretty good.
+But thank you.
+And joking aside, that's helpful.
+If you don't know what that was, it's always mysterious to see things you don't understand what they're doing.
+So in this case, points is an array where I like to think of each each row is one of the points.
+But the syntax for this coordinates to points is going to take in lists of the X coordinates, Y coordinates.
+It's maybe a dumb design as I'm thinking about it right now.
+Like maybe the way it should play.
+It makes sense.
+The reason it makes sense is usually when you're calling this, you have axi.c2p.
+You're just passing an actual individual ones like, hey, I want to know what point does this correspond to in the manum coordinate system.
+And it's like, here's that point.
+So if I wanted to add a dot there, you know, this we could see where it shows up for.
+Why can't I type cell?
+Because you're on camera.
+Because I'm on camera.
+Yeah.
+And so it's putting it at that.
+And you say it's a dumb system.
+If it works, it's not a dumb system.
+Yeah.
+It can always be improved.
+Right.
+But it's working as a whole lot better than many systems we try and make.
+Great.
+So let's have some fun with this.
+We could see how it evolves rather than just adding the curve.
+We could show the creation of the curve, which is basically showing the system evolve.
+So that's going to take all those points, but just kind of run through them slowly.
+Yeah.
+Or make them appear slowly.
+Well, here's what it'll do.
+Right.
+It'll draw it.
+But that was very fast.
+So maybe I want the runtime to match the actual time of the dynamic system.
+So it should draw it over the course of 10 seconds.
+But here it's trying to be too smart.
+When it draws things by default, it does that smoothing function.
+I see.
+And that's actually changing the behavior.
+So actually we want the rate function in this case.
+Almost always it's nice for it to be smooth.
+This is one of those cases where the math that it's representing is relevant.
+It needs to be kept rather than masked.
+So instead, linearly, this is the actual evolution of it.
+Nice.
+And so we can style it too.
+Maybe we want to set the stroke to make it look blue, make it look a little bit thinner, something like that.
+We could actually give it a range if we wanted to have a kind of gradient between things.
+Which I don't know if that looks nice or not.
+But you can imagine.
+That's starting blue and ending up red.
+Yeah.
+Starting at zero stroke with ending up at 10 or starting at 10 ending up at zero.
+Knock yourself out.
+Yeah, those look pretty ugly to me.
+And also I think we'll want to use colors for a different reason now.
+Because the reason the system is interesting is because it's chaotic.
+If you have initial conditions that are really close to each other.
+But not quite the same.
+But not quite the same.
+They start evolving the same for a while, but then they stop.
+So I think here's the way that I want to illustrate this.
+We're going to create multiple curves.
+I'm going to have curves which I'm going to create a group.
+And I call it a vgroup just to say, hey, these are going to be vectorized objects.
+That makes the rendering a little faster if it knows that.
+If it doesn't know that, it'll render them, but it doesn't use a certain trick to make it faster.
+Then I'm going to go through a bunch of states, which I need to define now.
+So states I'm going to maybe make into...
+And these are your initial conditions.
+These are going to be the initial conditions.
+So let's just change that z coordinate by a little bit.
+So we'll take like an epsilon to be like 1, 1000.
+Maybe I'll make it more explicit for n in range.
+How many initial conditions do you want?
+Should we start with just two?
+Sure, sure.
+I mean, I know you're doing a whole list for it, and that's slightly redundant, but we can crank that up to lots.
+Yeah, this will be good.
+So that'll be our state.
+So these are not going to be dependent on the state 0, but whatever state is part of our for loop here.
+I'm going to take everything we just did and basically say...
+Put it in the loop.
+Okay, points were just created.
+Great.
+Okay, it says blue.
+I don't want them all to be blue.
+So let me make some colors, which at the moment, because there's just two right now, we're going to have to change this in a moment, but I'm going to make it blue and red.
+But like...
+You eventually will need some numerical way of changing it.
+Generalized, yeah.
+But this will make it kind of easy to see now.
+Good commenting, Graham.
+Oh, it's a rarity when I'm animating.
+Someone's watching now, eh?
+Yeah.
+I'm not the worst in the world, but there's a lot of room for improvement.
+So I'm just going to include that in the loop.
+So I'm zipping together the states and the colors.
+And so the curves are going to be colored differently.
+And now this showing creation, I want to actually happen...
+Oh, here we'll use our star again.
+I love list constructors and all that.
+So here's a little fanciness for what we're doing.
+So we've got this group of curves that actually...
+In this for loop, I'm going to need to add each one.
+So curves.add curve.
+So creates an empty group.
+This list adds new threads to it.
+In this case, there's just two.
+In a moment, we can make it 10 if we want.
+And then this is going to create basically a list.
+It's a generator, but it'll create a list of animations.
+Those animations are this show creation thing.
+And then the stars, so that as you pass it into the play argument, it's passing them as if they were multiple different animations.
+So there's a little bit baked into that.
+But essentially what we want is that we're going to have an evolution of two curves at once.
+And right now you only see the red one because the red one's being rendered on top of it.
+But now they've diverged.
+Now they've diverged.
+I want to see that divergence a little bit more clearly.
+We need to run it for longer.
+Okay, so first let's run it for longer.
+So let's actually name this.
+Let's call it, I don't know, evolution time.
+We could just call it time.
+And that will be an overused name again, isn't it?
+Let's make that 30.
+The other thing I want to do is have little dots indicating the end point.
+Oh yes, so you can eyeball it easily.
+Yeah, so the way I'm going to do that is I'm going to make a group that'll have a thing called a glow dot color for colors.
+And again, glow dot is a baked in function that you've got because you want often to have a point that moves and has a nice bit of coloring into it.
+And so this one's not a vectorized thing.
+So rather than it's just like its data is described by a point in space and like how much I want it to like ambiently glow.
+And it's got a little color.
+And I'm going to create an updater function for it where I'm going to update the dots.
+This is going to be a function that takes those dots in.
+And I'm just going to write this function kind of in place.
+I often like to do that where it's like everything relevant to this animation we're doing just sits in that commenting bit.
+I'm going to say for dot curve and zipping together the dots with the curves.
+I want each dot to move to the end point of the curve.
+So move to curve dot get end.
+So curve dot get end will tell you its last point.
+The dots going to move to that point.
+And this is something I want to happen on every iteration.
+So I'm going to say add as an updater this.
+This is a thing I want to be called on these dots at every iteration from here on forward.
+Python question?
+Yeah, yeah, yeah.
+The zip command is sort of stacking two lists sort of in parallel so that you can iterate through them in parallel.
+Yeah, yeah.
+So let's say we have list one looks like one, two, three.
+List two looks like, you know, a, b, c.
+Yeah.
+Oh, that's going to kill me.
+You couldn't leave it.
+So if you say for number letter in zip list one list two print number and letter.
+Then it pairs them up.
+Yeah, it pairs them up.
+So you can keep lists which are referring to similar things sort of implicitly because of their position.
+Yeah.
+I mean, that's what I thought, but it's nice to see that.
+And so there's a it's unsettling in my mind right now because we're zipping things together that might not have the same size.
+So we're going to want to do something that makes sure that colors.
+In fact, let's just do it now.
+Would it cope if you did or would it spit out an error?
+Well, so what it'll do, here's what will happen.
+Suppose that list one was actually range much longer.
+So list one looks like this.
+If we run that little bit we had above it just it goes until one of the lists runs out.
+So we would just it would cope, but you would be missing many of them.
+And actually quite hard to find that bug if you hadn't spotted it.
+Yeah, no, it is.
+It is.
+It's why it's unsettling unless you're like sort of fluent with Python.
+So I have a thing called color gradient that will basically go between two colors and you you tell it how many steps to how many steps exactly.
+And so the number of steps should be the length of the states in this case.
+So we should just feel like, OK, no matter what, the number of colors matches the length of the states.
+And now I feel more comfortable.
+I wonder how much it is insightful to watch someone doing a workflow and to note when discomfort kicks in.
+That's a really insightful thing to realize what matters from bitter experience, right?
+Isn't it?
+This isn't that bitter.
+It's maybe just like aesthetically.
+Experience tells you when to worry about something when not to worry about it.
+And it's just nice to see that that's how you know I should deal with that before I forget about it.
+So how do we want to do this?
+Oh, yeah.
+So we've got our dots.
+We've got the updater.
+That means if we add the dots to the scene, then as these evolve and their endpoint changes based on what's been drawn.
+It should track it around.
+It should.
+I'm going to put in a small line that anyone who knows Python is going to vomit at.
+And if you want, I can explain the line and why I would never do it in any sort of like serious code.
+But it is an annoying necessity.
+Let's see it first and then I'll ask you.
+We can edit if we need to.
+Must be a string or real number.
+What line is this coming up for?
+So when I set the points.
+Color and colors.
+The color gradient is producing.
+Oh, so the initial argument for glow dot is the center like where it is in space.
+So it was telling it you needed that parameter to be there could be a better certainly a better type error message that's that rather than this is kicking off to this is where people are like who know Python.
+The constructor of glow dot should definitely have had better error messaging.
+I'm not going to hold it against you.
+Yeah, there's the dot.
+And again, red on top of blue at first.
+This is OK.
+The reason they're running so fast is because the runtime of this is now different from the evolution time.
+So we should maybe have the 30 step the 30 length solution is now happening in 10 seconds.
+Yeah.
+So let's let's run that again.
+But where we.
+So this is in the time it's actually supposed to be.
+So they start off together.
+And here's the classic.
+They'd be like they're so close together to start with.
+But now they're separated.
+And then after a little bit, it's as if they're doing completely different things.
+I want to jump in here real quick to explain that global update locals line, because it is such a ridiculously cursed line of code.
+But it has to do with a bug in the sort of IPython embed being used.
+So let me just show you what's going on here.
+Taking a super simple example, let's say I have this snippet of Python where I define some variable X.
+Let me make this bigger.
+And then I define this function of Y that's going to use that X.
+So it's defined outside of the function, but it's making use of that X.
+And then we're going to test, you know, what is like F of 10.
+So you expect it to return 13.
+And it'll do this if I run this as just a Python script.
+I run it from the terminal Python of that thing.
+It prints out for us F of 10 is equal to 13.
+All is well and good.
+Now inside that sort of IPython embed that's being used for Manim.
+If I take exactly the same code, exactly the same code, it behaves differently where it says name error, name X is not defined.
+Because I think what's happening is that when inside an IPython cell like this, it defines a new function.
+It doesn't necessarily share the same scope that it would in a normal Python environment.
+The catch all hack for how to get around this is to say, hey, I want X to be a global variable.
+In fact, to just have a universal catch all, I'm going to take the whole dictionary of global variables, which Python just gives you access to for some reason.
+And I'm going to say, hey, look at the dictionary of all local variables.
+That's going to include that X.
+I just want everything that's local to become global, which is obviously a horrifying thing to do if this was like code for a real library or something.
+But because we're just scrappily running it in this little interactive session purely for the purpose of scene development, it's not as dangerous.
+But if you were wondering or if you were vomiting at the screen, that's basically what's going on.
+It's that with this kind of interactive mode.
+Interestingly, it's not the case that that'll be a problem in just IPython if you run that from the terminal.
+Like if I take this code not using the dumb hack, it works just fine.
+So it has something to do with this notion of embedding such that we're dropping into the middle of a scene kind of like it's a debugger.
+If I'm missing someone, if someone knows like a better way to get around that, I'm all ears.
+Future future me here.
+Worth being clear about one thing here, which is that the better way to do this, if you have some function referencing some variable that it needs to use, is to just make that very explicit.
+So in this case, I could say X is an argument of the function, give it a default value, which is the X kind of defined in the same scope as where the function is defined.
+And then everything will work dandy and as you want.
+So in the scene that I was doing with Ben, if we look over at the very cursed line here, the better way to do that where it wants to reference curves is to basically say, hey, curves should actually be something explicit in there.
+Maybe an argument that defaults to the value that's going to be whatever it was on the outside.
+That will totally handle it.
+The reason I was in the habit of doing this, for one thing, it's maybe a little annoying to do that with lambdas on the fly and things like that.
+But the same bug would come up with list constructors.
+So if I was to define something like X plus Y for Y in range, I don't know, 10, something like that.
+And I want to see what this looks like.
+This is something where, you know, in normal Python, this X would be visible outside.
+And so if we were to actually run this, run this little test, it would do what we want.
+Whereas inside the manum environment, at least previously, so if I do all this and then I ran that code, previously that same bug would emerge.
+But when I was just looking at it now, it seems like actually it's fine.
+Whatever bug had been there that affected list constructors and things like that, it's fine.
+So maybe I should just get out of the habit of typing that incredibly cursed line and you can ignore the last five minutes.
+Anyway, back to actually finishing out that scene with Ben.
+Let's make those dots bigger.
+Can we give them radius one?
+I don't like red as the second color.
+I just think that looks kind of ugly.
+I often...
+Okay, that's a very big dot.
+But I guess I don't know.
+We see it.
+Yeah, we see it.
+That's maybe a little bit a little bit too big.
+So I might ease off on that.
+Again, I mean, it's a minor comment, but the aesthetics are handled for you.
+The glow dot, it's too big, right?
+But it still looks nice, even though it's big because you've paid attention to making a glow dot function, which makes a nice looking dot.
+So this is something I was going to ask about.
+This is interactive.
+Yeah, yeah, yeah, yeah.
+And that wasn't obvious until you moved the axes.
+No, it's because everything is ultimately rendered and just like made into a YouTube video.
+And every now and then I've done something where I'll like have an animation I want to play with in the moment.
+But like, it's not that common.
+So okay, a very common thing I might do, we've got this animation, it's rendering all these.
+It would be nice for the camera to slowly pan throughout.
+Agreed.
+And so it's amazing how useful it is for 3D rendering is that if you're looking at a TV screen, you need the illusion created by the rotation to keep the depth alive.
+Yeah.
+So here's what I might do.
+I have a little another keyboard shortcut that is not documented anywhere where I can save to my clipboard, basically a call that needs to be made to put the camera in the current position.
+So that's just grabbed where the camera angle is right now.
+That's helpful.
+And so if in my animation I take the camera frame, which is like frame.
+I haven't talked about this dot animate thing yet.
+But basically I say, I want you to do this thing.
+I don't want you to just do it to the object.
+I want you to animate that over time.
+And there's some little bit of magic that underlies what's going on there.
+But in this case, the thing I wanted to animate is reorienting itself to a certain position.
+So over the course of the animation, it should like slowly pan itself over.
+So it'll take wherever it is, wherever it thinks it is already and try and get to that.
+So I'm going to also it's nice if the runtime as an argument of the play method, then it becomes the runtime for every animation in that method.
+So this might not be enough movement, actually.
+I might want to like really have it spin around because it's happening over 30 seconds.
+So back to the beginning.
+Do all this.
+Is it panning?
+Oh, it's very slow.
+It looks like it is very smooth.
+It's not.
+Yeah, it's smooth, which not necessarily.
+I think I like that.
+I think I like it as a smooth thing.
+Agreed.
+It might look kind of a jerky style if it wasn't.
+Yeah.
+And so now it's like as we're going, we can see it from all the different angles.
+I think the color scheme is still a little jarring to me.
+So I think what I might do is make it go to teal or something that's nice and close to it.
+And then maybe we'll make this actually even more aggressive.
+I'm not your best color audience.
+My color vision deficiency, definitely.
+I don't know if my colors are the same.
+Anyway, yellow and blue I can see apart.
+Blue and teal.
+In this case, like either you want them to be starkly different so you see it or you want it to be aesthetically nice where maybe you're just using the shade of it rather than the hue to distinguish.
+So I mean, one thing we could try, it's going to look cleaner, but maybe be harder to discern.
+Let's say we go between two different shades of blue and I'm going to now let's have some fun and let's have there be like 10 points.
+And so they're just going to change by their epsilon in the third coordinate.
+Yeah, exactly.
+Doesn't really matter.
+We know actually.
+I mean, mathematical comment.
+The other amazing thing about this is that wherever you start, it goes into this sort of shape.
+That's kind of like the second surprising thing, isn't it?
+Yeah, yeah, yeah.
+The whole point is not just that it does something strange, but that there is an attractor.
+So often with differential equations, it might be attracted to a single point.
+It might blow up to infinity.
+It might be attracted to a cycle, but then this is what's called a strange attractor where all the points are attracted to a certain shape, but that shape isn't so simple as a cycle and it's got a fractal nature to it.
+I often feel like it's the sort of contradiction inherent in trying to describe chaos to someone because I want you to say, okay, this is when it's unpredictable.
+And yet at the same time it is predictable and there's this strange attractor.
+So it's the fact that both are happening.
+And this is...
+You know that it's going to be on this subset of R3.
+It's going to get really close to that subset.
+Where on that will it be?
+Well, we just had 10 starting conditions that were really close to each other.
+And if we remove the curves and just see the dots.
+They're all over the place.
+Oh, actually, let's do this.
+Let's have some fun.
+What if the curves...
+Sort of fade out of...
+Oh yeah, let's have them fade out of...
+Sorry, you had an idea that I...
+No, no, no, no, let's do that.
+Let's have the curves fade over time.
+I want to know what your idea was.
+How do I want to do that?
+I'm going to...
+I definitely made the part that follows with Ben way more complicated than it needed to be.
+We also got sidetracked chasing down a couple of different bugs.
+I think what I'll do is post the full relatively uncut version of that conversation maybe on Patreon.
+But just give you a much more succinct version of how we wrapped up here.
+Here I have essentially the same scene that I was doing with Ben.
+So we've got our axes setting up a 3D coordinate system.
+We've got our curves.
+I've got 10 of them.
+Here, when we animate, the curves are getting drawn.
+The dots are following.
+And Ben had just asked if we want to have the curves fade out over time.
+What I should have said is that you just type fade out curves, which is another animation type.
+It'll slowly change them to have zero opacity.
+In this case, that evolution time, if we make it the parameter...
+The runtime, rather.
+If we make that the parameter of the play argument here, then it becomes a runtime for everything on the inside.
+So now when we do that, it goes.
+And over the course of those 10 seconds, the curves should slowly fade.
+And indeed it looks like they do.
+And then we're left just with the dots, which is nice.
+It looks very nice.
+The other thing that we got into, and I just took way longer to say this than I properly should have.
+Because I was trying to remember what the names of the functions were and things like that.
+Again, I'll post this all in a more uncut version elsewhere.
+If we wanted a nice effect where there's this sort of tail following the dots that sort of fades out nicely.
+There's this thing I once wrote for some...
+You don't even remember what video, way in the past, called Tracing Tail.
+And so the way this will work is if you give it just a single little object of some kind.
+So let's give it that first dot.
+And then let's add the tail.
+Then, rather than fading out the curves in this case, actually what I'm going to do is just set those curves to be invisible.
+So set their opacity to be zero.
+So they'll be drawn that will determine where the dots go as they're having this kind of update function called on them.
+But we won't actually see them.
+What we will see is this one tail for one of the dots.
+I think.
+So the way that it looks...
+Great.
+We see that one little tail and it kind of fades out in the back.
+I like the effect.
+It sort of goes from full opacity to zero opacity, zero stroke width.
+You can change some of the parameters on it here.
+In this case, the amount of time that it follows it.
+So right here it's showing the last one second.
+And if we were to wait, it would sort of fade out because one more second has passed.
+So instead I could say, hey, I want you to follow it for a little bit more time.
+So let's make that time traced three seconds.
+Instead of just having one tail, we could have a group of them.
+So we'll create a group of these tails, not just for the zeroth dot, but for all of the dots.
+For dots and dots.
+And then I could maybe have it match the color of that dot so that we kind of see them all.
+So now, when we do this, we should see ten different tails all following for a little bit more time.
+Which I think should just give a nice, oh yeah, yeah, yeah, that gives a nice smooth little effect.
+And they all start to spread out.
+You can see that spread really cleanly.
+And here we can have more fun by basically having it evolve over more time.
+Instead of ten seconds, we could bring that up to thirty seconds.
+We could make them closer so this epsilon value, instead of being one one thousandth, we could make it one one hundred thousandth.
+So it should take longer for them to all diverge.
+So now if I go, we see all of those tails.
+In theory, these ten dots should actually stay closer for much longer.
+And it should take longer before we see that divergence in the chaos.
+And indeed, it takes a little while, but eventually they spread out.
+So, I think that's kind of a nice end effect.
+Like I said, I'll post the more uncut version, but now is a pretty good point to just jump ahead towards other topics.
+Well, goal achieved.
+You've got a Lorentz Attractor with multiple initial conditions varied very slightly, animating prettily with a glitchy trail.
+So before we finish the workflow, you've made a code that does a thing.
+And let's say you're happy with it.
+I know there's lots of polishing that you want to do.
+But you then bake it into an MP4 file.
+Oh yeah, yeah, yeah.
+So in this case, once I have the scene that I like, and so in this case maybe we'll clean it a little bit.
+I might want to render this out, so I've got a little keyboard shortcut.
+The way that you might call Manim usually is in the command line, if you've downloaded the GitHub and you've imported it all, you say Manim, and then you pass in a file, a Python file that contains the scene.
+And so in this case, I found the scene to put that.
+You say which scene do you want to render from that file.
+And in this case, I have a couple different parameters.
+If I say pre-run, it'll go through it all without animating to one, estimate how long it'll take, and also catch any errors rather than halfway through the animation.
+This Finder thing just means it's going to pop it up in Finder, the Mac OS file system.
+And then W means write it to file.
+And so if I run this, it pre-runs through, thinks about it, it knows how long it'll take now, and now it's rendering it to an MP4.
+And because I'll usually render it at 4K, sometimes the rendering will take a little longer.
+One of the reasons I wanted to make any kind of behind the scenes, the way I used to use Manim, and the way I actually suspect a lot of people who use Manim Community do use it, is you're always running it from the command line.
+So you've got your scene and then you run Manim, that scene, and then it pops up.
+It renders an MP4 file, so it has to render the file and then pop it up.
+And there were a bunch of shortcuts to say, oh, don't render the whole file, just render it starting at this animation or something.
+But you can imagine the iteration cycle is a little more annoying if every single time you're making an update and you want to see it.
+So it was later in the game, around the same time I was changing the implementation to run on OpenGL, to then also have the interactive shell version, such that the process of creating just is like, highlight the code and see what the code does.
+And that's a fundamental change to the workflow.
+It's huge!
+And my specific workflow, it depends on these Sublime scripts that I wrote that will send a command to the Terminus, which is the extension of Sublime that makes a terminal.
+So what I'll do is in the description of this video, I'll actually document what that process is.
+And so if anyone's curious and wants to replicate it, probably whatever text editor they're using you can do something that does the same.
+So for all the people who are in Visual Studio and whatnot, you can do something that would look the same.
+So here it rendered it, and now it's going to look all glitchy because of those glitches that I mentioned.
+But this is now playing in a video player, it's a file.
+This I would drop into Final Cut, do my editing.
+I guess another thing we never did is we could have the equations.
+Let's add the equations.
+So you can have a LaTeX object that's basically going to say hey, take some LaTeX and then render it, and then we'll add it on.
+Have you ever used MathPix?
+MathPix is so good.
+So it's OCR, but for LaTeX you can take a snapshot of just any equations and then it gives you all sorts of things, but one of them would be the LaTeX for that expression.
+Fantastic.
+And so it also gives you it as an SVG if you want and all that.
+It's really good.
+So from a screen, literally a bitmap is taken to a scalable vector.
+It's really panicky.
+It's great.
+It's so good.
+I guess it renders it in LaTeX and then SVGs it out.
+So we can use this here, so we can have our equations and then add those.
+So that will dump them in the middle of the screen, am I right?
+You're absolutely right.
+And also on the XY play.
+If there's a 3D scene and you want stuff like that, you say fix in frame, as if it's glued on the camera frame.
+And then in this case we might want it in a corner.
+So here's something I wrote which, let's see if this works actually.
+So you can index into it by a string.
+So I can say every time you find an X you know, maybe color that red.
+That's useful.
+But not working.
+Tech to color.
+And by better I mean more it'll actually work.
+So T to C I guess is what we call it.
+So T to C Let me get my line spacing in a way that looks a little bit nicer.
+So here's a nice thing you can do.
+If we say everything that looks like an X make that red.
+Everything that's Y, red, green, blue.
+I think that will...
+And actually now that it's known to separate those out at some point, if I do say equations and I try to pull out the Xs and I shift them a little bit up then it has control on them.
+It does its best if you don't do anything to say hey these are specific variables I'm going to want to separate but you have to from the tech expression know how many symbols there will be such that it can dissect the manum object in that.
+It's a little tricky to get it to actually work.
+So if you know you want control over variables you just put them in an expression like this.
+There's another one called isolate or something.
+9 times out of 10 it will work by default anyway for simpler expressions.
+Maybe you do something where it's like you've got we're going to write the equations onto the screen to just beam in a bit.
+And now that's going to be the scene that renders if we go and then it does its whole thing.
+And so those are just up there as it's doing its thing.
+And are they behind or in front of the camera?
+That's the sort of thing I'm sure you can control right?
+So in this case by default things will just be rendered in the order that you put them on unless you tell them to apply a depth test.
+So a lot of 3D objects that know they're supposed to be in three dimensions it's going to be depth tested.
+In this case its actual position in space is on that xy plane so it's a little bit weird.
+But if we wanted them to be rendered, wanted to make sure they show up in front what we could do is just make sure that we add it down here.
+And then what I could do we could maybe say hey let's take those equations and I want to set a backstroke so that there's a little bit of space around them.
+Let's maybe make the font size a little smaller so that they're just up in the corner so the font size is like 30 something like that.
+We put that on they're a little bit smaller up there and then now when we render our I guess they're not really going to overlap with the solutions because I made them smaller.
+Because they're being updated every frame.
+Being able to break the text into sort of mathematical parts is extraordinarily useful if you want to highlight mathematical parts.
+And it's something that would be a real pain to do in any other context.
+Yeah you know what I maybe should say.
+I have some example scenes basically.
+So this is my intention.
+Hey if you wanted to get started just look at a couple of these examples.
+And so if you wanted to see like working with some tech what that might look like.
+In this case I've got actually a series of expressions that we're going to play with which is basically rearranging a certain equation.
+And these are going to be the lines of our equation and now it's just rendering the first of those lines.
+I've got a special notion of transform that will try to match the strings underlying it.
+So that if we play like this the A squared goes to the A squared the B squared goes to the B squared and things like that.
+There's example scenes in here to kind of show the kinds of operations available.
+If you just play around with some strings this like matching string will automatically give you a nice anagram animator.
+Where you don't really you don't even have to think.
+You don't have to worry about it.
+You don't have to think.
+It's just like move the letter to the corresponding letter and like it's sort of a one liner that does that.
+That was like an emergent thing.
+I mean slightly not helpful for viewers but we saw a big anagram discussed a couple of days ago.
+We should tell Simon.
+Yeah that's what it would save Simon if he had run it through Manim.
+I can just like show a little bit more in here if you want where got this equation, famous equation.
+If you wanted to say hey I just want to reference the E part of that.
+There's an animation called flash around and you'd be flashing around just at E.
+Or you want it.
+There's another one called indicate and you want to indicate that pie.
+Things like that.
+So you're pulling it out bit by bit.
+And in terms of understanding what functions like that exist.
+Obviously there's your head which is this vast trove of experience over the time you wrote it.
+But the Manim community version is a different version but these still exist.
+Yeah Manim community definitely has much better documentation.
+There's not zero documentation on this one.
+You can see all the animations basically in a folder of the library called animation.
+If you just look through that folder you'll see the things that exist.
+All of the code I've ever written for any video is on GitHub.
+If you go to github.
+slash 3b1b slash videos this GitHub basically has all the animation from videos in the past.
+In this case I guess and videos of the present.
+I haven't made any animation for holograms yet so that one.
+We can see some puzzles that I just made for the IMO.
+You can see it all in there and then that gives you some sense of what the functionality available is.
+And maybe this is a workflow thing for people like me who are beginning.
+If you don't know what functions are out there obviously you can look at the library and see what's in there.
+There's no auto complete sort of like if you start typing one that you think might be it you can't Oh yeah sure there is.
+There's all sorts of auto complete tools out there.
+Which will be more to do with the text editor.
+Yeah so this is the text editor question.
+So like in Sublime there's a thing called a language server protocol and so there's some I think it's called like Pi LSP or something.
+It has some sense of the environment that it's in and might auto complete.
+So that's one way to find a function.
+If I was going to write a function I might call it this.
+You can find out if there is one call.
+GitHub copilot right?
+Just like use copilot.
+I don't like using copilot with Manim just because I know what I want to do and it doesn't quite know what I want to do.
+And it's really nice if you're like engaging with a new library of code but I don't know I just find like dumber auto complete tools to be the thing I actually want.
+Because often it's like it's not a if I don't know exactly what I want the way I want to even articulate the request is in code not in English.
+To each their own but like just try it.
+Yeah and you have the experience to sort of fall back on your own experience.
+Yeah yeah yeah yeah just fill it in.
+No but that is a sort of workflow thing and depending on your text editor and it's actually something I'm just not used to.
+Like it's that that lower level sometimes it's the barrier to getting started on these things.
+Yeah yeah yeah.
+But once you've crossed those hurdles.
+Yeah how do you even know where to start.
+So the example scenes I think would maybe yeah yeah gives you some sense of it.
+Nice well thank you for showing me I really enjoyed seeing the back end.
+It's a very human experience coding and what and the messiness is part of it.
+So there you go little peek behind the scenes.
+I will leave a link in the description to that repo where you can see the code for literally any video I've made in the past.
+By the time I post this I'll also add something to the readme of that repo to outline the actual workflow that I'm using here.
+You know the specific sublime scripts what you would want to mimic if you're using a different text editor things like that.
+And I'll also post the full version of that conversation warts and all to Patreon.
+I might actually do some like manum live streams or something like that on Patreon periodically.
+If that's a thing you would be into let me know.
+If so what kinds of things would you like to see.
+But in the meantime I'll be busy animating the next video and I will see you then.

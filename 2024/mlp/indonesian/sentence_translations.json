@@ -1,0 +1,1218 @@
+[
+ {
+  "input": "If you feed a large language model the phrase, Michael Jordan plays the sport of blank, and you have it predict what comes next, and it correctly predicts basketball, this would suggest that somewhere, inside its hundreds of billions of parameters, it's baked in knowledge about a specific person and his specific sport.",
+  "translatedText": "Jika Anda memberi makan model bahasa yang besar dengan frasa, Michael Jordan memainkan olahraga kosong, dan Anda memintanya memprediksi apa yang akan terjadi selanjutnya, dan model tersebut dengan tepat memprediksi bola basket, ini menunjukkan bahwa di suatu tempat, di dalam ratusan miliar parameter, model tersebut dipanggang dengan pengetahuan tentang orang tertentu dan olahraga tertentu.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 0.0,
+  "end": 18.32
+ },
+ {
+  "input": "And I think in general, anyone who's played around with one of these models has the clear sense that it's memorized tons and tons of facts.",
+  "translatedText": "Dan saya rasa, secara umum, siapa pun yang pernah bermain-main dengan salah satu model ini, pasti akan mengingat banyak sekali fakta yang dihafalkannya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 18.94,
+  "end": 25.4
+ },
+ {
+  "input": "So a reasonable question you could ask is, how exactly does that work?",
+  "translatedText": "Jadi, pertanyaan yang masuk akal yang bisa Anda ajukan adalah, bagaimana tepatnya cara kerjanya?",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 25.7,
+  "end": 29.16
+ },
+ {
+  "input": "And where do those facts live?",
+  "translatedText": "Dan di manakah fakta-fakta itu berada?",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 29.16,
+  "end": 31.04
+ },
+ {
+  "input": "Last December, a few researchers from Google DeepMind posted about work on this question, and they were using this specific example of matching athletes to their sports.",
+  "translatedText": "Desember lalu, beberapa peneliti dari Google DeepMind memposting tentang penelitian tentang pertanyaan ini, dan mereka menggunakan contoh spesifik untuk mencocokkan atlet dengan olahraga mereka.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 35.72,
+  "end": 44.48
+ },
+ {
+  "input": "And although a full mechanistic understanding of how facts are stored remains unsolved, they had some interesting partial results, including the very general high-level conclusion that the facts seem to live inside a specific part of these networks, known fancifully as the multi-layer perceptrons, or MLPs for short.",
+  "translatedText": "Dan meskipun pemahaman mekanistik penuh tentang bagaimana fakta-fakta disimpan masih belum terpecahkan, mereka memiliki beberapa hasil parsial yang menarik, termasuk kesimpulan tingkat tinggi yang sangat umum bahwa fakta-fakta tersebut tampaknya tinggal di dalam bagian tertentu dari jaringan ini, yang dikenal secara aneh sebagai multi-layer perceptron, atau disingkat MLP.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 44.9,
+  "end": 62.64
+ },
+ {
+  "input": "In the last couple of chapters, you and I have been digging into the details behind transformers, the architecture underlying large language models, and also underlying a lot of other modern AI.",
+  "translatedText": "Dalam beberapa bab terakhir, Anda dan saya telah menggali detail di balik transformer, arsitektur yang mendasari model bahasa yang besar, dan juga mendasari banyak AI modern lainnya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 63.12,
+  "end": 72.5
+ },
+ {
+  "input": "In the most recent chapter, we were focusing on a piece called Attention.",
+  "translatedText": "Dalam bab terakhir, kami memfokuskan pada bagian yang berjudul Perhatian.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 73.06,
+  "end": 76.2
+ },
+ {
+  "input": "And the next step for you and me is to dig into the details of what happens inside these multi-layer perceptrons, which make up the other big portion of the network.",
+  "translatedText": "Dan langkah selanjutnya bagi Anda dan saya adalah menggali detail apa yang terjadi di dalam perceptron multi-lapisan ini, yang membentuk bagian besar lainnya dari jaringan.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 76.84,
+  "end": 85.04
+ },
+ {
+  "input": "The computation here is actually relatively simple, especially when you compare it to attention.",
+  "translatedText": "Perhitungan di sini sebenarnya relatif sederhana, khususnya apabila Anda membandingkannya dengan perhatian.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 85.68,
+  "end": 90.1
+ },
+ {
+  "input": "It boils down essentially to a pair of matrix multiplications with a simple something in between.",
+  "translatedText": "Pada dasarnya, ini adalah sepasang perkalian matriks dengan sesuatu yang sederhana di antaranya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 90.56,
+  "end": 94.98
+ },
+ {
+  "input": "However, interpreting what these computations are doing is exceedingly challenging.",
+  "translatedText": "Namun, menafsirkan apa yang dilakukan oleh komputasi ini sangat menantang.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 95.72,
+  "end": 100.46
+ },
+ {
+  "input": "Our main goal here is to step through the computations and make them memorable, but I'd like to do it in the context of showing a specific example of how one of these blocks could, at least in principle, store a concrete fact.",
+  "translatedText": "Tujuan utama kita di sini adalah untuk melangkah melalui perhitungan dan membuatnya mudah diingat, tetapi saya ingin melakukannya dalam konteks menunjukkan contoh spesifik tentang bagaimana salah satu blok ini dapat, setidaknya pada prinsipnya, menyimpan fakta konkret.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 101.56,
+  "end": 113.16
+ },
+ {
+  "input": "Specifically, it'll be storing the fact that Michael Jordan plays basketball.",
+  "translatedText": "Secara khusus, ini akan menyimpan fakta bahwa Michael Jordan bermain bola basket.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 113.58,
+  "end": 117.08
+ },
+ {
+  "input": "I should mention the layout here is inspired by a conversation I had with one of those DeepMind researchers, Neil Nanda.",
+  "translatedText": "Saya harus menyebutkan bahwa tata letak di sini terinspirasi dari percakapan saya dengan salah satu peneliti DeepMind, Neil Nanda.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 118.08,
+  "end": 123.2
+ },
+ {
+  "input": "For the most part, I will assume that you've either watched the last two chapters, or otherwise you have a basic sense for what a transformer is, but refreshers never hurt, so here's the quick reminder of the overall flow.",
+  "translatedText": "Untuk sebagian besar, saya akan berasumsi bahwa Anda telah menonton dua bab terakhir, atau jika tidak, Anda memiliki pemahaman dasar tentang apa itu transformator, tetapi penyegaran tidak pernah ada salahnya, jadi inilah pengingat singkat tentang alur keseluruhan.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 124.06,
+  "end": 134.7
+ },
+ {
+  "input": "You and I have been studying a model that's trained to take in a piece of text and predict what comes next.",
+  "translatedText": "Anda dan saya telah mempelajari sebuah model yang dilatih untuk menerima sepotong teks dan memprediksi apa yang akan terjadi selanjutnya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 135.34,
+  "end": 141.32
+ },
+ {
+  "input": "That input text is first broken into a bunch of tokens, which means little chunks that are typically words or little pieces of words, and each token is associated with a high-dimensional vector, which is to say a long list of numbers.",
+  "translatedText": "Teks input tersebut pertama-tama dipecah menjadi sekumpulan token, yang berarti potongan-potongan kecil yang biasanya berupa kata atau potongan-potongan kecil kata, dan setiap token diasosiasikan dengan vektor berdimensi tinggi, yang berarti daftar angka yang panjang.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 141.72,
+  "end": 155.28
+ },
+ {
+  "input": "This sequence of vectors then repeatedly passes through two kinds of operation, attention, which allows the vectors to pass information between one another, and then the multilayer perceptrons, the thing that we're gonna dig into today, and also there's a certain normalization step in between.",
+  "translatedText": "Urutan vektor ini kemudian berulang kali melewati dua jenis operasi, perhatian, yang memungkinkan vektor untuk menyampaikan informasi antara satu sama lain, dan kemudian perceptron multilayer, hal yang akan kita gali hari ini, dan juga ada langkah normalisasi di antaranya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 155.84,
+  "end": 172.3
+ },
+ {
+  "input": "After the sequence of vectors has flowed through many, many different iterations of both of these blocks, by the end, the hope is that each vector has soaked up enough information, both from the context, all of the other words in the input, and also from the general knowledge that was baked into the model weights through training, that it can be used to make a prediction of what token comes next.",
+  "translatedText": "Setelah urutan vektor mengalir melalui banyak iterasi yang berbeda dari kedua blok ini, pada akhirnya, harapannya adalah setiap vektor telah menyerap informasi yang cukup, baik dari konteks, semua kata lain dalam input, dan juga dari pengetahuan umum yang telah dimasukkan ke dalam bobot model melalui pelatihan, sehingga dapat digunakan untuk membuat prediksi token apa yang akan muncul selanjutnya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 173.3,
+  "end": 196.02
+ },
+ {
+  "input": "One of the key ideas that I want you to have in your mind is that all of these vectors live in a very, very high-dimensional space, and when you think about that space, different directions can encode different kinds of meaning.",
+  "translatedText": "Salah satu ide kunci yang saya ingin Anda miliki dalam pikiran Anda adalah bahwa semua vektor ini hidup dalam ruang yang sangat, sangat berdimensi tinggi, dan ketika Anda berpikir tentang ruang itu, arah yang berbeda dapat mengkodekan berbagai jenis makna yang berbeda.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 196.86,
+  "end": 208.8
+ },
+ {
+  "input": "So a very classic example that I like to refer back to is how if you look at the embedding of woman and subtract the embedding of man, and you take that little step and you add it to another masculine noun, something like uncle, you land somewhere very, very close to the corresponding feminine noun.",
+  "translatedText": "Jadi contoh yang sangat klasik yang ingin saya rujuk kembali adalah bagaimana jika Anda melihat penyematan woman dan mengurangi penyematan man, dan Anda mengambil langkah kecil itu dan menambahkannya ke kata benda maskulin lain, seperti paman, Anda akan mendarat di suatu tempat yang sangat, sangat dekat dengan kata benda feminin yang sesuai.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 210.12,
+  "end": 226.24
+ },
+ {
+  "input": "In this sense, this particular direction encodes gender information.",
+  "translatedText": "Dalam hal ini, arah khusus ini mengkodekan informasi gender.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 226.44,
+  "end": 230.88
+ },
+ {
+  "input": "The idea is that many other distinct directions in this super high-dimensional space could correspond to other features that the model might want to represent.",
+  "translatedText": "Idenya adalah bahwa banyak arah yang berbeda dalam ruang dimensi super tinggi ini dapat berhubungan dengan fitur lain yang mungkin ingin direpresentasikan oleh model.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 231.64,
+  "end": 239.64
+ },
+ {
+  "input": "In a transformer, these vectors don't merely encode the meaning of a single word, though.",
+  "translatedText": "Dalam transformator, vektor-vektor ini tidak hanya mengkodekan arti dari satu kata saja.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 241.4,
+  "end": 246.18
+ },
+ {
+  "input": "As they flow through the network, they imbibe a much richer meaning based on all the context around them, and also based on the model's knowledge.",
+  "translatedText": "Ketika mereka mengalir melalui jaringan, mereka menyerap makna yang jauh lebih kaya berdasarkan semua konteks di sekitar mereka, dan juga berdasarkan pengetahuan model.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 246.68,
+  "end": 255.18
+ },
+ {
+  "input": "Ultimately, each one needs to encode something far, far beyond the meaning of a single word, since it needs to be sufficient to predict what will come next.",
+  "translatedText": "Pada akhirnya, masing-masing perlu menyandikan sesuatu yang jauh, jauh melampaui makna satu kata, karena harus cukup untuk memprediksi apa yang akan terjadi selanjutnya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 255.88,
+  "end": 263.76
+ },
+ {
+  "input": "We've already seen how attention blocks let you incorporate context, but a majority of the model parameters actually live inside the MLP blocks, and one thought for what they might be doing is that they offer extra capacity to store facts.",
+  "translatedText": "Kita telah melihat bagaimana blok perhatian memungkinkan Anda memasukkan konteks, tetapi sebagian besar parameter model sebenarnya berada di dalam blok MLP, dan satu pemikiran tentang apa yang mungkin mereka lakukan adalah bahwa mereka menawarkan kapasitas ekstra untuk menyimpan fakta.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 264.56,
+  "end": 278.14
+ },
+ {
+  "input": "Like I said, the lesson here is gonna center on the concrete toy example of how exactly it could store the fact that Michael Jordan plays basketball.",
+  "translatedText": "Seperti yang saya katakan, pelajaran di sini akan berpusat pada contoh mainan konkret tentang bagaimana mainan tersebut dapat menyimpan fakta bahwa Michael Jordan bermain bola basket.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 278.72,
+  "end": 286.12
+ },
+ {
+  "input": "Now, this toy example is gonna require that you and I make a couple of assumptions about that high-dimensional space.",
+  "translatedText": "Sekarang, contoh mainan ini akan mengharuskan Anda dan saya membuat beberapa asumsi tentang ruang dimensi tinggi.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 287.12,
+  "end": 291.9
+ },
+ {
+  "input": "First, we'll suppose that one of the directions represents the idea of a first name Michael, and then another nearly perpendicular direction represents the idea of the last name Jordan, and then yet a third direction will represent the idea of basketball.",
+  "translatedText": "Pertama, kita anggap salah satu arah mewakili ide nama depan Michael, lalu arah lain yang hampir tegak lurus mewakili ide nama belakang Jordan, dan kemudian arah ketiga mewakili ide bola basket.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 292.36,
+  "end": 306.42
+ },
+ {
+  "input": "So specifically, what I mean by this is if you look in the network and you pluck out one of the vectors being processed, if its dot product with this first name Michael direction is one, that's what it would mean for the vector to be encoding the idea of a person with that first name.",
+  "translatedText": "Jadi secara khusus, yang saya maksud dengan ini adalah jika Anda melihat di jaringan dan Anda mengambil salah satu vektor yang sedang diproses, jika hasil kali titiknya dengan nama depan Michael ini adalah satu, itu berarti vektor tersebut mengkodekan ide orang dengan nama depan tersebut.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 307.4,
+  "end": 322.34
+ },
+ {
+  "input": "Otherwise, that dot product would be zero or negative, meaning the vector doesn't really align with that direction.",
+  "translatedText": "Jika tidak, dot product tersebut akan bernilai nol atau negatif, yang berarti vektor tidak benar-benar sejajar dengan arah tersebut.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 323.8,
+  "end": 328.7
+ },
+ {
+  "input": "And for simplicity, let's completely ignore the very reasonable question of what it might mean if that dot product was bigger than one.",
+  "translatedText": "Dan untuk mempermudah, mari kita abaikan saja pertanyaan yang sangat masuk akal, yaitu apa artinya jika dot product itu lebih besar dari satu.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 329.42,
+  "end": 335.32
+ },
+ {
+  "input": "Similarly, its dot product with these other directions would tell you whether it represents the last name Jordan or basketball.",
+  "translatedText": "Demikian pula, hasil kali titiknya dengan arah lainnya akan memberi tahu Anda apakah itu mewakili nama belakang Jordan atau bola basket.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 336.2,
+  "end": 343.76
+ },
+ {
+  "input": "So let's say a vector is meant to represent the full name, Michael Jordan, then its dot product with both of these directions would have to be one.",
+  "translatedText": "Jadi, katakanlah sebuah vektor dimaksudkan untuk merepresentasikan nama lengkap, Michael Jordan, maka hasil perkalian titik dengan kedua arah ini haruslah satu.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 344.74,
+  "end": 352.68
+ },
+ {
+  "input": "Since the text Michael Jordan spans two different tokens, this would also mean we have to assume that an earlier attention block has successfully passed information to the second of these two vectors so as to ensure that it can encode both names.",
+  "translatedText": "Karena teks Michael Jordan mencakup dua token yang berbeda, ini juga berarti kita harus mengasumsikan bahwa blok perhatian sebelumnya telah berhasil meneruskan informasi ke yang kedua dari kedua vektor ini untuk memastikan bahwa ia dapat menyandikan kedua nama tersebut.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 353.48,
+  "end": 366.96
+ },
+ {
+  "input": "With all of those as the assumptions, let's now dive into the meat of the lesson.",
+  "translatedText": "Dengan semua itu sebagai asumsi, sekarang mari kita masuk ke inti pelajaran.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 367.94,
+  "end": 371.48
+ },
+ {
+  "input": "What happens inside a multilayer perceptron?",
+  "translatedText": "Apa yang terjadi di dalam perceptron multilayer?",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 371.88,
+  "end": 374.98
+ },
+ {
+  "input": "You might think of this sequence of vectors flowing into the block, and remember, each vector was originally associated with one of the tokens from the input text.",
+  "translatedText": "Anda mungkin membayangkan urutan vektor yang mengalir ke dalam blok, dan ingatlah bahwa setiap vektor pada awalnya dikaitkan dengan salah satu token dari teks input.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 377.1,
+  "end": 385.58
+ },
+ {
+  "input": "What's gonna happen is that each individual vector from that sequence goes through a short series of operations, we'll unpack them in just a moment, and at the end, we'll get another vector with the same dimension.",
+  "translatedText": "Yang akan terjadi adalah setiap vektor individu dari urutan tersebut akan melalui serangkaian operasi singkat, kita akan menguraikannya dalam beberapa saat, dan pada akhirnya, kita akan mendapatkan vektor lain dengan dimensi yang sama.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 386.08,
+  "end": 396.36
+ },
+ {
+  "input": "That other vector is gonna get added to the original one that flowed in, and that sum is the result flowing out.",
+  "translatedText": "Vektor lain tersebut akan ditambahkan ke vektor asli yang mengalir masuk, dan jumlah tersebut adalah hasil yang mengalir keluar.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 396.88,
+  "end": 403.2
+ },
+ {
+  "input": "This sequence of operations is something you apply to every vector in the sequence, associated with every token in the input, and it all happens in parallel.",
+  "translatedText": "Urutan operasi ini adalah sesuatu yang Anda terapkan pada setiap vektor dalam urutan tersebut, yang terkait dengan setiap token dalam input, dan semuanya terjadi secara paralel.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 403.72,
+  "end": 411.62
+ },
+ {
+  "input": "In particular, the vectors don't talk to each other in this step, they're all kind of doing their own thing.",
+  "translatedText": "Khususnya, vektor tidak berbicara satu sama lain dalam langkah ini, mereka semua melakukan tugasnya masing-masing.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 412.1,
+  "end": 416.2
+ },
+ {
+  "input": "And for you and me, that actually makes it a lot simpler, because it means if we understand what happens to just one of the vectors through this block, we effectively understand what happens to all of them.",
+  "translatedText": "Dan bagi Anda dan saya, hal ini sebenarnya membuatnya jauh lebih sederhana, karena ini berarti jika kita memahami apa yang terjadi pada salah satu vektor melalui blok ini, kita secara efektif memahami apa yang terjadi pada semua vektor.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 416.72,
+  "end": 426.06
+ },
+ {
+  "input": "When I say this block is gonna encode the fact that Michael Jordan plays basketball, what I mean is that if a vector flows in that encodes first name Michael and last name Jordan, then this sequence of computations will produce something that includes that direction basketball, which is what will add on to the vector in that position.",
+  "translatedText": "Ketika saya mengatakan bahwa blok ini akan mengkodekan fakta bahwa Michael Jordan bermain bola basket, yang saya maksud adalah bahwa jika sebuah vektor mengalir yang mengkodekan nama depan Michael dan nama belakang Jordan, maka urutan komputasi ini akan menghasilkan sesuatu yang mencakup bola basket ke arah tersebut, yang akan ditambahkan ke vektor pada posisi tersebut.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 427.1,
+  "end": 444.02
+ },
+ {
+  "input": "The first step of this process looks like multiplying that vector by a very big matrix.",
+  "translatedText": "Langkah pertama dari proses ini terlihat seperti mengalikan vektor tersebut dengan matriks yang sangat besar.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 445.6,
+  "end": 449.7
+ },
+ {
+  "input": "No surprises there, this is deep learning.",
+  "translatedText": "Tidak ada kejutan di sana, ini adalah pembelajaran yang mendalam.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 450.04,
+  "end": 451.98
+ },
+ {
+  "input": "And this matrix, like all of the other ones we've seen, is filled with model parameters that are learned from data, which you might think of as a bunch of knobs and dials that get tweaked and tuned to determine what the model behavior is.",
+  "translatedText": "Dan matriks ini, seperti semua matriks lain yang telah kita lihat, diisi dengan parameter model yang dipelajari dari data, yang dapat Anda bayangkan sebagai sekumpulan kenop dan tombol yang dapat diubah dan disetel untuk menentukan perilaku model.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 452.68,
+  "end": 463.54
+ },
+ {
+  "input": "Now, one nice way to think about matrix multiplication is to imagine each row of that matrix as being its own vector, and taking a bunch of dot products between those rows and the vector being processed, which I'll label as E for embedding.",
+  "translatedText": "Sekarang, salah satu cara yang baik untuk memikirkan perkalian matriks adalah dengan membayangkan setiap baris dari matriks tersebut sebagai vektornya sendiri, dan mengambil sekumpulan dot product antara baris-baris tersebut dengan vektor yang sedang diproses, yang akan saya beri label sebagai E untuk embedding.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 464.5,
+  "end": 476.88
+ },
+ {
+  "input": "For example, suppose that very first row happened to equal this first name Michael direction that we're presuming exists.",
+  "translatedText": "Sebagai contoh, anggaplah baris pertama kebetulan sama dengan arah nama depan Michael yang kita duga ada.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 477.28,
+  "end": 484.04
+ },
+ {
+  "input": "That would mean that the first component in this output, this dot product right here, would be one if that vector encodes the first name Michael, and zero or negative otherwise.",
+  "translatedText": "Itu berarti bahwa komponen pertama dalam output ini, dot product di sini, akan menjadi satu jika vektor tersebut mengkodekan nama depan Michael, dan nol atau negatif jika tidak.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 484.32,
+  "end": 494.8
+ },
+ {
+  "input": "Even more fun, take a moment to think about what it would mean if that first row was this first name Michael plus last name Jordan direction.",
+  "translatedText": "Yang lebih menyenangkan lagi, luangkan waktu sejenak untuk memikirkan apa artinya jika barisan pertama adalah nama depan Michael ditambah nama belakang Jordan.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 495.88,
+  "end": 503.08
+ },
+ {
+  "input": "And for simplicity, let me go ahead and write that down as M plus J.",
+  "translatedText": "Dan untuk mempermudah, saya akan menuliskannya sebagai M ditambah J.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 503.7,
+  "end": 507.42
+ },
+ {
+  "input": "Then, taking a dot product with this embedding E, things distribute really nicely, so it looks like M dot E plus J dot E.",
+  "translatedText": "Kemudian, dengan mengambil dot product dengan penyematan E ini, semuanya terdistribusi dengan sangat baik, sehingga terlihat seperti M dot E ditambah J dot E.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 508.08,
+  "end": 514.98
+ },
+ {
+  "input": "And notice how that means the ultimate value would be two if the vector encodes the full name Michael Jordan, and otherwise it would be one or something smaller than one.",
+  "translatedText": "Dan perhatikan bagaimana hal itu berarti nilai akhirnya adalah dua jika vektor mengkodekan nama lengkap Michael Jordan, dan jika tidak, maka nilai akhirnya adalah satu atau sesuatu yang lebih kecil dari satu.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 514.98,
+  "end": 524.7
+ },
+ {
+  "input": "And that's just one row in this matrix.",
+  "translatedText": "Dan itu hanya satu baris dalam matriks ini.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 525.34,
+  "end": 527.26
+ },
+ {
+  "input": "You might think of all of the other rows as in parallel asking some other kinds of questions, probing at some other sorts of features of the vector being processed.",
+  "translatedText": "Anda dapat memikirkan semua baris lainnya secara paralel dengan mengajukan beberapa jenis pertanyaan lain, menyelidiki beberapa jenis fitur lain dari vektor yang sedang diproses.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 527.6,
+  "end": 536.04
+ },
+ {
+  "input": "Very often this step also involves adding another vector to the output, which is full of model parameters learned from data.",
+  "translatedText": "Sering kali langkah ini juga melibatkan penambahan vektor lain pada output, yang penuh dengan parameter model yang dipelajari dari data.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 536.7,
+  "end": 542.24
+ },
+ {
+  "input": "This other vector is known as the bias.",
+  "translatedText": "Vektor lain ini dikenal sebagai bias.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 542.24,
+  "end": 544.56
+ },
+ {
+  "input": "For our example, I want you to imagine that the value of this bias in that very first component is negative one, meaning our final output looks like that relevant dot product, but minus one.",
+  "translatedText": "Untuk contoh kita, saya ingin Anda membayangkan bahwa nilai bias pada komponen pertama adalah negatif satu, yang berarti hasil akhir kita akan terlihat seperti dot product yang relevan, tetapi minus satu.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 545.18,
+  "end": 555.56
+ },
+ {
+  "input": "You might very reasonably ask why I would want you to assume that the model has learned this, and in a moment you'll see why it's very clean and nice if we have a value here which is positive if and only if a vector encodes the full name Michael Jordan, and otherwise it's zero or negative.",
+  "translatedText": "Anda mungkin akan bertanya mengapa saya ingin Anda mengasumsikan bahwa model telah mempelajari hal ini, dan sebentar lagi Anda akan melihat mengapa sangat bersih dan bagus jika kita memiliki nilai di sini yang bernilai positif jika dan hanya jika vektor mengkodekan nama lengkap Michael Jordan, dan jika tidak, nilainya nol atau negatif.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 556.12,
+  "end": 572.16
+ },
+ {
+  "input": "The total number of rows in this matrix, which is something like the number of questions being asked, in the case of GPT-3, whose numbers we've been following, is just under 50,000.",
+  "translatedText": "Jumlah total baris dalam matriks ini, yang kira-kira sama dengan jumlah pertanyaan yang diajukan, dalam kasus GPT-3, yang angkanya telah kita ikuti, hanya kurang dari 50.000.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 573.04,
+  "end": 582.78
+ },
+ {
+  "input": "In fact, it's exactly four times the number of dimensions in this embedding space.",
+  "translatedText": "Malahan, persis empat kali lipat jumlah dimensi dalam ruang penyematan ini.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 583.1,
+  "end": 586.64
+ },
+ {
+  "input": "That's a design choice.",
+  "translatedText": "Itu adalah pilihan desain.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 586.92,
+  "end": 587.9
+ },
+ {
+  "input": "You could make it more, you could make it less, but having a clean multiple tends to be friendly for hardware.",
+  "translatedText": "Anda bisa membuatnya lebih banyak, bisa juga lebih sedikit, tetapi memiliki multiple yang bersih cenderung ramah untuk perangkat keras.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 587.94,
+  "end": 592.24
+ },
+ {
+  "input": "Since this matrix full of weights maps us into a higher dimensional space, I'm gonna give it the shorthand W up.",
+  "translatedText": "Karena matriks yang penuh dengan bobot ini memetakan kita ke dalam ruang dimensi yang lebih tinggi, saya akan memberikan singkatan W ke atas.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 592.74,
+  "end": 599.02
+ },
+ {
+  "input": "I'll continue labeling the vector we're processing as E, and let's label this bias vector as B up and put that all back down in the diagram.",
+  "translatedText": "Saya akan terus memberi label pada vektor yang sedang kita proses sebagai E, dan mari kita beri label pada vektor bias ini sebagai B ke atas dan letakkan kembali pada diagram.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 599.02,
+  "end": 607.16
+ },
+ {
+  "input": "At this point, a problem is that this operation is purely linear, but language is a very non-linear process.",
+  "translatedText": "Pada titik ini, masalahnya adalah bahwa operasi ini murni linier, tetapi bahasa adalah proses yang sangat non-linier.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 609.18,
+  "end": 615.36
+ },
+ {
+  "input": "If the entry that we're measuring is high for Michael plus Jordan, it would also necessarily be somewhat triggered by Michael plus Phelps and also Alexis plus Jordan, despite those being unrelated conceptually.",
+  "translatedText": "Jika entri yang kita ukur tinggi untuk Michael plus Jordan, itu juga akan dipicu oleh Michael plus Phelps dan juga Alexis plus Jordan, meskipun mereka tidak terkait secara konseptual.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 615.88,
+  "end": 628.1
+ },
+ {
+  "input": "What you really want is a simple yes or no for the full name.",
+  "translatedText": "Yang Anda inginkan adalah jawaban ya atau tidak untuk nama lengkap.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 628.54,
+  "end": 632.0
+ },
+ {
+  "input": "So the next step is to pass this large intermediate vector through a very simple non-linear function.",
+  "translatedText": "Jadi, langkah selanjutnya adalah melewatkan vektor perantara yang besar ini melalui fungsi non-linear yang sangat sederhana.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 632.9,
+  "end": 637.84
+ },
+ {
+  "input": "A common choice is one that takes all of the negative values and maps them to zero and leaves all of the positive values unchanged.",
+  "translatedText": "Pilihan yang umum adalah pilihan yang mengambil semua nilai negatif dan memetakannya ke nol dan membiarkan semua nilai positif tidak berubah.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 638.36,
+  "end": 645.3
+ },
+ {
+  "input": "And continuing with the deep learning tradition of overly fancy names, this very simple function is often called the rectified linear unit, or ReLU for short.",
+  "translatedText": "Dan melanjutkan tradisi pembelajaran yang mendalam tentang nama-nama yang terlalu mewah, fungsi yang sangat sederhana ini sering disebut dengan rectified linear unit, atau disingkat ReLU.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 646.44,
+  "end": 656.02
+ },
+ {
+  "input": "Here's what the graph looks like.",
+  "translatedText": "Berikut ini adalah tampilan grafiknya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 656.02,
+  "end": 657.88
+ },
+ {
+  "input": "So taking our imagined example where this first entry of the intermediate vector is one, if and only if the full name is Michael Jordan and zero or negative otherwise, after you pass it through the ReLU, you end up with a very clean value where all of the zero and negative values just get clipped to zero.",
+  "translatedText": "Jadi, dengan mengambil contoh yang kita bayangkan di mana entri pertama dari vektor perantara ini adalah satu, jika dan hanya jika nama lengkapnya adalah Michael Jordan dan nol atau negatif jika tidak, setelah Anda melewatinya melalui ReLU, Anda akan mendapatkan nilai yang sangat bersih di mana semua nilai nol dan negatif akan dipotong menjadi nol.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 658.3,
+  "end": 675.74
+ },
+ {
+  "input": "So this output would be one for the full name Michael Jordan and zero otherwise.",
+  "translatedText": "Jadi, keluaran ini akan menjadi satu untuk nama lengkap Michael Jordan dan nol jika tidak.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 676.1,
+  "end": 679.78
+ },
+ {
+  "input": "In other words, it very directly mimics the behavior of an AND gate.",
+  "translatedText": "Dengan kata lain, ini secara langsung meniru perilaku gerbang AND.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 680.56,
+  "end": 684.12
+ },
+ {
+  "input": "Often models will use a slightly modified function that's called the JLU, which has the same basic shape, it's just a bit smoother.",
+  "translatedText": "Seringkali model akan menggunakan fungsi yang sedikit dimodifikasi yang disebut JLU, yang memiliki bentuk dasar yang sama, hanya saja sedikit lebih halus.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 685.66,
+  "end": 692.02
+ },
+ {
+  "input": "But for our purposes, it's a little bit cleaner if we only think about the ReLU.",
+  "translatedText": "Tetapi untuk tujuan kita, akan sedikit lebih bersih jika kita hanya memikirkan ReLU.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 692.5,
+  "end": 695.72
+ },
+ {
+  "input": "Also, when you hear people refer to the neurons of a transformer, they're talking about these values right here.",
+  "translatedText": "Selain itu, ketika Anda mendengar orang menyebut neuron transformator, mereka membicarakan nilai-nilai ini di sini.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 696.74,
+  "end": 702.52
+ },
+ {
+  "input": "Whenever you see that common neural network picture with a layer of dots and a bunch of lines connecting to the previous layer, which we had earlier in this series, that's typically meant to convey this combination of a linear step, a matrix multiplication, followed by some simple term-wise nonlinear function like a ReLU.",
+  "translatedText": "Setiap kali Anda melihat gambar jaringan saraf yang umum dengan lapisan titik-titik dan sekumpulan garis yang menghubungkan ke lapisan sebelumnya, yang kita bahas sebelumnya dalam seri ini, itu biasanya dimaksudkan untuk menyampaikan kombinasi dari langkah linier, perkalian matriks, diikuti oleh beberapa fungsi nonlinier sederhana yang bijaksana seperti ReLU.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 702.9,
+  "end": 721.26
+ },
+ {
+  "input": "You would say that this neuron is active whenever this value is positive and that it's inactive if that value is zero.",
+  "translatedText": "Anda akan mengatakan bahwa neuron ini aktif setiap kali nilainya positif dan tidak aktif jika nilainya nol.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 722.5,
+  "end": 728.92
+ },
+ {
+  "input": "The next step looks very similar to the first one.",
+  "translatedText": "Langkah berikutnya terlihat sangat mirip dengan langkah pertama.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 730.12,
+  "end": 732.38
+ },
+ {
+  "input": "You multiply by a very large matrix and you add on a certain bias term.",
+  "translatedText": "Anda mengalikannya dengan matriks yang sangat besar dan menambahkan istilah bias tertentu.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 732.56,
+  "end": 736.58
+ },
+ {
+  "input": "In this case, the number of dimensions in the output is back down to the size of that embedding space, so I'm gonna go ahead and call this the down projection matrix.",
+  "translatedText": "Dalam hal ini, jumlah dimensi dalam output kembali ke ukuran ruang penyematan, jadi saya akan menyebutnya sebagai matriks proyeksi ke bawah.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 736.98,
+  "end": 745.52
+ },
+ {
+  "input": "And this time, instead of thinking of things row by row, it's actually nicer to think of it column by column.",
+  "translatedText": "Dan kali ini, alih-alih memikirkan segala sesuatunya baris demi baris, akan lebih baik jika kita memikirkannya kolom demi kolom.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 746.22,
+  "end": 751.36
+ },
+ {
+  "input": "You see, another way that you can hold matrix multiplication in your head is to imagine taking each column of the matrix and multiplying it by the corresponding term in the vector that it's processing and adding together all of those rescaled columns.",
+  "translatedText": "Cara lain yang dapat Anda lakukan untuk mengingat perkalian matriks adalah dengan membayangkan mengambil setiap kolom matriks dan mengalikannya dengan suku yang sesuai dalam vektor yang sedang diproses, lalu menambahkan semua kolom yang telah diubah ukurannya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 751.86,
+  "end": 765.64
+ },
+ {
+  "input": "The reason it's nicer to think about this way is because here the columns have the same dimension as the embedding space, so we can think of them as directions in that space.",
+  "translatedText": "Alasan mengapa cara ini lebih bagus untuk dipikirkan, karena di sini kolom memiliki dimensi yang sama dengan ruang penyematan, jadi kita bisa menganggapnya sebagai arah dalam ruang tersebut.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 766.84,
+  "end": 775.78
+ },
+ {
+  "input": "For instance, we will imagine that the model has learned to make that first column into this basketball direction that we suppose exists.",
+  "translatedText": "Sebagai contoh, kita akan membayangkan bahwa model telah belajar untuk membuat kolom pertama ke arah bola basket yang kita anggap ada.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 776.14,
+  "end": 783.08
+ },
+ {
+  "input": "What that would mean is that when the relevant neuron in that first position is active, we'll be adding this column to the final result.",
+  "translatedText": "Maksudnya adalah ketika neuron yang relevan di posisi pertama aktif, kita akan menambahkan kolom ini ke hasil akhir.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 784.18,
+  "end": 790.78
+ },
+ {
+  "input": "But if that neuron was inactive, if that number was zero, then this would have no effect.",
+  "translatedText": "Tetapi jika neuron tersebut tidak aktif, jika angkanya nol, maka hal ini tidak akan berpengaruh.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 791.14,
+  "end": 795.78
+ },
+ {
+  "input": "And it doesn't just have to be basketball.",
+  "translatedText": "Dan itu tidak hanya harus bola basket.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 796.5,
+  "end": 798.06
+ },
+ {
+  "input": "The model could also bake into this column and many other features that it wants to associate with something that has the full name Michael Jordan.",
+  "translatedText": "Model ini juga dapat memanggang ke dalam kolom ini dan banyak fitur lainnya yang ingin diasosiasikan dengan sesuatu yang memiliki nama lengkap Michael Jordan.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 798.22,
+  "end": 805.2
+ },
+ {
+  "input": "And at the same time, all of the other columns in this matrix are telling you what will be added to the final result if the corresponding neuron is active.",
+  "translatedText": "Dan pada saat yang sama, semua kolom lain dalam matriks ini memberi tahu Anda apa yang akan ditambahkan ke hasil akhir jika neuron yang bersangkutan aktif.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 806.98,
+  "end": 816.66
+ },
+ {
+  "input": "And if you have a bias in this case, it's something that you're just adding every single time, regardless of the neuron values.",
+  "translatedText": "Dan jika Anda memiliki bias dalam kasus ini, itu adalah sesuatu yang Anda tambahkan setiap saat, terlepas dari nilai neuronnya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 817.36,
+  "end": 823.5
+ },
+ {
+  "input": "You might wonder what's that doing.",
+  "translatedText": "Anda mungkin bertanya-tanya apa yang dilakukannya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 824.06,
+  "end": 825.28
+ },
+ {
+  "input": "As with all parameter-filled objects here, it's kind of hard to say exactly.",
+  "translatedText": "Seperti semua objek yang diisi parameter di sini, agak sulit untuk mengatakannya secara tepat.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 825.54,
+  "end": 829.32
+ },
+ {
+  "input": "Maybe there's some bookkeeping that the network needs to do, but you can feel free to ignore it for now.",
+  "translatedText": "Mungkin ada beberapa pembukuan yang perlu dilakukan oleh jaringan, tetapi Anda bisa mengabaikannya untuk saat ini.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 829.32,
+  "end": 834.38
+ },
+ {
+  "input": "Making our notation a little more compact again, I'll call this big matrix W down and similarly call that bias vector B down and put that back into our diagram.",
+  "translatedText": "Untuk membuat notasi kita sedikit lebih ringkas lagi, saya akan menyebut matriks besar W ini sebagai W dan dengan cara yang sama menyebut vektor bias B sebagai B dan memasukkannya kembali ke dalam diagram kita.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 834.86,
+  "end": 844.26
+ },
+ {
+  "input": "Like I previewed earlier, what you do with this final result is add it to the vector that flowed into the block at that position and that gets you this final result.",
+  "translatedText": "Seperti yang saya tunjukkan sebelumnya, apa yang Anda lakukan dengan hasil akhir ini adalah menambahkannya ke vektor yang mengalir ke dalam blok pada posisi tersebut dan Anda akan mendapatkan hasil akhir ini.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 844.74,
+  "end": 853.24
+ },
+ {
+  "input": "So for example, if the vector flowing in encoded both first name Michael and last name Jordan, then because this sequence of operations will trigger that AND gate, it will add on the basketball direction, so what pops out will encode all of those together.",
+  "translatedText": "Jadi misalnya, jika vektor yang mengalir mengkodekan nama depan Michael dan nama belakang Jordan, maka karena urutan operasi ini akan memicu gerbang AND tersebut, maka vektor tersebut akan menambahkan arah bola basket, sehingga apa yang muncul akan mengkodekan semuanya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 853.82,
+  "end": 869.24
+ },
+ {
+  "input": "And remember, this is a process happening to every one of those vectors in parallel.",
+  "translatedText": "Dan ingat, ini adalah proses yang terjadi pada setiap vektor secara paralel.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 869.82,
+  "end": 874.2
+ },
+ {
+  "input": "In particular, taking the GPT-3 numbers, it means that this block doesn't just have 50,000 neurons in it, it has 50,000 times the number of tokens in the input.",
+  "translatedText": "Secara khusus, dengan mengambil angka GPT-3, ini berarti bahwa blok ini tidak hanya memiliki 50.000 neuron di dalamnya, tetapi juga memiliki 50.000 kali lipat jumlah token dalam input.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 874.8,
+  "end": 884.86
+ },
+ {
+  "input": "So that is the entire operation, two matrix products, each with a bias added and a simple clipping function in between.",
+  "translatedText": "Jadi, itulah keseluruhan operasi, dua produk matriks, masing-masing dengan bias yang ditambahkan dan fungsi kliping sederhana di antaranya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 888.18,
+  "end": 895.18
+ },
+ {
+  "input": "Any of you who watched the earlier videos of the series will recognize this structure as the most basic kind of neural network that we studied there.",
+  "translatedText": "Anda yang telah menonton video-video sebelumnya dari seri ini akan mengenali struktur ini sebagai jenis jaringan saraf yang paling dasar yang kami pelajari di sana.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 896.08,
+  "end": 902.62
+ },
+ {
+  "input": "In that example, it was trained to recognize handwritten digits.",
+  "translatedText": "Dalam contoh tersebut, kamera dilatih untuk mengenali angka yang ditulis tangan.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 903.08,
+  "end": 906.1
+ },
+ {
+  "input": "Over here, in the context of a transformer for a large language model, this is one piece in a larger architecture and any attempt to interpret what exactly it's doing is heavily intertwined with the idea of encoding information into vectors of a high-dimensional embedding space.",
+  "translatedText": "Di sini, dalam konteks transformator untuk model bahasa yang besar, ini adalah salah satu bagian dari arsitektur yang lebih besar dan setiap upaya untuk menafsirkan apa yang sebenarnya dilakukannya sangat terkait dengan gagasan pengkodean informasi ke dalam vektor ruang penyematan berdimensi tinggi.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 906.58,
+  "end": 923.18
+ },
+ {
+  "input": "That is the core lesson, but I do wanna step back and reflect on two different things, the first of which is a kind of bookkeeping, and the second of which involves a very thought-provoking fact about higher dimensions that I actually didn't know until I dug into transformers.",
+  "translatedText": "Itu adalah pelajaran intinya, tetapi saya ingin mundur sejenak dan merefleksikan dua hal yang berbeda, yang pertama adalah semacam pembukuan, dan yang kedua melibatkan fakta yang sangat menggugah tentang dimensi yang lebih tinggi yang sebenarnya tidak saya ketahui hingga saya mempelajari transformer.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 924.26,
+  "end": 938.08
+ },
+ {
+  "input": "In the last two chapters, you and I started counting up the total number of parameters in GPT-3 and seeing exactly where they live, so let's quickly finish up the game here.",
+  "translatedText": "Dalam dua bab terakhir, Anda dan saya mulai menghitung jumlah total parameter dalam GPT-3 dan melihat dengan tepat di mana letaknya, jadi mari kita selesaikan permainan di sini.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 941.08,
+  "end": 950.76
+ },
+ {
+  "input": "I already mentioned how this up projection matrix has just under 50,000 rows and that each row matches the size of the embedding space, which for GPT-3 is 12,288.",
+  "translatedText": "Saya telah menyebutkan bagaimana matriks proyeksi ke atas ini hanya memiliki kurang dari 50.000 baris dan setiap baris sesuai dengan ukuran ruang penyematan, yang untuk GPT-3 adalah 12.288.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 951.4,
+  "end": 962.18
+ },
+ {
+  "input": "Multiplying those together, it gives us 604 million parameters just for that matrix, and the down projection has the same number of parameters just with a transposed shape.",
+  "translatedText": "Dengan mengalikan keduanya, akan menghasilkan 604 juta parameter hanya untuk matriks tersebut, dan proyeksi ke bawah memiliki jumlah parameter yang sama, hanya saja dengan bentuk yang diubah.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 963.24,
+  "end": 973.92
+ },
+ {
+  "input": "So together, they give about 1.2 billion parameters.",
+  "translatedText": "Jadi, secara keseluruhan, mereka memberikan sekitar 1,2 miliar parameter.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 974.5,
+  "end": 977.4
+ },
+ {
+  "input": "The bias vector also accounts for a couple more parameters, but it's a trivial proportion of the total, so I'm not even gonna show it.",
+  "translatedText": "Vektor bias juga menyumbang beberapa parameter lainnya, tetapi ini adalah proporsi yang sepele dari total keseluruhan, jadi saya tidak akan menunjukkannya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 978.28,
+  "end": 984.1
+ },
+ {
+  "input": "In GPT-3, this sequence of embedding vectors flows through not one, but 96 distinct MLPs, so the total number of parameters devoted to all of these blocks adds up to about 116 billion.",
+  "translatedText": "Dalam GPT-3, urutan vektor penyisipan ini mengalir melalui bukan hanya satu, tetapi 96 MLP yang berbeda, sehingga jumlah total parameter yang dikhususkan untuk semua blok ini berjumlah sekitar 116 miliar.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 984.66,
+  "end": 998.06
+ },
+ {
+  "input": "This is around 2 thirds of the total parameters in the network, and when you add it to everything that we had before, for the attention blocks, the embedding, and the unembedding, you do indeed get that grand total of 175 billion as advertised.",
+  "translatedText": "Ini adalah sekitar 2 pertiga dari total parameter dalam jaringan, dan ketika Anda menambahkannya ke semua yang kami miliki sebelumnya, untuk blok perhatian, penyematan, dan pengurungan, Anda memang mendapatkan total 175 miliar seperti yang diiklankan.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 998.82,
+  "end": 1011.62
+ },
+ {
+  "input": "It's probably worth mentioning there's another set of parameters associated with those normalization steps that this explanation has skipped over, but like the bias vector, they account for a very trivial proportion of the total.",
+  "translatedText": "Mungkin perlu disebutkan bahwa ada satu set parameter lain yang terkait dengan langkah-langkah normalisasi yang telah dilewatkan dalam penjelasan ini, tetapi seperti vektor bias, parameter ini merupakan bagian yang sangat sepele dari keseluruhannya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1013.06,
+  "end": 1023.84
+ },
+ {
+  "input": "As to that second point of reflection, you might be wondering if this central toy example we've been spending so much time on reflects how facts are actually stored in real large language models.",
+  "translatedText": "Mengenai poin refleksi kedua, Anda mungkin bertanya-tanya apakah contoh mainan utama yang telah kita habiskan begitu banyak waktu mencerminkan bagaimana fakta sebenarnya disimpan dalam model bahasa besar yang nyata.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1025.9,
+  "end": 1035.68
+ },
+ {
+  "input": "It is true that the rows of that first matrix can be thought of as directions in this embedding space, and that means the activation of each neuron tells you how much a given vector aligns with some specific direction.",
+  "translatedText": "Memang benar bahwa baris-baris dari matriks pertama tersebut dapat dianggap sebagai arah dalam ruang penyisipan ini, dan itu berarti aktivasi setiap neuron memberi tahu Anda seberapa banyak vektor yang diberikan sejajar dengan arah tertentu.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1036.32,
+  "end": 1047.54
+ },
+ {
+  "input": "It's also true that the columns of that second matrix tell you what will be added to the result if that neuron is active.",
+  "translatedText": "Kolom-kolom pada matriks kedua tersebut juga menunjukkan apa yang akan ditambahkan ke hasil jika neuron tersebut aktif.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1047.76,
+  "end": 1054.34
+ },
+ {
+  "input": "Both of those are just mathematical facts.",
+  "translatedText": "Kedua hal tersebut hanyalah fakta matematis.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1054.64,
+  "end": 1056.8
+ },
+ {
+  "input": "However, the evidence does suggest that individual neurons very rarely represent a single clean feature like Michael Jordan, and there may actually be a very good reason this is the case, related to an idea floating around interpretability researchers these days known as superposition.",
+  "translatedText": "Namun, bukti-bukti yang ada menunjukkan bahwa neuron-neuron individu sangat jarang merepresentasikan satu fitur yang bersih seperti Michael Jordan, dan mungkin ada alasan yang sangat bagus mengapa hal ini terjadi, terkait dengan ide yang beredar di kalangan para peneliti interpretasi akhir-akhir ini, yang dikenal sebagai superposisi.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1057.74,
+  "end": 1074.12
+ },
+ {
+  "input": "This is a hypothesis that might help to explain both why the models are especially hard to interpret and also why they scale surprisingly well.",
+  "translatedText": "Ini adalah hipotesis yang dapat membantu menjelaskan mengapa model ini sangat sulit untuk ditafsirkan dan juga mengapa model ini memiliki skala yang sangat baik.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1074.64,
+  "end": 1082.42
+ },
+ {
+  "input": "The basic idea is that if you have an n-dimensional space and you wanna represent a bunch of different features using directions that are all perpendicular to one another in that space, you know, that way if you add a component in one direction, it doesn't influence any of the other directions, then the maximum number of vectors you can fit is only n, the number of dimensions.",
+  "translatedText": "Ide dasarnya adalah jika Anda memiliki ruang berdimensi n dan Anda ingin merepresentasikan banyak fitur yang berbeda menggunakan arah yang semuanya tegak lurus satu sama lain dalam ruang tersebut, Anda tahu, dengan cara itu jika Anda menambahkan komponen dalam satu arah, itu tidak memengaruhi arah lainnya, maka jumlah maksimum vektor yang dapat Anda muat hanya n, jumlah dimensi.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1083.5,
+  "end": 1103.96
+ },
+ {
+  "input": "To a mathematician, actually, this is the definition of dimension.",
+  "translatedText": "Bagi seorang matematikawan, sebenarnya, ini adalah definisi dimensi.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1104.6,
+  "end": 1107.62
+ },
+ {
+  "input": "But where it gets interesting is if you relax that constraint a little bit and you tolerate some noise.",
+  "translatedText": "Tetapi yang menjadi menarik adalah jika Anda sedikit melonggarkan batasan tersebut dan Anda menoleransi beberapa kebisingan.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1108.22,
+  "end": 1113.58
+ },
+ {
+  "input": "Say you allow those features to be represented by vectors that aren't exactly perpendicular, they're just nearly perpendicular, maybe between 89 and 91 degrees apart.",
+  "translatedText": "Katakanlah Anda mengizinkan fitur-fitur tersebut diwakili oleh vektor yang tidak sepenuhnya tegak lurus, hanya hampir tegak lurus, mungkin antara 89 dan 91 derajat.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1114.18,
+  "end": 1123.82
+ },
+ {
+  "input": "If we were in two or three dimensions, this makes no difference.",
+  "translatedText": "Jika kita berada dalam dua atau tiga dimensi, hal ini tidak ada bedanya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1124.82,
+  "end": 1128.02
+ },
+ {
+  "input": "That gives you hardly any extra wiggle room to fit more vectors in, which makes it all the more counterintuitive that for higher dimensions, the answer changes dramatically.",
+  "translatedText": "Hal ini hampir tidak memberikan ruang gerak ekstra untuk memasukkan lebih banyak vektor, yang membuatnya semakin berlawanan dengan intuisi bahwa untuk dimensi yang lebih tinggi, jawabannya berubah secara dramatis.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1128.26,
+  "end": 1136.78
+ },
+ {
+  "input": "I can give you a really quick and dirty illustration of this using some scrappy Python that's going to create a list of 100-dimensional vectors, each one initialized randomly, and this list is going to contain 10,000 distinct vectors, so 100 times as many vectors as there are dimensions.",
+  "translatedText": "Saya dapat memberikan ilustrasi yang sangat cepat dan kotor tentang hal ini dengan menggunakan beberapa Python yang akan membuat daftar vektor 100 dimensi, masing-masing diinisialisasi secara acak, dan daftar ini akan berisi 10.000 vektor yang berbeda, jadi 100 kali lebih banyak dari jumlah dimensinya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1137.66,
+  "end": 1154.4
+ },
+ {
+  "input": "This plot right here shows the distribution of angles between pairs of these vectors.",
+  "translatedText": "Plot di sini menunjukkan distribusi sudut di antara pasangan vektor ini.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1155.32,
+  "end": 1159.9
+ },
+ {
+  "input": "So because they started at random, those angles could be anything from 0 to 180 degrees, but you'll notice that already, even just for random vectors, there's this heavy bias for things to be closer to 90 degrees.",
+  "translatedText": "Jadi, karena dimulai secara acak, sudut-sudut itu bisa apa saja, dari 0 hingga 180 derajat, tetapi Anda akan melihat bahwa, bahkan hanya untuk vektor acak, ada bias yang besar untuk hal-hal yang lebih dekat ke 90 derajat.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1160.68,
+  "end": 1171.96
+ },
+ {
+  "input": "Then what I'm going to do is run a certain optimization process that iteratively nudges all of these vectors so that they try to become more perpendicular to one another.",
+  "translatedText": "Kemudian apa yang akan saya lakukan adalah menjalankan proses optimasi tertentu yang secara iteratif mendorong semua vektor ini sehingga mereka mencoba untuk menjadi lebih tegak lurus satu sama lain.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1172.5,
+  "end": 1181.52
+ },
+ {
+  "input": "After repeating this many different times, here's what the distribution of angles looks like.",
+  "translatedText": "Setelah mengulanginya berkali-kali, berikut ini adalah distribusi sudut yang terlihat.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1182.06,
+  "end": 1186.66
+ },
+ {
+  "input": "We have to actually zoom in on it here because all of the possible angles between pairs of vectors sit inside this narrow range between 89 and 91 degrees.",
+  "translatedText": "Kita harus benar-benar memperbesarnya di sini, karena semua sudut yang mungkin terjadi di antara pasangan vektor berada di dalam kisaran sempit antara 89 dan 91 derajat.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1187.12,
+  "end": 1196.9
+ },
+ {
+  "input": "In general, a consequence of something known as the Johnson-Lindenstrauss lemma is that the number of vectors you can cram into a space that are nearly perpendicular like this grows exponentially with the number of dimensions.",
+  "translatedText": "Secara umum, konsekuensi dari sesuatu yang dikenal sebagai lemma Johnson-Lindenstrauss adalah jumlah vektor yang dapat Anda jejalkan ke dalam ruang yang hampir tegak lurus seperti ini tumbuh secara eksponensial dengan jumlah dimensi.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1198.02,
+  "end": 1210.84
+ },
+ {
+  "input": "This is very significant for large language models, which might benefit from associating independent ideas with nearly perpendicular directions.",
+  "translatedText": "Hal ini sangat penting untuk model bahasa yang besar, yang mungkin mendapat manfaat dari mengasosiasikan ide-ide independen dengan arah yang hampir tegak lurus.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1211.96,
+  "end": 1219.88
+ },
+ {
+  "input": "It means that it's possible for it to store many, many more ideas than there are dimensions in the space that it's allotted.",
+  "translatedText": "Ini berarti, bahwa kamera ini dapat menyimpan lebih banyak ide, lebih banyak lagi daripada dimensi ruang yang tersedia.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1220.0,
+  "end": 1226.44
+ },
+ {
+  "input": "This might partially explain why model performance seems to scale so well with size.",
+  "translatedText": "Hal ini mungkin menjelaskan sebagian mengapa performa model tampaknya sangat sesuai dengan ukurannya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1227.32,
+  "end": 1231.74
+ },
+ {
+  "input": "A space that has 10 times as many dimensions can store way, way more than 10 times as many independent ideas.",
+  "translatedText": "Ruang yang memiliki 10 kali lebih banyak dimensi dapat menyimpan lebih dari 10 kali lebih banyak ide independen.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1232.54,
+  "end": 1239.4
+ },
+ {
+  "input": "And this is relevant not just to that embedding space where the vectors flowing through the model live, but also to that vector full of neurons in the middle of that multilayer perceptron that we just studied.",
+  "translatedText": "Dan ini tidak hanya relevan dengan ruang embedding tempat vektor-vektor yang mengalir melalui model, tetapi juga dengan vektor yang penuh dengan neuron di tengah-tengah perceptron multilayer yang baru saja kita pelajari.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1240.42,
+  "end": 1250.44
+ },
+ {
+  "input": "That is to say, at the sizes of GPT-3, it might not just be probing at 50,000 features, but if it instead leveraged this enormous added capacity by using nearly perpendicular directions of the space, it could be probing at many, many more features of the vector being processed.",
+  "translatedText": "Dengan kata lain, pada ukuran GPT-3, mungkin tidak hanya menyelidiki 50.000 fitur, tetapi jika GPT-3 memanfaatkan kapasitas tambahan yang sangat besar ini dengan menggunakan arah ruang yang hampir tegak lurus, GPT-3 dapat menyelidiki lebih banyak lagi fitur vektor yang sedang diproses.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1250.96,
+  "end": 1267.24
+ },
+ {
+  "input": "But if it was doing that, what it means is that individual features aren't gonna be visible as a single neuron lighting up.",
+  "translatedText": "Tetapi jika ia melakukan hal itu, artinya, fitur-fitur individual tidak akan terlihat sebagai satu neuron yang menyala.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1267.78,
+  "end": 1274.34
+ },
+ {
+  "input": "It would have to look like some specific combination of neurons instead, a superposition.",
+  "translatedText": "Ini harus terlihat seperti kombinasi neuron tertentu, sebagai gantinya, sebuah superposisi.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1274.66,
+  "end": 1279.38
+ },
+ {
+  "input": "For any of you curious to learn more, a key relevant search term here is sparse autoencoder, which is a tool that some of the interpretability people use to try to extract what the true features are, even if they're very superimposed on all these neurons.",
+  "translatedText": "Bagi Anda yang ingin mempelajari lebih lanjut, istilah pencarian utama yang relevan di sini adalah sparse autoencoder, yang merupakan alat yang digunakan oleh beberapa orang yang memiliki kemampuan interpretasi untuk mencoba mengekstrak fitur yang sebenarnya, meskipun fitur-fitur tersebut sangat bertumpuk pada semua neuron.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1280.4,
+  "end": 1292.88
+ },
+ {
+  "input": "I'll link to a couple really great anthropic posts all about this.",
+  "translatedText": "Saya akan menautkan ke beberapa artikel antropologi yang sangat bagus tentang hal ini.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1293.54,
+  "end": 1296.8
+ },
+ {
+  "input": "At this point, we haven't touched every detail of a transformer, but you and I have hit the most important points.",
+  "translatedText": "Pada titik ini, kita belum menyentuh setiap detail transformator, tetapi Anda dan saya telah mencapai poin yang paling penting.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1297.88,
+  "end": 1303.3
+ },
+ {
+  "input": "The main thing that I wanna cover in a next chapter is the training process.",
+  "translatedText": "Hal utama yang ingin saya bahas dalam bab berikutnya adalah proses pelatihan.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1303.52,
+  "end": 1307.64
+ },
+ {
+  "input": "On the one hand, the short answer for how training works is that it's all backpropagation, and we covered backpropagation in a separate context with earlier chapters in the series.",
+  "translatedText": "Di satu sisi, jawaban singkat untuk cara kerja pelatihan adalah bahwa semua itu adalah backpropagation, dan kami telah membahas backpropagation dalam konteks yang terpisah dalam bab-bab sebelumnya dalam seri ini.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1308.46,
+  "end": 1316.9
+ },
+ {
+  "input": "But there is more to discuss, like the specific cost function used for language models, the idea of fine-tuning using reinforcement learning with human feedback, and the notion of scaling laws.",
+  "translatedText": "Namun masih banyak yang perlu didiskusikan, seperti fungsi biaya khusus yang digunakan untuk model bahasa, gagasan untuk menyempurnakan menggunakan pembelajaran penguatan dengan umpan balik dari manusia, dan gagasan tentang hukum penskalaan.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1317.22,
+  "end": 1327.78
+ },
+ {
+  "input": "Quick note for the active followers among you, there are a number of non-machine learning-related videos that I'm excited to sink my teeth into before I make that next chapter, so it might be a while, but I do promise it'll come in due time.",
+  "translatedText": "Catatan singkat untuk para pengikut aktif di antara Anda, ada sejumlah video yang tidak berhubungan dengan pembelajaran mesin yang ingin saya bahas sebelum saya membuat bab berikutnya, jadi mungkin akan memakan waktu cukup lama, tetapi saya berjanji akan hadir pada waktunya.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1328.96,
+  "end": 1340.0
+ },
+ {
+  "input": "Thank you.",
+  "translatedText": "Terima kasih.",
+  "model": "DeepL",
+  "n_reviews": 0,
+  "start": 1355.64,
+  "end": 1357.92
+ }
+]

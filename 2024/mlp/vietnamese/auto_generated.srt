@@ -1,0 +1,1356 @@
+1
+00:00:00,000 --> 00:00:05,192
+Nếu bạn đưa cụm từ &quot;Michael Jordan chơi bóng rổ&quot; vào một mô hình ngôn ngữ lớn, 
+
+2
+00:00:05,192 --> 00:00:09,801
+và yêu cầu nó dự đoán điều gì sẽ xảy ra tiếp theo, và nó dự đoán đúng bóng rổ, 
+
+3
+00:00:09,801 --> 00:00:14,002
+điều này cho thấy rằng ở đâu đó, bên trong hàng trăm tỷ tham số của nó, 
+
+4
+00:00:14,002 --> 00:00:18,320
+có chứa kiến thức về một người cụ thể và môn thể thao cụ thể của người đó.
+
+5
+00:00:18,940 --> 00:00:22,217
+Và tôi nghĩ nhìn chung, bất kỳ ai đã từng sử dụng một trong những mô 
+
+6
+00:00:22,217 --> 00:00:25,400
+hình này đều có cảm giác rõ ràng rằng nó ghi nhớ rất nhiều sự kiện.
+
+7
+00:00:25,700 --> 00:00:29,160
+Vậy câu hỏi hợp lý mà bạn có thể hỏi là: Chính xác thì điều đó diễn ra như thế nào?
+
+8
+00:00:29,160 --> 00:00:31,040
+Và những sự thật đó tồn tại ở đâu?
+
+9
+00:00:35,720 --> 00:00:38,551
+Tháng 12 năm ngoái, một số nhà nghiên cứu từ Google DeepMind đã 
+
+10
+00:00:38,551 --> 00:00:41,471
+đăng bài về công trình nghiên cứu câu hỏi này và họ đã sử dụng ví 
+
+11
+00:00:41,471 --> 00:00:44,480
+dụ cụ thể này để ghép nối các vận động viên với môn thể thao của họ.
+
+12
+00:00:44,900 --> 00:00:49,824
+Mặc dù vẫn chưa có lời giải đáp đầy đủ về mặt cơ chế về cách lưu trữ dữ liệu, 
+
+13
+00:00:49,824 --> 00:00:54,306
+họ đã có một số kết quả thú vị, bao gồm kết luận chung cấp cao rằng dữ 
+
+14
+00:00:54,306 --> 00:00:58,283
+liệu dường như nằm bên trong một phần cụ thể của các mạng này, 
+
+15
+00:00:58,283 --> 00:01:02,640
+được gọi một cách hoa mỹ là perceptron nhiều lớp hay viết tắt là MLP.
+
+16
+00:01:03,120 --> 00:01:06,279
+Trong vài chương gần đây, bạn và tôi đã tìm hiểu sâu hơn về các 
+
+17
+00:01:06,279 --> 00:01:09,291
+chi tiết đằng sau bộ chuyển đổi, kiến trúc cơ bản của các mô 
+
+18
+00:01:09,291 --> 00:01:12,500
+hình ngôn ngữ lớn và cũng là nền tảng của nhiều AI hiện đại khác.
+
+19
+00:01:13,060 --> 00:01:16,200
+Trong chương gần đây nhất, chúng ta đã tập trung vào một phần có tên là Sự chú ý.
+
+20
+00:01:16,840 --> 00:01:20,885
+Bước tiếp theo dành cho bạn và tôi là tìm hiểu sâu hơn về những gì xảy ra 
+
+21
+00:01:20,885 --> 00:01:25,040
+bên trong các perceptron nhiều lớp này, tạo nên phần lớn khác của mạng lưới.
+
+22
+00:01:25,680 --> 00:01:30,100
+Phép tính ở đây thực ra khá đơn giản, đặc biệt là khi bạn so sánh nó với sự chú ý.
+
+23
+00:01:30,560 --> 00:01:34,980
+Về cơ bản, nó bao gồm một cặp phép nhân ma trận với một phép đơn giản ở giữa.
+
+24
+00:01:35,720 --> 00:01:38,113
+Tuy nhiên, việc giải thích những phép tính này thực 
+
+25
+00:01:38,113 --> 00:01:40,460
+sự có ý nghĩa gì lại là một thách thức vô cùng lớn.
+
+26
+00:01:41,560 --> 00:01:45,808
+Mục tiêu chính của chúng ta ở đây là thực hiện từng bước tính toán và giúp chúng dễ nhớ, 
+
+27
+00:01:45,808 --> 00:01:49,532
+nhưng tôi muốn thực hiện trong bối cảnh đưa ra ví dụ cụ thể về cách một trong 
+
+28
+00:01:49,532 --> 00:01:53,160
+những khối này, ít nhất là về nguyên tắc, có thể lưu trữ một sự kiện cụ thể.
+
+29
+00:01:53,580 --> 00:01:57,080
+Cụ thể hơn, nó sẽ lưu trữ thông tin về việc Michael Jordan chơi bóng rổ.
+
+30
+00:01:58,080 --> 00:02:00,698
+Tôi nên nói rằng bố cục ở đây được lấy cảm hứng từ cuộc trò chuyện 
+
+31
+00:02:00,698 --> 00:02:03,200
+của tôi với một trong những nhà nghiên cứu DeepMind, Neil Nanda.
+
+32
+00:02:04,060 --> 00:02:07,662
+Về cơ bản, tôi sẽ cho rằng bạn đã xem hai chương cuối cùng hoặc 
+
+33
+00:02:07,662 --> 00:02:11,603
+có hiểu biết cơ bản về máy biến áp, nhưng việc ôn lại cũng không sao, 
+
+34
+00:02:11,603 --> 00:02:14,700
+vì vậy, đây là lời nhắc nhở nhanh về mạch truyện chung.
+
+35
+00:02:15,340 --> 00:02:18,221
+Bạn và tôi đã nghiên cứu một mô hình được đào tạo để 
+
+36
+00:02:18,221 --> 00:02:21,320
+tiếp nhận một đoạn văn bản và dự đoán nội dung tiếp theo.
+
+37
+00:02:21,720 --> 00:02:25,744
+Đầu tiên, văn bản đầu vào được chia thành một nhóm mã thông báo, 
+
+38
+00:02:25,744 --> 00:02:29,521
+nghĩa là các khối nhỏ thường là các từ hoặc các phần từ nhỏ, 
+
+39
+00:02:29,521 --> 00:02:33,298
+và mỗi mã thông báo được liên kết với một vectơ nhiều chiều, 
+
+40
+00:02:33,298 --> 00:02:35,280
+tức là một danh sách dài các số.
+
+41
+00:02:35,840 --> 00:02:40,371
+Chuỗi vectơ này sau đó liên tục trải qua hai loại hoạt động, chú ý, 
+
+42
+00:02:40,371 --> 00:02:45,835
+cho phép các vectơ truyền thông tin cho nhau, và sau đó là các perceptron đa lớp, 
+
+43
+00:02:45,835 --> 00:02:49,167
+thứ mà chúng ta sẽ tìm hiểu sâu hơn ngày hôm nay, 
+
+44
+00:02:49,167 --> 00:02:52,300
+và cũng có một bước chuẩn hóa nhất định ở giữa.
+
+45
+00:02:53,300 --> 00:02:58,786
+Sau khi chuỗi vectơ đã trải qua rất nhiều lần lặp lại khác nhau của cả hai khối này, 
+
+46
+00:02:58,786 --> 00:03:03,304
+cuối cùng, hy vọng là mỗi vectơ đã hấp thụ đủ thông tin, từ ngữ cảnh, 
+
+47
+00:03:03,304 --> 00:03:08,984
+tất cả các từ khác trong dữ liệu đầu vào và từ kiến thức chung đã được đưa vào trọng số 
+
+48
+00:03:08,984 --> 00:03:14,729
+mô hình thông qua quá trình đào tạo, để có thể sử dụng nó để dự đoán mã thông báo nào sẽ 
+
+49
+00:03:14,729 --> 00:03:16,020
+xuất hiện tiếp theo.
+
+50
+00:03:16,860 --> 00:03:20,769
+Một trong những ý tưởng chính mà tôi muốn bạn ghi nhớ là tất cả các vectơ 
+
+51
+00:03:20,769 --> 00:03:23,780
+này đều tồn tại trong một không gian có rất nhiều chiều, 
+
+52
+00:03:23,780 --> 00:03:27,849
+và khi bạn nghĩ về không gian đó, các hướng khác nhau có thể mã hóa các loại 
+
+53
+00:03:27,849 --> 00:03:28,800
+ý nghĩa khác nhau.
+
+54
+00:03:30,120 --> 00:03:35,555
+Vì vậy, một ví dụ rất kinh điển mà tôi muốn nhắc lại là nếu bạn nhìn vào danh từ phụ nữ 
+
+55
+00:03:35,555 --> 00:03:40,866
+và trừ đi danh từ đàn ông, rồi thực hiện bước nhỏ đó và thêm vào một danh từ nam tính 
+
+56
+00:03:40,866 --> 00:03:46,240
+khác, chẳng hạn như chú, bạn sẽ đến một nơi rất, rất gần với danh từ nữ tính tương ứng.
+
+57
+00:03:46,440 --> 00:03:50,880
+Theo nghĩa này, hướng cụ thể này mã hóa thông tin về giới tính.
+
+58
+00:03:51,640 --> 00:03:55,693
+Ý tưởng ở đây là nhiều hướng riêng biệt khác nhau trong không gian có nhiều 
+
+59
+00:03:55,693 --> 00:03:59,640
+chiều này có thể tương ứng với các đặc điểm khác mà mô hình muốn thể hiện.
+
+60
+00:04:01,400 --> 00:04:06,180
+Tuy nhiên, trong máy biến áp, các vectơ này không chỉ mã hóa ý nghĩa của một từ duy nhất.
+
+61
+00:04:06,680 --> 00:04:10,960
+Khi chúng chảy qua mạng, chúng sẽ hấp thụ ý nghĩa phong phú hơn nhiều 
+
+62
+00:04:10,960 --> 00:04:15,180
+dựa trên bối cảnh xung quanh chúng và dựa trên kiến thức của mô hình.
+
+63
+00:04:15,880 --> 00:04:20,679
+Cuối cùng, mỗi người cần mã hóa một cái gì đó vượt xa ý nghĩa của một từ đơn lẻ, 
+
+64
+00:04:20,679 --> 00:04:23,760
+vì nó cần đủ để dự đoán điều gì sẽ xảy ra tiếp theo.
+
+65
+00:04:24,560 --> 00:04:28,786
+Chúng ta đã thấy các khối chú ý cho phép bạn kết hợp ngữ cảnh như thế nào, 
+
+66
+00:04:28,786 --> 00:04:33,350
+nhưng phần lớn các tham số mô hình thực sự nằm bên trong các khối MLP và một suy 
+
+67
+00:04:33,350 --> 00:04:38,140
+nghĩ về những gì chúng có thể làm là cung cấp thêm dung lượng để lưu trữ các sự kiện.
+
+68
+00:04:38,720 --> 00:04:42,263
+Như tôi đã nói, bài học ở đây sẽ tập trung vào ví dụ về đồ chơi bê tông để xem 
+
+69
+00:04:42,263 --> 00:04:46,120
+chính xác nó có thể lưu trữ thông tin về việc Michael Jordan chơi bóng rổ như thế nào.
+
+70
+00:04:47,120 --> 00:04:49,487
+Bây giờ, ví dụ về đồ chơi này sẽ yêu cầu bạn và tôi 
+
+71
+00:04:49,487 --> 00:04:51,900
+đưa ra một vài giả định về không gian nhiều chiều đó.
+
+72
+00:04:52,360 --> 00:04:58,114
+Đầu tiên, chúng ta sẽ giả sử rằng một trong các hướng biểu diễn ý tưởng về tên Michael, 
+
+73
+00:04:58,114 --> 00:05:02,823
+sau đó một hướng gần như vuông góc khác biểu diễn ý tưởng về họ Jordan, 
+
+74
+00:05:02,823 --> 00:05:06,420
+và sau đó hướng thứ ba sẽ biểu diễn ý tưởng về bóng rổ.
+
+75
+00:05:07,400 --> 00:05:12,290
+Cụ thể hơn, ý tôi muốn nói là nếu bạn nhìn vào mạng và chọn ra một trong 
+
+76
+00:05:12,290 --> 00:05:17,181
+các vectơ đang được xử lý, nếu tích vô hướng của tên Michael này là một, 
+
+77
+00:05:17,181 --> 00:05:22,340
+thì đó chính là ý nghĩa của vectơ đang mã hóa ý tưởng về một người có tên đó.
+
+78
+00:05:23,800 --> 00:05:26,102
+Nếu không, tích vô hướng đó sẽ bằng 0 hoặc âm, 
+
+79
+00:05:26,102 --> 00:05:28,700
+nghĩa là vectơ không thực sự thẳng hàng với hướng đó.
+
+80
+00:05:29,420 --> 00:05:32,421
+Và để đơn giản, chúng ta hãy bỏ qua hoàn toàn câu hỏi rất 
+
+81
+00:05:32,421 --> 00:05:35,320
+hợp lý về ý nghĩa của việc tích vô hướng đó lớn hơn một.
+
+82
+00:05:36,200 --> 00:05:40,011
+Tương tự như vậy, tích vô hướng của nó với các hướng khác sẽ 
+
+83
+00:05:40,011 --> 00:05:43,760
+cho bạn biết liệu nó đại diện cho họ Jordan hay tên bóng rổ.
+
+84
+00:05:44,740 --> 00:05:49,081
+Vì vậy, giả sử một vectơ được dùng để biểu diễn tên đầy đủ, Michael Jordan, 
+
+85
+00:05:49,081 --> 00:05:52,680
+thì tích vô hướng của nó với cả hai hướng này sẽ phải bằng một.
+
+86
+00:05:53,480 --> 00:05:56,783
+Vì văn bản Michael Jordan bao gồm hai mã thông báo khác nhau, 
+
+87
+00:05:56,783 --> 00:06:01,099
+điều này cũng có nghĩa là chúng ta phải giả định rằng một khối chú ý trước đó đã 
+
+88
+00:06:01,099 --> 00:06:05,627
+truyền thông tin thành công đến vectơ thứ hai trong hai vectơ này để đảm bảo rằng nó 
+
+89
+00:06:05,627 --> 00:06:06,960
+có thể mã hóa cả hai tên.
+
+90
+00:06:07,940 --> 00:06:09,729
+Với tất cả những giả định trên, bây giờ chúng 
+
+91
+00:06:09,729 --> 00:06:11,480
+ta hãy đi sâu vào nội dung chính của bài học.
+
+92
+00:06:11,880 --> 00:06:14,980
+Chuyện gì xảy ra bên trong một perceptron nhiều lớp?
+
+93
+00:06:17,100 --> 00:06:20,913
+Bạn có thể nghĩ đến chuỗi các vectơ này chảy vào khối và nhớ rằng, 
+
+94
+00:06:20,913 --> 00:06:25,580
+mỗi vectơ ban đầu được liên kết với một trong các mã thông báo từ văn bản đầu vào.
+
+95
+00:06:26,080 --> 00:06:30,571
+Điều sẽ xảy ra là mỗi vectơ riêng lẻ từ chuỗi đó sẽ trải qua một loạt các phép toán ngắn, 
+
+96
+00:06:30,571 --> 00:06:33,565
+chúng ta sẽ giải nén chúng chỉ trong chốc lát và cuối cùng, 
+
+97
+00:06:33,565 --> 00:06:36,360
+chúng ta sẽ nhận được một vectơ khác có cùng kích thước.
+
+98
+00:06:36,880 --> 00:06:43,200
+Vectơ khác đó sẽ được thêm vào vectơ ban đầu chảy vào và tổng đó là kết quả chảy ra.
+
+99
+00:06:43,720 --> 00:06:47,670
+Trình tự hoạt động này là thứ bạn áp dụng cho mọi vectơ trong trình tự, 
+
+100
+00:06:47,670 --> 00:06:51,620
+liên kết với mọi mã thông báo trong đầu vào và tất cả diễn ra song song.
+
+101
+00:06:52,100 --> 00:06:54,459
+Đặc biệt, các vectơ không tương tác với nhau trong bước này, 
+
+102
+00:06:54,459 --> 00:06:56,200
+chúng đều hoạt động theo cách riêng của mình.
+
+103
+00:06:56,720 --> 00:06:59,536
+Và đối với bạn và tôi, điều đó thực sự làm cho mọi thứ đơn giản hơn rất nhiều, 
+
+104
+00:06:59,536 --> 00:07:02,673
+bởi vì nó có nghĩa là nếu chúng ta hiểu được điều gì xảy ra với chỉ một trong các vectơ 
+
+105
+00:07:02,673 --> 00:07:05,739
+thông qua khối này, thì về cơ bản chúng ta sẽ hiểu được điều gì xảy ra với tất cả các 
+
+106
+00:07:05,739 --> 00:07:06,060
+vectơ đó.
+
+107
+00:07:07,100 --> 00:07:11,994
+Khi tôi nói khối này sẽ mã hóa thông tin Michael Jordan chơi bóng rổ, 
+
+108
+00:07:11,994 --> 00:07:15,909
+ý tôi là nếu một vectơ mã hóa tên Michael và họ Jordan, 
+
+109
+00:07:15,909 --> 00:07:20,803
+thì chuỗi phép tính này sẽ tạo ra thứ gì đó bao gồm hướng bóng rổ đó, 
+
+110
+00:07:20,803 --> 00:07:24,020
+tức là thứ sẽ được thêm vào vectơ ở vị trí đó.
+
+111
+00:07:25,600 --> 00:07:27,762
+Bước đầu tiên của quá trình này trông giống như 
+
+112
+00:07:27,762 --> 00:07:29,700
+việc nhân vectơ đó với một ma trận rất lớn.
+
+113
+00:07:30,040 --> 00:07:31,980
+Không có gì ngạc nhiên, đây chính là học sâu.
+
+114
+00:07:32,680 --> 00:07:35,947
+Và ma trận này, giống như tất cả các ma trận khác mà chúng ta đã thấy, 
+
+115
+00:07:35,947 --> 00:07:38,248
+chứa đầy các tham số mô hình được học từ dữ liệu, 
+
+116
+00:07:38,248 --> 00:07:41,791
+mà bạn có thể coi như một loạt các nút vặn và mặt số được điều chỉnh và tinh 
+
+117
+00:07:41,791 --> 00:07:43,540
+chỉnh để xác định hành vi của mô hình.
+
+118
+00:07:44,500 --> 00:07:48,530
+Bây giờ, một cách hay để nghĩ về phép nhân ma trận là tưởng tượng mỗi 
+
+119
+00:07:48,530 --> 00:07:52,503
+hàng của ma trận đó là một vectơ riêng và lấy một loạt tích vô hướng 
+
+120
+00:07:52,503 --> 00:07:56,880
+giữa các hàng đó và vectơ đang được xử lý, mà tôi sẽ dán nhãn là E để nhúng.
+
+121
+00:07:57,280 --> 00:08:00,909
+Ví dụ, giả sử hàng đầu tiên tình cờ bằng với hướng 
+
+122
+00:08:00,909 --> 00:08:04,040
+tên Michael mà chúng ta đang cho là tồn tại.
+
+123
+00:08:04,320 --> 00:08:09,627
+Điều đó có nghĩa là thành phần đầu tiên trong đầu ra này, tích vô hướng ở đây, 
+
+124
+00:08:09,627 --> 00:08:14,800
+sẽ là một nếu vectơ đó mã hóa tên Michael và bằng không hoặc số âm nếu không.
+
+125
+00:08:15,880 --> 00:08:19,434
+Thậm chí còn thú vị hơn nữa, hãy dành một chút thời gian để suy nghĩ xem điều 
+
+126
+00:08:19,434 --> 00:08:23,080
+gì sẽ xảy ra nếu hàng đầu tiên là tên Michael cộng với họ Jordan theo hướng này.
+
+127
+00:08:23,700 --> 00:08:27,420
+Để đơn giản hơn, tôi xin viết nó thành M cộng với J.
+
+128
+00:08:28,080 --> 00:08:30,840
+Sau đó, lấy tích vô hướng với phép nhúng E này, 
+
+129
+00:08:30,840 --> 00:08:34,980
+mọi thứ phân bố thực sự đẹp, trông giống như M chấm E cộng với J chấm E.
+
+130
+00:08:34,980 --> 00:08:39,720
+Và hãy lưu ý rằng điều đó có nghĩa là giá trị cuối cùng sẽ là hai nếu vectơ mã 
+
+131
+00:08:39,720 --> 00:08:44,700
+hóa tên đầy đủ của Michael Jordan, nếu không thì sẽ là một hoặc một số nhỏ hơn một.
+
+132
+00:08:45,340 --> 00:08:47,260
+Và đó chỉ là một hàng trong ma trận này.
+
+133
+00:08:47,600 --> 00:08:52,446
+Bạn có thể nghĩ tất cả các hàng khác đều song song đặt ra một số loại câu hỏi khác nhau, 
+
+134
+00:08:52,446 --> 00:08:56,040
+thăm dò một số loại tính năng khác nhau của vectơ đang được xử lý.
+
+135
+00:08:56,700 --> 00:08:59,690
+Bước này thường bao gồm việc thêm một vectơ khác vào đầu ra, 
+
+136
+00:08:59,690 --> 00:09:02,240
+chứa đầy đủ các tham số mô hình học được từ dữ liệu.
+
+137
+00:09:02,240 --> 00:09:04,560
+Vectơ khác này được gọi là độ lệch.
+
+138
+00:09:05,180 --> 00:09:08,591
+Trong ví dụ của chúng ta, tôi muốn bạn tưởng tượng rằng giá trị của độ 
+
+139
+00:09:08,591 --> 00:09:12,051
+lệch này trong thành phần đầu tiên là âm một, nghĩa là đầu ra cuối cùng 
+
+140
+00:09:12,051 --> 00:09:15,560
+của chúng ta trông giống như tích vô hướng có liên quan, nhưng là âm một.
+
+141
+00:09:16,120 --> 00:09:20,208
+Bạn có thể hỏi một cách rất hợp lý rằng tại sao tôi muốn bạn cho rằng mô hình 
+
+142
+00:09:20,208 --> 00:09:24,140
+đã học được điều này và ngay sau đây bạn sẽ thấy tại sao nó rất rõ ràng và 
+
+143
+00:09:24,140 --> 00:09:28,071
+đẹp nếu chúng ta có một giá trị ở đây là dương nếu và chỉ nếu một vectơ mã 
+
+144
+00:09:28,071 --> 00:09:32,160
+hóa tên đầy đủ là Michael Jordan, còn nếu không thì sẽ là số không hoặc số âm.
+
+145
+00:09:33,040 --> 00:09:37,847
+Tổng số hàng trong ma trận này, tương đương với số câu hỏi được đặt ra trong 
+
+146
+00:09:37,847 --> 00:09:42,780
+trường hợp của GPT-3, với số lượng mà chúng tôi đang theo dõi, chỉ dưới 50.000.
+
+147
+00:09:43,100 --> 00:09:46,640
+Trên thực tế, con số này chính xác gấp bốn lần số chiều trong không gian nhúng này.
+
+148
+00:09:46,920 --> 00:09:47,900
+Đó là một lựa chọn thiết kế.
+
+149
+00:09:47,940 --> 00:09:50,047
+Bạn có thể làm nhiều hơn hoặc ít hơn, nhưng việc 
+
+150
+00:09:50,047 --> 00:09:52,240
+làm sạch nhiều lần sẽ thân thiện hơn với phần cứng.
+
+151
+00:09:52,740 --> 00:09:55,821
+Vì ma trận chứa đầy trọng số này ánh xạ chúng ta vào 
+
+152
+00:09:55,821 --> 00:09:59,020
+không gian có nhiều chiều hơn nên tôi sẽ viết tắt là W.
+
+153
+00:09:59,020 --> 00:10:02,932
+Tôi sẽ tiếp tục dán nhãn vectơ mà chúng ta đang xử lý là E và 
+
+154
+00:10:02,932 --> 00:10:07,160
+hãy dán nhãn vectơ sai số này là B lên và đưa tất cả trở lại sơ đồ.
+
+155
+00:10:09,180 --> 00:10:12,536
+Ở thời điểm này, vấn đề là hoạt động này hoàn toàn tuyến tính, 
+
+156
+00:10:12,536 --> 00:10:15,360
+nhưng ngôn ngữ lại là một quá trình không tuyến tính.
+
+157
+00:10:15,880 --> 00:10:19,772
+Nếu mục nhập mà chúng ta đang đo lường là cao đối với Michael cộng với Jordan, 
+
+158
+00:10:19,772 --> 00:10:23,862
+thì nó cũng cần phải được kích hoạt phần nào bởi Michael cộng với Phelps và Alexis 
+
+159
+00:10:23,862 --> 00:10:28,100
+cộng với Jordan, mặc dù về mặt khái niệm thì những người này không liên quan đến nhau.
+
+160
+00:10:28,540 --> 00:10:32,000
+Điều bạn thực sự muốn chỉ là câu trả lời có hoặc không cho tên đầy đủ.
+
+161
+00:10:32,900 --> 00:10:35,420
+Vì vậy, bước tiếp theo là truyền vectơ trung gian 
+
+162
+00:10:35,420 --> 00:10:37,840
+lớn này qua một hàm phi tuyến tính rất đơn giản.
+
+163
+00:10:38,360 --> 00:10:41,890
+Một lựa chọn phổ biến là lấy tất cả các giá trị âm và ánh 
+
+164
+00:10:41,890 --> 00:10:45,300
+xạ chúng thành 0 và giữ nguyên tất cả các giá trị dương.
+
+165
+00:10:46,440 --> 00:10:50,528
+Và tiếp tục với truyền thống học sâu với những cái tên quá hoa mỹ, 
+
+166
+00:10:50,528 --> 00:10:56,020
+hàm rất đơn giản này thường được gọi là đơn vị tuyến tính chỉnh lưu hoặc viết tắt là ReLU.
+
+167
+00:10:56,020 --> 00:10:57,880
+Đây là hình ảnh biểu đồ.
+
+168
+00:10:58,300 --> 00:11:02,507
+Vì vậy, lấy ví dụ tưởng tượng của chúng ta, trong đó mục đầu tiên của vectơ 
+
+169
+00:11:02,507 --> 00:11:06,770
+trung gian là một, nếu và chỉ nếu tên đầy đủ là Michael Jordan và bằng không 
+
+170
+00:11:06,770 --> 00:11:11,366
+hoặc số âm nếu không, sau khi bạn đưa nó qua ReLU, bạn sẽ có một giá trị rất sạch, 
+
+171
+00:11:11,366 --> 00:11:15,740
+trong đó tất cả các giá trị bằng không và giá trị âm chỉ bị cắt thành số không.
+
+172
+00:11:16,100 --> 00:11:17,901
+Vì vậy, đầu ra này sẽ là một cho tên đầy đủ là 
+
+173
+00:11:17,901 --> 00:11:19,780
+Michael Jordan và là 0 cho những trường hợp khác.
+
+174
+00:11:20,560 --> 00:11:24,120
+Nói cách khác, nó mô phỏng rất trực tiếp hành vi của cổng AND.
+
+175
+00:11:25,660 --> 00:11:29,035
+Các mô hình thường sử dụng một hàm được sửa đổi đôi chút gọi là JLU, 
+
+176
+00:11:29,035 --> 00:11:32,020
+có hình dạng cơ bản giống như vậy nhưng mượt mà hơn một chút.
+
+177
+00:11:32,500 --> 00:11:34,061
+Nhưng đối với mục đích của chúng ta, mọi thứ sẽ 
+
+178
+00:11:34,061 --> 00:11:35,720
+rõ ràng hơn một chút nếu chúng ta chỉ nghĩ về ReLU.
+
+179
+00:11:36,740 --> 00:11:39,976
+Ngoài ra, khi bạn nghe mọi người nhắc đến các nơ-ron của máy biến áp, 
+
+180
+00:11:39,976 --> 00:11:42,520
+nghĩa là họ đang nói về những giá trị này ngay tại đây.
+
+181
+00:11:42,900 --> 00:11:47,395
+Bất cứ khi nào bạn thấy hình ảnh mạng nơ-ron phổ biến với một lớp chấm và một loạt 
+
+182
+00:11:47,395 --> 00:11:51,890
+các đường kết nối với lớp trước đó, mà chúng ta đã có trước đó trong loạt bài này, 
+
+183
+00:11:51,890 --> 00:11:56,114
+thì điều đó thường có nghĩa là truyền đạt sự kết hợp của một bước tuyến tính, 
+
+184
+00:11:56,114 --> 00:12:00,772
+phép nhân ma trận, theo sau là một số hàm phi tuyến tính theo từng thuật ngữ đơn giản 
+
+185
+00:12:00,772 --> 00:12:01,260
+như ReLU.
+
+186
+00:12:02,500 --> 00:12:05,650
+Bạn có thể nói rằng nơ-ron này hoạt động khi giá trị 
+
+187
+00:12:05,650 --> 00:12:08,920
+này dương và không hoạt động nếu giá trị đó bằng không.
+
+188
+00:12:10,120 --> 00:12:12,380
+Bước tiếp theo trông rất giống với bước đầu tiên.
+
+189
+00:12:12,560 --> 00:12:16,580
+Bạn nhân với một ma trận rất lớn và thêm vào một số hạng thiên vị nhất định.
+
+190
+00:12:16,980 --> 00:12:21,250
+Trong trường hợp này, số chiều trong đầu ra sẽ giảm xuống bằng kích thước của 
+
+191
+00:12:21,250 --> 00:12:25,520
+không gian nhúng đó, vì vậy tôi sẽ tiếp tục và gọi đây là ma trận chiếu xuống.
+
+192
+00:12:26,220 --> 00:12:31,360
+Và lần này, thay vì nghĩ về từng hàng, thực ra sẽ hay hơn nếu nghĩ về từng cột.
+
+193
+00:12:31,860 --> 00:12:36,510
+Bạn thấy đấy, một cách khác để bạn có thể ghi nhớ phép nhân ma trận trong đầu là 
+
+194
+00:12:36,510 --> 00:12:41,161
+tưởng tượng việc lấy từng cột của ma trận và nhân nó với số hạng tương ứng trong 
+
+195
+00:12:41,161 --> 00:12:45,640
+vectơ mà nó đang xử lý và cộng tất cả các cột đã được chia tỷ lệ lại với nhau.
+
+196
+00:12:46,840 --> 00:12:52,030
+Lý do khiến cách này hay hơn là vì ở đây các cột có cùng kích thước với không gian nhúng, 
+
+197
+00:12:52,030 --> 00:12:55,780
+do đó chúng ta có thể coi chúng là các hướng trong không gian đó.
+
+198
+00:12:56,140 --> 00:12:59,499
+Ví dụ, chúng ta sẽ tưởng tượng rằng mô hình đã học được cách 
+
+199
+00:12:59,499 --> 00:13:03,080
+biến cột đầu tiên thành hướng bóng rổ mà chúng ta cho là tồn tại.
+
+200
+00:13:04,180 --> 00:13:08,393
+Điều đó có nghĩa là khi tế bào thần kinh có liên quan ở vị trí đầu tiên hoạt động, 
+
+201
+00:13:08,393 --> 00:13:10,780
+chúng ta sẽ thêm cột này vào kết quả cuối cùng.
+
+202
+00:13:11,140 --> 00:13:13,122
+Nhưng nếu tế bào thần kinh đó không hoạt động, 
+
+203
+00:13:13,122 --> 00:13:15,780
+nếu con số đó bằng không, thì điều này sẽ không có tác dụng gì.
+
+204
+00:13:16,500 --> 00:13:18,060
+Và không chỉ có bóng rổ.
+
+205
+00:13:18,220 --> 00:13:21,787
+Mô hình này cũng có thể tích hợp vào cột này và nhiều tính năng khác 
+
+206
+00:13:21,787 --> 00:13:25,200
+mà nó muốn liên kết với thứ gì đó có tên đầy đủ là Michael Jordan.
+
+207
+00:13:26,980 --> 00:13:31,583
+Và đồng thời, tất cả các cột khác trong ma trận này sẽ cho bạn biết 
+
+208
+00:13:31,583 --> 00:13:36,660
+những gì sẽ được thêm vào kết quả cuối cùng nếu nơ-ron tương ứng hoạt động.
+
+209
+00:13:37,360 --> 00:13:39,857
+Và nếu bạn có sự thiên vị trong trường hợp này, 
+
+210
+00:13:39,857 --> 00:13:43,500
+thì đó là thứ bạn chỉ cần thêm vào mỗi lần, bất kể giá trị của nơ-ron.
+
+211
+00:13:44,060 --> 00:13:45,280
+Bạn có thể tự hỏi điều đó có tác dụng gì.
+
+212
+00:13:45,540 --> 00:13:49,320
+Giống như tất cả các đối tượng có tham số ở đây, thật khó để nói chính xác.
+
+213
+00:13:49,320 --> 00:13:52,307
+Có thể mạng lưới cần phải thực hiện một số công việc kế toán, 
+
+214
+00:13:52,307 --> 00:13:54,380
+nhưng hiện tại bạn có thể thoải mái bỏ qua.
+
+215
+00:13:54,860 --> 00:13:57,811
+Để ký hiệu của chúng ta trở nên nhỏ gọn hơn một chút, 
+
+216
+00:13:57,811 --> 00:14:02,401
+tôi sẽ gọi ma trận lớn W này là xuống và tương tự gọi vectơ thiên vị B là xuống rồi 
+
+217
+00:14:02,401 --> 00:14:04,260
+đưa nó trở lại sơ đồ của chúng ta.
+
+218
+00:14:04,740 --> 00:14:09,041
+Như tôi đã giới thiệu trước đó, những gì bạn làm với kết quả cuối cùng này là thêm 
+
+219
+00:14:09,041 --> 00:14:13,240
+nó vào vectơ chảy vào khối tại vị trí đó và bạn sẽ có được kết quả cuối cùng này.
+
+220
+00:14:13,820 --> 00:14:18,350
+Ví dụ, nếu vectơ chạy vào mã hóa cả tên Michael và họ Jordan, 
+
+221
+00:14:18,350 --> 00:14:24,197
+thì vì chuỗi hoạt động này sẽ kích hoạt cổng AND, nó sẽ thêm vào hướng bóng rổ, 
+
+222
+00:14:24,197 --> 00:14:29,240
+do đó, những gì xuất hiện sẽ mã hóa tất cả những tên đó lại với nhau.
+
+223
+00:14:29,820 --> 00:14:34,200
+Và hãy nhớ rằng, đây là một quá trình xảy ra song song với từng vectơ đó.
+
+224
+00:14:34,800 --> 00:14:40,025
+Cụ thể hơn, khi lấy số GPT-3, điều này có nghĩa là khối này không chỉ có 50.000 
+
+225
+00:14:40,025 --> 00:14:44,860
+nơ-ron mà còn có số lượng mã thông báo trong đầu vào nhiều gấp 50.000 lần.
+
+226
+00:14:48,180 --> 00:14:51,559
+Vậy là toàn bộ hoạt động đã hoàn tất, hai tích ma trận, 
+
+227
+00:14:51,559 --> 00:14:55,180
+mỗi tích có thêm một độ lệch và một hàm cắt đơn giản ở giữa.
+
+228
+00:14:56,080 --> 00:14:59,350
+Bất kỳ ai đã xem các video trước đó của loạt bài này đều sẽ nhận ra cấu 
+
+229
+00:14:59,350 --> 00:15:02,620
+trúc này là loại mạng nơ-ron cơ bản nhất mà chúng ta đã nghiên cứu ở đó.
+
+230
+00:15:03,080 --> 00:15:06,100
+Trong ví dụ đó, máy tính được đào tạo để nhận dạng chữ số viết tay.
+
+231
+00:15:06,580 --> 00:15:11,096
+Ở đây, trong bối cảnh của một bộ chuyển đổi cho một mô hình ngôn ngữ lớn, 
+
+232
+00:15:11,096 --> 00:15:15,368
+đây là một phần trong một kiến trúc lớn hơn và bất kỳ nỗ lực nào nhằm 
+
+233
+00:15:15,368 --> 00:15:19,579
+diễn giải chính xác chức năng của nó đều gắn chặt với ý tưởng mã hóa 
+
+234
+00:15:19,579 --> 00:15:23,180
+thông tin thành các vectơ của không gian nhúng nhiều chiều.
+
+235
+00:15:24,260 --> 00:15:28,534
+Đó là bài học cốt lõi, nhưng tôi muốn lùi lại một bước và suy ngẫm về hai điều khác nhau, 
+
+236
+00:15:28,534 --> 00:15:32,001
+điều đầu tiên là một loại sổ sách kế toán, và điều thứ hai liên quan đến 
+
+237
+00:15:32,001 --> 00:15:35,467
+một sự thật rất đáng suy ngẫm về các chiều không gian cao hơn mà thực ra 
+
+238
+00:15:35,467 --> 00:15:38,080
+tôi không biết cho đến khi tôi tìm hiểu về máy biến áp.
+
+239
+00:15:41,080 --> 00:15:45,808
+Trong hai chương trước, bạn và tôi đã bắt đầu đếm tổng số tham số trong GPT-3 và xem 
+
+240
+00:15:45,808 --> 00:15:50,760
+chính xác vị trí của chúng, vậy nên chúng ta hãy nhanh chóng hoàn thành trò chơi tại đây.
+
+241
+00:15:51,400 --> 00:15:56,680
+Tôi đã đề cập đến cách ma trận chiếu lên này có chưa đến 50.000 hàng và 
+
+242
+00:15:56,680 --> 00:16:02,180
+mỗi hàng khớp với kích thước của không gian nhúng, đối với GPT-3 là 12.288.
+
+243
+00:16:03,240 --> 00:16:08,652
+Nhân chúng lại với nhau, ta được 604 triệu tham số chỉ dành cho ma trận đó 
+
+244
+00:16:08,652 --> 00:16:13,920
+và phép chiếu xuống cũng có cùng số tham số nhưng có hình dạng chuyển vị.
+
+245
+00:16:14,500 --> 00:16:17,400
+Vì vậy, tổng cộng chúng cung cấp khoảng 1,2 tỷ tham số.
+
+246
+00:16:18,280 --> 00:16:21,145
+Vectơ độ lệch cũng chiếm một vài tham số nữa, nhưng nó chỉ chiếm 
+
+247
+00:16:21,145 --> 00:16:24,100
+một tỷ lệ nhỏ trong tổng số nên tôi thậm chí sẽ không trình bày nó.
+
+248
+00:16:24,660 --> 00:16:31,789
+Trong GPT-3, chuỗi vectơ nhúng này chạy qua không chỉ một mà là 96 MLP riêng biệt, 
+
+249
+00:16:31,789 --> 00:16:38,060
+do đó tổng số tham số dành cho tất cả các khối này lên tới khoảng 116 tỷ.
+
+250
+00:16:38,820 --> 00:16:43,066
+Con số này chiếm khoảng 2/3 tổng số tham số trong mạng và khi bạn thêm 
+
+251
+00:16:43,066 --> 00:16:46,894
+nó vào mọi thứ chúng ta đã có trước đó, đối với các khối chú ý, 
+
+252
+00:16:46,894 --> 00:16:51,620
+nhúng và hủy nhúng, bạn thực sự sẽ nhận được tổng cộng 175 tỷ như đã quảng cáo.
+
+253
+00:16:53,060 --> 00:16:56,616
+Có lẽ đáng đề cập đến một tập hợp các tham số khác liên quan đến 
+
+254
+00:16:56,616 --> 00:16:59,517
+các bước chuẩn hóa mà phần giải thích này đã bỏ qua, 
+
+255
+00:16:59,517 --> 00:17:03,840
+nhưng giống như vectơ độ lệch, chúng chỉ chiếm một tỷ lệ rất nhỏ trong tổng số.
+
+256
+00:17:05,900 --> 00:17:09,083
+Về điểm phản ánh thứ hai, bạn có thể tự hỏi liệu ví dụ đồ chơi trung 
+
+257
+00:17:09,083 --> 00:17:12,220
+tâm mà chúng ta đã dành nhiều thời gian cho có phản ánh cách các sự 
+
+258
+00:17:12,220 --> 00:17:15,680
+kiện thực sự được lưu trữ trong các mô hình ngôn ngữ lớn thực sự hay không.
+
+259
+00:17:16,319 --> 00:17:19,960
+Đúng là các hàng của ma trận đầu tiên có thể được coi là các hướng trong 
+
+260
+00:17:19,960 --> 00:17:23,700
+không gian nhúng này và điều đó có nghĩa là sự kích hoạt của mỗi nơ-ron sẽ 
+
+261
+00:17:23,700 --> 00:17:27,540
+cho bạn biết mức độ một vectơ nhất định liên kết với một hướng cụ thể nào đó.
+
+262
+00:17:27,760 --> 00:17:30,962
+Các cột của ma trận thứ hai cũng đúng khi cho bạn biết 
+
+263
+00:17:30,962 --> 00:17:34,340
+những gì sẽ được thêm vào kết quả nếu nơ-ron đó hoạt động.
+
+264
+00:17:34,640 --> 00:17:36,800
+Cả hai đều chỉ là những sự thật toán học.
+
+265
+00:17:37,740 --> 00:17:41,887
+Tuy nhiên, bằng chứng cho thấy rằng các tế bào thần kinh riêng lẻ rất hiếm khi 
+
+266
+00:17:41,887 --> 00:17:45,037
+đại diện cho một đặc điểm sạch duy nhất như Michael Jordan, 
+
+267
+00:17:45,037 --> 00:17:48,502
+và thực tế có thể có một lý do rất chính đáng cho trường hợp này, 
+
+268
+00:17:48,502 --> 00:17:52,544
+liên quan đến một ý tưởng đang được các nhà nghiên cứu về khả năng diễn giải 
+
+269
+00:17:52,544 --> 00:17:54,120
+hiện nay gọi là sự chồng chập.
+
+270
+00:17:54,640 --> 00:17:58,447
+Đây là giả thuyết có thể giúp giải thích tại sao các mô hình lại đặc 
+
+271
+00:17:58,447 --> 00:18:02,420
+biệt khó diễn giải và tại sao chúng có khả năng mở rộng đáng ngạc nhiên.
+
+272
+00:18:03,500 --> 00:18:08,542
+Ý tưởng cơ bản là nếu bạn có một không gian n chiều và bạn muốn biểu diễn một loạt các 
+
+273
+00:18:08,542 --> 00:18:13,643
+đặc điểm khác nhau bằng các hướng vuông góc với nhau trong không gian đó, bạn biết đấy, 
+
+274
+00:18:13,643 --> 00:18:17,004
+theo cách đó, nếu bạn thêm một thành phần theo một hướng, 
+
+275
+00:18:17,004 --> 00:18:19,844
+nó sẽ không ảnh hưởng đến bất kỳ hướng nào khác, 
+
+276
+00:18:19,844 --> 00:18:23,960
+thì số lượng vectơ tối đa bạn có thể phù hợp chỉ là n, tức là số chiều.
+
+277
+00:18:24,600 --> 00:18:27,620
+Đối với một nhà toán học, đây thực sự là định nghĩa về chiều.
+
+278
+00:18:28,220 --> 00:18:33,580
+Nhưng điều thú vị là nếu bạn nới lỏng một chút sự hạn chế đó và chấp nhận một số tiếng ồn.
+
+279
+00:18:34,180 --> 00:18:38,938
+Giả sử bạn cho phép các đặc điểm đó được biểu diễn bằng các vectơ không hoàn 
+
+280
+00:18:38,938 --> 00:18:43,820
+toàn vuông góc, mà chỉ gần như vuông góc, có thể cách nhau khoảng 89 đến 91 độ.
+
+281
+00:18:44,820 --> 00:18:48,020
+Nếu chúng ta ở trong không gian hai hoặc ba chiều thì điều này không tạo ra sự khác biệt.
+
+282
+00:18:48,260 --> 00:18:51,899
+Điều đó hầu như không cho bạn thêm bất kỳ khoảng trống nào để đưa thêm nhiều vectơ vào, 
+
+283
+00:18:51,899 --> 00:18:54,215
+điều này càng khiến cho việc đối với các chiều cao hơn, 
+
+284
+00:18:54,215 --> 00:18:56,780
+câu trả lời thay đổi đáng kể trở nên trái ngược với trực giác.
+
+285
+00:18:57,660 --> 00:19:01,723
+Tôi có thể cho bạn một minh họa thực sự nhanh chóng và đơn giản về 
+
+286
+00:19:01,723 --> 00:19:06,515
+điều này bằng cách sử dụng một số Python để tạo danh sách các vectơ 100 chiều, 
+
+287
+00:19:06,515 --> 00:19:11,670
+mỗi vectơ được khởi tạo ngẫu nhiên và danh sách này sẽ chứa 10.000 vectơ riêng biệt, 
+
+288
+00:19:11,670 --> 00:19:14,400
+do đó có số vectơ nhiều gấp 100 lần số chiều.
+
+289
+00:19:15,320 --> 00:19:19,900
+Biểu đồ này cho thấy sự phân bố góc giữa các cặp vectơ này.
+
+290
+00:19:20,680 --> 00:19:25,370
+Vì chúng bắt đầu ngẫu nhiên nên các góc đó có thể nằm trong khoảng từ 0 đến 180 độ, 
+
+291
+00:19:25,370 --> 00:19:29,112
+nhưng bạn sẽ nhận thấy rằng, ngay cả đối với các vectơ ngẫu nhiên, 
+
+292
+00:19:29,112 --> 00:19:31,960
+vẫn có độ lệch lớn khiến mọi thứ gần hơn với 90 độ.
+
+293
+00:19:32,500 --> 00:19:36,892
+Sau đó, điều tôi sẽ làm là chạy một quy trình tối ưu hóa nhất định để liên 
+
+294
+00:19:36,892 --> 00:19:41,520
+tục thúc đẩy tất cả các vectơ này sao cho chúng trở nên vuông góc với nhau hơn.
+
+295
+00:19:42,060 --> 00:19:46,660
+Sau khi lặp lại nhiều lần, sự phân bố góc trông như thế này.
+
+296
+00:19:47,120 --> 00:19:52,047
+Chúng ta thực sự phải phóng to nó ở đây vì tất cả các góc có thể 
+
+297
+00:19:52,047 --> 00:19:56,900
+có giữa các cặp vectơ đều nằm trong phạm vi hẹp từ 89 đến 91 độ.
+
+298
+00:19:58,020 --> 00:20:02,422
+Nhìn chung, một hệ quả của cái gọi là định lý Johnson-Lindenstrauss 
+
+299
+00:20:02,422 --> 00:20:06,631
+là số lượng vectơ mà bạn có thể nhồi nhét vào một không gian gần 
+
+300
+00:20:06,631 --> 00:20:10,840
+như vuông góc như thế này sẽ tăng theo cấp số nhân theo số chiều.
+
+301
+00:20:11,960 --> 00:20:15,042
+Điều này rất quan trọng đối với các mô hình ngôn ngữ lớn, 
+
+302
+00:20:15,042 --> 00:20:18,923
+có thể được hưởng lợi từ việc liên kết các ý tưởng độc lập với các hướng 
+
+303
+00:20:18,923 --> 00:20:19,880
+gần như vuông góc.
+
+304
+00:20:20,000 --> 00:20:23,084
+Điều này có nghĩa là nó có thể lưu trữ nhiều ý tưởng hơn 
+
+305
+00:20:23,084 --> 00:20:26,440
+rất nhiều so với số chiều trong không gian mà nó được phân bổ.
+
+306
+00:20:27,320 --> 00:20:29,451
+Điều này có thể giải thích một phần tại sao hiệu suất 
+
+307
+00:20:29,451 --> 00:20:31,740
+của mô hình dường như tăng trưởng rất tốt theo kích thước.
+
+308
+00:20:32,540 --> 00:20:36,154
+Một không gian có số chiều gấp 10 lần có thể lưu 
+
+309
+00:20:36,154 --> 00:20:39,400
+trữ nhiều hơn gấp 10 lần số ý tưởng độc lập.
+
+310
+00:20:40,420 --> 00:20:43,620
+Và điều này không chỉ liên quan đến không gian nhúng nơi các 
+
+311
+00:20:43,620 --> 00:20:46,925
+vectơ chạy qua mô hình tồn tại mà còn liên quan đến vectơ chứa 
+
+312
+00:20:46,925 --> 00:20:50,440
+đầy nơ-ron ở giữa lớp perceptron đa lớp mà chúng ta vừa nghiên cứu.
+
+313
+00:20:50,960 --> 00:20:56,006
+Nói cách khác, ở kích thước của GPT-3, nó có thể không chỉ thăm dò 50.000 đặc điểm, 
+
+314
+00:20:56,006 --> 00:21:00,091
+mà nếu thay vào đó tận dụng khả năng bổ sung khổng lồ này bằng cách 
+
+315
+00:21:00,091 --> 00:21:03,215
+sử dụng các hướng gần như vuông góc của không gian, 
+
+316
+00:21:03,215 --> 00:21:07,240
+nó có thể thăm dò nhiều đặc điểm hơn nữa của vectơ đang được xử lý.
+
+317
+00:21:07,780 --> 00:21:11,035
+Nhưng nếu thực hiện được điều đó, điều đó có nghĩa là các đặc điểm 
+
+318
+00:21:11,035 --> 00:21:14,340
+riêng lẻ sẽ không thể nhìn thấy được khi một nơ-ron đơn lẻ sáng lên.
+
+319
+00:21:14,660 --> 00:21:17,020
+Thay vào đó, nó phải trông giống như một sự kết hợp cụ 
+
+320
+00:21:17,020 --> 00:21:19,380
+thể nào đó của các tế bào thần kinh, một sự chồng chập.
+
+321
+00:21:20,400 --> 00:21:23,438
+Đối với bất kỳ ai tò mò muốn tìm hiểu thêm, một thuật ngữ tìm kiếm có liên 
+
+322
+00:21:23,438 --> 00:21:25,424
+quan chính ở đây là bộ mã hóa tự động thưa thớt, 
+
+323
+00:21:25,424 --> 00:21:28,503
+đây là một công cụ mà một số người giải thích sử dụng để cố gắng trích xuất 
+
+324
+00:21:28,503 --> 00:21:31,583
+các tính năng thực sự, ngay cả khi chúng được chồng lên nhau rất nhiều trên 
+
+325
+00:21:31,583 --> 00:21:32,880
+tất cả các tế bào thần kinh này.
+
+326
+00:21:33,540 --> 00:21:36,800
+Tôi sẽ liên kết đến một số bài đăng thực sự tuyệt vời về chủ đề này.
+
+327
+00:21:37,880 --> 00:21:40,988
+Đến thời điểm này, chúng ta vẫn chưa đề cập đến mọi chi tiết của máy biến áp, 
+
+328
+00:21:40,988 --> 00:21:43,300
+nhưng bạn và tôi đã đề cập đến những điểm quan trọng nhất.
+
+329
+00:21:43,520 --> 00:21:47,640
+Điều chính mà tôi muốn đề cập trong chương tiếp theo là quá trình đào tạo.
+
+330
+00:21:48,460 --> 00:21:51,209
+Một mặt, câu trả lời ngắn gọn cho cách thức đào tạo hoạt động là tất cả 
+
+331
+00:21:51,209 --> 00:21:54,073
+đều dựa trên sự lan truyền ngược, và chúng tôi đã đề cập đến sự lan truyền 
+
+332
+00:21:54,073 --> 00:21:56,900
+ngược trong một bối cảnh riêng biệt ở các chương trước trong loạt bài này.
+
+333
+00:21:57,220 --> 00:22:00,756
+Nhưng vẫn còn nhiều điều cần thảo luận, như hàm chi phí cụ thể được sử 
+
+334
+00:22:00,756 --> 00:22:04,143
+dụng cho các mô hình ngôn ngữ, ý tưởng tinh chỉnh bằng cách sử dụng 
+
+335
+00:22:04,143 --> 00:22:07,780
+học tăng cường với phản hồi của con người và khái niệm về quy luật tỷ lệ.
+
+336
+00:22:08,960 --> 00:22:12,142
+Lưu ý nhanh cho những người theo dõi tích cực trong số các bạn, 
+
+337
+00:22:12,142 --> 00:22:15,822
+có một số video không liên quan đến máy học mà tôi rất muốn xem hết trước 
+
+338
+00:22:15,822 --> 00:22:20,000
+khi viết chương tiếp theo. Có thể sẽ mất một thời gian, nhưng tôi hứa sẽ sớm ra mắt.
+
+339
+00:22:35,640 --> 00:22:37,920
+Cảm ơn.
+

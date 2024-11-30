@@ -1,0 +1,1416 @@
+1
+00:00:00,000 --> 00:00:04,450
+Se você alimentar um grande modelo de linguagem com a frase &quot;Michael Jordan joga 
+
+2
+00:00:04,450 --> 00:00:07,762
+basquete&quot;, e fizer com que ele preveja o que vem a seguir, 
+
+3
+00:00:07,762 --> 00:00:11,540
+e ele prever corretamente o basquete, isso sugeriria que em algum lugar, 
+
+4
+00:00:11,540 --> 00:00:14,128
+dentro de suas centenas de bilhões de parâmetros, 
+
+5
+00:00:14,128 --> 00:00:18,320
+há conhecimento incorporado sobre uma pessoa específica e seu esporte específico.
+
+6
+00:00:18,940 --> 00:00:22,213
+E acho que, em geral, qualquer um que tenha brincado com um desses modelos 
+
+7
+00:00:22,213 --> 00:00:25,400
+tem a clara sensação de que ele memorizou toneladas e toneladas de fatos.
+
+8
+00:00:25,700 --> 00:00:29,160
+Então, uma pergunta razoável que você poderia fazer é: como isso funciona exatamente?
+
+9
+00:00:29,160 --> 00:00:31,040
+E onde esses fatos vivem?
+
+10
+00:00:35,720 --> 00:00:38,656
+Em dezembro passado, alguns pesquisadores do Google DeepMind 
+
+11
+00:00:38,656 --> 00:00:41,640
+publicaram um artigo sobre esse assunto e usaram esse exemplo 
+
+12
+00:00:41,640 --> 00:00:44,480
+específico de correspondência de atletas com seus esportes.
+
+13
+00:00:44,900 --> 00:00:49,347
+E embora uma compreensão mecanicista completa de como os fatos são armazenados permaneça 
+
+14
+00:00:49,347 --> 00:00:52,745
+sem solução, eles tiveram alguns resultados parciais interessantes, 
+
+15
+00:00:52,745 --> 00:00:57,043
+incluindo a conclusão geral de alto nível de que os fatos parecem viver dentro de uma 
+
+16
+00:00:57,043 --> 00:01:01,490
+parte específica dessas redes, conhecidas fantasiosamente como perceptrons multicamadas, 
+
+17
+00:01:01,490 --> 00:01:02,640
+ou MLPs, para abreviar.
+
+18
+00:01:03,120 --> 00:01:06,246
+Nos últimos capítulos, você e eu nos aprofundamos nos detalhes 
+
+19
+00:01:06,246 --> 00:01:09,522
+por trás dos transformadores, na arquitetura subjacente a grandes 
+
+20
+00:01:09,522 --> 00:01:12,500
+modelos de linguagem e também em muitas outras IAs modernas.
+
+21
+00:01:13,060 --> 00:01:16,200
+No capítulo mais recente, nos concentramos em uma parte chamada Atenção.
+
+22
+00:01:16,840 --> 00:01:20,914
+E o próximo passo para você e para mim é investigar os detalhes do que acontece 
+
+23
+00:01:20,914 --> 00:01:25,040
+dentro desses perceptrons multicamadas, que compõem a outra grande parte da rede.
+
+24
+00:01:25,680 --> 00:01:30,100
+O cálculo aqui é relativamente simples, especialmente quando comparado à atenção.
+
+25
+00:01:30,560 --> 00:01:33,240
+Tudo se resume essencialmente a um par de multiplicações 
+
+26
+00:01:33,240 --> 00:01:34,980
+de matrizes com algo simples no meio.
+
+27
+00:01:35,720 --> 00:01:40,460
+No entanto, interpretar o que esses cálculos estão fazendo é extremamente desafiador.
+
+28
+00:01:41,560 --> 00:01:45,393
+Nosso principal objetivo aqui é percorrer os cálculos e torná-los memoráveis, 
+
+29
+00:01:45,393 --> 00:01:49,326
+mas gostaria de fazer isso no contexto de mostrar um exemplo específico de como 
+
+30
+00:01:49,326 --> 00:01:53,160
+um desses blocos poderia, pelo menos em princípio, armazenar um fato concreto.
+
+31
+00:01:53,580 --> 00:01:57,080
+Mais especificamente, ele armazenará o fato de que Michael Jordan joga basquete.
+
+32
+00:01:58,080 --> 00:02:00,681
+Devo mencionar que o layout aqui foi inspirado em uma conversa 
+
+33
+00:02:00,681 --> 00:02:03,200
+que tive com um desses pesquisadores da DeepMind, Neil Nanda.
+
+34
+00:02:04,060 --> 00:02:07,436
+Na maior parte, presumo que você tenha assistido aos dois últimos 
+
+35
+00:02:07,436 --> 00:02:10,658
+capítulos ou tenha uma noção básica do que é um transformador, 
+
+36
+00:02:10,658 --> 00:02:14,700
+mas relembrar nunca é demais, então aqui vai um rápido lembrete do fluxo geral.
+
+37
+00:02:15,340 --> 00:02:18,157
+Você e eu temos estudado um modelo treinado para 
+
+38
+00:02:18,157 --> 00:02:21,320
+receber um pedaço de texto e prever o que vem a seguir.
+
+39
+00:02:21,720 --> 00:02:24,913
+O texto de entrada é primeiro dividido em vários tokens, 
+
+40
+00:02:24,913 --> 00:02:29,508
+o que significa pequenos pedaços que normalmente são palavras ou pequenos pedaços 
+
+41
+00:02:29,508 --> 00:02:33,767
+de palavras, e cada token é associado a um vetor de alta dimensão, ou seja, 
+
+42
+00:02:33,767 --> 00:02:35,280
+uma longa lista de números.
+
+43
+00:02:35,840 --> 00:02:41,094
+Essa sequência de vetores passa repetidamente por dois tipos de operação: atenção, 
+
+44
+00:02:41,094 --> 00:02:44,639
+que permite que os vetores passem informações entre si, 
+
+45
+00:02:44,639 --> 00:02:49,007
+e então os perceptrons multicamadas, que é o que vamos abordar hoje, 
+
+46
+00:02:49,007 --> 00:02:52,300
+e também há uma certa etapa de normalização no meio.
+
+47
+00:02:53,300 --> 00:02:56,530
+Depois que a sequência de vetores tiver passado por muitas, 
+
+48
+00:02:56,530 --> 00:03:00,675
+muitas iterações diferentes de ambos os blocos, a esperança é que, no final, 
+
+49
+00:03:00,675 --> 00:03:04,498
+cada vetor tenha absorvido informações suficientes, tanto do contexto, 
+
+50
+00:03:04,498 --> 00:03:09,290
+de todas as outras palavras na entrada, quanto do conhecimento geral que foi incorporado 
+
+51
+00:03:09,290 --> 00:03:13,866
+aos pesos do modelo por meio do treinamento, para que ele possa ser usado para fazer 
+
+52
+00:03:13,866 --> 00:03:16,020
+uma previsão de qual token vem a seguir.
+
+53
+00:03:16,860 --> 00:03:20,823
+Uma das principais ideias que quero que você tenha em mente é que todos esses 
+
+54
+00:03:20,823 --> 00:03:25,345
+vetores vivem em um espaço de altíssima dimensão e, quando você pensa sobre esse espaço, 
+
+55
+00:03:25,345 --> 00:03:28,800
+diferentes direções podem codificar diferentes tipos de significado.
+
+56
+00:03:30,120 --> 00:03:34,034
+Então, um exemplo muito clássico ao qual gosto de me referir é como se você 
+
+57
+00:03:34,034 --> 00:03:37,639
+observar a incorporação de mulher e subtrair a incorporação de homem, 
+
+58
+00:03:37,639 --> 00:03:42,016
+e der esse pequeno passo e adicioná-lo a outro substantivo masculino, algo como tio, 
+
+59
+00:03:42,016 --> 00:03:46,240
+você chega a um lugar muito, muito próximo do substantivo feminino correspondente.
+
+60
+00:03:46,440 --> 00:03:50,880
+Nesse sentido, essa direção específica codifica informações de gênero.
+
+61
+00:03:51,640 --> 00:03:55,545
+A ideia é que muitas outras direções distintas neste espaço de super alta dimensão 
+
+62
+00:03:55,545 --> 00:03:59,640
+poderiam corresponder a outras características que o modelo poderia querer representar.
+
+63
+00:04:01,400 --> 00:04:03,973
+Em um transformador, esses vetores não codificam 
+
+64
+00:04:03,973 --> 00:04:06,180
+apenas o significado de uma única palavra.
+
+65
+00:04:06,680 --> 00:04:10,876
+À medida que fluem pela rede, eles absorvem um significado muito mais rico com 
+
+66
+00:04:10,876 --> 00:04:15,180
+base em todo o contexto ao seu redor e também com base no conhecimento do modelo.
+
+67
+00:04:15,880 --> 00:04:18,631
+No final das contas, cada um precisa codificar algo muito, 
+
+68
+00:04:18,631 --> 00:04:20,869
+muito além do significado de uma única palavra, 
+
+69
+00:04:20,869 --> 00:04:23,760
+já que precisa ser suficiente para prever o que virá a seguir.
+
+70
+00:04:24,560 --> 00:04:28,417
+Já vimos como os blocos de atenção permitem que você incorpore contexto, 
+
+71
+00:04:28,417 --> 00:04:32,750
+mas a maioria dos parâmetros do modelo, na verdade, reside dentro dos blocos MLP, 
+
+72
+00:04:32,750 --> 00:04:37,294
+e uma ideia do que eles podem estar fazendo é que eles oferecem capacidade extra para 
+
+73
+00:04:37,294 --> 00:04:38,140
+armazenar fatos.
+
+74
+00:04:38,720 --> 00:04:42,375
+Como eu disse, a lição aqui vai se concentrar no exemplo do brinquedo de concreto 
+
+75
+00:04:42,375 --> 00:04:46,120
+de como exatamente ele poderia armazenar o fato de que Michael Jordan joga basquete.
+
+76
+00:04:47,120 --> 00:04:49,430
+Agora, este exemplo de brinquedo vai exigir que você e eu 
+
+77
+00:04:49,430 --> 00:04:51,900
+façamos algumas suposições sobre esse espaço de alta dimensão.
+
+78
+00:04:52,360 --> 00:04:57,693
+Primeiro, vamos supor que uma das direções representa a ideia do primeiro nome Michael, 
+
+79
+00:04:57,693 --> 00:05:02,662
+e então outra direção quase perpendicular representa a ideia do sobrenome Jordan, 
+
+80
+00:05:02,662 --> 00:05:06,420
+e então uma terceira direção representará a ideia de basquete.
+
+81
+00:05:07,400 --> 00:05:11,109
+Então, especificamente, o que quero dizer com isso é que se você olhar na 
+
+82
+00:05:11,109 --> 00:05:14,218
+rede e selecionar um dos vetores que estão sendo processados, 
+
+83
+00:05:14,218 --> 00:05:17,627
+se o produto escalar com a direção do primeiro nome Michael for um, 
+
+84
+00:05:17,627 --> 00:05:21,387
+isso é o que significaria para o vetor codificar a ideia de uma pessoa com 
+
+85
+00:05:21,387 --> 00:05:22,340
+esse primeiro nome.
+
+86
+00:05:23,800 --> 00:05:26,099
+Caso contrário, esse produto escalar seria zero ou negativo, 
+
+87
+00:05:26,099 --> 00:05:28,700
+o que significa que o vetor não se alinha realmente com essa direção.
+
+88
+00:05:29,420 --> 00:05:32,196
+E para simplificar, vamos ignorar completamente a questão muito 
+
+89
+00:05:32,196 --> 00:05:35,320
+razoável do que significaria se esse produto escalar fosse maior que um.
+
+90
+00:05:36,200 --> 00:05:40,073
+Da mesma forma, seu produto escalar com essas outras direções 
+
+91
+00:05:40,073 --> 00:05:43,760
+lhe diria se ele representa o sobrenome Jordan ou basquete.
+
+92
+00:05:44,740 --> 00:05:49,070
+Então, digamos que um vetor deve representar o nome completo, Michael Jordan, 
+
+93
+00:05:49,070 --> 00:05:52,680
+então seu produto escalar com ambas as direções teria que ser um.
+
+94
+00:05:53,480 --> 00:05:56,567
+Como o texto Michael Jordan abrange dois tokens diferentes, 
+
+95
+00:05:56,567 --> 00:06:00,888
+isso também significa que temos que assumir que um bloco de atenção anterior passou 
+
+96
+00:06:00,888 --> 00:06:03,975
+informações com sucesso para o segundo desses dois vetores, 
+
+97
+00:06:03,975 --> 00:06:06,960
+de modo a garantir que ele possa codificar ambos os nomes.
+
+98
+00:06:07,940 --> 00:06:11,480
+Com todas essas suposições, vamos agora mergulhar no cerne da lição.
+
+99
+00:06:11,880 --> 00:06:14,980
+O que acontece dentro de um perceptron multicamadas?
+
+100
+00:06:17,100 --> 00:06:21,229
+Você pode pensar nessa sequência de vetores fluindo para o bloco e lembrar 
+
+101
+00:06:21,229 --> 00:06:25,580
+que cada vetor foi originalmente associado a um dos tokens do texto de entrada.
+
+102
+00:06:26,080 --> 00:06:29,320
+O que vai acontecer é que cada vetor individual dessa sequência 
+
+103
+00:06:29,320 --> 00:06:33,676
+passa por uma curta série de operações, vamos descompactá-las em apenas um momento e, 
+
+104
+00:06:33,676 --> 00:06:36,360
+no final, obteremos outro vetor com a mesma dimensão.
+
+105
+00:06:36,880 --> 00:06:40,584
+Esse outro vetor será adicionado ao original que fluiu para dentro, 
+
+106
+00:06:40,584 --> 00:06:43,200
+e essa soma será o resultado que flui para fora.
+
+107
+00:06:43,720 --> 00:06:48,090
+Essa sequência de operações é algo que você aplica a cada vetor na sequência, 
+
+108
+00:06:48,090 --> 00:06:51,620
+associado a cada token na entrada, e tudo acontece em paralelo.
+
+109
+00:06:52,100 --> 00:06:54,453
+Em particular, os vetores não conversam entre si nesta etapa, 
+
+110
+00:06:54,453 --> 00:06:56,200
+eles estão todos fazendo suas próprias coisas.
+
+111
+00:06:56,720 --> 00:06:59,667
+E para você e para mim, isso na verdade torna tudo muito mais simples, 
+
+112
+00:06:59,667 --> 00:07:02,863
+porque significa que se entendermos o que acontece com apenas um dos vetores 
+
+113
+00:07:02,863 --> 00:07:06,060
+através desse bloco, efetivamente entenderemos o que acontece com todos eles.
+
+114
+00:07:07,100 --> 00:07:11,622
+Quando digo que esse bloco vai codificar o fato de que Michael Jordan joga basquete, 
+
+115
+00:07:11,622 --> 00:07:15,772
+o que quero dizer é que se um vetor fluir codificando o primeiro nome Michael 
+
+116
+00:07:15,772 --> 00:07:20,082
+e o sobrenome Jordan, então essa sequência de cálculos produzirá algo que inclui 
+
+117
+00:07:20,082 --> 00:07:24,020
+essa direção basquete, que é o que será adicionado ao vetor nessa posição.
+
+118
+00:07:25,600 --> 00:07:29,700
+O primeiro passo desse processo parece multiplicar esse vetor por uma matriz muito grande.
+
+119
+00:07:30,040 --> 00:07:31,980
+Não há surpresas nisso, isso é aprendizado profundo.
+
+120
+00:07:32,680 --> 00:07:34,606
+E essa matriz, como todas as outras que vimos, 
+
+121
+00:07:34,606 --> 00:07:37,720
+é preenchida com parâmetros de modelo que são aprendidos a partir de dados, 
+
+122
+00:07:37,720 --> 00:07:41,122
+o que você pode imaginar como um monte de botões e mostradores que são ajustados e 
+
+123
+00:07:41,122 --> 00:07:43,540
+ajustados para determinar qual é o comportamento do modelo.
+
+124
+00:07:44,500 --> 00:07:48,595
+Agora, uma boa maneira de pensar sobre multiplicação de matrizes é imaginar cada linha 
+
+125
+00:07:48,595 --> 00:07:52,690
+dessa matriz como sendo seu próprio vetor e pegar um monte de produtos escalares entre 
+
+126
+00:07:52,690 --> 00:07:56,880
+essas linhas e o vetor que está sendo processado, que rotularei como E para incorporação.
+
+127
+00:07:57,280 --> 00:08:00,688
+Por exemplo, suponha que a primeira linha seja igual a esta 
+
+128
+00:08:00,688 --> 00:08:04,040
+direção do primeiro nome Michael que presumimos que exista.
+
+129
+00:08:04,320 --> 00:08:09,265
+Isso significaria que o primeiro componente nesta saída, este produto escalar aqui, 
+
+130
+00:08:09,265 --> 00:08:12,798
+seria um se esse vetor codificasse o primeiro nome Michael, 
+
+131
+00:08:12,798 --> 00:08:14,800
+e zero ou negativo caso contrário.
+
+132
+00:08:15,880 --> 00:08:19,412
+Ainda mais divertido, reserve um momento para pensar no que significaria se a 
+
+133
+00:08:19,412 --> 00:08:23,080
+primeira fileira fosse essa direção: primeiro nome Michael mais sobrenome Jordan.
+
+134
+00:08:23,700 --> 00:08:27,420
+E para simplificar, deixe-me escrever isso como M mais J.
+
+135
+00:08:28,080 --> 00:08:31,134
+Então, pegando um produto escalar com esse E incorporado, 
+
+136
+00:08:31,134 --> 00:08:34,980
+as coisas se distribuem muito bem, então parece M ponto E mais J ponto E.
+
+137
+00:08:34,980 --> 00:08:39,992
+E observe como isso significa que o valor final seria dois se o vetor codificasse 
+
+138
+00:08:39,992 --> 00:08:44,700
+o nome completo Michael Jordan, caso contrário seria um ou algo menor que um.
+
+139
+00:08:45,340 --> 00:08:47,260
+E essa é apenas uma linha nesta matriz.
+
+140
+00:08:47,600 --> 00:08:51,574
+Você pode pensar em todas as outras linhas fazendo paralelamente outros tipos de 
+
+141
+00:08:51,574 --> 00:08:55,500
+perguntas, investigando outros tipos de características do vetor que está sendo 
+
+142
+00:08:55,500 --> 00:08:56,040
+processado.
+
+143
+00:08:56,700 --> 00:08:59,548
+Muitas vezes, essa etapa também envolve a adição de outro vetor à saída, 
+
+144
+00:08:59,548 --> 00:09:02,240
+que está cheio de parâmetros do modelo aprendidos a partir dos dados.
+
+145
+00:09:02,240 --> 00:09:04,560
+Esse outro vetor é conhecido como viés.
+
+146
+00:09:05,180 --> 00:09:08,569
+No nosso exemplo, quero que você imagine que o valor desse viés 
+
+147
+00:09:08,569 --> 00:09:11,958
+no primeiro componente é negativo um, o que significa que nossa 
+
+148
+00:09:11,958 --> 00:09:15,560
+saída final se parece com o produto escalar relevante, mas menos um.
+
+149
+00:09:16,120 --> 00:09:20,051
+Você pode perguntar, com razão, por que eu gostaria que você assumisse que 
+
+150
+00:09:20,051 --> 00:09:23,930
+o modelo aprendeu isso, e em um momento você verá por que é muito claro e 
+
+151
+00:09:23,930 --> 00:09:27,547
+agradável se tivermos um valor aqui que é positivo se, e somente se, 
+
+152
+00:09:27,547 --> 00:09:32,160
+um vetor codifica o nome completo Michael Jordan, e, caso contrário, é zero ou negativo.
+
+153
+00:09:33,040 --> 00:09:38,119
+O número total de linhas nesta matriz, que é algo como o número de perguntas feitas, 
+
+154
+00:09:38,119 --> 00:09:42,780
+no caso do GPT-3, cujos números estamos acompanhando, é pouco menos de 50.000.
+
+155
+00:09:43,100 --> 00:09:46,640
+Na verdade, é exatamente quatro vezes o número de dimensões neste espaço de incorporação.
+
+156
+00:09:46,920 --> 00:09:47,900
+Essa é uma escolha de design.
+
+157
+00:09:47,940 --> 00:09:50,370
+Você pode aumentar ou diminuir, mas ter um múltiplo 
+
+158
+00:09:50,370 --> 00:09:52,240
+limpo tende a ser favorável ao hardware.
+
+159
+00:09:52,740 --> 00:09:57,406
+Como essa matriz cheia de pesos nos mapeia para um espaço dimensional mais alto, 
+
+160
+00:09:57,406 --> 00:09:59,020
+vou chamá-la de W para cima.
+
+161
+00:09:59,020 --> 00:10:02,296
+Vou continuar rotulando o vetor que estamos processando como E, 
+
+162
+00:10:02,296 --> 00:10:06,238
+e vamos rotular esse vetor de polarização como B para cima e colocar tudo de 
+
+163
+00:10:06,238 --> 00:10:07,160
+volta no diagrama.
+
+164
+00:10:09,180 --> 00:10:12,743
+Neste ponto, o problema é que essa operação é puramente linear, 
+
+165
+00:10:12,743 --> 00:10:15,360
+mas a linguagem é um processo muito não linear.
+
+166
+00:10:15,880 --> 00:10:19,691
+Se a entrada que estamos medindo for alta para Michael mais Jordan, 
+
+167
+00:10:19,691 --> 00:10:23,727
+ela também seria necessariamente desencadeada por Michael mais Phelps e 
+
+168
+00:10:23,727 --> 00:10:28,100
+também Alexis mais Jordan, apesar de não estarem relacionados conceitualmente.
+
+169
+00:10:28,540 --> 00:10:32,000
+O que você realmente quer é um simples sim ou não para o nome completo.
+
+170
+00:10:32,900 --> 00:10:35,250
+Então o próximo passo é passar esse grande vetor 
+
+171
+00:10:35,250 --> 00:10:37,840
+intermediário por uma função não linear muito simples.
+
+172
+00:10:38,360 --> 00:10:42,814
+Uma escolha comum é aquela que pega todos os valores negativos e os mapeia para zero, 
+
+173
+00:10:42,814 --> 00:10:45,300
+deixando todos os valores positivos inalterados.
+
+174
+00:10:46,440 --> 00:10:50,857
+E continuando com a tradição de aprendizado profundo de nomes excessivamente elaborados, 
+
+175
+00:10:50,857 --> 00:10:54,878
+essa função muito simples é frequentemente chamada de unidade linear retificada, 
+
+176
+00:10:54,878 --> 00:10:56,020
+ou ReLU, para abreviar.
+
+177
+00:10:56,020 --> 00:10:57,880
+Veja como fica o gráfico.
+
+178
+00:10:58,300 --> 00:11:02,365
+Então, tomando nosso exemplo imaginado, onde essa primeira entrada do vetor 
+
+179
+00:11:02,365 --> 00:11:06,699
+intermediário é um, se e somente se o nome completo for Michael Jordan e zero ou 
+
+180
+00:11:06,699 --> 00:11:09,641
+negativo caso contrário, depois de passá-lo pelo ReLU, 
+
+181
+00:11:09,641 --> 00:11:14,028
+você termina com um valor muito limpo, onde todos os valores zero e negativos são 
+
+182
+00:11:14,028 --> 00:11:15,740
+simplesmente cortados para zero.
+
+183
+00:11:16,100 --> 00:11:19,780
+Portanto, essa saída seria um para o nome completo Michael Jordan e zero para outros.
+
+184
+00:11:20,560 --> 00:11:24,120
+Em outras palavras, ele imita muito diretamente o comportamento de uma porta AND.
+
+185
+00:11:25,660 --> 00:11:29,281
+Muitas vezes, os modelos usam uma função ligeiramente modificada chamada JLU, 
+
+186
+00:11:29,281 --> 00:11:32,020
+que tem o mesmo formato básico, só que um pouco mais suave.
+
+187
+00:11:32,500 --> 00:11:35,720
+Mas para nossos propósitos, fica um pouco mais limpo se pensarmos apenas no ReLU.
+
+188
+00:11:36,740 --> 00:11:40,593
+Além disso, quando você ouve as pessoas se referindo aos neurônios de um transformador, 
+
+189
+00:11:40,593 --> 00:11:42,520
+elas estão falando sobre esses valores aqui.
+
+190
+00:11:42,900 --> 00:11:47,396
+Sempre que você vê aquela imagem comum de rede neural com uma camada de pontos e um 
+
+191
+00:11:47,396 --> 00:11:51,999
+monte de linhas conectando-se à camada anterior, que vimos anteriormente nesta série, 
+
+192
+00:11:51,999 --> 00:11:56,014
+isso normalmente significa transmitir essa combinação de uma etapa linear, 
+
+193
+00:11:56,014 --> 00:12:00,564
+uma multiplicação de matriz, seguida por alguma função não linear simples de termos, 
+
+194
+00:12:00,564 --> 00:12:01,260
+como um ReLU.
+
+195
+00:12:02,500 --> 00:12:05,789
+Você diria que esse neurônio está ativo sempre que esse valor 
+
+196
+00:12:05,789 --> 00:12:08,920
+for positivo e que ele está inativo se esse valor for zero.
+
+197
+00:12:10,120 --> 00:12:12,380
+O próximo passo é muito parecido com o primeiro.
+
+198
+00:12:12,560 --> 00:12:16,580
+Você multiplica por uma matriz muito grande e adiciona um certo termo de viés.
+
+199
+00:12:16,980 --> 00:12:21,358
+Nesse caso, o número de dimensões na saída é reduzido novamente ao tamanho desse 
+
+200
+00:12:21,358 --> 00:12:25,520
+espaço de incorporação, então vou chamá-la de matriz de projeção descendente.
+
+201
+00:12:26,220 --> 00:12:29,460
+E desta vez, em vez de pensar nas coisas linha por linha, 
+
+202
+00:12:29,460 --> 00:12:31,360
+é melhor pensar coluna por coluna.
+
+203
+00:12:31,860 --> 00:12:36,561
+Veja bem, outra maneira de manter a multiplicação de matrizes na sua cabeça é imaginar 
+
+204
+00:12:36,561 --> 00:12:41,316
+que você está pegando cada coluna da matriz e multiplicando-a pelo termo correspondente 
+
+205
+00:12:41,316 --> 00:12:45,640
+no vetor que ela está processando e somando todas essas colunas redimensionadas.
+
+206
+00:12:46,840 --> 00:12:51,061
+A razão pela qual é melhor pensar dessa maneira é porque aqui as colunas têm a mesma 
+
+207
+00:12:51,061 --> 00:12:55,432
+dimensão que o espaço de incorporação, então podemos pensar nelas como direções naquele 
+
+208
+00:12:55,432 --> 00:12:55,780
+espaço.
+
+209
+00:12:56,140 --> 00:12:59,795
+Por exemplo, vamos imaginar que o modelo aprendeu a fazer a primeira 
+
+210
+00:12:59,795 --> 00:13:03,080
+coluna seguir essa direção de basquete que supomos que exista.
+
+211
+00:13:04,180 --> 00:13:07,641
+O que isso significaria é que quando o neurônio relevante naquela primeira 
+
+212
+00:13:07,641 --> 00:13:10,780
+posição estiver ativo, adicionaremos esta coluna ao resultado final.
+
+213
+00:13:11,140 --> 00:13:14,412
+Mas se esse neurônio estivesse inativo, se esse número fosse zero, 
+
+214
+00:13:14,412 --> 00:13:15,780
+então isso não teria efeito.
+
+215
+00:13:16,500 --> 00:13:18,060
+E não precisa ser só basquete.
+
+216
+00:13:18,220 --> 00:13:21,915
+O modelo também pode fazer parte desta coluna e de muitas outras características 
+
+217
+00:13:21,915 --> 00:13:25,200
+que ele deseja associar a algo que tenha o nome completo Michael Jordan.
+
+218
+00:13:26,980 --> 00:13:31,757
+E, ao mesmo tempo, todas as outras colunas nesta matriz estão dizendo o que 
+
+219
+00:13:31,757 --> 00:13:36,660
+será adicionado ao resultado final se o neurônio correspondente estiver ativo.
+
+220
+00:13:37,360 --> 00:13:41,483
+E se você tem um viés nesse caso, é algo que você está apenas adicionando todas as vezes, 
+
+221
+00:13:41,483 --> 00:13:43,500
+independentemente dos valores dos neurônios.
+
+222
+00:13:44,060 --> 00:13:45,280
+Você deve estar se perguntando o que isso está fazendo.
+
+223
+00:13:45,540 --> 00:13:48,110
+Como acontece com todos os objetos preenchidos com parâmetros aqui, 
+
+224
+00:13:48,110 --> 00:13:49,320
+é meio difícil dizer exatamente.
+
+225
+00:13:49,320 --> 00:13:52,429
+Talvez haja alguma contabilidade que a rede precise fazer, 
+
+226
+00:13:52,429 --> 00:13:54,380
+mas você pode ignorá-la por enquanto.
+
+227
+00:13:54,860 --> 00:13:57,638
+Para tornar nossa notação um pouco mais compacta novamente, 
+
+228
+00:13:57,638 --> 00:14:00,277
+chamarei essa grande matriz de W down e, da mesma forma, 
+
+229
+00:14:00,277 --> 00:14:04,260
+chamarei esse vetor de polarização de B down e o colocarei de volta em nosso diagrama.
+
+230
+00:14:04,740 --> 00:14:09,015
+Como mencionei anteriormente, o que você faz com esse resultado final é adicioná-lo 
+
+231
+00:14:09,015 --> 00:14:13,240
+ao vetor que fluiu para o bloco naquela posição e isso lhe dá esse resultado final.
+
+232
+00:14:13,820 --> 00:14:18,794
+Então, por exemplo, se o vetor que flui codificasse o primeiro nome Michael e o 
+
+233
+00:14:18,794 --> 00:14:23,768
+sobrenome Jordan, então, como essa sequência de operações acionará a porta AND, 
+
+234
+00:14:23,768 --> 00:14:29,240
+ela adicionará a direção do basquete, então o que aparecer codificará todos eles juntos.
+
+235
+00:14:29,820 --> 00:14:34,200
+E lembre-se, esse é um processo que acontece em cada um desses vetores em paralelo.
+
+236
+00:14:34,800 --> 00:14:39,766
+Em particular, tomando os números do GPT-3, isso significa que esse bloco não 
+
+237
+00:14:39,766 --> 00:14:44,860
+tem apenas 50.000 neurônios, mas tem 50.000 vezes o número de tokens na entrada.
+
+238
+00:14:48,180 --> 00:14:51,356
+Então essa é a operação completa, dois produtos de matriz, 
+
+239
+00:14:51,356 --> 00:14:55,180
+cada um com um viés adicionado e uma função de recorte simples no meio.
+
+240
+00:14:56,080 --> 00:14:59,482
+Qualquer um de vocês que assistiu aos vídeos anteriores da série reconhecerá 
+
+241
+00:14:59,482 --> 00:15:02,620
+essa estrutura como o tipo mais básico de rede neural que estudamos lá.
+
+242
+00:15:03,080 --> 00:15:06,100
+Nesse exemplo, ele foi treinado para reconhecer dígitos escritos à mão.
+
+243
+00:15:06,580 --> 00:15:10,568
+Aqui, no contexto de um transformador para um grande modelo de linguagem, 
+
+244
+00:15:10,568 --> 00:15:14,772
+esta é uma parte de uma arquitetura maior e qualquer tentativa de interpretar 
+
+245
+00:15:14,772 --> 00:15:18,922
+exatamente o que ela está fazendo está fortemente interligada com a ideia de 
+
+246
+00:15:18,922 --> 00:15:23,180
+codificar informações em vetores de um espaço de incorporação de alta dimensão.
+
+247
+00:15:24,260 --> 00:15:27,850
+Essa é a lição principal, mas eu quero dar um passo para trás e refletir 
+
+248
+00:15:27,850 --> 00:15:31,440
+sobre duas coisas diferentes: a primeira é uma espécie de contabilidade, 
+
+249
+00:15:31,440 --> 00:15:34,981
+e a segunda envolve um fato muito instigante sobre dimensões superiores 
+
+250
+00:15:34,981 --> 00:15:38,080
+que eu realmente não sabia até pesquisar sobre transformadores.
+
+251
+00:15:41,080 --> 00:15:45,975
+Nos dois últimos capítulos, você e eu começamos a contar o número total de parâmetros no 
+
+252
+00:15:45,975 --> 00:15:50,760
+GPT-3 e a ver exatamente onde eles estão, então vamos terminar o jogo rapidamente aqui.
+
+253
+00:15:51,400 --> 00:15:56,759
+Já mencionei como essa matriz de projeção ascendente tem pouco menos de 50.000 linhas e 
+
+254
+00:15:56,759 --> 00:16:02,180
+que cada linha corresponde ao tamanho do espaço de incorporação, que para GPT-3 é 12.288.
+
+255
+00:16:03,240 --> 00:16:08,489
+Multiplicando esses valores, temos 604 milhões de parâmetros somente para essa matriz, 
+
+256
+00:16:08,489 --> 00:16:13,920
+e a projeção para baixo tem o mesmo número de parâmetros, apenas com uma forma transposta.
+
+257
+00:16:14,500 --> 00:16:17,400
+Então, juntos, eles fornecem cerca de 1,2 bilhão de parâmetros.
+
+258
+00:16:18,280 --> 00:16:21,258
+O vetor de viés também é responsável por mais alguns parâmetros, 
+
+259
+00:16:21,258 --> 00:16:24,100
+mas é uma proporção trivial do total, então nem vou mostrá-lo.
+
+260
+00:16:24,660 --> 00:16:29,578
+No GPT-3, essa sequência de vetores de incorporação flui não por um, 
+
+261
+00:16:29,578 --> 00:16:33,997
+mas por 96 MLPs distintos, então o número total de parâmetros 
+
+262
+00:16:33,997 --> 00:16:38,060
+dedicados a todos esses blocos soma cerca de 116 bilhões.
+
+263
+00:16:38,820 --> 00:16:42,246
+Isso representa cerca de 2 terços do total de parâmetros na rede e, 
+
+264
+00:16:42,246 --> 00:16:46,379
+quando você adiciona isso a tudo o que tínhamos antes, para os blocos de atenção, 
+
+265
+00:16:46,379 --> 00:16:50,662
+a incorporação e a desincorporação, você de fato obtém o total geral de 175 bilhões, 
+
+266
+00:16:50,662 --> 00:16:51,620
+conforme anunciado.
+
+267
+00:16:53,060 --> 00:16:56,464
+Provavelmente vale a pena mencionar que há outro conjunto de parâmetros 
+
+268
+00:16:56,464 --> 00:16:59,962
+associados a essas etapas de normalização que esta explicação pulou, mas, 
+
+269
+00:16:59,962 --> 00:17:03,840
+assim como o vetor de viés, eles representam uma proporção muito trivial do total.
+
+270
+00:17:05,900 --> 00:17:09,188
+Quanto ao segundo ponto de reflexão, você pode estar se perguntando se esse 
+
+271
+00:17:09,188 --> 00:17:12,520
+exemplo central de brinquedo no qual temos dedicado tanto tempo reflete como 
+
+272
+00:17:12,520 --> 00:17:15,680
+os fatos são realmente armazenados em grandes modelos de linguagem reais.
+
+273
+00:17:16,319 --> 00:17:20,200
+É verdade que as linhas dessa primeira matriz podem ser consideradas como direções 
+
+274
+00:17:20,200 --> 00:17:23,893
+nesse espaço de incorporação, e isso significa que a ativação de cada neurônio 
+
+275
+00:17:23,893 --> 00:17:27,540
+informa o quanto um determinado vetor se alinha com alguma direção específica.
+
+276
+00:17:27,760 --> 00:17:31,050
+Também é verdade que as colunas dessa segunda matriz informam o 
+
+277
+00:17:31,050 --> 00:17:34,340
+que será adicionado ao resultado se esse neurônio estiver ativo.
+
+278
+00:17:34,640 --> 00:17:36,800
+Ambos são apenas fatos matemáticos.
+
+279
+00:17:37,740 --> 00:17:41,639
+No entanto, as evidências sugerem que neurônios individuais raramente 
+
+280
+00:17:41,639 --> 00:17:45,261
+representam uma única característica limpa, como Michael Jordan, 
+
+281
+00:17:45,261 --> 00:17:49,384
+e pode haver uma boa razão para isso, relacionada a uma ideia que circula 
+
+282
+00:17:49,384 --> 00:17:54,120
+entre os pesquisadores de interpretabilidade atualmente, conhecida como superposição.
+
+283
+00:17:54,640 --> 00:17:58,699
+Esta é uma hipótese que pode ajudar a explicar por que os modelos são especialmente 
+
+284
+00:17:58,699 --> 00:18:02,420
+difíceis de interpretar e também por que eles escalam surpreendentemente bem.
+
+285
+00:18:03,500 --> 00:18:07,549
+A ideia básica é que se você tem um espaço n-dimensional e quer representar 
+
+286
+00:18:07,549 --> 00:18:11,225
+um monte de características diferentes usando direções que são todas 
+
+287
+00:18:11,225 --> 00:18:14,102
+perpendiculares entre si naquele espaço, dessa forma, 
+
+288
+00:18:14,102 --> 00:18:16,660
+se você adicionar um componente em uma direção, 
+
+289
+00:18:16,660 --> 00:18:19,217
+ele não influencia nenhuma das outras direções, 
+
+290
+00:18:19,217 --> 00:18:23,960
+então o número máximo de vetores que você pode ajustar é apenas n, o número de dimensões.
+
+291
+00:18:24,600 --> 00:18:27,620
+Para um matemático, na verdade, essa é a definição de dimensão.
+
+292
+00:18:28,220 --> 00:18:33,580
+Mas o mais interessante é quando você relaxa um pouco essa restrição e tolera algum ruído.
+
+293
+00:18:34,180 --> 00:18:37,654
+Digamos que você permita que essas características sejam representadas 
+
+294
+00:18:37,654 --> 00:18:40,198
+por vetores que não são exatamente perpendiculares, 
+
+295
+00:18:40,198 --> 00:18:43,820
+mas apenas quase perpendiculares, talvez entre 89 e 91 graus de distância.
+
+296
+00:18:44,820 --> 00:18:48,020
+Se estivéssemos em duas ou três dimensões, isso não faria diferença.
+
+297
+00:18:48,260 --> 00:18:51,750
+Isso não lhe dá muito espaço de manobra para encaixar mais vetores, 
+
+298
+00:18:51,750 --> 00:18:55,240
+o que torna ainda mais contraintuitivo que, para dimensões maiores, 
+
+299
+00:18:55,240 --> 00:18:56,780
+a resposta mude drasticamente.
+
+300
+00:18:57,660 --> 00:19:03,325
+Posso dar uma ilustração bem rápida e prática disso usando um Python simples que criará 
+
+301
+00:19:03,325 --> 00:19:08,219
+uma lista de vetores de 100 dimensões, cada um inicializado aleatoriamente, 
+
+302
+00:19:08,219 --> 00:19:11,824
+e essa lista conterá 10.000 vetores distintos, ou seja, 
+
+303
+00:19:11,824 --> 00:19:14,400
+100 vezes mais vetores do que dimensões.
+
+304
+00:19:15,320 --> 00:19:19,900
+Este gráfico aqui mostra a distribuição de ângulos entre pares desses vetores.
+
+305
+00:19:20,680 --> 00:19:25,245
+Então, como eles começaram aleatoriamente, esses ângulos podem ser de 0 a 180 graus, 
+
+306
+00:19:25,245 --> 00:19:28,038
+mas você notará que, mesmo para vetores aleatórios, 
+
+307
+00:19:28,038 --> 00:19:31,960
+há uma forte tendência de que as coisas fiquem mais próximas de 90 graus.
+
+308
+00:19:32,500 --> 00:19:36,850
+Então o que farei é executar um certo processo de otimização que, iterativamente, 
+
+309
+00:19:36,850 --> 00:19:41,520
+ajusta todos esses vetores para que eles tentem se tornar mais perpendiculares entre si.
+
+310
+00:19:42,060 --> 00:19:46,660
+Depois de repetir isso várias vezes, veja como fica a distribuição dos ângulos.
+
+311
+00:19:47,120 --> 00:19:51,879
+Na verdade, temos que dar um zoom aqui porque todos os ângulos possíveis 
+
+312
+00:19:51,879 --> 00:19:56,900
+entre pares de vetores ficam dentro dessa faixa estreita entre 89 e 91 graus.
+
+313
+00:19:58,020 --> 00:20:02,479
+Em geral, uma consequência de algo conhecido como lema de Johnson-Lindenstrauss 
+
+314
+00:20:02,479 --> 00:20:06,603
+é que o número de vetores que você pode enfiar em um espaço que são quase 
+
+315
+00:20:06,603 --> 00:20:10,840
+perpendiculares como esse cresce exponencialmente com o número de dimensões.
+
+316
+00:20:11,960 --> 00:20:15,048
+Isso é muito significativo para grandes modelos de linguagem, 
+
+317
+00:20:15,048 --> 00:20:19,083
+que podem se beneficiar da associação de ideias independentes com direções quase 
+
+318
+00:20:19,083 --> 00:20:19,880
+perpendiculares.
+
+319
+00:20:20,000 --> 00:20:23,041
+Isso significa que é possível armazenar muito mais 
+
+320
+00:20:23,041 --> 00:20:26,440
+ideias do que as dimensões do espaço que lhe é atribuído.
+
+321
+00:20:27,320 --> 00:20:29,662
+Isso pode explicar parcialmente por que o desempenho 
+
+322
+00:20:29,662 --> 00:20:31,740
+do modelo parece se adaptar tão bem ao tamanho.
+
+323
+00:20:32,540 --> 00:20:36,391
+Um espaço que tem 10 vezes mais dimensões pode armazenar muito, 
+
+324
+00:20:36,391 --> 00:20:39,400
+muito mais que 10 vezes mais ideias independentes.
+
+325
+00:20:40,420 --> 00:20:43,760
+E isso é relevante não apenas para o espaço de incorporação onde vivem 
+
+326
+00:20:43,760 --> 00:20:47,052
+os vetores que fluem através do modelo, mas também para o vetor cheio 
+
+327
+00:20:47,052 --> 00:20:50,440
+de neurônios no meio do perceptron multicamadas que acabamos de estudar.
+
+328
+00:20:50,960 --> 00:20:56,008
+Ou seja, com o tamanho do GPT-3, ele não estaria apenas sondando 50.000 características, 
+
+329
+00:20:56,008 --> 00:20:59,922
+mas se aproveitasse essa enorme capacidade adicional usando direções 
+
+330
+00:20:59,922 --> 00:21:03,723
+quase perpendiculares do espaço, ele poderia estar sondando muito, 
+
+331
+00:21:03,723 --> 00:21:07,240
+muito mais características do vetor que está sendo processado.
+
+332
+00:21:07,780 --> 00:21:11,013
+Mas se isso acontecesse, o que significaria é que as características 
+
+333
+00:21:11,013 --> 00:21:14,340
+individuais não seriam visíveis quando um único neurônio se iluminasse.
+
+334
+00:21:14,660 --> 00:21:19,380
+Teria que parecer uma combinação específica de neurônios, uma superposição.
+
+335
+00:21:20,400 --> 00:21:22,453
+Para qualquer um de vocês curioso para saber mais, 
+
+336
+00:21:22,453 --> 00:21:24,989
+um termo de pesquisa relevante aqui é autocodificador esparso, 
+
+337
+00:21:24,989 --> 00:21:28,210
+que é uma ferramenta que algumas pessoas de interpretabilidade usam para tentar 
+
+338
+00:21:28,210 --> 00:21:30,222
+extrair quais são as verdadeiras características, 
+
+339
+00:21:30,222 --> 00:21:32,880
+mesmo que elas estejam muito sobrepostas em todos esses neurônios.
+
+340
+00:21:33,540 --> 00:21:36,800
+Vou deixar um link para algumas postagens antrópicas muito boas sobre isso.
+
+341
+00:21:37,880 --> 00:21:40,875
+Até aqui, não abordamos todos os detalhes de um transformador, 
+
+342
+00:21:40,875 --> 00:21:43,300
+mas você e eu abordamos os pontos mais importantes.
+
+343
+00:21:43,520 --> 00:21:47,640
+O principal assunto que quero abordar no próximo capítulo é o processo de treinamento.
+
+344
+00:21:48,460 --> 00:21:51,444
+Por um lado, a resposta curta sobre como o treinamento funciona 
+
+345
+00:21:51,444 --> 00:21:54,242
+é que tudo é retropropagação, e abordamos a retropropagação 
+
+346
+00:21:54,242 --> 00:21:56,900
+em um contexto separado em capítulos anteriores da série.
+
+347
+00:21:57,220 --> 00:22:00,721
+Mas há mais a discutir, como a função de custo específica usada 
+
+348
+00:22:00,721 --> 00:22:04,497
+para modelos de linguagem, a ideia de ajuste fino usando aprendizado 
+
+349
+00:22:04,497 --> 00:22:07,780
+por reforço com feedback humano e a noção de leis de escala.
+
+350
+00:22:08,960 --> 00:22:11,212
+Nota rápida para os seguidores ativos entre vocês: 
+
+351
+00:22:11,212 --> 00:22:14,877
+há uma série de vídeos não relacionados a aprendizado de máquina que estou ansioso 
+
+352
+00:22:14,877 --> 00:22:18,321
+para assistir antes de fazer o próximo capítulo, então pode demorar um pouco, 
+
+353
+00:22:18,321 --> 00:22:20,000
+mas prometo que sairá no devido tempo.
+
+354
+00:22:35,640 --> 00:22:37,920
+Obrigado.
+

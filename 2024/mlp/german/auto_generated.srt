@@ -1,0 +1,1504 @@
+1
+00:00:00,000 --> 00:00:04,423
+Wenn du ein großes Sprachmodell mit dem Satz "Michael Jordan spielt den Sport Blank" 
+
+2
+00:00:04,423 --> 00:00:07,494
+fütterst und es vorhersagen lässt, was als Nächstes kommt, 
+
+3
+00:00:07,494 --> 00:00:10,929
+und es korrekt Basketball vorhersagt, würde das darauf hindeuten, 
+
+4
+00:00:10,929 --> 00:00:15,301
+dass es irgendwo in seinen Hunderten von Milliarden von Parametern Wissen über eine 
+
+5
+00:00:15,301 --> 00:00:18,320
+bestimmte Person und ihren speziellen Sport eingebaut hat.
+
+6
+00:00:18,940 --> 00:00:22,689
+Und ich denke, dass jeder, der schon einmal mit einem dieser Modelle gespielt hat, 
+
+7
+00:00:22,689 --> 00:00:25,400
+das Gefühl hat, dass es sich tonnenweise Fakten gemerkt hat.
+
+8
+00:00:25,700 --> 00:00:29,160
+Eine vernünftige Frage, die du dir stellen könntest, ist: Wie genau funktioniert das?
+
+9
+00:00:29,160 --> 00:00:31,040
+Und wo leben diese Fakten?
+
+10
+00:00:35,720 --> 00:00:38,483
+Im Dezember letzten Jahres berichteten einige Forscher von 
+
+11
+00:00:38,483 --> 00:00:41,341
+Google DeepMind über ihre Arbeit zu dieser Frage und nutzten 
+
+12
+00:00:41,341 --> 00:00:44,480
+dabei das Beispiel der Zuordnung von Sportlern zu ihren Sportarten.
+
+13
+00:00:44,900 --> 00:00:47,941
+Und obwohl ein vollständiges mechanistisches Verständnis darüber, 
+
+14
+00:00:47,941 --> 00:00:50,613
+wie Fakten gespeichert werden, nach wie vor ungelöst ist, 
+
+15
+00:00:50,613 --> 00:00:53,009
+kamen sie zu einigen interessanten Teilergebnissen, 
+
+16
+00:00:53,009 --> 00:00:55,497
+einschließlich der sehr allgemeinen Schlussfolgerung, 
+
+17
+00:00:55,497 --> 00:00:58,861
+dass die Fakten in einem bestimmten Teil dieser Netze zu leben scheinen, 
+
+18
+00:00:58,861 --> 00:01:02,640
+die phantasievoll als mehrschichtige Perzeptrons oder kurz MLPs bezeichnet werden.
+
+19
+00:01:03,120 --> 00:01:07,220
+In den letzten Kapiteln haben wir uns mit den Details der Transformatoren beschäftigt, 
+
+20
+00:01:07,220 --> 00:01:10,001
+der Architektur, die großen Sprachmodellen zugrunde liegt, 
+
+21
+00:01:10,001 --> 00:01:12,500
+und auch mit vielen anderen Aspekten der modernen KI.
+
+22
+00:01:13,060 --> 00:01:16,200
+Im letzten Kapitel haben wir uns mit einem Stück namens Attention beschäftigt.
+
+23
+00:01:16,840 --> 00:01:20,202
+Der nächste Schritt für dich und mich ist es, die Details zu erforschen, 
+
+24
+00:01:20,202 --> 00:01:22,644
+was in diesen mehrschichtigen Perzeptronen passiert, 
+
+25
+00:01:22,644 --> 00:01:25,040
+die den anderen großen Teil des Netzwerks ausmachen.
+
+26
+00:01:25,680 --> 00:01:27,677
+Die Berechnung ist eigentlich relativ einfach, 
+
+27
+00:01:27,677 --> 00:01:30,100
+vor allem wenn du sie mit der Aufmerksamkeit vergleichst.
+
+28
+00:01:30,560 --> 00:01:33,392
+Im Grunde genommen handelt es sich um zwei Matrixmultiplikationen 
+
+29
+00:01:33,392 --> 00:01:34,980
+mit einem einfachen Etwas dazwischen.
+
+30
+00:01:35,720 --> 00:01:40,460
+Allerdings ist es äußerst schwierig zu verstehen, was diese Berechnungen bewirken.
+
+31
+00:01:41,560 --> 00:01:46,108
+Unser Hauptziel hier ist es, die Berechnungen durchzugehen und sie einprägsam zu machen, 
+
+32
+00:01:46,108 --> 00:01:48,816
+aber ich möchte ein konkretes Beispiel dafür zeigen, 
+
+33
+00:01:48,816 --> 00:01:53,160
+wie einer dieser Blöcke zumindest im Prinzip eine konkrete Tatsache speichern könnte.
+
+34
+00:01:53,580 --> 00:01:57,080
+Konkret geht es darum, die Tatsache zu speichern, dass Michael Jordan Basketball spielt.
+
+35
+00:01:58,080 --> 00:02:00,978
+Ich sollte erwähnen, dass das Layout hier von einem Gespräch inspiriert ist, 
+
+36
+00:02:00,978 --> 00:02:03,200
+das ich mit einem der DeepMind-Forscher, Neil Nanda, hatte.
+
+37
+00:02:04,060 --> 00:02:07,487
+In den meisten Fällen gehe ich davon aus, dass du entweder die letzten beiden Kapitel 
+
+38
+00:02:07,487 --> 00:02:10,754
+gesehen hast oder ein grundlegendes Gefühl dafür hast, was ein Transformator ist, 
+
+39
+00:02:10,754 --> 00:02:13,942
+aber eine Auffrischung kann nie schaden, also hier eine kurze Erinnerung an den 
+
+40
+00:02:13,942 --> 00:02:14,700
+allgemeinen Ablauf.
+
+41
+00:02:15,340 --> 00:02:18,352
+Du und ich haben ein Modell untersucht, das darauf trainiert ist, 
+
+42
+00:02:18,352 --> 00:02:21,320
+einen Text aufzunehmen und vorherzusagen, was als nächstes kommt.
+
+43
+00:02:21,720 --> 00:02:26,538
+Der Eingabetext wird zunächst in eine Reihe von Token zerlegt, d.h. in kleine Stücke, 
+
+44
+00:02:26,538 --> 00:02:29,564
+die typischerweise Wörter oder kleine Wortteile sind, 
+
+45
+00:02:29,564 --> 00:02:33,599
+und jedes Token wird mit einem hochdimensionalen Vektor verknüpft, d.h. 
+
+46
+00:02:33,599 --> 00:02:35,280
+einer langen Liste von Zahlen.
+
+47
+00:02:35,840 --> 00:02:39,906
+Diese Sequenz von Vektoren durchläuft dann immer wieder zwei Arten von Operationen: 
+
+48
+00:02:39,906 --> 00:02:42,424
+die Aufmerksamkeit, die es den Vektoren ermöglicht, 
+
+49
+00:02:42,424 --> 00:02:46,587
+Informationen untereinander weiterzugeben, und dann die mehrschichtigen Perzeptronen, 
+
+50
+00:02:46,587 --> 00:02:49,104
+die wir heute genauer unter die Lupe nehmen werden, 
+
+51
+00:02:49,104 --> 00:02:52,300
+und dazwischen gibt es noch einen gewissen Normalisierungsschritt.
+
+52
+00:02:53,300 --> 00:02:57,741
+Nachdem die Sequenz von Vektoren viele, viele verschiedene Iterationen dieser 
+
+53
+00:02:57,741 --> 00:03:00,759
+beiden Blöcke durchlaufen hat, besteht die Hoffnung, 
+
+54
+00:03:00,759 --> 00:03:04,346
+dass jeder Vektor am Ende genug Informationen aus dem Kontext, 
+
+55
+00:03:04,346 --> 00:03:08,560
+allen anderen Wörtern in der Eingabe und auch aus dem allgemeinen Wissen, 
+
+56
+00:03:08,560 --> 00:03:13,058
+das durch das Training in die Modellgewichte eingeflossen ist, aufgesaugt hat, 
+
+57
+00:03:13,058 --> 00:03:16,020
+um eine Vorhersage über das nächste Token zu machen.
+
+58
+00:03:16,860 --> 00:03:20,264
+Eine der wichtigsten Ideen, die ich dir mit auf den Weg geben möchte, ist, 
+
+59
+00:03:20,264 --> 00:03:23,624
+dass all diese Vektoren in einem sehr, sehr hochdimensionalen Raum leben, 
+
+60
+00:03:23,624 --> 00:03:27,483
+und wenn du über diesen Raum nachdenkst, können verschiedene Richtungen verschiedene 
+
+61
+00:03:27,483 --> 00:03:28,800
+Arten von Bedeutung kodieren.
+
+62
+00:03:30,120 --> 00:03:34,209
+Ein klassisches Beispiel, auf das ich immer wieder gerne zurückgreife, ist, dass man, 
+
+63
+00:03:34,209 --> 00:03:38,061
+wenn man die Einbettung von Frau betrachtet und die Einbettung von Mann abzieht, 
+
+64
+00:03:38,061 --> 00:03:42,198
+diesen kleinen Schritt macht und ihn zu einem anderen männlichen Substantiv hinzufügt, 
+
+65
+00:03:42,198 --> 00:03:46,240
+z. B. Onkel, dann landet man sehr, sehr nahe am entsprechenden weiblichen Substantiv.
+
+66
+00:03:46,440 --> 00:03:50,880
+In diesem Sinne kodiert diese besondere Richtung Geschlechterinformationen.
+
+67
+00:03:51,640 --> 00:03:55,748
+Die Idee ist, dass viele andere Richtungen in diesem hochdimensionalen Raum 
+
+68
+00:03:55,748 --> 00:03:59,640
+anderen Merkmalen entsprechen könnten, die das Modell darstellen möchte.
+
+69
+00:04:01,400 --> 00:04:03,669
+In einem Transformator kodieren diese Vektoren 
+
+70
+00:04:03,669 --> 00:04:06,180
+aber nicht nur die Bedeutung eines einzelnen Wortes.
+
+71
+00:04:06,680 --> 00:04:11,002
+Während sie durch das Netzwerk fließen, erhalten sie eine viel reichhaltigere Bedeutung, 
+
+72
+00:04:11,002 --> 00:04:15,180
+die auf dem gesamten Kontext um sie herum und auch auf dem Wissen des Modells basiert.
+
+73
+00:04:15,880 --> 00:04:19,911
+Letztlich muss jeder etwas kodieren, das weit über die Bedeutung eines einzelnen Wortes 
+
+74
+00:04:19,911 --> 00:04:23,760
+hinausgeht, denn es muss ausreichen, um vorherzusagen, was als Nächstes kommen wird.
+
+75
+00:04:24,560 --> 00:04:28,767
+Wir haben bereits gesehen, wie du mit Hilfe von Aufmerksamkeitsblöcken Kontext 
+
+76
+00:04:28,767 --> 00:04:32,974
+einbeziehen kannst, aber ein Großteil der Modellparameter befindet sich in den 
+
+77
+00:04:32,974 --> 00:04:37,394
+MLP-Blöcken, und ein Gedanke ist, dass sie zusätzliche Kapazität zum Speichern von 
+
+78
+00:04:37,394 --> 00:04:38,140
+Fakten bieten.
+
+79
+00:04:38,720 --> 00:04:42,132
+Wie ich schon sagte, wird sich die Lektion hier auf das konkrete Spielzeugbeispiel 
+
+80
+00:04:42,132 --> 00:04:44,557
+konzentrieren, wie genau es die Tatsache speichern könnte, 
+
+81
+00:04:44,557 --> 00:04:46,120
+dass Michael Jordan Basketball spielt.
+
+82
+00:04:47,120 --> 00:04:51,900
+Für dieses Beispiel müssen wir ein paar Annahmen über den hochdimensionalen Raum treffen.
+
+83
+00:04:52,360 --> 00:04:56,915
+Zunächst nehmen wir an, dass eine der Richtungen die Vorstellung eines Vornamens 
+
+84
+00:04:56,915 --> 00:05:01,808
+Michael repräsentiert, eine andere, fast senkrechte Richtung steht für die Vorstellung 
+
+85
+00:05:01,808 --> 00:05:06,420
+des Nachnamens Jordan und eine dritte Richtung für die Vorstellung von Basketball.
+
+86
+00:05:07,400 --> 00:05:12,722
+Was ich damit meine, ist, wenn du dir das Netzwerk ansiehst und einen der verarbeiteten 
+
+87
+00:05:12,722 --> 00:05:17,501
+Vektoren herauspickst und sein Punktprodukt mit dem Vornamen Michael eins ist, 
+
+88
+00:05:17,501 --> 00:05:22,340
+bedeutet das, dass der Vektor die Idee einer Person mit diesem Vornamen kodiert.
+
+89
+00:05:23,800 --> 00:05:26,287
+Andernfalls wäre das Punktprodukt null oder negativ, was bedeutet, 
+
+90
+00:05:26,287 --> 00:05:28,700
+dass der Vektor nicht wirklich mit dieser Richtung übereinstimmt.
+
+91
+00:05:29,420 --> 00:05:31,998
+Und der Einfachheit halber lassen wir die sehr vernünftige Frage, 
+
+92
+00:05:31,998 --> 00:05:35,320
+was es bedeuten würde, wenn das Punktprodukt größer als eins wäre, völlig außer Acht.
+
+93
+00:05:36,200 --> 00:05:40,392
+Auch das Punktprodukt mit den anderen Richtungen würde dir sagen, 
+
+94
+00:05:40,392 --> 00:05:43,760
+ob es den Nachnamen Jordan oder Basketball darstellt.
+
+95
+00:05:44,740 --> 00:05:49,177
+Angenommen, ein Vektor soll den vollen Namen Michael Jordan repräsentieren, 
+
+96
+00:05:49,177 --> 00:05:52,680
+dann muss sein Punktprodukt mit beiden Richtungen eins sein.
+
+97
+00:05:53,480 --> 00:05:56,715
+Da sich der Text Michael Jordan über zwei verschiedene Token erstreckt, 
+
+98
+00:05:56,715 --> 00:05:59,051
+bedeutet dies auch, dass wir davon ausgehen müssen, 
+
+99
+00:05:59,051 --> 00:06:02,286
+dass ein früherer Aufmerksamkeitsblock erfolgreich Informationen an den 
+
+100
+00:06:02,286 --> 00:06:05,432
+zweiten dieser beiden Vektoren weitergegeben hat, um sicherzustellen, 
+
+101
+00:06:05,432 --> 00:06:06,960
+dass er beide Namen kodieren kann.
+
+102
+00:06:07,940 --> 00:06:11,480
+Mit all diesen Voraussetzungen können wir nun zum Kern der Lektion vordringen.
+
+103
+00:06:11,880 --> 00:06:14,980
+Was passiert im Inneren eines mehrschichtigen Perzeptrons?
+
+104
+00:06:17,100 --> 00:06:20,768
+Du kannst dir vorstellen, dass diese Folge von Vektoren in den Block fließt, 
+
+105
+00:06:20,768 --> 00:06:24,913
+und denk daran, dass jeder Vektor ursprünglich mit einem der Token aus dem Eingabetext 
+
+106
+00:06:24,913 --> 00:06:25,580
+verbunden war.
+
+107
+00:06:26,080 --> 00:06:29,397
+Was passieren wird, ist, dass jeder einzelne Vektor aus dieser Sequenz 
+
+108
+00:06:29,397 --> 00:06:33,042
+eine kurze Reihe von Operationen durchläuft, die wir gleich auspacken werden, 
+
+109
+00:06:33,042 --> 00:06:36,360
+und am Ende erhalten wir einen weiteren Vektor mit derselben Dimension.
+
+110
+00:06:36,880 --> 00:06:39,694
+Der andere Vektor wird zu dem ursprünglichen Vektor addiert, 
+
+111
+00:06:39,694 --> 00:06:43,200
+der hineingeflossen ist, und diese Summe ist das Ergebnis, das herausfließt.
+
+112
+00:06:43,720 --> 00:06:47,521
+Diese Abfolge von Operationen wendest du auf jeden Vektor in der Sequenz an, 
+
+113
+00:06:47,521 --> 00:06:51,620
+der mit jedem Token in der Eingabe verbunden ist, und das alles geschieht parallel.
+
+114
+00:06:52,100 --> 00:06:54,494
+Vor allem reden die Vektoren in diesem Schritt nicht miteinander, 
+
+115
+00:06:54,494 --> 00:06:56,200
+sondern machen alle irgendwie ihr eigenes Ding.
+
+116
+00:06:56,720 --> 00:07:00,519
+Das macht es für dich und mich viel einfacher, denn wenn wir verstehen, 
+
+117
+00:07:00,519 --> 00:07:04,371
+was mit einem der Vektoren in diesem Block passiert, verstehen wir auch, 
+
+118
+00:07:04,371 --> 00:07:06,060
+was mit allen Vektoren passiert.
+
+119
+00:07:07,100 --> 00:07:09,789
+Wenn ich sage, dass dieser Block die Tatsache kodiert, 
+
+120
+00:07:09,789 --> 00:07:13,066
+dass Michael Jordan Basketball spielt, dann meine ich damit, dass, 
+
+121
+00:07:13,066 --> 00:07:17,271
+wenn ein Vektor einfließt, der den Vornamen Michael und den Nachnamen Jordan kodiert, 
+
+122
+00:07:17,271 --> 00:07:21,623
+diese Sequenz von Berechnungen etwas erzeugen wird, das die Richtung Basketball enthält, 
+
+123
+00:07:21,623 --> 00:07:24,020
+was dem Vektor an dieser Stelle hinzugefügt wird.
+
+124
+00:07:25,600 --> 00:07:27,331
+Der erste Schritt dieses Prozesses sieht so aus, 
+
+125
+00:07:27,331 --> 00:07:29,700
+dass dieser Vektor mit einer sehr großen Matrix multipliziert wird.
+
+126
+00:07:30,040 --> 00:07:31,980
+Das ist keine Überraschung, das ist Deep Learning.
+
+127
+00:07:32,680 --> 00:07:35,261
+Und diese Matrix ist, wie alle anderen, die wir gesehen haben, 
+
+128
+00:07:35,261 --> 00:07:38,827
+mit Modellparametern gefüllt, die aus den Daten gelernt wurden und die du dir als eine 
+
+129
+00:07:38,827 --> 00:07:41,818
+Reihe von Knöpfen und Reglern vorstellen kannst, die eingestellt werden, 
+
+130
+00:07:41,818 --> 00:07:43,540
+um das Verhalten des Modells zu bestimmen.
+
+131
+00:07:44,500 --> 00:07:47,595
+Eine schöne Art, sich die Matrixmultiplikation vorzustellen, ist, 
+
+132
+00:07:47,595 --> 00:07:51,252
+sich jede Zeile der Matrix als eigenen Vektor vorzustellen und eine Reihe von 
+
+133
+00:07:51,252 --> 00:07:55,098
+Punktprodukten zwischen diesen Zeilen und dem zu verarbeitenden Vektor zu bilden, 
+
+134
+00:07:55,098 --> 00:07:56,880
+den ich mit E für Embedding bezeichne.
+
+135
+00:07:57,280 --> 00:08:00,513
+Nehmen wir zum Beispiel an, dass die erste Zeile zufällig mit dem 
+
+136
+00:08:00,513 --> 00:08:04,040
+Vornamen Michael übereinstimmt, von dem wir annehmen, dass er existiert.
+
+137
+00:08:04,320 --> 00:08:08,125
+Das würde bedeuten, dass die erste Komponente in dieser Ausgabe, 
+
+138
+00:08:08,125 --> 00:08:12,926
+dieses Punktprodukt hier, eins ist, wenn der Vektor den Vornamen Michael kodiert, 
+
+139
+00:08:12,926 --> 00:08:14,800
+und ansonsten null oder negativ.
+
+140
+00:08:15,880 --> 00:08:19,136
+Noch mehr Spaß macht es, wenn du dir überlegst, was es bedeuten würde, 
+
+141
+00:08:19,136 --> 00:08:23,080
+wenn die erste Reihe aus dem Vornamen Michael und dem Nachnamen Jordan bestehen würde.
+
+142
+00:08:23,700 --> 00:08:27,420
+Der Einfachheit halber schreibe ich das mal als M plus J auf.
+
+143
+00:08:28,080 --> 00:08:30,997
+Wenn du dann ein Punktprodukt mit dieser Einbettung E bildest, 
+
+144
+00:08:30,997 --> 00:08:34,980
+verteilen sich die Dinge sehr schön, so dass es wie M Punkt E plus J Punkt E aussieht.
+
+145
+00:08:34,980 --> 00:08:37,938
+Das bedeutet, dass der endgültige Wert zwei ist, 
+
+146
+00:08:37,938 --> 00:08:41,379
+wenn der Vektor den vollen Namen Michael Jordan kodiert, 
+
+147
+00:08:41,379 --> 00:08:44,700
+und ansonsten wäre er eins oder etwas kleiner als eins.
+
+148
+00:08:45,340 --> 00:08:47,260
+Und das ist nur eine Zeile in dieser Matrix.
+
+149
+00:08:47,600 --> 00:08:51,736
+Du könntest dir vorstellen, dass alle anderen Zeilen parallel dazu andere 
+
+150
+00:08:51,736 --> 00:08:56,040
+Fragen stellen und andere Merkmale des zu verarbeitenden Vektors untersuchen.
+
+151
+00:08:56,700 --> 00:09:00,008
+Sehr oft wird bei diesem Schritt auch ein weiterer Vektor zur Ausgabe hinzugefügt, 
+
+152
+00:09:00,008 --> 00:09:02,240
+der die aus den Daten gelernten Modellparameter enthält.
+
+153
+00:09:02,240 --> 00:09:04,560
+Dieser andere Vektor wird als Bias bezeichnet.
+
+154
+00:09:05,180 --> 00:09:07,786
+Für unser Beispiel möchte ich, dass du dir vorstellst, 
+
+155
+00:09:07,786 --> 00:09:11,341
+dass der Wert dieser Verzerrung in der allerersten Komponente negativ ist, 
+
+156
+00:09:11,341 --> 00:09:15,560
+d.h. unsere endgültige Ausgabe sieht aus wie das relevante Punktprodukt, aber minus eins.
+
+157
+00:09:16,120 --> 00:09:19,891
+Du wirst dich vielleicht fragen, warum ich möchte, dass du davon ausgehst, 
+
+158
+00:09:19,891 --> 00:09:22,757
+dass das Modell dies gelernt hat. Gleich wirst du sehen, 
+
+159
+00:09:22,757 --> 00:09:26,176
+warum es sehr sauber und schön ist, wenn wir hier einen Wert haben, 
+
+160
+00:09:26,176 --> 00:09:30,349
+der nur dann positiv ist, wenn ein Vektor den vollen Namen Michael Jordan kodiert, 
+
+161
+00:09:30,349 --> 00:09:32,160
+und ansonsten null oder negativ ist.
+
+162
+00:09:33,040 --> 00:09:37,993
+Die Gesamtzahl der Zeilen in dieser Matrix, die in etwa der Anzahl der gestellten Fragen 
+
+163
+00:09:37,993 --> 00:09:42,780
+entspricht, beträgt im Fall des GPT-3, dessen Zahlen wir verfolgt haben, knapp 50.000.
+
+164
+00:09:43,100 --> 00:09:44,887
+Tatsächlich ist sie genau viermal so groß wie die 
+
+165
+00:09:44,887 --> 00:09:46,640
+Anzahl der Dimensionen in diesem Einbettungsraum.
+
+166
+00:09:46,920 --> 00:09:47,900
+Das ist eine Design-Entscheidung.
+
+167
+00:09:47,940 --> 00:09:50,168
+Du kannst es mehr oder weniger machen, aber ein sauberes 
+
+168
+00:09:50,168 --> 00:09:52,240
+Multiple ist in der Regel günstiger für die Hardware.
+
+169
+00:09:52,740 --> 00:09:57,250
+Da diese Matrix voller Gewichte uns in einen höherdimensionalen Raum abbildet, 
+
+170
+00:09:57,250 --> 00:09:59,020
+gebe ich ihr die Kurzform W up.
+
+171
+00:09:59,020 --> 00:10:02,196
+Ich beschrifte den Vektor, den wir bearbeiten, weiterhin mit E, 
+
+172
+00:10:02,196 --> 00:10:06,316
+und diesen Vorspannungsvektor beschriften wir mit B und tragen das alles wieder in 
+
+173
+00:10:06,316 --> 00:10:07,160
+das Diagramm ein.
+
+174
+00:10:09,180 --> 00:10:12,581
+Ein Problem dabei ist, dass dieser Vorgang rein linear ist, 
+
+175
+00:10:12,581 --> 00:10:15,360
+Sprache aber ein sehr nicht-linearer Prozess ist.
+
+176
+00:10:15,880 --> 00:10:19,747
+Wenn der Eintritt, den wir messen, für Michael plus Jordan hoch ist, 
+
+177
+00:10:19,747 --> 00:10:24,568
+wird er zwangsläufig auch durch Michael plus Phelps und Alexis plus Jordan ausgelöst, 
+
+178
+00:10:24,568 --> 00:10:28,100
+auch wenn diese konzeptionell nicht miteinander verbunden sind.
+
+179
+00:10:28,540 --> 00:10:32,000
+Was du wirklich willst, ist ein einfaches Ja oder Nein für den vollständigen Namen.
+
+180
+00:10:32,900 --> 00:10:35,605
+Der nächste Schritt besteht also darin, diesen großen Zwischenvektor 
+
+181
+00:10:35,605 --> 00:10:37,840
+durch eine sehr einfache nichtlineare Funktion zu leiten.
+
+182
+00:10:38,360 --> 00:10:41,893
+Eine gängige Wahl ist die, die alle negativen Werte auf 
+
+183
+00:10:41,893 --> 00:10:45,300
+Null setzt und alle positiven Werte unverändert lässt.
+
+184
+00:10:46,440 --> 00:10:50,900
+Und um der Tradition des Deep Learning mit allzu ausgefallenen Namen gerecht zu werden, 
+
+185
+00:10:50,900 --> 00:10:53,891
+wird diese sehr einfache Funktion oft als gleichgerichtete 
+
+186
+00:10:53,891 --> 00:10:56,020
+lineare Einheit oder kurz ReLU bezeichnet.
+
+187
+00:10:56,020 --> 00:10:57,880
+So sieht das Diagramm aus.
+
+188
+00:10:58,300 --> 00:11:02,714
+In unserem Beispiel, in dem der erste Eintrag des Zwischenvektors eine Eins ist, 
+
+189
+00:11:02,714 --> 00:11:05,439
+wenn der vollständige Name Michael Jordan lautet, 
+
+190
+00:11:05,439 --> 00:11:08,109
+und ansonsten eine Null oder ein negativer Wert, 
+
+191
+00:11:08,109 --> 00:11:11,815
+erhältst du nach dem Durchlaufen der ReLU einen sehr sauberen Wert, 
+
+192
+00:11:11,815 --> 00:11:15,740
+bei dem alle Nullen und negativen Werte einfach auf Null gekappt werden.
+
+193
+00:11:16,100 --> 00:11:19,780
+Die Ausgabe wäre also eins für den vollen Namen Michael Jordan und sonst null.
+
+194
+00:11:20,560 --> 00:11:24,120
+Mit anderen Worten: Es ahmt das Verhalten eines UND-Gatters sehr direkt nach.
+
+195
+00:11:25,660 --> 00:11:29,325
+Oft verwenden Modelle eine leicht abgewandelte Funktion namens JLU, 
+
+196
+00:11:29,325 --> 00:11:32,020
+die dieselbe Grundform hat, nur etwas glatter ist.
+
+197
+00:11:32,500 --> 00:11:35,720
+Aber für unsere Zwecke ist es ein bisschen sauberer, wenn wir nur an die ReLU denken.
+
+198
+00:11:36,740 --> 00:11:42,520
+Wenn du von den Neuronen eines Transformators sprichst, meinst du diese Werte hier.
+
+199
+00:11:42,900 --> 00:11:46,419
+Wenn du das übliche Bild eines neuronalen Netzwerks mit einer Schicht aus 
+
+200
+00:11:46,419 --> 00:11:49,987
+Punkten und einem Bündel von Linien siehst, die mit der vorherigen Schicht 
+
+201
+00:11:49,987 --> 00:11:52,793
+verbunden sind, wie wir es in dieser Reihe bereits hatten, 
+
+202
+00:11:52,793 --> 00:11:56,218
+dann soll das normalerweise die Kombination aus einem linearen Schritt, 
+
+203
+00:11:56,218 --> 00:11:58,929
+einer Matrixmultiplikation, gefolgt von einer einfachen, 
+
+204
+00:11:58,929 --> 00:12:01,260
+nichtlinearen Funktion wie einer ReLU darstellen.
+
+205
+00:12:02,500 --> 00:12:06,381
+Du würdest sagen, dass dieses Neuron aktiv ist, wenn dieser Wert positiv ist, 
+
+206
+00:12:06,381 --> 00:12:08,920
+und dass es inaktiv ist, wenn dieser Wert Null ist.
+
+207
+00:12:10,120 --> 00:12:12,380
+Der nächste Schritt sieht dem ersten sehr ähnlich.
+
+208
+00:12:12,560 --> 00:12:16,580
+Du multiplizierst mit einer sehr großen Matrix und fügst einen bestimmten Bias-Term hinzu.
+
+209
+00:12:16,980 --> 00:12:21,173
+In diesem Fall ist die Anzahl der Dimensionen in der Ausgabe wieder auf die Größe 
+
+210
+00:12:21,173 --> 00:12:25,520
+des Einbettungsraums reduziert, also nenne ich das hier die Abwärtsprojektionsmatrix.
+
+211
+00:12:26,220 --> 00:12:29,383
+Und dieses Mal ist es schöner, die Dinge nicht Zeile für Zeile, 
+
+212
+00:12:29,383 --> 00:12:31,360
+sondern Spalte für Spalte zu betrachten.
+
+213
+00:12:31,860 --> 00:12:36,489
+Eine andere Möglichkeit, die Matrixmultiplikation im Kopf zu behalten, besteht darin, 
+
+214
+00:12:36,489 --> 00:12:40,849
+dir vorzustellen, dass du jede Spalte der Matrix mit dem entsprechenden Term des 
+
+215
+00:12:40,849 --> 00:12:45,640
+Vektors multiplizierst, den sie verarbeitet, und dann alle umskalierten Spalten addierst.
+
+216
+00:12:46,840 --> 00:12:49,672
+Der Grund dafür, dass diese Denkweise schöner ist, liegt darin, 
+
+217
+00:12:49,672 --> 00:12:52,991
+dass die Spalten hier die gleiche Dimension wie der Einbettungsraum haben, 
+
+218
+00:12:52,991 --> 00:12:55,780
+sodass wir sie als Richtungen in diesem Raum betrachten können.
+
+219
+00:12:56,140 --> 00:12:59,331
+Wir stellen uns zum Beispiel vor, dass das Modell gelernt hat, 
+
+220
+00:12:59,331 --> 00:13:03,080
+die erste Spalte in die von uns angenommene Basketballrichtung zu bringen.
+
+221
+00:13:04,180 --> 00:13:07,577
+Das würde bedeuten, dass wir diese Spalte zum Endergebnis hinzufügen, 
+
+222
+00:13:07,577 --> 00:13:10,780
+wenn das entsprechende Neuron an dieser ersten Position aktiv ist.
+
+223
+00:13:11,140 --> 00:13:15,780
+Aber wenn das Neuron inaktiv wäre, wenn die Zahl Null wäre, dann hätte das keinen Effekt.
+
+224
+00:13:16,500 --> 00:13:18,060
+Und das muss nicht nur beim Basketball sein.
+
+225
+00:13:18,220 --> 00:13:21,733
+Das Modell könnte auch in diese Spalte und viele andere Merkmale einbacken, 
+
+226
+00:13:21,733 --> 00:13:25,200
+die es mit etwas verbinden will, das den vollen Namen Michael Jordan trägt.
+
+227
+00:13:26,980 --> 00:13:31,416
+Und gleichzeitig sagen dir alle anderen Spalten in dieser Matrix, 
+
+228
+00:13:31,416 --> 00:13:36,660
+was zum Endergebnis hinzugefügt wird, wenn das entsprechende Neuron aktiv ist.
+
+229
+00:13:37,360 --> 00:13:40,454
+Und wenn du in diesem Fall eine Verzerrung hast, ist das etwas, 
+
+230
+00:13:40,454 --> 00:13:43,500
+das du jedes Mal hinzufügst, unabhängig von den Neuronenwerten.
+
+231
+00:13:44,060 --> 00:13:45,280
+Du fragst dich vielleicht, was das soll.
+
+232
+00:13:45,540 --> 00:13:47,907
+Wie bei allen Objekten, die mit Parametern gefüllt sind, 
+
+233
+00:13:47,907 --> 00:13:49,320
+ist es schwer, das genau zu sagen.
+
+234
+00:13:49,320 --> 00:13:52,482
+Vielleicht muss das Netzwerk ein paar Buchhaltungsaufgaben erledigen, 
+
+235
+00:13:52,482 --> 00:13:54,380
+aber das kannst du erst einmal ignorieren.
+
+236
+00:13:54,860 --> 00:13:57,861
+Um unsere Notation wieder etwas kompakter zu machen, 
+
+237
+00:13:57,861 --> 00:14:02,617
+nenne ich diese große Matrix W unten und nenne den Bias-Vektor B unten und füge ihn 
+
+238
+00:14:02,617 --> 00:14:04,260
+wieder in unser Diagramm ein.
+
+239
+00:14:04,740 --> 00:14:08,990
+Wie ich vorhin schon angedeutet habe, fügst du das Endergebnis zu dem Vektor hinzu, 
+
+240
+00:14:08,990 --> 00:14:13,240
+der an dieser Stelle in den Block geflossen ist, und so erhältst du das Endergebnis.
+
+241
+00:14:13,820 --> 00:14:18,613
+Wenn zum Beispiel der einfließende Vektor sowohl den Vornamen Michael als auch den 
+
+242
+00:14:18,613 --> 00:14:23,695
+Nachnamen Jordan kodiert, dann wird diese Folge von Operationen das UND-Gatter auslösen 
+
+243
+00:14:23,695 --> 00:14:27,911
+und die Richtung des Basketballs addieren, so dass das, was herauskommt, 
+
+244
+00:14:27,911 --> 00:14:29,240
+alles zusammen kodiert.
+
+245
+00:14:29,820 --> 00:14:34,200
+Und denk daran, dass dieser Prozess mit jedem einzelnen dieser Vektoren parallel abläuft.
+
+246
+00:14:34,800 --> 00:14:39,733
+Nimmt man die GPT-3-Zahlen, bedeutet das, dass dieser Block nicht nur 50.000 
+
+247
+00:14:39,733 --> 00:14:44,860
+Neuronen enthält, sondern auch die 50.000-fache Anzahl von Token in der Eingabe.
+
+248
+00:14:48,180 --> 00:14:50,737
+Das ist also die gesamte Operation: zwei Matrixprodukte, 
+
+249
+00:14:50,737 --> 00:14:53,071
+zu denen jeweils eine Vorspannung hinzugefügt wird, 
+
+250
+00:14:53,071 --> 00:14:55,180
+und dazwischen eine einfache Clipping-Funktion.
+
+251
+00:14:56,080 --> 00:14:58,637
+Diejenigen von euch, die die früheren Videos der Reihe gesehen haben, 
+
+252
+00:14:58,637 --> 00:15:01,523
+werden diese Struktur als die grundlegendste Art von neuronalem Netz erkennen, 
+
+253
+00:15:01,523 --> 00:15:02,620
+die wir dort untersucht haben.
+
+254
+00:15:03,080 --> 00:15:06,100
+In diesem Beispiel wurde es darauf trainiert, handgeschriebene Ziffern zu erkennen.
+
+255
+00:15:06,580 --> 00:15:10,468
+Hier, im Kontext eines Transformators für ein großes Sprachmodell, 
+
+256
+00:15:10,468 --> 00:15:14,241
+ist dies ein Teil einer größeren Architektur, und jeder Versuch, 
+
+257
+00:15:14,241 --> 00:15:18,536
+zu interpretieren, was genau er tut, ist stark mit der Idee der Kodierung 
+
+258
+00:15:18,536 --> 00:15:23,180
+von Informationen in Vektoren eines hochdimensionalen Einbettungsraums verwoben.
+
+259
+00:15:24,260 --> 00:15:27,714
+Das ist die wichtigste Lektion, aber ich möchte einen Schritt zurücktreten und 
+
+260
+00:15:27,714 --> 00:15:31,213
+über zwei verschiedene Dinge nachdenken. Das erste ist eine Art Buchhaltung und 
+
+261
+00:15:31,213 --> 00:15:35,106
+das zweite beinhaltet eine sehr nachdenklich stimmende Tatsache über höhere Dimensionen, 
+
+262
+00:15:35,106 --> 00:15:38,080
+die ich nicht kannte, bis ich mich mit Transformatoren beschäftigte.
+
+263
+00:15:41,080 --> 00:15:44,058
+In den letzten beiden Kapiteln haben du und ich angefangen, 
+
+264
+00:15:44,058 --> 00:15:47,434
+die Gesamtzahl der Parameter in GPT-3 zu zählen und genau zu sehen, 
+
+265
+00:15:47,434 --> 00:15:50,760
+wo sie sich befinden, also lass uns das Spiel hier schnell beenden.
+
+266
+00:15:51,400 --> 00:15:56,632
+Ich habe bereits erwähnt, dass diese Projektionsmatrix knapp 50.000 Zeilen hat und 
+
+267
+00:15:56,632 --> 00:16:02,180
+dass jede Zeile der Größe des Einbettungsraums entspricht, der für GPT-3 12.288 beträgt.
+
+268
+00:16:03,240 --> 00:16:06,835
+Multipliziert man diese Werte miteinander, erhält man 604 Millionen 
+
+269
+00:16:06,835 --> 00:16:10,271
+Parameter allein für diese Matrix, und die Abwärtsprojektion hat 
+
+270
+00:16:10,271 --> 00:16:13,920
+die gleiche Anzahl von Parametern, nur mit einer transponierten Form.
+
+271
+00:16:14,500 --> 00:16:17,400
+Zusammen ergeben sie also etwa 1,2 Milliarden Parameter.
+
+272
+00:16:18,280 --> 00:16:20,683
+Der Bias-Vektor berücksichtigt noch ein paar weitere Parameter, 
+
+273
+00:16:20,683 --> 00:16:22,710
+aber das ist ein trivialer Anteil an der Gesamtsumme, 
+
+274
+00:16:22,710 --> 00:16:24,100
+deshalb zeige ich ihn gar nicht erst.
+
+275
+00:16:24,660 --> 00:16:29,617
+In GPT-3 durchläuft diese Sequenz von Einbettungsvektoren nicht nur eine, 
+
+276
+00:16:29,617 --> 00:16:33,771
+sondern 96 verschiedene MLPs, so dass sich die Gesamtzahl der 
+
+277
+00:16:33,771 --> 00:16:38,060
+Parameter für alle diese Blöcke auf etwa 116 Milliarden beläuft.
+
+278
+00:16:38,820 --> 00:16:42,263
+Das sind etwa 2 Drittel der gesamten Parameter im Netzwerk, 
+
+279
+00:16:42,263 --> 00:16:44,961
+und wenn du sie zu den Aufmerksamkeitsblöcken, 
+
+280
+00:16:44,961 --> 00:16:49,094
+der Einbettung und der Entbettung addierst, erhältst du tatsächlich die 
+
+281
+00:16:49,094 --> 00:16:51,620
+angekündigte Gesamtsumme von 175 Milliarden.
+
+282
+00:16:53,060 --> 00:16:56,359
+Es ist wahrscheinlich erwähnenswert, dass es eine weitere Gruppe von Parametern gibt, 
+
+283
+00:16:56,359 --> 00:16:59,159
+die mit diesen Normalisierungsschritten verbunden sind und die in dieser 
+
+284
+00:16:59,159 --> 00:17:01,806
+Erklärung übersprungen wurden, aber genau wie der Bias-Vektor machen 
+
+285
+00:17:01,806 --> 00:17:03,840
+sie nur einen sehr geringen Teil der Gesamtmenge aus.
+
+286
+00:17:05,900 --> 00:17:08,559
+Was den zweiten Punkt betrifft, so fragst du dich vielleicht, 
+
+287
+00:17:08,559 --> 00:17:11,862
+ob das zentrale Spielzeugbeispiel, auf das wir so viel Zeit verwendet haben, 
+
+288
+00:17:11,862 --> 00:17:15,680
+widerspiegelt, wie Fakten in echten großen Sprachmodellen tatsächlich gespeichert werden.
+
+289
+00:17:16,319 --> 00:17:20,298
+Es stimmt, dass die Zeilen dieser ersten Matrix als Richtungen in diesem Einbettungsraum 
+
+290
+00:17:20,298 --> 00:17:24,187
+betrachtet werden können, und das bedeutet, dass die Aktivierung jedes Neurons angibt, 
+
+291
+00:17:24,187 --> 00:17:27,540
+wie sehr ein bestimmter Vektor mit einer bestimmten Richtung übereinstimmt.
+
+292
+00:17:27,760 --> 00:17:31,100
+Es stimmt auch, dass die Spalten dieser zweiten Matrix dir sagen, 
+
+293
+00:17:31,100 --> 00:17:34,340
+was zu dem Ergebnis hinzugefügt wird, wenn das Neuron aktiv ist.
+
+294
+00:17:34,640 --> 00:17:36,800
+Beides sind nur mathematische Fakten.
+
+295
+00:17:37,740 --> 00:17:41,715
+Es gibt jedoch Hinweise darauf, dass einzelne Neuronen nur sehr selten ein 
+
+296
+00:17:41,715 --> 00:17:45,002
+einzelnes sauberes Merkmal wie Michael Jordan repräsentieren, 
+
+297
+00:17:45,002 --> 00:17:48,288
+und es könnte tatsächlich einen sehr guten Grund dafür geben, 
+
+298
+00:17:48,288 --> 00:17:52,529
+der mit einer Idee zusammenhängt, die heutzutage unter Interpretationsforschern 
+
+299
+00:17:52,529 --> 00:17:54,120
+als Superposition bekannt ist.
+
+300
+00:17:54,640 --> 00:17:58,678
+Diese Hypothese könnte erklären, warum die Modelle besonders schwer 
+
+301
+00:17:58,678 --> 00:18:02,420
+zu interpretieren sind und warum sie erstaunlich gut skalieren.
+
+302
+00:18:03,500 --> 00:18:07,634
+Die Grundidee ist: Wenn du einen n-dimensionalen Raum hast und eine Reihe von 
+
+303
+00:18:07,634 --> 00:18:10,814
+verschiedenen Merkmalen durch Richtungen darstellen willst, 
+
+304
+00:18:10,814 --> 00:18:13,623
+die alle senkrecht zueinander in diesem Raum stehen, 
+
+305
+00:18:13,623 --> 00:18:18,394
+so dass eine Komponente in einer Richtung keinen Einfluss auf die anderen Richtungen hat, 
+
+306
+00:18:18,394 --> 00:18:22,528
+dann ist die maximale Anzahl der Vektoren, die du unterbringen kannst, nur n, 
+
+307
+00:18:22,528 --> 00:18:23,960
+die Anzahl der Dimensionen.
+
+308
+00:18:24,600 --> 00:18:27,620
+Für einen Mathematiker ist das die Definition von Dimension.
+
+309
+00:18:28,220 --> 00:18:31,143
+Interessant wird es aber, wenn du diese Einschränkung 
+
+310
+00:18:31,143 --> 00:18:33,580
+ein wenig lockerst und etwas Lärm tolerierst.
+
+311
+00:18:34,180 --> 00:18:38,304
+Angenommen, du erlaubst, dass diese Merkmale durch Vektoren dargestellt werden, 
+
+312
+00:18:38,304 --> 00:18:41,397
+die nicht genau senkrecht sind, sondern nur fast senkrecht, 
+
+313
+00:18:41,397 --> 00:18:43,820
+vielleicht zwischen 89 und 91 Grad auseinander.
+
+314
+00:18:44,820 --> 00:18:48,020
+Wenn wir uns in zwei oder drei Dimensionen befinden, macht das keinen Unterschied.
+
+315
+00:18:48,260 --> 00:18:52,017
+Das gibt dir kaum zusätzlichen Spielraum, um mehr Vektoren einzubauen. 
+
+316
+00:18:52,017 --> 00:18:56,780
+Umso erstaunlicher ist es, dass sich die Antwort für höhere Dimensionen dramatisch ändert.
+
+317
+00:18:57,660 --> 00:19:01,651
+Ich kann dir eine schnelle und schmutzige Veranschaulichung geben, 
+
+318
+00:19:01,651 --> 00:19:05,344
+indem ich eine Liste von 100-dimensionalen Vektoren erstelle, 
+
+319
+00:19:05,344 --> 00:19:09,157
+die alle zufällig initialisiert werden. Diese Liste wird 10.000 
+
+320
+00:19:09,157 --> 00:19:14,400
+verschiedene Vektoren enthalten, also 100 Mal so viele Vektoren wie es Dimensionen gibt.
+
+321
+00:19:15,320 --> 00:19:19,900
+Diese Grafik hier zeigt die Verteilung der Winkel zwischen den Paaren dieser Vektoren.
+
+322
+00:19:20,680 --> 00:19:22,985
+Da sie mit einem Zufallsvektor begonnen haben, 
+
+323
+00:19:22,985 --> 00:19:26,859
+können diese Winkel zwischen 0 und 180 Grad liegen, aber du wirst feststellen, 
+
+324
+00:19:26,859 --> 00:19:29,998
+dass schon bei den Zufallsvektoren eine starke Tendenz besteht, 
+
+325
+00:19:29,998 --> 00:19:31,960
+dass die Winkel näher an 90 Grad liegen.
+
+326
+00:19:32,500 --> 00:19:35,978
+Dann führe ich einen bestimmten Optimierungsprozess durch, 
+
+327
+00:19:35,978 --> 00:19:38,749
+der all diese Vektoren iterativ so verschiebt, 
+
+328
+00:19:38,749 --> 00:19:41,520
+dass sie möglichst senkrecht zueinander stehen.
+
+329
+00:19:42,060 --> 00:19:44,481
+Nachdem du dies viele Male wiederholt hast, sieht 
+
+330
+00:19:44,481 --> 00:19:46,660
+die Verteilung der Winkel folgendermaßen aus.
+
+331
+00:19:47,120 --> 00:19:52,242
+Wir müssen hier tatsächlich heranzoomen, weil alle möglichen Winkel zwischen 
+
+332
+00:19:52,242 --> 00:19:56,900
+Vektorenpaaren in diesem engen Bereich zwischen 89 und 91 Grad liegen.
+
+333
+00:19:58,020 --> 00:20:02,397
+Das Johnson-Lindenstrauss-Lemma besagt, dass die Anzahl der Vektoren, 
+
+334
+00:20:02,397 --> 00:20:07,650
+die man in einem Raum unterbringen kann und die nahezu senkrecht zueinander stehen, 
+
+335
+00:20:07,650 --> 00:20:10,840
+exponentiell mit der Anzahl der Dimensionen wächst.
+
+336
+00:20:11,960 --> 00:20:16,052
+Dies ist sehr wichtig für große Sprachmodelle, die davon profitieren können, 
+
+337
+00:20:16,052 --> 00:20:19,880
+dass unabhängige Ideen mit fast senkrechten Richtungen verbunden werden.
+
+338
+00:20:20,000 --> 00:20:23,687
+Das bedeutet, dass es möglich ist, viel, viel mehr Ideen zu speichern, 
+
+339
+00:20:23,687 --> 00:20:26,440
+als es Dimensionen in dem ihm zugewiesenen Raum gibt.
+
+340
+00:20:27,320 --> 00:20:29,445
+Das könnte teilweise erklären, warum die Leistung 
+
+341
+00:20:29,445 --> 00:20:31,740
+des Modells so gut mit der Größe zu skalieren scheint.
+
+342
+00:20:32,540 --> 00:20:35,970
+Ein Raum, der 10 Mal so viele Dimensionen hat, kann viel, 
+
+343
+00:20:35,970 --> 00:20:39,400
+viel mehr als 10 Mal so viele unabhängige Ideen speichern.
+
+344
+00:20:40,420 --> 00:20:43,730
+Und das gilt nicht nur für den Einbettungsraum, in dem die Vektoren leben, 
+
+345
+00:20:43,730 --> 00:20:46,997
+die durch das Modell fließen, sondern auch für den Vektor voller Neuronen 
+
+346
+00:20:46,997 --> 00:20:50,440
+in der Mitte des mehrschichtigen Perzeptrons, das wir gerade untersucht haben.
+
+347
+00:20:50,960 --> 00:20:55,595
+Das heißt, bei der Größe von GPT-3 könnte es nicht nur 50.000 Merkmale untersuchen, 
+
+348
+00:20:55,595 --> 00:20:59,845
+sondern wenn es stattdessen diese enorme zusätzliche Kapazität nutzen würde, 
+
+349
+00:20:59,845 --> 00:21:03,873
+indem es fast senkrechte Richtungen des Raums verwendet, könnte es viel, 
+
+350
+00:21:03,873 --> 00:21:07,240
+viel mehr Merkmale des zu verarbeitenden Vektors untersuchen.
+
+351
+00:21:07,780 --> 00:21:10,215
+Aber wenn das der Fall wäre, würde das bedeuten, 
+
+352
+00:21:10,215 --> 00:21:14,340
+dass einzelne Merkmale nicht als ein einzelnes aufleuchtendes Neuron sichtbar sind.
+
+353
+00:21:14,660 --> 00:21:18,476
+Stattdessen müsste es wie eine bestimmte Kombination von Neuronen aussehen, 
+
+354
+00:21:18,476 --> 00:21:19,380
+eine Überlagerung.
+
+355
+00:21:20,400 --> 00:21:24,288
+Für alle, die mehr wissen wollen: Ein wichtiger Suchbegriff ist "Sparse Autoencoder", 
+
+356
+00:21:24,288 --> 00:21:28,222
+ein Werkzeug, mit dem einige Leute, die sich mit der Interpretierbarkeit beschäftigen, 
+
+357
+00:21:28,222 --> 00:21:30,347
+versuchen, die wahren Merkmale zu extrahieren, 
+
+358
+00:21:30,347 --> 00:21:32,880
+auch wenn sie von all diesen Neuronen überlagert werden.
+
+359
+00:21:33,540 --> 00:21:36,800
+Ich verlinke mal ein paar wirklich tolle Anthropic-Beiträge zu diesem Thema.
+
+360
+00:21:37,880 --> 00:21:41,237
+An dieser Stelle haben wir noch nicht alle Details eines Transformators behandelt, 
+
+361
+00:21:41,237 --> 00:21:43,300
+aber wir haben die wichtigsten Punkte angesprochen.
+
+362
+00:21:43,520 --> 00:21:46,469
+Das Wichtigste, das ich in einem nächsten Kapitel behandeln möchte, 
+
+363
+00:21:46,469 --> 00:21:47,640
+ist der Ausbildungsprozess.
+
+364
+00:21:48,460 --> 00:21:51,095
+Die kurze Antwort auf die Frage, wie das Training funktioniert, ist, 
+
+365
+00:21:51,095 --> 00:21:52,890
+dass es sich dabei um Backpropagation handelt, 
+
+366
+00:21:52,890 --> 00:21:55,792
+und wir haben die Backpropagation in einem anderen Zusammenhang in früheren 
+
+367
+00:21:55,792 --> 00:21:56,900
+Kapiteln der Reihe behandelt.
+
+368
+00:21:57,220 --> 00:22:00,679
+Aber es gibt noch mehr zu besprechen, z. B. die spezifische Kostenfunktion, 
+
+369
+00:22:00,679 --> 00:22:03,956
+die für Sprachmodelle verwendet wird, die Idee der Feinabstimmung durch 
+
+370
+00:22:03,956 --> 00:22:07,780
+Verstärkungslernen mit menschlichem Feedback und das Konzept der Skalierungsgesetze.
+
+371
+00:22:08,960 --> 00:22:11,896
+Kurzer Hinweis für die aktiven Follower unter euch: Es gibt eine Reihe von Videos, 
+
+372
+00:22:11,896 --> 00:22:14,480
+die nichts mit maschinellem Lernen zu tun haben und in die ich mich noch 
+
+373
+00:22:14,480 --> 00:22:16,532
+vertiefen möchte, bevor ich das nächste Kapitel schreibe. 
+
+374
+00:22:16,532 --> 00:22:18,655
+Es könnte also noch eine Weile dauern, aber ich verspreche, 
+
+375
+00:22:18,655 --> 00:22:20,000
+dass es zu gegebener Zeit kommen wird.
+
+376
+00:22:35,640 --> 00:22:37,920
+Vielen Dank!
+

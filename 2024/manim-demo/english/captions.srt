@@ -1,0 +1,4452 @@
+1
+00:00:00,000 --> 00:00:04,620
+The most common question I get about 3Blue1Brown is, what do I use to animate the videos?
+
+2
+00:00:05,160 --> 00:00:08,354
+The short answer is that I wrote a custom Python library, 
+
+3
+00:00:08,354 --> 00:00:12,320
+it's name is Manim, so it's all programmatic and it's also very bespoke.
+
+4
+00:00:12,900 --> 00:00:16,835
+What I wanted to do with this video is offer a behind the scenes to show you, 
+
+5
+00:00:16,835 --> 00:00:20,720
+one, what Manim is for those who don't know, and even for those who do know, 
+
+6
+00:00:20,720 --> 00:00:24,000
+to show a little bit about how I use it and what the workflow is.
+
+7
+00:00:24,500 --> 00:00:28,705
+Now the way I'm doing this is I sat down with Ben Sparks when I was in the UK a couple 
+
+8
+00:00:28,705 --> 00:00:32,619
+months ago, many of you may recognize him from his many great Numberphile videos.
+
+9
+00:00:33,140 --> 00:00:37,150
+He wanted to know how Manim worked, I knew a number of other people had that same 
+
+10
+00:00:37,150 --> 00:00:41,308
+question, so I recorded the conversation, it's kind of a scrappy recording but we'll 
+
+11
+00:00:41,308 --> 00:00:41,700
+make do.
+
+12
+00:00:42,240 --> 00:00:46,503
+And after a simple hello world example, we animate the famous Lorenz Attractor, 
+
+13
+00:00:46,503 --> 00:00:49,328
+which is very important in the foundations of chaos, 
+
+14
+00:00:49,328 --> 00:00:51,460
+it's also just a fun visual to get into.
+
+15
+00:00:52,020 --> 00:00:54,151
+One quick thing I should mention before we dive in 
+
+16
+00:00:54,151 --> 00:00:56,200
+is that there are actually two versions of Manim.
+
+17
+00:00:56,720 --> 00:01:00,652
+So the first has a history very intertwined with the history of the channel, 
+
+18
+00:01:00,652 --> 00:01:04,534
+the way I started the project, basically when I was finishing my undergrad, 
+
+19
+00:01:04,534 --> 00:01:09,029
+was that I wanted this coding project that would somehow let me illustrate mathematical 
+
+20
+00:01:09,029 --> 00:01:13,472
+functions better as transformations, made a super scrappy bit of Python code for that, 
+
+21
+00:01:13,472 --> 00:01:18,069
+used it to make the first video on this channel, as I made more videos the tool improved, 
+
+22
+00:01:18,069 --> 00:01:22,360
+as the tool improved I would make more videos, and that's just continued ever since.
+
+23
+00:01:22,360 --> 00:01:26,212
+The most recent video I made, which was about holograms, if I do say so myself, 
+
+24
+00:01:26,212 --> 00:01:30,113
+I was pretty proud of the visuals in that, and that would have been dramatically 
+
+25
+00:01:30,113 --> 00:01:34,062
+harder to do even two or three years ago, but over the last month it was actually 
+
+26
+00:01:34,062 --> 00:01:38,300
+kind of a joy to make just because of a lot of the workflow improvements over the years.
+
+27
+00:01:38,560 --> 00:01:42,830
+I've always posted all of the code that I make for videos, it's openly visible on GitHub, 
+
+28
+00:01:42,830 --> 00:01:46,200
+and I also made the tool itself, the underlying tool Manim open source.
+
+29
+00:01:47,020 --> 00:01:51,297
+But I don't, as a personality type, really have the constitution to manage an open 
+
+30
+00:01:51,297 --> 00:01:55,728
+source project, I also don't really have the capacity for it while I'm making videos, 
+
+31
+00:01:55,728 --> 00:01:59,902
+so I wasn't the most attentive to issues and pull requests and things like that, 
+
+32
+00:01:59,902 --> 00:02:04,179
+but a community of people who wanted it to be a more robust tool for others forked 
+
+33
+00:02:04,179 --> 00:02:08,353
+the repo and created a version that is attentive to issues and pull requests and 
+
+34
+00:02:08,353 --> 00:02:12,940
+has better testing and better documentation, and it's called the Manim community version.
+
+35
+00:02:13,340 --> 00:02:15,746
+So it's generally recommended people start with that, 
+
+36
+00:02:15,746 --> 00:02:19,400
+but in the meantime I often do make a bunch of changes or developments to my own, 
+
+37
+00:02:19,400 --> 00:02:22,742
+over the last couple years I've made it more interactive, more performant, 
+
+38
+00:02:22,742 --> 00:02:23,500
+things like that.
+
+39
+00:02:23,920 --> 00:02:27,673
+The reason I bring this up is that what I'll be demoing with Ben is my own version, 
+
+40
+00:02:27,673 --> 00:02:31,337
+but you should be aware that there is this divide and that if you want the better 
+
+41
+00:02:31,337 --> 00:02:35,180
+documented and tested version, it's recommended to go with the community one for that.
+
+42
+00:02:35,660 --> 00:02:38,640
+Without further ado, let's dive into the Hello World example.
+
+43
+00:02:40,300 --> 00:02:41,340
+It's all in Python.
+
+44
+00:02:41,880 --> 00:02:45,500
+Okay, and on the left is a Python, just a text file essentially with...
+
+45
+00:02:45,500 --> 00:02:48,980
+Yep, so this is, it's Sublime text, I use Sublime, that's a text editor.
+
+46
+00:02:49,260 --> 00:02:50,820
+We're going to be typing some Python here.
+
+47
+00:02:50,820 --> 00:02:53,285
+I guess just as like a basic sense of what it 
+
+48
+00:02:53,285 --> 00:02:56,020
+even looks like to have something up on the screen.
+
+49
+00:02:56,520 --> 00:02:59,960
+Let me get something there and then we can talk through what's going on.
+
+50
+00:03:00,320 --> 00:03:03,280
+Here I've created a scene.
+
+51
+00:03:03,880 --> 00:03:08,200
+So all of the scenes that I edit together take the form of a class in Python.
+
+52
+00:03:08,900 --> 00:03:11,434
+And then inside a certain method of that called construct, 
+
+53
+00:03:11,434 --> 00:03:14,140
+this is where all the code that renders stuff is going to live.
+
+54
+00:03:14,260 --> 00:03:17,090
+There's objects added like a circle, like, you know, 
+
+55
+00:03:17,090 --> 00:03:19,120
+we can add like a square in there too.
+
+56
+00:03:19,120 --> 00:03:21,060
+We're also going to add that square.
+
+57
+00:03:22,180 --> 00:03:24,440
+If I kind of ran all of that, we have the square.
+
+58
+00:03:24,580 --> 00:03:25,480
+How did you just run that?
+
+59
+00:03:25,680 --> 00:03:26,200
+Was there...
+
+60
+00:03:26,200 --> 00:03:27,360
+Oh yeah, okay, okay, okay.
+
+61
+00:03:27,540 --> 00:03:29,020
+So this is what...
+
+62
+00:03:29,020 --> 00:03:30,760
+I think you just waved the magic wand and it happened, right?
+
+63
+00:03:30,780 --> 00:03:31,960
+But you have a shortcut it looked like.
+
+64
+00:03:32,320 --> 00:03:35,799
+Okay, so in principle, if over in this little terminal, 
+
+65
+00:03:35,799 --> 00:03:41,080
+it's a Python terminal such that we can call commands on the scene that are relevant.
+
+66
+00:03:41,080 --> 00:03:45,440
+So I might say square.shift to the right, and then that square will shift to the right.
+
+67
+00:03:45,460 --> 00:03:47,280
+And if I call it again, more things will happen.
+
+68
+00:03:47,280 --> 00:03:50,580
+I could also say, you know, what's one plus two, just normal Python.
+
+69
+00:03:50,820 --> 00:03:52,660
+Okay, it's a Python just entry box, basically.
+
+70
+00:03:52,920 --> 00:03:54,240
+Yeah, but it's talking to this.
+
+71
+00:03:54,760 --> 00:03:58,570
+And so while I'm creating a scene, it's nice to have 
+
+72
+00:03:58,570 --> 00:04:02,380
+a Python terminal that's talking to the scene itself.
+
+73
+00:04:03,100 --> 00:04:05,958
+And then separately, so what might be nice as a workflow is to say, 
+
+74
+00:04:05,958 --> 00:04:08,060
+hey, I've got all this stuff that I'm going to do.
+
+75
+00:04:08,100 --> 00:04:12,240
+Like maybe I want to take square and I'm going to put it to the top edge.
+
+76
+00:04:13,480 --> 00:04:16,552
+And so a common thing that you might do is say, take that, 
+
+77
+00:04:16,552 --> 00:04:19,260
+copy that, go over to this, paste that, press enter.
+
+78
+00:04:20,200 --> 00:04:21,920
+And that immediately tests that line.
+
+79
+00:04:22,560 --> 00:04:23,600
+So then it tests that line.
+
+80
+00:04:24,220 --> 00:04:25,820
+But I don't want to do that every time.
+
+81
+00:04:25,940 --> 00:04:27,920
+I don't want to like do it and copy and paste.
+
+82
+00:04:28,200 --> 00:04:33,400
+So instead I have a shortcut written and this is tied to some Sublime specific things.
+
+83
+00:04:33,660 --> 00:04:37,060
+In my case, it's command R, I think the keyboard shortcut I have.
+
+84
+00:04:37,320 --> 00:04:41,420
+It'll copy it and it'll run whatever the text that was copied in there.
+
+85
+00:04:41,420 --> 00:04:46,180
+So you've got a shortcut which runs this code, outputs the visual, immediate check.
+
+86
+00:04:46,940 --> 00:04:48,719
+I just want to jump in with a quick comment here 
+
+87
+00:04:48,719 --> 00:04:50,680
+because there's slightly more going on under the hood.
+
+88
+00:04:50,920 --> 00:04:53,180
+Like all things, this is best motivated with an example.
+
+89
+00:04:53,900 --> 00:04:58,620
+So if I pull up a scene from the most recent video on holograms, these can get quite long.
+
+90
+00:04:58,800 --> 00:05:03,659
+So here, the final output was a four and a half minute MP4 file describing 
+
+91
+00:05:03,659 --> 00:05:08,520
+diffraction gradings and in particular, this one was about the double slit.
+
+92
+00:05:08,520 --> 00:05:11,507
+It's really nice to have these long scenes because they share a bunch 
+
+93
+00:05:11,507 --> 00:05:14,580
+of context and as you're coding, you can kind of reference that context.
+
+94
+00:05:15,000 --> 00:05:19,880
+But the code for something like that ends up being just a big, big, big pile of Python.
+
+95
+00:05:20,100 --> 00:05:20,860
+Lots and lots of code.
+
+96
+00:05:21,440 --> 00:05:24,546
+And it used to be the case I would break this all down into little subroutines, 
+
+97
+00:05:24,546 --> 00:05:27,147
+but historically it's proven to be nice as just to have it kind of 
+
+98
+00:05:27,147 --> 00:05:29,400
+all in one spot where all your local variables are shared.
+
+99
+00:05:29,720 --> 00:05:33,472
+The thing I want to highlight is that if I'm working on the scene and I'm somewhere 
+
+100
+00:05:33,472 --> 00:05:36,286
+in the middle of it, so lots and lots of code has taken place, 
+
+101
+00:05:36,286 --> 00:05:40,173
+but we're in the middle at this point, while I'm iterating on just one little section, 
+
+102
+00:05:40,173 --> 00:05:44,060
+like here I might want to be able to run the code of this section and see what it does.
+
+103
+00:05:44,440 --> 00:05:47,660
+As you can imagine, you might want to tweak it, you might want to change it a little bit.
+
+104
+00:05:48,480 --> 00:05:50,220
+So in this case, let's see what's going on.
+
+105
+00:05:50,240 --> 00:05:51,900
+We've got some graphs being drawn.
+
+106
+00:05:53,220 --> 00:05:58,280
+This like wave kind of showing the red and blue wave is fading out a little bit.
+
+107
+00:05:58,280 --> 00:06:00,660
+So maybe I could say, what if I don't want it to fade out as much?
+
+108
+00:06:01,040 --> 00:06:02,700
+I want that to only be 0.8.
+
+109
+00:06:03,140 --> 00:06:04,940
+I want the runtime here to be a little different.
+
+110
+00:06:04,940 --> 00:06:08,758
+I want to be able to run that same section, but in order for that to work, 
+
+111
+00:06:08,758 --> 00:06:12,220
+when I'm pasting it in, it can't just literally be pasting the code.
+
+112
+00:06:12,400 --> 00:06:15,120
+It has to revert to the state that the scene had at the start.
+
+113
+00:06:15,780 --> 00:06:19,140
+So it's really running this little thing called checkpoint paste, 
+
+114
+00:06:19,140 --> 00:06:23,265
+which basically says if the thing that was copied starts with a certain comment, 
+
+115
+00:06:23,265 --> 00:06:26,779
+I'm going to see if I've seen that comment before and cached a state 
+
+116
+00:06:26,779 --> 00:06:29,580
+of the scene associated with that so that I can run it.
+
+117
+00:06:29,720 --> 00:06:32,561
+Basically it's making it behave a little bit more like a notebook, 
+
+118
+00:06:32,561 --> 00:06:33,580
+like a Jupyter notebook.
+
+119
+00:06:34,060 --> 00:06:38,153
+Some viewers might be wondering why I don't just have it all in a Jupyter notebook, 
+
+120
+00:06:38,153 --> 00:06:41,662
+but I really like having the scene in a single text file and being able 
+
+121
+00:06:41,662 --> 00:06:44,440
+to interact with it through scripts and things like that.
+
+122
+00:06:44,520 --> 00:06:46,897
+But this is kind of like a hybridization between 
+
+123
+00:06:46,897 --> 00:06:49,080
+just the raw text file and a notebook itself.
+
+124
+00:06:49,900 --> 00:06:54,220
+We could also have some like text on there that maybe literally says, hello world.
+
+125
+00:06:54,360 --> 00:06:56,260
+This is like a good plan for hello world.
+
+126
+00:06:56,820 --> 00:06:58,200
+Yeah, put that to the top.
+
+127
+00:06:58,360 --> 00:07:00,340
+And that's also something, you know, it's not 
+
+128
+00:07:00,340 --> 00:07:02,580
+going to show up on this if we don't have this line.
+
+129
+00:07:02,580 --> 00:07:04,340
+So the adding makes it appear.
+
+130
+00:07:04,640 --> 00:07:06,830
+But it looks like, so this is me naively thinking, 
+
+131
+00:07:06,830 --> 00:07:09,450
+when you make an object, it puts it in the middle and unless 
+
+132
+00:07:09,450 --> 00:07:12,500
+you then do some two edges or some other movements, it moves it around.
+
+133
+00:07:12,680 --> 00:07:14,500
+Most objects default to being in the center.
+
+134
+00:07:15,020 --> 00:07:17,744
+Instead of adding it, a different thing you could do, 
+
+135
+00:07:17,744 --> 00:07:21,780
+anytime you're going to do some kind of animation, there's a method called play.
+
+136
+00:07:22,100 --> 00:07:24,215
+And then instead of throwing in an object, I'll 
+
+137
+00:07:24,215 --> 00:07:26,420
+say there's something I want to do to that object.
+
+138
+00:07:26,480 --> 00:07:28,979
+So in this case, maybe I want to write it to make it look like 
+
+139
+00:07:28,979 --> 00:07:31,320
+it's being written on And there's a function baked in here.
+
+140
+00:07:31,320 --> 00:07:31,600
+Yeah.
+
+141
+00:07:31,760 --> 00:07:32,200
+Nice.
+
+142
+00:07:32,480 --> 00:07:34,339
+And I could have some parameters and like, hey, 
+
+143
+00:07:34,339 --> 00:07:37,360
+maybe I want that to happen a little bit longer, like with a runtime of three.
+
+144
+00:07:37,880 --> 00:07:41,300
+And suddenly anyone who's watched any Manim videos recognizes that effect.
+
+145
+00:07:41,520 --> 00:07:41,580
+Yeah.
+
+146
+00:07:41,760 --> 00:07:42,520
+They're ready to go.
+
+147
+00:07:42,720 --> 00:07:43,360
+That's really useful.
+
+148
+00:07:43,540 --> 00:07:46,346
+Like I wrote that effect and like nothing else uses that 
+
+149
+00:07:46,346 --> 00:07:49,400
+particular effect of having the like edge come on and fade in.
+
+150
+00:07:49,580 --> 00:07:49,720
+It's pretty.
+
+151
+00:07:50,020 --> 00:07:50,200
+It's pretty.
+
+152
+00:07:50,820 --> 00:07:52,360
+That's the signature look for it.
+
+153
+00:07:52,760 --> 00:07:58,180
+A different philosophy also with Manim was like anything can transform into anything.
+
+154
+00:07:58,180 --> 00:08:01,860
+So what I mean by that is let's say we've got this text.
+
+155
+00:08:03,760 --> 00:08:07,487
+I might say, hey, I want to take the the H of that 
+
+156
+00:08:07,487 --> 00:08:11,580
+text and then I'm going to make it turn into the circle.
+
+157
+00:08:12,760 --> 00:08:14,420
+So that's going to turn into a circle.
+
+158
+00:08:14,620 --> 00:08:16,580
+So you defined the circle already, but you didn't add it anywhere.
+
+159
+00:08:16,720 --> 00:08:16,960
+Exactly.
+
+160
+00:08:17,180 --> 00:08:18,480
+Now you're going to transform the H into it.
+
+161
+00:08:18,760 --> 00:08:18,820
+Yeah.
+
+162
+00:08:18,820 --> 00:08:21,060
+So if we go to this point, the text gets written.
+
+163
+00:08:21,860 --> 00:08:26,980
+What this line is going to do is say extract the H from that text.
+
+164
+00:08:27,440 --> 00:08:29,820
+And then transform it into the circle.
+
+165
+00:08:31,720 --> 00:08:34,580
+Oh, because the circle was in the middle it has moved it hasn't just put it away.
+
+166
+00:08:35,539 --> 00:08:38,380
+And so these these built in functions like write and transform that we're just seeing.
+
+167
+00:08:38,580 --> 00:08:40,772
+These are the ones that you sort of sculpted to 
+
+168
+00:08:40,772 --> 00:08:42,919
+make the jobs that you wanted to happen happen.
+
+169
+00:08:43,120 --> 00:08:43,679
+Yeah, exactly.
+
+170
+00:08:43,940 --> 00:08:44,140
+Exactly.
+
+171
+00:08:44,840 --> 00:08:47,400
+And so a lot of things derive from transform.
+
+172
+00:08:48,020 --> 00:08:51,101
+So usually like it doesn't really there's no pedagogical 
+
+173
+00:08:51,101 --> 00:08:53,480
+reason to have like an H turn into a circle.
+
+174
+00:08:53,720 --> 00:08:54,140
+I enjoyed it.
+
+175
+00:08:54,140 --> 00:08:57,680
+It looks nice and we can, you know, we can maybe make it a little bit slower.
+
+176
+00:08:58,520 --> 00:09:00,740
+I mean, I have other questions like it didn't just transform.
+
+177
+00:09:01,020 --> 00:09:02,700
+It looked like it had it was eased.
+
+178
+00:09:02,900 --> 00:09:04,760
+There's all sorts of nice smoothing functions going on.
+
+179
+00:09:04,760 --> 00:09:05,120
+Oh, yeah.
+
+180
+00:09:05,120 --> 00:09:06,060
+OK, so let's play with that.
+
+181
+00:09:06,240 --> 00:09:09,400
+So let's let's play with the transform.
+
+182
+00:09:11,160 --> 00:09:15,160
+So here notice like the H is shrinking and the circle is growing.
+
+183
+00:09:15,440 --> 00:09:16,460
+I don't actually want that.
+
+184
+00:09:16,720 --> 00:09:21,800
+So when I extract the H, it creates a group of all of the H's that it found in this text.
+
+185
+00:09:22,180 --> 00:09:25,600
+So if I take the first element of that, it'll have a thing of it.
+
+186
+00:09:26,260 --> 00:09:27,780
+This is uglier than it needs to look.
+
+187
+00:09:27,900 --> 00:09:31,644
+But if I want to use a matrix, it's like there's a hierarchy where you might 
+
+188
+00:09:31,644 --> 00:09:35,340
+have groups of objects like this whole text is a group of characters within.
+
+189
+00:09:35,540 --> 00:09:38,440
+So if I just want the first character, actually a simpler way to do this.
+
+190
+00:09:38,740 --> 00:09:39,260
+It's very dumb.
+
+191
+00:09:39,560 --> 00:09:40,800
+I'm going to take the first character.
+
+192
+00:09:40,940 --> 00:09:46,320
+So the zeroeth element in that Python list, then the actual points data of that H.
+
+193
+00:09:47,280 --> 00:09:47,720
+That's fun.
+
+194
+00:09:47,900 --> 00:09:48,180
+OK, right.
+
+195
+00:09:48,600 --> 00:09:50,660
+So instead of taking the characters, just got the geometrical.
+
+196
+00:09:50,660 --> 00:09:51,080
+Yeah.
+
+197
+00:09:52,040 --> 00:09:55,660
+And so the smoothing there, there's an attribute I call like the rate 
+
+198
+00:09:55,660 --> 00:09:59,540
+function and it defaults to a thing called smooth, which just looks smooth.
+
+199
+00:09:59,700 --> 00:10:02,452
+But if it's not the classic smooth step sort of profile, 
+
+200
+00:10:02,452 --> 00:10:04,240
+basically, yeah, it's a cubic bezier.
+
+201
+00:10:04,560 --> 00:10:06,540
+I think that it'll be like a smooth step.
+
+202
+00:10:06,680 --> 00:10:10,360
+But if it was linear, then just notice it's a little jerky.
+
+203
+00:10:10,920 --> 00:10:12,800
+This will be easier if it's a runtime of one to see.
+
+204
+00:10:12,900 --> 00:10:14,720
+It's like, yes, jerky start, jerky stop.
+
+205
+00:10:15,140 --> 00:10:16,100
+Sometimes you want that.
+
+206
+00:10:16,220 --> 00:10:16,980
+Yeah, sometimes you don't.
+
+207
+00:10:17,080 --> 00:10:19,174
+This will come up for us later, actually, is only 
+
+208
+00:10:19,174 --> 00:10:21,060
+this to be linear when it defaults to smooth.
+
+209
+00:10:21,360 --> 00:10:23,877
+I'm really excited to see that because it's those details that make the 
+
+210
+00:10:23,877 --> 00:10:26,640
+difference from like I've made something move to I've made something look good.
+
+211
+00:10:26,800 --> 00:10:27,460
+Yeah, yeah.
+
+212
+00:10:27,680 --> 00:10:29,640
+I really making that easy to do.
+
+213
+00:10:29,640 --> 00:10:32,060
+It's a big part of what my name is doing, I think.
+
+214
+00:10:33,180 --> 00:10:35,228
+We mentioned let's let's do a classic piece of sort of 
+
+215
+00:10:35,228 --> 00:10:37,500
+recreational interesting maths that a lot of people heard of.
+
+216
+00:10:37,720 --> 00:10:40,440
+Yeah, I was like, I've never plotted a Lorenz attractor.
+
+217
+00:10:40,520 --> 00:10:41,460
+And that was that was why I suggested.
+
+218
+00:10:41,700 --> 00:10:44,758
+For those of you who don't know, the Lorenz attractor is this very 
+
+219
+00:10:44,758 --> 00:10:47,680
+bizarre shape that came up in the early history of chaos theory.
+
+220
+00:10:47,960 --> 00:10:49,300
+Ben and I do talk more about it.
+
+221
+00:10:49,300 --> 00:10:52,602
+But what you need to know is that it comes from a set of differential 
+
+222
+00:10:52,602 --> 00:10:55,762
+equations in three dimensions, which basically means if you have a 
+
+223
+00:10:55,762 --> 00:10:59,017
+point somewhere in 3D space, there's this set of deterministic rules 
+
+224
+00:10:59,017 --> 00:11:02,320
+that tells you how that point should change at a given moment in time.
+
+225
+00:11:02,960 --> 00:11:05,957
+And what happens when you try this for a variety of starting 
+
+226
+00:11:05,957 --> 00:11:08,660
+conditions proves to be very interesting as you'll see.
+
+227
+00:11:08,820 --> 00:11:10,280
+It's really nice fodder for animation.
+
+228
+00:11:10,640 --> 00:11:12,637
+And if you want to learn more about it, I'm pretty 
+
+229
+00:11:12,637 --> 00:11:14,360
+sure there's a great Veritasium video on it.
+
+230
+00:11:14,360 --> 00:11:18,860
+But also one of my favorite books, which I think I actually should have up here.
+
+231
+00:11:19,440 --> 00:11:19,480
+Yes.
+
+232
+00:11:19,760 --> 00:11:19,840
+OK.
+
+233
+00:11:19,960 --> 00:11:23,704
+So one of my favorite books by one of my favorite authors, James Glick, describes, 
+
+234
+00:11:23,704 --> 00:11:27,540
+you know, kind of how this came about and the role that it had in early chaos theory.
+
+235
+00:11:27,920 --> 00:11:28,820
+All of that's by the by.
+
+236
+00:11:29,060 --> 00:11:30,580
+But some of you all want to know.
+
+237
+00:11:30,640 --> 00:11:31,420
+So I figured I'd share.
+
+238
+00:11:32,700 --> 00:11:35,360
+I guess maybe one thing I should mention before we dive into this.
+
+239
+00:11:35,500 --> 00:11:36,220
+This is all in 2D.
+
+240
+00:11:36,580 --> 00:11:38,040
+But the points are actually all in 2D.
+
+241
+00:11:38,360 --> 00:11:39,420
+Whoa, that's a bug.
+
+242
+00:11:40,420 --> 00:11:41,680
+This is a rendering bug, is it?
+
+243
+00:11:42,280 --> 00:11:43,380
+Yes, actually, that's it.
+
+244
+00:11:43,380 --> 00:11:46,580
+OK, there's the thing I was playing around with on the low level rendering recently.
+
+245
+00:11:47,080 --> 00:11:48,900
+I know what's going on and why that's happening.
+
+246
+00:11:49,060 --> 00:11:52,880
+And there's a dumb way to fix it, which is to.
+
+247
+00:11:55,220 --> 00:11:57,460
+Yeah, just don't don't don't worry about that.
+
+248
+00:11:58,080 --> 00:11:59,380
+Fun to see the back end.
+
+249
+00:11:59,540 --> 00:12:00,200
+Don't worry about that.
+
+250
+00:12:00,260 --> 00:12:02,200
+Sometimes I go and I try to make the rendering nicer.
+
+251
+00:12:02,380 --> 00:12:05,100
+And then so that was that was always three dimensional.
+
+252
+00:12:05,280 --> 00:12:06,800
+We just happen to be looking at everything's always through.
+
+253
+00:12:06,920 --> 00:12:12,949
+So for example, if I add 3D axes, then it's like everything exists by default on the X, 
+
+254
+00:12:12,949 --> 00:12:17,060
+Y plane and just like ninety nine scenes out of one hundred.
+
+255
+00:12:17,460 --> 00:12:20,760
+I'm just doing it in 2D because pedagogically you want it to feel like a blackboard.
+
+256
+00:12:20,940 --> 00:12:22,860
+Only go up to 3D if you really need to.
+
+257
+00:12:23,320 --> 00:12:24,420
+Now we really need to.
+
+258
+00:12:24,800 --> 00:12:28,905
+So for the Lorenz Attractor, our setup, I just have some like axes with 
+
+259
+00:12:28,905 --> 00:12:33,240
+some coordinates around what we're around what we're going to want to be in.
+
+260
+00:12:34,000 --> 00:12:35,420
+Actually, I'll be very honest with you.
+
+261
+00:12:35,560 --> 00:12:38,740
+The way I started here, I went to chat GPT.
+
+262
+00:12:38,740 --> 00:12:43,758
+What you want to do for the math underlying this is to basically feed some software, 
+
+263
+00:12:43,758 --> 00:12:47,477
+a differential equation and an initial condition and just say, 
+
+264
+00:12:47,477 --> 00:12:49,780
+how does this initial condition evolve?
+
+265
+00:12:50,520 --> 00:12:53,540
+Obviously, people will have built software packages that do it with something smarter.
+
+266
+00:12:54,040 --> 00:12:56,950
+So I just asked and I'm like, hey, write me a Python function using some 
+
+267
+00:12:56,950 --> 00:13:00,140
+numerical ODE solver to find, you know, find a solution of the Lorenz equations.
+
+268
+00:13:00,560 --> 00:13:01,400
+The famous Lorenz equations.
+
+269
+00:13:01,740 --> 00:13:02,680
+Well, you know, I just wanted to.
+
+270
+00:13:02,880 --> 00:13:03,580
+Not the other ones.
+
+271
+00:13:04,960 --> 00:13:06,160
+You know, sometimes I like it.
+
+272
+00:13:06,160 --> 00:13:10,305
+As you've no doubt found, if you're trying to engage with some new library or something, 
+
+273
+00:13:10,305 --> 00:13:13,240
+it's just, you know, just kind of a nice way to see what it is.
+
+274
+00:13:13,520 --> 00:13:18,420
+It solves a lot of the protocol issues that sometimes you take three hours to get past.
+
+275
+00:13:18,600 --> 00:13:21,220
+So it's mentioning the SciPy integrate.
+
+276
+00:13:21,680 --> 00:13:25,160
+So that's a nice library and it's got this solve initial value problem function.
+
+277
+00:13:25,860 --> 00:13:28,540
+And then it gives some boilerplate for how to how that would look.
+
+278
+00:13:28,620 --> 00:13:30,160
+And it's using Matplotlib to render it.
+
+279
+00:13:30,400 --> 00:13:32,100
+Abundantly reasonable, but we're using Manim.
+
+280
+00:13:32,400 --> 00:13:33,820
+So just adapt it.
+
+281
+00:13:34,260 --> 00:13:34,660
+Yeah.
+
+282
+00:13:35,720 --> 00:13:40,340
+And so essentially I've got a function here to describe the differential equation.
+
+283
+00:13:40,600 --> 00:13:42,966
+It says for a given time and for a given state, 
+
+284
+00:13:42,966 --> 00:13:46,960
+which is going to have XYZ coordinates, just what's the derivative of that state.
+
+285
+00:13:47,360 --> 00:13:51,040
+And you've got three parameters, which you've got Greek words for.
+
+286
+00:13:51,160 --> 00:13:56,195
+And so that, you know, I guess if we go to the if we go to the Wikipedia page for Lorenz, 
+
+287
+00:13:56,195 --> 00:14:01,120
+this is a system that has some parameters on it that I guess we can kind of freely tune.
+
+288
+00:14:01,540 --> 00:14:04,760
+There's some parameters that someone must have found makes for nice diagrams.
+
+289
+00:14:05,560 --> 00:14:06,580
+And so let's just use them.
+
+290
+00:14:06,840 --> 00:14:07,680
+Let's keep this page open.
+
+291
+00:14:07,680 --> 00:14:10,797
+So if we want to render the equations onto our scene to do it, 
+
+292
+00:14:10,797 --> 00:14:13,420
+do it in that manner, maybe we can do it in a moment.
+
+293
+00:14:14,220 --> 00:14:15,020
+So we've got that.
+
+294
+00:14:15,580 --> 00:14:20,590
+I've just got a tiny little wrapper around the SciPy numerical integration 
+
+295
+00:14:20,590 --> 00:14:24,866
+solver for us because what I want to do is be able to say, hey, 
+
+296
+00:14:24,866 --> 00:14:30,011
+for a given initial condition, just give me all the points that are going to 
+
+297
+00:14:30,011 --> 00:14:31,080
+be the solution.
+
+298
+00:14:31,460 --> 00:14:32,160
+So let me just check.
+
+299
+00:14:32,760 --> 00:14:34,820
+And you kind of need to know what it's going to spit back at you.
+
+300
+00:14:34,960 --> 00:14:35,080
+Yeah.
+
+301
+00:14:35,760 --> 00:14:40,944
+It's giving you something called solution, which is going to have time values and X, 
+
+302
+00:14:40,944 --> 00:14:41,920
+Y, and Z values.
+
+303
+00:14:42,420 --> 00:14:44,580
+So the way, yeah, this library is a little weird.
+
+304
+00:14:44,740 --> 00:14:48,695
+It's kind of like it's treating Y as the output, but Y might be like a vector value, 
+
+305
+00:14:48,695 --> 00:14:52,464
+which is a little confusing, which is part of why I wanted a wrapper so that I'm 
+
+306
+00:14:52,464 --> 00:14:56,420
+just thinking in terms of states rather than like its language is involving like a Y.
+
+307
+00:14:56,420 --> 00:14:59,460
+And I also wanted this matrix transposed for how I like it.
+
+308
+00:14:59,560 --> 00:14:59,620
+Oh, gotcha.
+
+309
+00:14:59,700 --> 00:15:00,320
+That's what that T is.
+
+310
+00:15:00,440 --> 00:15:00,520
+Okay.
+
+311
+00:15:00,620 --> 00:15:00,720
+Yeah.
+
+312
+00:15:00,920 --> 00:15:03,800
+It's just all like, don't worry about the wrapper too much.
+
+313
+00:15:04,060 --> 00:15:05,600
+Let's just actually see what it looks like.
+
+314
+00:15:05,840 --> 00:15:10,640
+So let's say our initial condition is something like, let's just make it 0, 0, 0.
+
+315
+00:15:10,780 --> 00:15:11,240
+Why not?
+
+316
+00:15:12,560 --> 00:15:16,542
+And then we can take the solutions where I'm passing in a given function, 
+
+317
+00:15:16,542 --> 00:15:20,524
+which we want to be the Lorentz system and passing in that initial state, 
+
+318
+00:15:20,524 --> 00:15:23,000
+which is the initial state we just wrote down.
+
+319
+00:15:23,580 --> 00:15:25,340
+How long do I want that to go?
+
+320
+00:15:25,340 --> 00:15:28,420
+So let's see what, I don't know, 10 seconds of solution looks like.
+
+321
+00:15:28,740 --> 00:15:31,580
+And this right here is just going to be a set of points basically.
+
+322
+00:15:32,240 --> 00:15:36,440
+And so if I run this and I ask, you know, what are points?
+
+323
+00:15:36,600 --> 00:15:37,320
+It gives a bunch of zeros.
+
+324
+00:15:37,680 --> 00:15:40,920
+This is maybe predictable that 0 is going to be a bad initial condition.
+
+325
+00:15:40,920 --> 00:15:41,600
+Initial condition, yes.
+
+326
+00:15:41,760 --> 00:15:41,940
+Yeah.
+
+327
+00:15:42,000 --> 00:15:44,560
+So let's make that like 10 or something like that.
+
+328
+00:15:45,000 --> 00:15:46,400
+And so now if we look at the points.
+
+329
+00:15:46,980 --> 00:15:49,060
+There's some interesting points rather than all zeros.
+
+330
+00:15:49,280 --> 00:15:49,460
+Yeah.
+
+331
+00:15:49,720 --> 00:15:49,860
+Yeah.
+
+332
+00:15:50,160 --> 00:15:50,420
+Okay.
+
+333
+00:15:50,420 --> 00:15:55,572
+So in this case, I could render a curve where the, like I said, 
+
+334
+00:15:55,572 --> 00:15:59,920
+I call everything a mobject for a mathematical object.
+
+335
+00:16:00,300 --> 00:16:02,858
+Many of them are vectorized mobjects, which just tells you how 
+
+336
+00:16:02,858 --> 00:16:05,580
+it's rendering as opposed to being a surface or like a point cloud.
+
+337
+00:16:06,080 --> 00:16:08,179
+And these are things like curves that have some 
+
+338
+00:16:08,179 --> 00:16:10,060
+sort of stroke thickness fill and all that.
+
+339
+00:16:10,580 --> 00:16:13,660
+So that's interpreting the points and then drawing lines between them essentially.
+
+340
+00:16:14,020 --> 00:16:17,197
+Well, so to do that, I'm basically going to say, hey, 
+
+341
+00:16:17,197 --> 00:16:20,140
+set your points as corners as if it was a polygon.
+
+342
+00:16:21,680 --> 00:16:23,900
+All of those points that were just created.
+
+343
+00:16:24,540 --> 00:16:26,560
+And then let's see what that curve looks like.
+
+344
+00:16:28,440 --> 00:16:29,860
+If I knew how to spell self.
+
+345
+00:16:31,040 --> 00:16:35,260
+So if I do that, we don't see it, but actually it's up there.
+
+346
+00:16:35,660 --> 00:16:38,005
+No, because the thing is I was just adding the points, 
+
+347
+00:16:38,005 --> 00:16:40,820
+but I wasn't using the coordinate system of these axes in any way.
+
+348
+00:16:41,600 --> 00:16:41,960
+And so.
+
+349
+00:16:42,560 --> 00:16:45,420
+Ah, so they're not necessarily going to plot them according to those axes.
+
+350
+00:16:45,640 --> 00:16:45,780
+Right.
+
+351
+00:16:45,780 --> 00:16:49,408
+So what I actually want to do is take the axes and there's a function 
+
+352
+00:16:49,408 --> 00:16:53,244
+called like coordinates to points, which is basically going from whatever 
+
+353
+00:16:53,244 --> 00:16:57,080
+the coordinate system of the axes are to the like manum coordinate system.
+
+354
+00:16:57,260 --> 00:17:00,520
+And there's an abbreviation for that because it's used a lot called chords to points.
+
+355
+00:17:01,080 --> 00:17:03,220
+And I'll just pass that in.
+
+356
+00:17:03,360 --> 00:17:05,829
+And I think actually it thinks of it in terms 
+
+357
+00:17:05,829 --> 00:17:08,460
+of you passing a list of X list of Y list of Z's.
+
+358
+00:17:08,460 --> 00:17:12,480
+So I'm going to do a little transposing and don't worry about it too much.
+
+359
+00:17:13,079 --> 00:17:15,480
+But this should be in the actual coordinate system.
+
+360
+00:17:15,960 --> 00:17:19,480
+Can I check what that star is doing in that penultimate line on the code?
+
+361
+00:17:20,319 --> 00:17:26,660
+OK, so yeah, if you have let's say I have a tuple, this like one, two, three.
+
+362
+00:17:26,660 --> 00:17:27,000
+Right.
+
+363
+00:17:27,339 --> 00:17:32,494
+And then if I have I define a function that takes in like X, 
+
+364
+00:17:32,494 --> 00:17:37,480
+Y, Z and it returns let's say like X plus Y plus two times.
+
+365
+00:17:37,620 --> 00:17:38,380
+We'll do a non trivial.
+
+366
+00:17:38,560 --> 00:17:41,660
+If I call function on that tuple, it'll be like type error.
+
+367
+00:17:41,660 --> 00:17:43,020
+Ah, because it wanted them separated.
+
+368
+00:17:44,500 --> 00:17:45,620
+That's a different kind of error.
+
+369
+00:17:45,840 --> 00:17:46,640
+It wants them separated.
+
+370
+00:17:47,180 --> 00:17:49,680
+So I could do it like oh, pass in like the zeroth element.
+
+371
+00:17:50,700 --> 00:17:54,470
+But Python has a little little syntactical snazziness where if 
+
+372
+00:17:54,470 --> 00:17:58,480
+you put an asterisk in front of an iterable thing, it'll unpack it.
+
+373
+00:17:58,540 --> 00:18:00,960
+OK, this is I mean, this is the most useful thing I've learned all day.
+
+374
+00:18:02,340 --> 00:18:03,560
+I mean, manum is pretty good.
+
+375
+00:18:03,720 --> 00:18:05,020
+But thank you.
+
+376
+00:18:05,140 --> 00:18:06,780
+And joking aside, that's helpful.
+
+377
+00:18:06,960 --> 00:18:08,690
+If you don't know what that was, it's always mysterious 
+
+378
+00:18:08,690 --> 00:18:10,360
+to see things you don't understand what they're doing.
+
+379
+00:18:10,360 --> 00:18:13,034
+So in this case, points is an array where I like 
+
+380
+00:18:13,034 --> 00:18:15,600
+to think of each each row is one of the points.
+
+381
+00:18:17,220 --> 00:18:19,613
+But the syntax for this coordinates to points is going 
+
+382
+00:18:19,613 --> 00:18:21,920
+to take in lists of the X coordinates, Y coordinates.
+
+383
+00:18:22,440 --> 00:18:24,440
+It's maybe a dumb design as I'm thinking about it right now.
+
+384
+00:18:24,640 --> 00:18:25,880
+Like maybe the way it should play.
+
+385
+00:18:26,320 --> 00:18:27,000
+It makes sense.
+
+386
+00:18:27,280 --> 00:18:31,180
+The reason it makes sense is usually when you're calling this, you have axi.c2p.
+
+387
+00:18:31,540 --> 00:18:33,762
+You're just passing an actual individual ones like, hey, 
+
+388
+00:18:33,762 --> 00:18:36,920
+I want to know what point does this correspond to in the manum coordinate system.
+
+389
+00:18:37,060 --> 00:18:37,960
+And it's like, here's that point.
+
+390
+00:18:37,960 --> 00:18:43,380
+So if I wanted to add a dot there, you know, this we could see where it shows up for.
+
+391
+00:18:46,020 --> 00:18:47,240
+Why can't I type cell?
+
+392
+00:18:47,640 --> 00:18:48,220
+Because you're on camera.
+
+393
+00:18:48,580 --> 00:18:49,240
+Because I'm on camera.
+
+394
+00:18:49,480 --> 00:18:49,600
+Yeah.
+
+395
+00:18:50,120 --> 00:18:51,520
+And so it's putting it at that.
+
+396
+00:18:51,680 --> 00:18:52,500
+And you say it's a dumb system.
+
+397
+00:18:52,500 --> 00:18:54,040
+If it works, it's not a dumb system.
+
+398
+00:18:54,240 --> 00:18:54,560
+Yeah.
+
+399
+00:18:55,080 --> 00:18:56,400
+It can always be improved.
+
+400
+00:18:56,480 --> 00:18:56,620
+Right.
+
+401
+00:18:56,660 --> 00:18:59,040
+But it's working as a whole lot better than many systems we try and make.
+
+402
+00:18:59,360 --> 00:18:59,440
+Great.
+
+403
+00:18:59,720 --> 00:19:00,960
+So let's have some fun with this.
+
+404
+00:19:01,320 --> 00:19:03,760
+We could see how it evolves rather than just adding the curve.
+
+405
+00:19:03,760 --> 00:19:08,740
+We could show the creation of the curve, which is basically showing the system evolve.
+
+406
+00:19:09,220 --> 00:19:12,320
+So that's going to take all those points, but just kind of run through them slowly.
+
+407
+00:19:13,320 --> 00:19:13,400
+Yeah.
+
+408
+00:19:13,620 --> 00:19:14,380
+Or make them appear slowly.
+
+409
+00:19:14,700 --> 00:19:15,500
+Well, here's what it'll do.
+
+410
+00:19:15,640 --> 00:19:15,760
+Right.
+
+411
+00:19:16,040 --> 00:19:16,700
+It'll draw it.
+
+412
+00:19:16,920 --> 00:19:17,860
+But that was very fast.
+
+413
+00:19:17,980 --> 00:19:23,000
+So maybe I want the runtime to match the actual time of the dynamic system.
+
+414
+00:19:23,280 --> 00:19:25,460
+So it should draw it over the course of 10 seconds.
+
+415
+00:19:25,900 --> 00:19:27,600
+But here it's trying to be too smart.
+
+416
+00:19:27,780 --> 00:19:30,480
+When it draws things by default, it does that smoothing function.
+
+417
+00:19:30,800 --> 00:19:31,040
+I see.
+
+418
+00:19:31,180 --> 00:19:33,100
+And that's actually changing the behavior.
+
+419
+00:19:33,100 --> 00:19:36,040
+So actually we want the rate function in this case.
+
+420
+00:19:36,820 --> 00:19:38,500
+Almost always it's nice for it to be smooth.
+
+421
+00:19:38,720 --> 00:19:42,040
+This is one of those cases where the math that it's representing is relevant.
+
+422
+00:19:42,260 --> 00:19:43,660
+It needs to be kept rather than masked.
+
+423
+00:19:43,840 --> 00:19:46,440
+So instead, linearly, this is the actual evolution of it.
+
+424
+00:19:46,500 --> 00:19:46,680
+Nice.
+
+425
+00:19:48,160 --> 00:19:49,860
+And so we can style it too.
+
+426
+00:19:50,880 --> 00:19:54,219
+Maybe we want to set the stroke to make it look blue, 
+
+427
+00:19:54,219 --> 00:19:57,620
+make it look a little bit thinner, something like that.
+
+428
+00:19:58,400 --> 00:20:04,420
+We could actually give it a range if we wanted to have a kind of gradient between things.
+
+429
+00:20:05,940 --> 00:20:08,300
+Which I don't know if that looks nice or not.
+
+430
+00:20:08,520 --> 00:20:09,120
+But you can imagine.
+
+431
+00:20:09,240 --> 00:20:10,720
+That's starting blue and ending up red.
+
+432
+00:20:11,060 --> 00:20:11,140
+Yeah.
+
+433
+00:20:11,540 --> 00:20:15,120
+Starting at zero stroke with ending up at 10 or starting at 10 ending up at zero.
+
+434
+00:20:15,400 --> 00:20:15,820
+Knock yourself out.
+
+435
+00:20:16,140 --> 00:20:17,360
+Yeah, those look pretty ugly to me.
+
+436
+00:20:18,720 --> 00:20:22,440
+And also I think we'll want to use colors for a different reason now.
+
+437
+00:20:22,500 --> 00:20:25,820
+Because the reason the system is interesting is because it's chaotic.
+
+438
+00:20:26,340 --> 00:20:28,960
+If you have initial conditions that are really close to each other.
+
+439
+00:20:29,200 --> 00:20:29,800
+But not quite the same.
+
+440
+00:20:29,820 --> 00:20:30,580
+But not quite the same.
+
+441
+00:20:30,640 --> 00:20:33,140
+They start evolving the same for a while, but then they stop.
+
+442
+00:20:34,180 --> 00:20:36,840
+So I think here's the way that I want to illustrate this.
+
+443
+00:20:37,260 --> 00:20:38,480
+We're going to create multiple curves.
+
+444
+00:20:39,300 --> 00:20:43,320
+I'm going to have curves which I'm going to create a group.
+
+445
+00:20:44,120 --> 00:20:46,960
+And I call it a vgroup just to say, hey, these are going to be vectorized objects.
+
+446
+00:20:47,160 --> 00:20:49,440
+That makes the rendering a little faster if it knows that.
+
+447
+00:20:49,520 --> 00:20:51,568
+If it doesn't know that, it'll render them, but 
+
+448
+00:20:51,568 --> 00:20:53,660
+it doesn't use a certain trick to make it faster.
+
+449
+00:20:54,780 --> 00:20:58,820
+Then I'm going to go through a bunch of states, which I need to define now.
+
+450
+00:20:59,540 --> 00:21:02,080
+So states I'm going to maybe make into...
+
+451
+00:21:02,080 --> 00:21:03,060
+And these are your initial conditions.
+
+452
+00:21:03,220 --> 00:21:04,480
+These are going to be the initial conditions.
+
+453
+00:21:04,660 --> 00:21:08,740
+So let's just change that z coordinate by a little bit.
+
+454
+00:21:09,280 --> 00:21:11,860
+So we'll take like an epsilon to be like 1, 1000.
+
+455
+00:21:12,340 --> 00:21:15,540
+Maybe I'll make it more explicit for n in range.
+
+456
+00:21:16,040 --> 00:21:17,440
+How many initial conditions do you want?
+
+457
+00:21:19,580 --> 00:21:20,740
+Should we start with just two?
+
+458
+00:21:21,140 --> 00:21:21,600
+Sure, sure.
+
+459
+00:21:21,600 --> 00:21:23,707
+I mean, I know you're doing a whole list for it, 
+
+460
+00:21:23,707 --> 00:21:26,460
+and that's slightly redundant, but we can crank that up to lots.
+
+461
+00:21:26,780 --> 00:21:27,520
+Yeah, this will be good.
+
+462
+00:21:28,040 --> 00:21:29,640
+So that'll be our state.
+
+463
+00:21:30,080 --> 00:21:33,198
+So these are not going to be dependent on the state 0, 
+
+464
+00:21:33,198 --> 00:21:35,920
+but whatever state is part of our for loop here.
+
+465
+00:21:37,280 --> 00:21:40,860
+I'm going to take everything we just did and basically say...
+
+466
+00:21:40,860 --> 00:21:41,340
+Put it in the loop.
+
+467
+00:21:42,220 --> 00:21:44,220
+Okay, points were just created.
+
+468
+00:21:44,480 --> 00:21:44,680
+Great.
+
+469
+00:21:46,120 --> 00:21:47,060
+Okay, it says blue.
+
+470
+00:21:47,740 --> 00:21:48,880
+I don't want them all to be blue.
+
+471
+00:21:48,880 --> 00:21:53,085
+So let me make some colors, which at the moment, because there's just two right now, 
+
+472
+00:21:53,085 --> 00:21:57,340
+we're going to have to change this in a moment, but I'm going to make it blue and red.
+
+473
+00:21:58,260 --> 00:21:58,720
+But like...
+
+474
+00:21:58,720 --> 00:22:00,880
+You eventually will need some numerical way of changing it.
+
+475
+00:22:01,140 --> 00:22:01,800
+Generalized, yeah.
+
+476
+00:22:02,120 --> 00:22:03,420
+But this will make it kind of easy to see now.
+
+477
+00:22:03,420 --> 00:22:03,980
+Good commenting, Graham.
+
+478
+00:22:05,260 --> 00:22:07,660
+Oh, it's a rarity when I'm animating.
+
+479
+00:22:07,900 --> 00:22:09,080
+Someone's watching now, eh?
+
+480
+00:22:09,620 --> 00:22:09,980
+Yeah.
+
+481
+00:22:10,800 --> 00:22:15,320
+I'm not the worst in the world, but there's a lot of room for improvement.
+
+482
+00:22:15,760 --> 00:22:18,660
+So I'm just going to include that in the loop.
+
+483
+00:22:18,880 --> 00:22:21,080
+So I'm zipping together the states and the colors.
+
+484
+00:22:21,600 --> 00:22:23,160
+And so the curves are going to be colored differently.
+
+485
+00:22:23,920 --> 00:22:28,000
+And now this showing creation, I want to actually happen...
+
+486
+00:22:29,520 --> 00:22:32,120
+Oh, here we'll use our star again.
+
+487
+00:22:32,320 --> 00:22:34,860
+I love list constructors and all that.
+
+488
+00:22:36,740 --> 00:22:39,220
+So here's a little fanciness for what we're doing.
+
+489
+00:22:39,440 --> 00:22:43,680
+So we've got this group of curves that actually...
+
+490
+00:22:43,680 --> 00:22:45,660
+In this for loop, I'm going to need to add each one.
+
+491
+00:22:46,120 --> 00:22:47,820
+So curves.add curve.
+
+492
+00:22:49,120 --> 00:22:50,420
+So creates an empty group.
+
+493
+00:22:51,120 --> 00:22:53,000
+This list adds new threads to it.
+
+494
+00:22:53,120 --> 00:22:54,040
+In this case, there's just two.
+
+495
+00:22:54,160 --> 00:22:55,960
+In a moment, we can make it 10 if we want.
+
+496
+00:22:56,920 --> 00:23:00,380
+And then this is going to create basically a list.
+
+497
+00:23:00,500 --> 00:23:03,860
+It's a generator, but it'll create a list of animations.
+
+498
+00:23:04,640 --> 00:23:06,720
+Those animations are this show creation thing.
+
+499
+00:23:07,620 --> 00:23:10,872
+And then the stars, so that as you pass it into the play argument, 
+
+500
+00:23:10,872 --> 00:23:13,980
+it's passing them as if they were multiple different animations.
+
+501
+00:23:14,780 --> 00:23:16,920
+So there's a little bit baked into that.
+
+502
+00:23:17,480 --> 00:23:20,228
+But essentially what we want is that we're going 
+
+503
+00:23:20,228 --> 00:23:22,640
+to have an evolution of two curves at once.
+
+504
+00:23:23,160 --> 00:23:26,760
+And right now you only see the red one because the red one's being rendered on top of it.
+
+505
+00:23:27,180 --> 00:23:28,060
+But now they've diverged.
+
+506
+00:23:28,380 --> 00:23:29,200
+Now they've diverged.
+
+507
+00:23:29,840 --> 00:23:31,840
+I want to see that divergence a little bit more clearly.
+
+508
+00:23:32,100 --> 00:23:32,920
+We need to run it for longer.
+
+509
+00:23:33,840 --> 00:23:35,400
+Okay, so first let's run it for longer.
+
+510
+00:23:35,880 --> 00:23:37,480
+So let's actually name this.
+
+511
+00:23:38,100 --> 00:23:40,660
+Let's call it, I don't know, evolution time.
+
+512
+00:23:41,080 --> 00:23:42,100
+We could just call it time.
+
+513
+00:23:43,240 --> 00:23:45,660
+And that will be an overused name again, isn't it?
+
+514
+00:23:46,160 --> 00:23:47,060
+Let's make that 30.
+
+515
+00:23:47,220 --> 00:23:50,620
+The other thing I want to do is have little dots indicating the end point.
+
+516
+00:23:51,160 --> 00:23:52,600
+Oh yes, so you can eyeball it easily.
+
+517
+00:23:53,180 --> 00:23:59,230
+Yeah, so the way I'm going to do that is I'm going to make a 
+
+518
+00:23:59,230 --> 00:24:05,380
+group that'll have a thing called a glow dot color for colors.
+
+519
+00:24:06,080 --> 00:24:09,130
+And again, glow dot is a baked in function that you've got because you want 
+
+520
+00:24:09,130 --> 00:24:12,020
+often to have a point that moves and has a nice bit of coloring into it.
+
+521
+00:24:12,160 --> 00:24:14,220
+And so this one's not a vectorized thing.
+
+522
+00:24:14,420 --> 00:24:17,370
+So rather than it's just like its data is described by a point 
+
+523
+00:24:17,370 --> 00:24:20,180
+in space and like how much I want it to like ambiently glow.
+
+524
+00:24:20,640 --> 00:24:21,460
+And it's got a little color.
+
+525
+00:24:21,820 --> 00:24:27,660
+And I'm going to create an updater function for it where I'm going to update the dots.
+
+526
+00:24:27,940 --> 00:24:30,240
+This is going to be a function that takes those dots in.
+
+527
+00:24:30,620 --> 00:24:32,780
+And I'm just going to write this function kind of in place.
+
+528
+00:24:33,860 --> 00:24:36,377
+I often like to do that where it's like everything relevant 
+
+529
+00:24:36,377 --> 00:24:39,020
+to this animation we're doing just sits in that commenting bit.
+
+530
+00:24:40,500 --> 00:24:46,940
+I'm going to say for dot curve and zipping together the dots with the curves.
+
+531
+00:24:47,280 --> 00:24:49,840
+I want each dot to move to the end point of the curve.
+
+532
+00:24:50,500 --> 00:24:52,480
+So move to curve dot get end.
+
+533
+00:24:53,520 --> 00:24:55,340
+So curve dot get end will tell you its last point.
+
+534
+00:24:56,180 --> 00:24:57,460
+The dots going to move to that point.
+
+535
+00:24:58,120 --> 00:25:00,420
+And this is something I want to happen on every iteration.
+
+536
+00:25:00,620 --> 00:25:03,360
+So I'm going to say add as an updater this.
+
+537
+00:25:04,420 --> 00:25:10,900
+This is a thing I want to be called on these dots at every iteration from here on forward.
+
+538
+00:25:11,440 --> 00:25:11,760
+Python question?
+
+539
+00:25:12,180 --> 00:25:12,640
+Yeah, yeah, yeah.
+
+540
+00:25:12,760 --> 00:25:15,168
+The zip command is sort of stacking two lists sort of in 
+
+541
+00:25:15,168 --> 00:25:17,620
+parallel so that you can iterate through them in parallel.
+
+542
+00:25:17,740 --> 00:25:18,280
+Yeah, yeah.
+
+543
+00:25:18,360 --> 00:25:21,440
+So let's say we have list one looks like one, two, three.
+
+544
+00:25:22,100 --> 00:25:28,340
+List two looks like, you know, a, b, c.
+
+545
+00:25:28,600 --> 00:25:28,740
+Yeah.
+
+546
+00:25:29,080 --> 00:25:29,880
+Oh, that's going to kill me.
+
+547
+00:25:30,140 --> 00:25:31,260
+You couldn't leave it.
+
+548
+00:25:33,380 --> 00:25:41,420
+So if you say for number letter in zip list one list two print number and letter.
+
+549
+00:25:42,600 --> 00:25:43,500
+Then it pairs them up.
+
+550
+00:25:43,680 --> 00:25:44,560
+Yeah, it pairs them up.
+
+551
+00:25:44,700 --> 00:25:46,517
+So you can keep lists which are referring to similar 
+
+552
+00:25:46,517 --> 00:25:48,300
+things sort of implicitly because of their position.
+
+553
+00:25:48,660 --> 00:25:48,680
+Yeah.
+
+554
+00:25:49,060 --> 00:25:51,540
+I mean, that's what I thought, but it's nice to see that.
+
+555
+00:25:51,920 --> 00:25:54,468
+And so there's a it's unsettling in my mind right now because 
+
+556
+00:25:54,468 --> 00:25:57,100
+we're zipping things together that might not have the same size.
+
+557
+00:25:57,160 --> 00:25:59,140
+So we're going to want to do something that makes sure that colors.
+
+558
+00:25:59,540 --> 00:26:00,640
+In fact, let's just do it now.
+
+559
+00:26:00,640 --> 00:26:03,100
+Would it cope if you did or would it spit out an error?
+
+560
+00:26:03,640 --> 00:26:05,740
+Well, so what it'll do, here's what will happen.
+
+561
+00:26:05,980 --> 00:26:11,880
+Suppose that list one was actually range much longer.
+
+562
+00:26:12,700 --> 00:26:13,780
+So list one looks like this.
+
+563
+00:26:14,000 --> 00:26:18,780
+If we run that little bit we had above it just it goes until one of the lists runs out.
+
+564
+00:26:18,940 --> 00:26:21,940
+So we would just it would cope, but you would be missing many of them.
+
+565
+00:26:22,140 --> 00:26:24,180
+And actually quite hard to find that bug if you hadn't spotted it.
+
+566
+00:26:24,220 --> 00:26:24,560
+Yeah, no, it is.
+
+567
+00:26:24,640 --> 00:26:24,880
+It is.
+
+568
+00:26:24,900 --> 00:26:28,280
+It's why it's unsettling unless you're like sort of fluent with Python.
+
+569
+00:26:28,720 --> 00:26:33,387
+So I have a thing called color gradient that will basically go between 
+
+570
+00:26:33,387 --> 00:26:38,120
+two colors and you you tell it how many steps to how many steps exactly.
+
+571
+00:26:38,260 --> 00:26:41,860
+And so the number of steps should be the length of the states in this case.
+
+572
+00:26:42,020 --> 00:26:43,951
+So we should just feel like, OK, no matter what, 
+
+573
+00:26:43,951 --> 00:26:46,080
+the number of colors matches the length of the states.
+
+574
+00:26:46,220 --> 00:26:48,360
+And now I feel more comfortable.
+
+575
+00:26:49,820 --> 00:26:52,714
+I wonder how much it is insightful to watch someone 
+
+576
+00:26:52,714 --> 00:26:55,720
+doing a workflow and to note when discomfort kicks in.
+
+577
+00:26:55,720 --> 00:26:59,280
+That's a really insightful thing to realize what matters from bitter experience, right?
+
+578
+00:26:59,460 --> 00:26:59,680
+Isn't it?
+
+579
+00:26:59,900 --> 00:27:00,920
+This isn't that bitter.
+
+580
+00:27:01,080 --> 00:27:02,520
+It's maybe just like aesthetically.
+
+581
+00:27:03,360 --> 00:27:05,700
+Experience tells you when to worry about something when not to worry about it.
+
+582
+00:27:05,720 --> 00:27:07,933
+And it's just nice to see that that's how you know 
+
+583
+00:27:07,933 --> 00:27:10,060
+I should deal with that before I forget about it.
+
+584
+00:27:10,580 --> 00:27:12,400
+So how do we want to do this?
+
+585
+00:27:12,640 --> 00:27:12,880
+Oh, yeah.
+
+586
+00:27:13,040 --> 00:27:13,840
+So we've got our dots.
+
+587
+00:27:13,960 --> 00:27:14,480
+We've got the updater.
+
+588
+00:27:14,660 --> 00:27:17,847
+That means if we add the dots to the scene, then as these 
+
+589
+00:27:17,847 --> 00:27:21,200
+evolve and their endpoint changes based on what's been drawn.
+
+590
+00:27:21,200 --> 00:27:21,600
+It should track it around.
+
+591
+00:27:22,020 --> 00:27:22,500
+It should.
+
+592
+00:27:24,320 --> 00:27:29,960
+I'm going to put in a small line that anyone who knows Python is going to vomit at.
+
+593
+00:27:31,560 --> 00:27:33,926
+And if you want, I can explain the line and why I 
+
+594
+00:27:33,926 --> 00:27:36,340
+would never do it in any sort of like serious code.
+
+595
+00:27:36,340 --> 00:27:39,220
+But it is an annoying necessity.
+
+596
+00:27:39,560 --> 00:27:41,280
+Let's see it first and then I'll ask you.
+
+597
+00:27:41,380 --> 00:27:42,440
+We can edit if we need to.
+
+598
+00:27:42,680 --> 00:27:43,740
+Must be a string or real number.
+
+599
+00:27:45,480 --> 00:27:47,120
+What line is this coming up for?
+
+600
+00:27:48,300 --> 00:27:49,420
+So when I set the points.
+
+601
+00:27:51,560 --> 00:27:52,640
+Color and colors.
+
+602
+00:27:54,360 --> 00:27:55,740
+The color gradient is producing.
+
+603
+00:27:57,620 --> 00:28:04,400
+Oh, so the initial argument for glow dot is the center like where it is in space.
+
+604
+00:28:04,680 --> 00:28:08,047
+So it was telling it you needed that parameter to be there could be 
+
+605
+00:28:08,047 --> 00:28:11,563
+a better certainly a better type error message that's that rather than 
+
+606
+00:28:11,563 --> 00:28:14,980
+this is kicking off to this is where people are like who know Python.
+
+607
+00:28:15,260 --> 00:28:19,160
+The constructor of glow dot should definitely have had better error messaging.
+
+608
+00:28:19,160 --> 00:28:20,540
+I'm not going to hold it against you.
+
+609
+00:28:20,900 --> 00:28:22,100
+Yeah, there's the dot.
+
+610
+00:28:22,860 --> 00:28:24,080
+And again, red on top of blue at first.
+
+611
+00:28:24,480 --> 00:28:27,000
+This is OK.
+
+612
+00:28:27,060 --> 00:28:29,293
+The reason they're running so fast is because the 
+
+613
+00:28:29,293 --> 00:28:31,840
+runtime of this is now different from the evolution time.
+
+614
+00:28:32,620 --> 00:28:37,500
+So we should maybe have the 30 step the 30 length solution is now happening in 10 seconds.
+
+615
+00:28:37,820 --> 00:28:38,040
+Yeah.
+
+616
+00:28:38,300 --> 00:28:39,860
+So let's let's run that again.
+
+617
+00:28:40,060 --> 00:28:40,480
+But where we.
+
+618
+00:28:41,600 --> 00:28:44,380
+So this is in the time it's actually supposed to be.
+
+619
+00:28:44,460 --> 00:28:45,420
+So they start off together.
+
+620
+00:28:45,580 --> 00:28:46,420
+And here's the classic.
+
+621
+00:28:46,420 --> 00:28:49,020
+They'd be like they're so close together to start with.
+
+622
+00:28:49,120 --> 00:28:49,900
+But now they're separated.
+
+623
+00:28:50,120 --> 00:28:53,040
+And then after a little bit, it's as if they're doing completely different things.
+
+624
+00:28:53,500 --> 00:28:57,673
+I want to jump in here real quick to explain that global update locals line, 
+
+625
+00:28:57,673 --> 00:29:00,600
+because it is such a ridiculously cursed line of code.
+
+626
+00:29:00,760 --> 00:29:04,760
+But it has to do with a bug in the sort of IPython embed being used.
+
+627
+00:29:05,140 --> 00:29:06,740
+So let me just show you what's going on here.
+
+628
+00:29:07,000 --> 00:29:10,044
+Taking a super simple example, let's say I have this 
+
+629
+00:29:10,044 --> 00:29:12,860
+snippet of Python where I define some variable X.
+
+630
+00:29:13,180 --> 00:29:14,180
+Let me make this bigger.
+
+631
+00:29:14,720 --> 00:29:18,940
+And then I define this function of Y that's going to use that X.
+
+632
+00:29:18,940 --> 00:29:22,240
+So it's defined outside of the function, but it's making use of that X.
+
+633
+00:29:22,720 --> 00:29:24,740
+And then we're going to test, you know, what is like F of 10.
+
+634
+00:29:24,880 --> 00:29:26,580
+So you expect it to return 13.
+
+635
+00:29:26,960 --> 00:29:30,760
+And it'll do this if I run this as just a Python script.
+
+636
+00:29:30,900 --> 00:29:33,380
+I run it from the terminal Python of that thing.
+
+637
+00:29:33,520 --> 00:29:36,220
+It prints out for us F of 10 is equal to 13.
+
+638
+00:29:36,660 --> 00:29:37,580
+All is well and good.
+
+639
+00:29:38,120 --> 00:29:42,340
+Now inside that sort of IPython embed that's being used for Manim.
+
+640
+00:29:42,340 --> 00:29:45,946
+If I take exactly the same code, exactly the same code, 
+
+641
+00:29:45,946 --> 00:29:50,520
+it behaves differently where it says name error, name X is not defined.
+
+642
+00:29:51,120 --> 00:29:55,784
+Because I think what's happening is that when inside an IPython cell like this, 
+
+643
+00:29:55,784 --> 00:29:57,300
+it defines a new function.
+
+644
+00:29:57,780 --> 00:30:02,520
+It doesn't necessarily share the same scope that it would in a normal Python environment.
+
+645
+00:30:03,320 --> 00:30:07,015
+The catch all hack for how to get around this is to say, 
+
+646
+00:30:07,015 --> 00:30:09,480
+hey, I want X to be a global variable.
+
+647
+00:30:10,130 --> 00:30:15,143
+In fact, to just have a universal catch all, I'm going to take the whole dictionary 
+
+648
+00:30:15,143 --> 00:30:19,620
+of global variables, which Python just gives you access to for some reason.
+
+649
+00:30:19,640 --> 00:30:23,220
+And I'm going to say, hey, look at the dictionary of all local variables.
+
+650
+00:30:23,220 --> 00:30:24,860
+That's going to include that X.
+
+651
+00:30:25,000 --> 00:30:27,806
+I just want everything that's local to become global, 
+
+652
+00:30:27,806 --> 00:30:31,808
+which is obviously a horrifying thing to do if this was like code for a real 
+
+653
+00:30:31,808 --> 00:30:32,900
+library or something.
+
+654
+00:30:32,980 --> 00:30:37,230
+But because we're just scrappily running it in this little interactive 
+
+655
+00:30:37,230 --> 00:30:41,720
+session purely for the purpose of scene development, it's not as dangerous.
+
+656
+00:30:42,460 --> 00:30:45,802
+But if you were wondering or if you were vomiting at the screen, 
+
+657
+00:30:45,802 --> 00:30:47,500
+that's basically what's going on.
+
+658
+00:30:47,560 --> 00:30:49,400
+It's that with this kind of interactive mode.
+
+659
+00:30:49,880 --> 00:30:52,743
+Interestingly, it's not the case that that'll be a 
+
+660
+00:30:52,743 --> 00:30:56,000
+problem in just IPython if you run that from the terminal.
+
+661
+00:30:56,200 --> 00:31:01,120
+Like if I take this code not using the dumb hack, it works just fine.
+
+662
+00:31:01,240 --> 00:31:04,313
+So it has something to do with this notion of embedding such that 
+
+663
+00:31:04,313 --> 00:31:07,620
+we're dropping into the middle of a scene kind of like it's a debugger.
+
+664
+00:31:08,720 --> 00:31:12,498
+If I'm missing someone, if someone knows like a better way to get around that, 
+
+665
+00:31:12,498 --> 00:31:13,120
+I'm all ears.
+
+666
+00:31:13,400 --> 00:31:14,700
+Future future me here.
+
+667
+00:31:15,140 --> 00:31:19,266
+Worth being clear about one thing here, which is that the better way to do this, 
+
+668
+00:31:19,266 --> 00:31:23,036
+if you have some function referencing some variable that it needs to use, 
+
+669
+00:31:23,036 --> 00:31:24,820
+is to just make that very explicit.
+
+670
+00:31:25,280 --> 00:31:29,907
+So in this case, I could say X is an argument of the function, give it a default value, 
+
+671
+00:31:29,907 --> 00:31:34,220
+which is the X kind of defined in the same scope as where the function is defined.
+
+672
+00:31:34,680 --> 00:31:37,300
+And then everything will work dandy and as you want.
+
+673
+00:31:38,180 --> 00:31:42,715
+So in the scene that I was doing with Ben, if we look over at the very cursed line here, 
+
+674
+00:31:42,715 --> 00:31:46,893
+the better way to do that where it wants to reference curves is to basically say, 
+
+675
+00:31:46,893 --> 00:31:49,900
+hey, curves should actually be something explicit in there.
+
+676
+00:31:49,920 --> 00:31:52,558
+Maybe an argument that defaults to the value that's 
+
+677
+00:31:52,558 --> 00:31:54,740
+going to be whatever it was on the outside.
+
+678
+00:31:55,000 --> 00:31:56,440
+That will totally handle it.
+
+679
+00:31:56,860 --> 00:31:59,698
+The reason I was in the habit of doing this, for one thing, 
+
+680
+00:31:59,698 --> 00:32:03,720
+it's maybe a little annoying to do that with lambdas on the fly and things like that.
+
+681
+00:32:04,080 --> 00:32:07,320
+But the same bug would come up with list constructors.
+
+682
+00:32:07,580 --> 00:32:12,254
+So if I was to define something like X plus Y for Y in range, 
+
+683
+00:32:12,254 --> 00:32:15,120
+I don't know, 10, something like that.
+
+684
+00:32:15,140 --> 00:32:16,560
+And I want to see what this looks like.
+
+685
+00:32:17,020 --> 00:32:21,860
+This is something where, you know, in normal Python, this X would be visible outside.
+
+686
+00:32:22,080 --> 00:32:27,060
+And so if we were to actually run this, run this little test, it would do what we want.
+
+687
+00:32:27,060 --> 00:32:30,839
+Whereas inside the manum environment, at least previously, 
+
+688
+00:32:30,839 --> 00:32:36,220
+so if I do all this and then I ran that code, previously that same bug would emerge.
+
+689
+00:32:36,600 --> 00:32:40,840
+But when I was just looking at it now, it seems like actually it's fine.
+
+690
+00:32:41,940 --> 00:32:45,683
+Whatever bug had been there that affected list constructors and things like that, 
+
+691
+00:32:45,683 --> 00:32:46,140
+it's fine.
+
+692
+00:32:47,440 --> 00:32:50,855
+So maybe I should just get out of the habit of typing that 
+
+693
+00:32:50,855 --> 00:32:54,560
+incredibly cursed line and you can ignore the last five minutes.
+
+694
+00:32:54,560 --> 00:32:57,480
+Anyway, back to actually finishing out that scene with Ben.
+
+695
+00:32:58,760 --> 00:32:59,960
+Let's make those dots bigger.
+
+696
+00:33:01,160 --> 00:33:02,120
+Can we give them radius one?
+
+697
+00:33:02,660 --> 00:33:04,340
+I don't like red as the second color.
+
+698
+00:33:04,940 --> 00:33:06,580
+I just think that looks kind of ugly.
+
+699
+00:33:08,540 --> 00:33:09,260
+I often...
+
+700
+00:33:09,260 --> 00:33:10,680
+Okay, that's a very big dot.
+
+701
+00:33:11,800 --> 00:33:12,500
+But I guess I don't know.
+
+702
+00:33:12,620 --> 00:33:12,940
+We see it.
+
+703
+00:33:13,000 --> 00:33:13,600
+Yeah, we see it.
+
+704
+00:33:14,020 --> 00:33:16,020
+That's maybe a little bit a little bit too big.
+
+705
+00:33:16,020 --> 00:33:17,320
+So I might ease off on that.
+
+706
+00:33:19,980 --> 00:33:23,680
+Again, I mean, it's a minor comment, but the aesthetics are handled for you.
+
+707
+00:33:23,680 --> 00:33:25,400
+The glow dot, it's too big, right?
+
+708
+00:33:25,660 --> 00:33:27,926
+But it still looks nice, even though it's big because you've paid 
+
+709
+00:33:27,926 --> 00:33:30,400
+attention to making a glow dot function, which makes a nice looking dot.
+
+710
+00:33:31,260 --> 00:33:32,880
+So this is something I was going to ask about.
+
+711
+00:33:33,180 --> 00:33:35,580
+This is interactive.
+
+712
+00:33:35,780 --> 00:33:36,660
+Yeah, yeah, yeah, yeah.
+
+713
+00:33:36,720 --> 00:33:38,500
+And that wasn't obvious until you moved the axes.
+
+714
+00:33:38,680 --> 00:33:40,720
+No, it's because everything is ultimately rendered 
+
+715
+00:33:40,720 --> 00:33:42,320
+and just like made into a YouTube video.
+
+716
+00:33:42,440 --> 00:33:44,522
+And every now and then I've done something where I'll 
+
+717
+00:33:44,522 --> 00:33:46,720
+like have an animation I want to play with in the moment.
+
+718
+00:33:47,100 --> 00:33:48,380
+But like, it's not that common.
+
+719
+00:33:48,900 --> 00:33:51,507
+So okay, a very common thing I might do, we've got this animation, 
+
+720
+00:33:51,507 --> 00:33:52,480
+it's rendering all these.
+
+721
+00:33:52,480 --> 00:33:55,120
+It would be nice for the camera to slowly pan throughout.
+
+722
+00:33:55,440 --> 00:33:55,520
+Agreed.
+
+723
+00:33:55,900 --> 00:34:00,680
+And so it's amazing how useful it is for 3D rendering is that if you're looking at 
+
+724
+00:34:00,680 --> 00:34:05,460
+a TV screen, you need the illusion created by the rotation to keep the depth alive.
+
+725
+00:34:05,720 --> 00:34:05,860
+Yeah.
+
+726
+00:34:06,260 --> 00:34:08,020
+So here's what I might do.
+
+727
+00:34:08,739 --> 00:34:13,121
+I have a little another keyboard shortcut that is not documented 
+
+728
+00:34:13,121 --> 00:34:17,502
+anywhere where I can save to my clipboard, basically a call that 
+
+729
+00:34:17,502 --> 00:34:21,480
+needs to be made to put the camera in the current position.
+
+730
+00:34:21,480 --> 00:34:25,100
+So that's just grabbed where the camera angle is right now.
+
+731
+00:34:25,360 --> 00:34:26,080
+That's helpful.
+
+732
+00:34:26,320 --> 00:34:29,120
+And so if in my animation I take the camera frame, which is like frame.
+
+733
+00:34:30,400 --> 00:34:32,520
+I haven't talked about this dot animate thing yet.
+
+734
+00:34:32,580 --> 00:34:35,340
+But basically I say, I want you to do this thing.
+
+735
+00:34:35,500 --> 00:34:37,040
+I don't want you to just do it to the object.
+
+736
+00:34:37,040 --> 00:34:38,760
+I want you to animate that over time.
+
+737
+00:34:38,880 --> 00:34:43,360
+And there's some little bit of magic that underlies what's going on there.
+
+738
+00:34:43,719 --> 00:34:45,900
+But in this case, the thing I wanted to animate 
+
+739
+00:34:45,900 --> 00:34:47,900
+is reorienting itself to a certain position.
+
+740
+00:34:48,440 --> 00:34:52,639
+So over the course of the animation, it should like slowly pan itself over.
+
+741
+00:34:52,760 --> 00:34:56,620
+So it'll take wherever it is, wherever it thinks it is already and try and get to that.
+
+742
+00:34:57,380 --> 00:35:01,227
+So I'm going to also it's nice if the runtime as an argument of the play method, 
+
+743
+00:35:01,227 --> 00:35:04,220
+then it becomes the runtime for every animation in that method.
+
+744
+00:35:04,920 --> 00:35:06,880
+So this might not be enough movement, actually.
+
+745
+00:35:06,980 --> 00:35:12,580
+I might want to like really have it spin around because it's happening over 30 seconds.
+
+746
+00:35:14,120 --> 00:35:15,620
+So back to the beginning.
+
+747
+00:35:17,620 --> 00:35:18,060
+Do all this.
+
+748
+00:35:18,200 --> 00:35:19,000
+Is it panning?
+
+749
+00:35:20,400 --> 00:35:21,140
+Oh, it's very slow.
+
+750
+00:35:21,340 --> 00:35:22,340
+It looks like it is very smooth.
+
+751
+00:35:22,500 --> 00:35:22,940
+It's not.
+
+752
+00:35:23,220 --> 00:35:25,500
+Yeah, it's smooth, which not necessarily.
+
+753
+00:35:25,920 --> 00:35:26,680
+I think I like that.
+
+754
+00:35:26,880 --> 00:35:28,420
+I think I like it as a smooth thing.
+
+755
+00:35:29,060 --> 00:35:29,140
+Agreed.
+
+756
+00:35:29,280 --> 00:35:30,980
+It might look kind of a jerky style if it wasn't.
+
+757
+00:35:31,360 --> 00:35:31,440
+Yeah.
+
+758
+00:35:31,460 --> 00:35:34,400
+And so now it's like as we're going, we can see it from all the different angles.
+
+759
+00:35:35,540 --> 00:35:38,460
+I think the color scheme is still a little jarring to me.
+
+760
+00:35:38,460 --> 00:35:43,660
+So I think what I might do is make it go to teal or something that's nice and close to it.
+
+761
+00:35:45,300 --> 00:35:48,840
+And then maybe we'll make this actually even more aggressive.
+
+762
+00:35:49,020 --> 00:35:51,060
+I'm not your best color audience.
+
+763
+00:35:51,480 --> 00:35:53,780
+My color vision deficiency, definitely.
+
+764
+00:35:54,640 --> 00:35:55,760
+I don't know if my colors are the same.
+
+765
+00:35:56,000 --> 00:35:57,660
+Anyway, yellow and blue I can see apart.
+
+766
+00:35:57,940 --> 00:35:58,260
+Blue and teal.
+
+767
+00:35:58,560 --> 00:36:01,805
+In this case, like either you want them to be starkly different so 
+
+768
+00:36:01,805 --> 00:36:04,857
+you see it or you want it to be aesthetically nice where maybe 
+
+769
+00:36:04,857 --> 00:36:08,200
+you're just using the shade of it rather than the hue to distinguish.
+
+770
+00:36:09,540 --> 00:36:13,521
+So I mean, one thing we could try, it's going to look cleaner, 
+
+771
+00:36:13,521 --> 00:36:15,480
+but maybe be harder to discern.
+
+772
+00:36:15,940 --> 00:36:19,426
+Let's say we go between two different shades of blue and I'm going 
+
+773
+00:36:19,426 --> 00:36:22,860
+to now let's have some fun and let's have there be like 10 points.
+
+774
+00:36:23,360 --> 00:36:25,920
+And so they're just going to change by their epsilon in the third coordinate.
+
+775
+00:36:26,460 --> 00:36:26,740
+Yeah, exactly.
+
+776
+00:36:26,740 --> 00:36:26,920
+Doesn't really matter.
+
+777
+00:36:27,100 --> 00:36:27,700
+We know actually.
+
+778
+00:36:28,440 --> 00:36:29,760
+I mean, mathematical comment.
+
+779
+00:36:29,920 --> 00:36:32,784
+The other amazing thing about this is that wherever you start, 
+
+780
+00:36:32,784 --> 00:36:34,240
+it goes into this sort of shape.
+
+781
+00:36:34,460 --> 00:36:36,420
+That's kind of like the second surprising thing, isn't it?
+
+782
+00:36:36,420 --> 00:36:37,020
+Yeah, yeah, yeah.
+
+783
+00:36:37,160 --> 00:36:40,324
+The whole point is not just that it does something strange, 
+
+784
+00:36:40,324 --> 00:36:41,960
+but that there is an attractor.
+
+785
+00:36:43,040 --> 00:36:46,420
+So often with differential equations, it might be attracted to a single point.
+
+786
+00:36:46,480 --> 00:36:47,880
+It might blow up to infinity.
+
+787
+00:36:48,260 --> 00:36:52,257
+It might be attracted to a cycle, but then this is what's called a strange 
+
+788
+00:36:52,257 --> 00:36:55,722
+attractor where all the points are attracted to a certain shape, 
+
+789
+00:36:55,722 --> 00:36:59,880
+but that shape isn't so simple as a cycle and it's got a fractal nature to it.
+
+790
+00:37:00,100 --> 00:37:03,023
+I often feel like it's the sort of contradiction inherent in trying to describe 
+
+791
+00:37:03,023 --> 00:37:06,020
+chaos to someone because I want you to say, okay, this is when it's unpredictable.
+
+792
+00:37:06,220 --> 00:37:08,940
+And yet at the same time it is predictable and there's this strange attractor.
+
+793
+00:37:08,940 --> 00:37:10,280
+So it's the fact that both are happening.
+
+794
+00:37:11,160 --> 00:37:11,960
+And this is...
+
+795
+00:37:11,960 --> 00:37:14,340
+You know that it's going to be on this subset of R3.
+
+796
+00:37:14,780 --> 00:37:16,660
+It's going to get really close to that subset.
+
+797
+00:37:16,920 --> 00:37:18,280
+Where on that will it be?
+
+798
+00:37:18,680 --> 00:37:21,400
+Well, we just had 10 starting conditions that were really close to each other.
+
+799
+00:37:21,480 --> 00:37:24,120
+And if we remove the curves and just see the dots.
+
+800
+00:37:24,260 --> 00:37:24,820
+They're all over the place.
+
+801
+00:37:24,940 --> 00:37:26,080
+Oh, actually, let's do this.
+
+802
+00:37:26,200 --> 00:37:26,900
+Let's have some fun.
+
+803
+00:37:27,800 --> 00:37:28,300
+What if the curves...
+
+804
+00:37:28,860 --> 00:37:30,080
+Sort of fade out of...
+
+805
+00:37:30,080 --> 00:37:31,240
+Oh yeah, let's have them fade out of...
+
+806
+00:37:31,240 --> 00:37:32,160
+Sorry, you had an idea that I...
+
+807
+00:37:32,160 --> 00:37:33,000
+No, no, no, no, let's do that.
+
+808
+00:37:33,000 --> 00:37:33,740
+Let's have the curves fade over time.
+
+809
+00:37:33,740 --> 00:37:34,820
+I want to know what your idea was.
+
+810
+00:37:35,640 --> 00:37:36,960
+How do I want to do that?
+
+811
+00:37:37,180 --> 00:37:38,560
+I'm going to...
+
+812
+00:37:38,560 --> 00:37:40,929
+I definitely made the part that follows with Ben 
+
+813
+00:37:40,929 --> 00:37:42,960
+way more complicated than it needed to be.
+
+814
+00:37:43,400 --> 00:37:46,080
+We also got sidetracked chasing down a couple of different bugs.
+
+815
+00:37:46,580 --> 00:37:49,490
+I think what I'll do is post the full relatively 
+
+816
+00:37:49,490 --> 00:37:52,580
+uncut version of that conversation maybe on Patreon.
+
+817
+00:37:53,080 --> 00:37:55,760
+But just give you a much more succinct version of how we wrapped up here.
+
+818
+00:37:56,100 --> 00:37:59,200
+Here I have essentially the same scene that I was doing with Ben.
+
+819
+00:37:59,880 --> 00:38:02,660
+So we've got our axes setting up a 3D coordinate system.
+
+820
+00:38:02,660 --> 00:38:03,840
+We've got our curves.
+
+821
+00:38:04,180 --> 00:38:05,520
+I've got 10 of them.
+
+822
+00:38:06,200 --> 00:38:08,760
+Here, when we animate, the curves are getting drawn.
+
+823
+00:38:08,940 --> 00:38:09,780
+The dots are following.
+
+824
+00:38:10,240 --> 00:38:13,860
+And Ben had just asked if we want to have the curves fade out over time.
+
+825
+00:38:14,500 --> 00:38:18,916
+What I should have said is that you just type fade out curves, 
+
+826
+00:38:18,916 --> 00:38:21,160
+which is another animation type.
+
+827
+00:38:21,360 --> 00:38:23,720
+It'll slowly change them to have zero opacity.
+
+828
+00:38:24,340 --> 00:38:28,800
+In this case, that evolution time, if we make it the parameter...
+
+829
+00:38:29,360 --> 00:38:30,460
+The runtime, rather.
+
+830
+00:38:30,560 --> 00:38:33,623
+If we make that the parameter of the play argument here, 
+
+831
+00:38:33,623 --> 00:38:36,580
+then it becomes a runtime for everything on the inside.
+
+832
+00:38:37,300 --> 00:38:39,900
+So now when we do that, it goes.
+
+833
+00:38:40,700 --> 00:38:45,180
+And over the course of those 10 seconds, the curves should slowly fade.
+
+834
+00:38:45,480 --> 00:38:46,580
+And indeed it looks like they do.
+
+835
+00:38:46,980 --> 00:38:49,100
+And then we're left just with the dots, which is nice.
+
+836
+00:38:49,220 --> 00:38:50,040
+It looks very nice.
+
+837
+00:38:51,200 --> 00:38:54,001
+The other thing that we got into, and I just took 
+
+838
+00:38:54,001 --> 00:38:56,860
+way longer to say this than I properly should have.
+
+839
+00:38:56,860 --> 00:38:58,716
+Because I was trying to remember what the names 
+
+840
+00:38:58,716 --> 00:39:00,380
+of the functions were and things like that.
+
+841
+00:39:00,400 --> 00:39:04,140
+Again, I'll post this all in a more uncut version elsewhere.
+
+842
+00:39:04,620 --> 00:39:07,850
+If we wanted a nice effect where there's this sort of 
+
+843
+00:39:07,850 --> 00:39:11,080
+tail following the dots that sort of fades out nicely.
+
+844
+00:39:11,080 --> 00:39:13,140
+There's this thing I once wrote for some...
+
+845
+00:39:13,140 --> 00:39:16,420
+You don't even remember what video, way in the past, called Tracing Tail.
+
+846
+00:39:17,300 --> 00:39:20,920
+And so the way this will work is if you give it just a single little object of some kind.
+
+847
+00:39:20,920 --> 00:39:22,300
+So let's give it that first dot.
+
+848
+00:39:22,520 --> 00:39:23,940
+And then let's add the tail.
+
+849
+00:39:25,720 --> 00:39:30,471
+Then, rather than fading out the curves in this case, 
+
+850
+00:39:30,471 --> 00:39:36,720
+actually what I'm going to do is just set those curves to be invisible.
+
+851
+00:39:37,060 --> 00:39:38,580
+So set their opacity to be zero.
+
+852
+00:39:39,960 --> 00:39:42,806
+So they'll be drawn that will determine where the dots go as 
+
+853
+00:39:42,806 --> 00:39:45,560
+they're having this kind of update function called on them.
+
+854
+00:39:45,780 --> 00:39:46,920
+But we won't actually see them.
+
+855
+00:39:47,280 --> 00:39:49,880
+What we will see is this one tail for one of the dots.
+
+856
+00:39:50,520 --> 00:39:50,760
+I think.
+
+857
+00:39:51,420 --> 00:39:52,920
+So the way that it looks...
+
+858
+00:39:52,920 --> 00:39:53,020
+Great.
+
+859
+00:39:53,020 --> 00:39:56,120
+We see that one little tail and it kind of fades out in the back.
+
+860
+00:39:56,120 --> 00:39:57,840
+I like the effect.
+
+861
+00:39:57,880 --> 00:40:03,460
+It sort of goes from full opacity to zero opacity, zero stroke width.
+
+862
+00:40:04,180 --> 00:40:07,400
+You can change some of the parameters on it here.
+
+863
+00:40:08,320 --> 00:40:12,040
+In this case, the amount of time that it follows it.
+
+864
+00:40:12,240 --> 00:40:14,260
+So right here it's showing the last one second.
+
+865
+00:40:14,740 --> 00:40:19,300
+And if we were to wait, it would sort of fade out because one more second has passed.
+
+866
+00:40:19,300 --> 00:40:22,900
+So instead I could say, hey, I want you to follow it for a little bit more time.
+
+867
+00:40:23,640 --> 00:40:26,480
+So let's make that time traced three seconds.
+
+868
+00:40:26,940 --> 00:40:30,020
+Instead of just having one tail, we could have a group of them.
+
+869
+00:40:30,680 --> 00:40:34,701
+So we'll create a group of these tails, not just for the zeroth dot, 
+
+870
+00:40:34,701 --> 00:40:36,100
+but for all of the dots.
+
+871
+00:40:36,560 --> 00:40:37,320
+For dots and dots.
+
+872
+00:40:38,100 --> 00:40:40,186
+And then I could maybe have it match the color 
+
+873
+00:40:40,186 --> 00:40:42,140
+of that dot so that we kind of see them all.
+
+874
+00:40:42,800 --> 00:40:45,842
+So now, when we do this, we should see ten different 
+
+875
+00:40:45,842 --> 00:40:48,540
+tails all following for a little bit more time.
+
+876
+00:40:48,540 --> 00:40:51,458
+Which I think should just give a nice, oh yeah, 
+
+877
+00:40:51,458 --> 00:40:54,560
+yeah, yeah, that gives a nice smooth little effect.
+
+878
+00:40:55,640 --> 00:40:56,760
+And they all start to spread out.
+
+879
+00:40:56,840 --> 00:40:58,540
+You can see that spread really cleanly.
+
+880
+00:40:59,220 --> 00:41:03,180
+And here we can have more fun by basically having it evolve over more time.
+
+881
+00:41:03,340 --> 00:41:06,560
+Instead of ten seconds, we could bring that up to thirty seconds.
+
+882
+00:41:07,360 --> 00:41:10,669
+We could make them closer so this epsilon value, 
+
+883
+00:41:10,669 --> 00:41:16,140
+instead of being one one thousandth, we could make it one one hundred thousandth.
+
+884
+00:41:16,140 --> 00:41:18,300
+So it should take longer for them to all diverge.
+
+885
+00:41:18,920 --> 00:41:21,020
+So now if I go, we see all of those tails.
+
+886
+00:41:21,340 --> 00:41:24,300
+In theory, these ten dots should actually stay closer for much longer.
+
+887
+00:41:24,540 --> 00:41:27,680
+And it should take longer before we see that divergence in the chaos.
+
+888
+00:41:28,660 --> 00:41:31,880
+And indeed, it takes a little while, but eventually they spread out.
+
+889
+00:41:32,560 --> 00:41:36,000
+So, I think that's kind of a nice end effect.
+
+890
+00:41:36,480 --> 00:41:38,471
+Like I said, I'll post the more uncut version, 
+
+891
+00:41:38,471 --> 00:41:41,480
+but now is a pretty good point to just jump ahead towards other topics.
+
+892
+00:41:41,880 --> 00:41:42,860
+Well, goal achieved.
+
+893
+00:41:43,080 --> 00:41:47,557
+You've got a Lorentz Attractor with multiple initial conditions varied very slightly, 
+
+894
+00:41:47,557 --> 00:41:49,640
+animating prettily with a glitchy trail.
+
+895
+00:41:49,960 --> 00:41:52,660
+So before we finish the workflow, you've made a code that does a thing.
+
+896
+00:41:52,820 --> 00:41:54,240
+And let's say you're happy with it.
+
+897
+00:41:54,240 --> 00:41:55,980
+I know there's lots of polishing that you want to do.
+
+898
+00:41:56,060 --> 00:41:58,660
+But you then bake it into an MP4 file.
+
+899
+00:41:58,900 --> 00:41:59,720
+Oh yeah, yeah, yeah.
+
+900
+00:41:59,740 --> 00:42:03,046
+So in this case, once I have the scene that I like, 
+
+901
+00:42:03,046 --> 00:42:06,480
+and so in this case maybe we'll clean it a little bit.
+
+902
+00:42:06,820 --> 00:42:09,940
+I might want to render this out, so I've got a little keyboard shortcut.
+
+903
+00:42:09,940 --> 00:42:14,166
+The way that you might call Manim usually is in the command line, 
+
+904
+00:42:14,166 --> 00:42:18,969
+if you've downloaded the GitHub and you've imported it all, you say Manim, 
+
+905
+00:42:18,969 --> 00:42:23,260
+and then you pass in a file, a Python file that contains the scene.
+
+906
+00:42:23,980 --> 00:42:26,300
+And so in this case, I found the scene to put that.
+
+907
+00:42:26,640 --> 00:42:29,400
+You say which scene do you want to render from that file.
+
+908
+00:42:30,060 --> 00:42:32,420
+And in this case, I have a couple different parameters.
+
+909
+00:42:32,660 --> 00:42:35,994
+If I say pre-run, it'll go through it all without animating to one, 
+
+910
+00:42:35,994 --> 00:42:40,113
+estimate how long it'll take, and also catch any errors rather than halfway through 
+
+911
+00:42:40,113 --> 00:42:40,800
+the animation.
+
+912
+00:42:41,200 --> 00:42:46,080
+This Finder thing just means it's going to pop it up in Finder, the Mac OS file system.
+
+913
+00:42:46,620 --> 00:42:48,420
+And then W means write it to file.
+
+914
+00:42:49,120 --> 00:42:52,313
+And so if I run this, it pre-runs through, thinks about it, 
+
+915
+00:42:52,313 --> 00:42:56,040
+it knows how long it'll take now, and now it's rendering it to an MP4.
+
+916
+00:42:56,780 --> 00:42:59,730
+And because I'll usually render it at 4K, sometimes 
+
+917
+00:42:59,730 --> 00:43:02,000
+the rendering will take a little longer.
+
+918
+00:43:02,420 --> 00:43:05,564
+One of the reasons I wanted to make any kind of behind the scenes, 
+
+919
+00:43:05,564 --> 00:43:09,130
+the way I used to use Manim, and the way I actually suspect a lot of people 
+
+920
+00:43:09,130 --> 00:43:13,120
+who use Manim Community do use it, is you're always running it from the command line.
+
+921
+00:43:13,600 --> 00:43:19,240
+So you've got your scene and then you run Manim, that scene, and then it pops up.
+
+922
+00:43:19,440 --> 00:43:23,460
+It renders an MP4 file, so it has to render the file and then pop it up.
+
+923
+00:43:24,080 --> 00:43:26,763
+And there were a bunch of shortcuts to say, oh, don't render the whole file, 
+
+924
+00:43:26,763 --> 00:43:28,680
+just render it starting at this animation or something.
+
+925
+00:43:28,900 --> 00:43:31,352
+But you can imagine the iteration cycle is a little more annoying 
+
+926
+00:43:31,352 --> 00:43:33,880
+if every single time you're making an update and you want to see it.
+
+927
+00:43:33,880 --> 00:43:38,364
+So it was later in the game, around the same time I was changing the implementation 
+
+928
+00:43:38,364 --> 00:43:41,941
+to run on OpenGL, to then also have the interactive shell version, 
+
+929
+00:43:41,941 --> 00:43:44,504
+such that the process of creating just is like, 
+
+930
+00:43:44,504 --> 00:43:46,960
+highlight the code and see what the code does.
+
+931
+00:43:47,320 --> 00:43:49,060
+And that's a fundamental change to the workflow.
+
+932
+00:43:49,420 --> 00:43:50,120
+It's huge!
+
+933
+00:43:50,580 --> 00:43:55,621
+And my specific workflow, it depends on these Sublime scripts that I wrote that will 
+
+934
+00:43:55,621 --> 00:44:00,840
+send a command to the Terminus, which is the extension of Sublime that makes a terminal.
+
+935
+00:44:00,840 --> 00:44:04,030
+So what I'll do is in the description of this video, 
+
+936
+00:44:04,030 --> 00:44:06,680
+I'll actually document what that process is.
+
+937
+00:44:06,840 --> 00:44:10,353
+And so if anyone's curious and wants to replicate it, 
+
+938
+00:44:10,353 --> 00:44:15,820
+probably whatever text editor they're using you can do something that does the same.
+
+939
+00:44:16,040 --> 00:44:18,247
+So for all the people who are in Visual Studio and whatnot, 
+
+940
+00:44:18,247 --> 00:44:19,940
+you can do something that would look the same.
+
+941
+00:44:20,380 --> 00:44:23,680
+So here it rendered it, and now it's going to look 
+
+942
+00:44:23,680 --> 00:44:27,240
+all glitchy because of those glitches that I mentioned.
+
+943
+00:44:27,320 --> 00:44:29,280
+But this is now playing in a video player, it's a file.
+
+944
+00:44:29,280 --> 00:44:31,740
+This I would drop into Final Cut, do my editing.
+
+945
+00:44:34,080 --> 00:44:37,620
+I guess another thing we never did is we could have the equations.
+
+946
+00:44:38,500 --> 00:44:40,060
+Let's add the equations.
+
+947
+00:44:41,360 --> 00:44:45,662
+So you can have a LaTeX object that's basically going to say hey, 
+
+948
+00:44:45,662 --> 00:44:49,640
+take some LaTeX and then render it, and then we'll add it on.
+
+949
+00:44:50,440 --> 00:44:51,540
+Have you ever used MathPix?
+
+950
+00:44:53,040 --> 00:44:54,140
+MathPix is so good.
+
+951
+00:44:54,700 --> 00:44:59,760
+So it's OCR, but for LaTeX you can take a snapshot of just any equations and then it 
+
+952
+00:44:59,760 --> 00:45:04,880
+gives you all sorts of things, but one of them would be the LaTeX for that expression.
+
+953
+00:45:05,460 --> 00:45:05,460
+Fantastic.
+
+954
+00:45:05,800 --> 00:45:09,140
+And so it also gives you it as an SVG if you want and all that.
+
+955
+00:45:09,280 --> 00:45:09,880
+It's really good.
+
+956
+00:45:10,680 --> 00:45:15,360
+So from a screen, literally a bitmap is taken to a scalable vector.
+
+957
+00:45:15,600 --> 00:45:16,240
+It's really panicky.
+
+958
+00:45:16,360 --> 00:45:16,800
+It's great.
+
+959
+00:45:16,940 --> 00:45:17,400
+It's so good.
+
+960
+00:45:17,580 --> 00:45:20,600
+I guess it renders it in LaTeX and then SVGs it out.
+
+961
+00:45:20,740 --> 00:45:25,900
+So we can use this here, so we can have our equations and then add those.
+
+962
+00:45:27,140 --> 00:45:29,020
+So that will dump them in the middle of the screen, am I right?
+
+963
+00:45:29,480 --> 00:45:30,200
+You're absolutely right.
+
+964
+00:45:30,720 --> 00:45:32,900
+And also on the XY play.
+
+965
+00:45:35,680 --> 00:45:39,483
+If there's a 3D scene and you want stuff like that, 
+
+966
+00:45:39,483 --> 00:45:43,800
+you say fix in frame, as if it's glued on the camera frame.
+
+967
+00:45:44,040 --> 00:45:45,640
+And then in this case we might want it in a corner.
+
+968
+00:45:49,980 --> 00:45:53,480
+So here's something I wrote which, let's see if this works actually.
+
+969
+00:45:54,000 --> 00:45:56,500
+So you can index into it by a string.
+
+970
+00:45:56,920 --> 00:46:01,880
+So I can say every time you find an X you know, maybe color that red.
+
+971
+00:46:02,340 --> 00:46:03,300
+That's useful.
+
+972
+00:46:04,360 --> 00:46:05,020
+But not working.
+
+973
+00:46:08,020 --> 00:46:09,320
+Tech to color.
+
+974
+00:46:10,240 --> 00:46:12,120
+And by better I mean more it'll actually work.
+
+975
+00:46:13,580 --> 00:46:16,260
+So T to C I guess is what we call it.
+
+976
+00:46:16,880 --> 00:46:22,380
+So T to C Let me get my line spacing in a way that looks a little bit nicer.
+
+977
+00:46:23,580 --> 00:46:24,760
+So here's a nice thing you can do.
+
+978
+00:46:25,000 --> 00:46:28,100
+If we say everything that looks like an X make that red.
+
+979
+00:46:29,160 --> 00:46:31,940
+Everything that's Y, red, green, blue.
+
+980
+00:46:33,180 --> 00:46:37,220
+I think that will...
+
+981
+00:46:37,220 --> 00:46:42,727
+And actually now that it's known to separate those out at some point, 
+
+982
+00:46:42,727 --> 00:46:47,212
+if I do say equations and I try to pull out the Xs and I 
+
+983
+00:46:47,212 --> 00:46:51,540
+shift them a little bit up then it has control on them.
+
+984
+00:46:52,080 --> 00:46:57,109
+It does its best if you don't do anything to say hey these are specific variables 
+
+985
+00:46:57,109 --> 00:47:02,016
+I'm going to want to separate but you have to from the tech expression know how 
+
+986
+00:47:02,016 --> 00:47:06,740
+many symbols there will be such that it can dissect the manum object in that.
+
+987
+00:47:08,080 --> 00:47:10,160
+It's a little tricky to get it to actually work.
+
+988
+00:47:10,300 --> 00:47:12,404
+So if you know you want control over variables 
+
+989
+00:47:12,404 --> 00:47:14,420
+you just put them in an expression like this.
+
+990
+00:47:14,500 --> 00:47:16,380
+There's another one called isolate or something.
+
+991
+00:47:16,900 --> 00:47:21,060
+9 times out of 10 it will work by default anyway for simpler expressions.
+
+992
+00:47:22,040 --> 00:47:25,195
+Maybe you do something where it's like you've got we're going 
+
+993
+00:47:25,195 --> 00:47:28,300
+to write the equations onto the screen to just beam in a bit.
+
+994
+00:47:29,180 --> 00:47:31,625
+And now that's going to be the scene that renders 
+
+995
+00:47:31,625 --> 00:47:33,680
+if we go and then it does its whole thing.
+
+996
+00:47:34,060 --> 00:47:36,620
+And so those are just up there as it's doing its thing.
+
+997
+00:47:36,860 --> 00:47:38,720
+And are they behind or in front of the camera?
+
+998
+00:47:39,060 --> 00:47:41,180
+That's the sort of thing I'm sure you can control right?
+
+999
+00:47:41,640 --> 00:47:45,855
+So in this case by default things will just be rendered in the 
+
+1000
+00:47:45,855 --> 00:47:50,540
+order that you put them on unless you tell them to apply a depth test.
+
+1001
+00:47:50,800 --> 00:47:52,700
+So a lot of 3D objects that know they're supposed to 
+
+1002
+00:47:52,700 --> 00:47:54,600
+be in three dimensions it's going to be depth tested.
+
+1003
+00:47:54,880 --> 00:48:00,620
+In this case its actual position in space is on that xy plane so it's a little bit weird.
+
+1004
+00:48:00,840 --> 00:48:03,872
+But if we wanted them to be rendered, wanted to make sure they show up 
+
+1005
+00:48:03,872 --> 00:48:06,820
+in front what we could do is just make sure that we add it down here.
+
+1006
+00:48:07,260 --> 00:48:11,605
+And then what I could do we could maybe say hey let's take those equations and 
+
+1007
+00:48:11,605 --> 00:48:15,840
+I want to set a backstroke so that there's a little bit of space around them.
+
+1008
+00:48:16,080 --> 00:48:19,591
+Let's maybe make the font size a little smaller so that they're just 
+
+1009
+00:48:19,591 --> 00:48:22,900
+up in the corner so the font size is like 30 something like that.
+
+1010
+00:48:23,460 --> 00:48:27,424
+We put that on they're a little bit smaller up there and then now when we render our I 
+
+1011
+00:48:27,424 --> 00:48:31,480
+guess they're not really going to overlap with the solutions because I made them smaller.
+
+1012
+00:48:32,680 --> 00:48:34,460
+Because they're being updated every frame.
+
+1013
+00:48:35,040 --> 00:48:37,512
+Being able to break the text into sort of mathematical parts is 
+
+1014
+00:48:37,512 --> 00:48:40,100
+extraordinarily useful if you want to highlight mathematical parts.
+
+1015
+00:48:40,320 --> 00:48:42,720
+And it's something that would be a real pain to do in any other context.
+
+1016
+00:48:42,740 --> 00:48:44,380
+Yeah you know what I maybe should say.
+
+1017
+00:48:44,540 --> 00:48:46,580
+I have some example scenes basically.
+
+1018
+00:48:47,220 --> 00:48:48,540
+So this is my intention.
+
+1019
+00:48:48,680 --> 00:48:51,300
+Hey if you wanted to get started just look at a couple of these examples.
+
+1020
+00:48:52,000 --> 00:48:56,760
+And so if you wanted to see like working with some tech what that might look like.
+
+1021
+00:48:57,120 --> 00:48:59,515
+In this case I've got actually a series of expressions that we're 
+
+1022
+00:48:59,515 --> 00:49:02,020
+going to play with which is basically rearranging a certain equation.
+
+1023
+00:49:02,280 --> 00:49:04,260
+And these are going to be the lines of our equation 
+
+1024
+00:49:04,260 --> 00:49:06,280
+and now it's just rendering the first of those lines.
+
+1025
+00:49:06,280 --> 00:49:11,120
+I've got a special notion of transform that will try to match the strings underlying it.
+
+1026
+00:49:11,360 --> 00:49:14,779
+So that if we play like this the A squared goes to the A 
+
+1027
+00:49:14,779 --> 00:49:18,680
+squared the B squared goes to the B squared and things like that.
+
+1028
+00:49:19,280 --> 00:49:24,440
+There's example scenes in here to kind of show the kinds of operations available.
+
+1029
+00:49:25,140 --> 00:49:28,606
+If you just play around with some strings this like matching 
+
+1030
+00:49:28,606 --> 00:49:31,960
+string will automatically give you a nice anagram animator.
+
+1031
+00:49:32,260 --> 00:49:33,560
+Where you don't really you don't even have to think.
+
+1032
+00:49:33,760 --> 00:49:34,180
+You don't have to worry about it.
+
+1033
+00:49:34,180 --> 00:49:34,840
+You don't have to think.
+
+1034
+00:49:35,000 --> 00:49:37,253
+It's just like move the letter to the corresponding 
+
+1035
+00:49:37,253 --> 00:49:39,680
+letter and like it's sort of a one liner that does that.
+
+1036
+00:49:39,820 --> 00:49:41,300
+That was like an emergent thing.
+
+1037
+00:49:41,460 --> 00:49:43,780
+I mean slightly not helpful for viewers but we 
+
+1038
+00:49:43,780 --> 00:49:46,200
+saw a big anagram discussed a couple of days ago.
+
+1039
+00:49:46,360 --> 00:49:47,020
+We should tell Simon.
+
+1040
+00:49:47,140 --> 00:49:49,880
+Yeah that's what it would save Simon if he had run it through Manim.
+
+1041
+00:49:51,140 --> 00:49:55,004
+I can just like show a little bit more in here if you want where got this equation, 
+
+1042
+00:49:55,004 --> 00:49:55,740
+famous equation.
+
+1043
+00:49:56,120 --> 00:49:58,920
+If you wanted to say hey I just want to reference the E part of that.
+
+1044
+00:49:59,240 --> 00:50:02,820
+There's an animation called flash around and you'd be flashing around just at E.
+
+1045
+00:50:03,260 --> 00:50:03,700
+Or you want it.
+
+1046
+00:50:03,780 --> 00:50:06,040
+There's another one called indicate and you want to indicate that pie.
+
+1047
+00:50:06,480 --> 00:50:06,900
+Things like that.
+
+1048
+00:50:07,020 --> 00:50:08,700
+So you're pulling it out bit by bit.
+
+1049
+00:50:08,780 --> 00:50:11,720
+And in terms of understanding what functions like that exist.
+
+1050
+00:50:12,600 --> 00:50:15,180
+Obviously there's your head which is this vast 
+
+1051
+00:50:15,180 --> 00:50:17,760
+trove of experience over the time you wrote it.
+
+1052
+00:50:17,880 --> 00:50:21,880
+But the Manim community version is a different version but these still exist.
+
+1053
+00:50:22,160 --> 00:50:24,620
+Yeah Manim community definitely has much better documentation.
+
+1054
+00:50:25,480 --> 00:50:27,280
+There's not zero documentation on this one.
+
+1055
+00:50:27,620 --> 00:50:31,480
+You can see all the animations basically in a folder of the library called animation.
+
+1056
+00:50:31,920 --> 00:50:34,720
+If you just look through that folder you'll see the things that exist.
+
+1057
+00:50:35,320 --> 00:50:37,820
+All of the code I've ever written for any video is on GitHub.
+
+1058
+00:50:38,440 --> 00:50:41,700
+If you go to github.
+
+1059
+00:50:42,100 --> 00:50:45,950
+slash 3b1b slash videos this GitHub basically 
+
+1060
+00:50:45,950 --> 00:50:49,800
+has all the animation from videos in the past.
+
+1061
+00:50:50,540 --> 00:50:52,460
+In this case I guess and videos of the present.
+
+1062
+00:50:52,900 --> 00:50:55,940
+I haven't made any animation for holograms yet so that one.
+
+1063
+00:50:56,420 --> 00:50:59,840
+We can see some puzzles that I just made for the IMO.
+
+1064
+00:51:00,160 --> 00:51:02,219
+You can see it all in there and then that gives you 
+
+1065
+00:51:02,219 --> 00:51:04,200
+some sense of what the functionality available is.
+
+1066
+00:51:04,700 --> 00:51:07,400
+And maybe this is a workflow thing for people like me who are beginning.
+
+1067
+00:51:08,920 --> 00:51:11,137
+If you don't know what functions are out there obviously 
+
+1068
+00:51:11,137 --> 00:51:13,160
+you can look at the library and see what's in there.
+
+1069
+00:51:13,840 --> 00:51:16,600
+There's no auto complete sort of like if you start typing 
+
+1070
+00:51:16,600 --> 00:51:19,600
+one that you think might be it you can't Oh yeah sure there is.
+
+1071
+00:51:19,740 --> 00:51:21,800
+There's all sorts of auto complete tools out there.
+
+1072
+00:51:22,040 --> 00:51:23,780
+Which will be more to do with the text editor.
+
+1073
+00:51:24,060 --> 00:51:25,500
+Yeah so this is the text editor question.
+
+1074
+00:51:25,900 --> 00:51:29,360
+So like in Sublime there's a thing called a language server protocol 
+
+1075
+00:51:29,360 --> 00:51:32,620
+and so there's some I think it's called like Pi LSP or something.
+
+1076
+00:51:34,980 --> 00:51:38,120
+It has some sense of the environment that it's in and might auto complete.
+
+1077
+00:51:38,120 --> 00:51:39,340
+So that's one way to find a function.
+
+1078
+00:51:39,680 --> 00:51:41,740
+If I was going to write a function I might call it this.
+
+1079
+00:51:41,880 --> 00:51:43,080
+You can find out if there is one call.
+
+1080
+00:51:43,420 --> 00:51:44,620
+GitHub copilot right?
+
+1081
+00:51:44,800 --> 00:51:46,100
+Just like use copilot.
+
+1082
+00:51:46,460 --> 00:51:49,920
+I don't like using copilot with Manim just because I know 
+
+1083
+00:51:49,920 --> 00:51:53,620
+what I want to do and it doesn't quite know what I want to do.
+
+1084
+00:51:53,980 --> 00:51:58,246
+And it's really nice if you're like engaging with a new library of code but I don't 
+
+1085
+00:51:58,246 --> 00:52:02,360
+know I just find like dumber auto complete tools to be the thing I actually want.
+
+1086
+00:52:02,900 --> 00:52:06,226
+Because often it's like it's not a if I don't know exactly what I want 
+
+1087
+00:52:06,226 --> 00:52:09,600
+the way I want to even articulate the request is in code not in English.
+
+1088
+00:52:10,880 --> 00:52:12,940
+To each their own but like just try it.
+
+1089
+00:52:13,080 --> 00:52:15,320
+Yeah and you have the experience to sort of fall back on your own experience.
+
+1090
+00:52:15,320 --> 00:52:17,000
+Yeah yeah yeah yeah just fill it in.
+
+1091
+00:52:17,480 --> 00:52:20,060
+No but that is a sort of workflow thing and depending on your 
+
+1092
+00:52:20,060 --> 00:52:22,600
+text editor and it's actually something I'm just not used to.
+
+1093
+00:52:23,160 --> 00:52:25,029
+Like it's that that lower level sometimes it's 
+
+1094
+00:52:25,029 --> 00:52:26,900
+the barrier to getting started on these things.
+
+1095
+00:52:27,180 --> 00:52:27,560
+Yeah yeah yeah.
+
+1096
+00:52:27,560 --> 00:52:28,640
+But once you've crossed those hurdles.
+
+1097
+00:52:29,060 --> 00:52:30,020
+Yeah how do you even know where to start.
+
+1098
+00:52:30,280 --> 00:52:34,460
+So the example scenes I think would maybe yeah yeah gives you some sense of it.
+
+1099
+00:52:34,620 --> 00:52:37,740
+Nice well thank you for showing me I really enjoyed seeing the back end.
+
+1100
+00:52:38,180 --> 00:52:41,440
+It's a very human experience coding and what and the messiness is part of it.
+
+1101
+00:52:41,920 --> 00:52:44,180
+So there you go little peek behind the scenes.
+
+1102
+00:52:44,760 --> 00:52:47,547
+I will leave a link in the description to that repo where you 
+
+1103
+00:52:47,547 --> 00:52:50,380
+can see the code for literally any video I've made in the past.
+
+1104
+00:52:50,920 --> 00:52:53,951
+By the time I post this I'll also add something to the readme 
+
+1105
+00:52:53,951 --> 00:52:57,080
+of that repo to outline the actual workflow that I'm using here.
+
+1106
+00:52:57,360 --> 00:53:00,154
+You know the specific sublime scripts what you would want to 
+
+1107
+00:53:00,154 --> 00:53:03,040
+mimic if you're using a different text editor things like that.
+
+1108
+00:53:03,240 --> 00:53:07,040
+And I'll also post the full version of that conversation warts and all to Patreon.
+
+1109
+00:53:07,280 --> 00:53:09,403
+I might actually do some like manum live streams 
+
+1110
+00:53:09,403 --> 00:53:11,440
+or something like that on Patreon periodically.
+
+1111
+00:53:11,700 --> 00:53:13,880
+If that's a thing you would be into let me know.
+
+1112
+00:53:14,300 --> 00:53:16,300
+If so what kinds of things would you like to see.
+
+1113
+00:53:16,500 --> 00:53:19,820
+But in the meantime I'll be busy animating the next video and I will see you then.
+

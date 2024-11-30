@@ -1,0 +1,1508 @@
+1
+00:00:00,000 --> 00:00:02,897
+Jika Anda memberi makan model bahasa yang besar dengan frasa, 
+
+2
+00:00:02,897 --> 00:00:06,542
+Michael Jordan memainkan olahraga kosong, dan Anda memintanya memprediksi apa 
+
+3
+00:00:06,542 --> 00:00:10,655
+yang akan terjadi selanjutnya, dan model tersebut dengan tepat memprediksi bola basket, 
+
+4
+00:00:10,655 --> 00:00:14,113
+ini menunjukkan bahwa di suatu tempat, di dalam ratusan miliar parameter, 
+
+5
+00:00:14,113 --> 00:00:18,320
+model tersebut dipanggang dengan pengetahuan tentang orang tertentu dan olahraga tertentu.
+
+6
+00:00:18,940 --> 00:00:22,170
+Dan saya rasa, secara umum, siapa pun yang pernah bermain-main dengan salah 
+
+7
+00:00:22,170 --> 00:00:25,400
+satu model ini, pasti akan mengingat banyak sekali fakta yang dihafalkannya.
+
+8
+00:00:25,700 --> 00:00:27,970
+Jadi, pertanyaan yang masuk akal yang bisa Anda ajukan adalah, 
+
+9
+00:00:27,970 --> 00:00:29,160
+bagaimana tepatnya cara kerjanya?
+
+10
+00:00:29,160 --> 00:00:31,040
+Dan di manakah fakta-fakta itu berada?
+
+11
+00:00:35,720 --> 00:00:38,655
+Desember lalu, beberapa peneliti dari Google DeepMind memposting 
+
+12
+00:00:38,655 --> 00:00:41,635
+tentang penelitian tentang pertanyaan ini, dan mereka menggunakan 
+
+13
+00:00:41,635 --> 00:00:44,480
+contoh spesifik untuk mencocokkan atlet dengan olahraga mereka.
+
+14
+00:00:44,900 --> 00:00:48,220
+Dan meskipun pemahaman mekanistik penuh tentang bagaimana fakta-fakta 
+
+15
+00:00:48,220 --> 00:00:52,347
+disimpan masih belum terpecahkan, mereka memiliki beberapa hasil parsial yang menarik, 
+
+16
+00:00:52,347 --> 00:00:55,667
+termasuk kesimpulan tingkat tinggi yang sangat umum bahwa fakta-fakta 
+
+17
+00:00:55,667 --> 00:00:59,035
+tersebut tampaknya tinggal di dalam bagian tertentu dari jaringan ini, 
+
+18
+00:00:59,035 --> 00:01:02,640
+yang dikenal secara aneh sebagai multi-layer perceptron, atau disingkat MLP.
+
+19
+00:01:03,120 --> 00:01:07,603
+Dalam beberapa bab terakhir, Anda dan saya telah menggali detail di balik transformer, 
+
+20
+00:01:07,603 --> 00:01:10,232
+arsitektur yang mendasari model bahasa yang besar, 
+
+21
+00:01:10,232 --> 00:01:12,500
+dan juga mendasari banyak AI modern lainnya.
+
+22
+00:01:13,060 --> 00:01:16,200
+Dalam bab terakhir, kami memfokuskan pada bagian yang berjudul Perhatian.
+
+23
+00:01:16,840 --> 00:01:20,940
+Dan langkah selanjutnya bagi Anda dan saya adalah menggali detail apa yang terjadi di 
+
+24
+00:01:20,940 --> 00:01:25,040
+dalam perceptron multi-lapisan ini, yang membentuk bagian besar lainnya dari jaringan.
+
+25
+00:01:25,680 --> 00:01:27,745
+Perhitungan di sini sebenarnya relatif sederhana, 
+
+26
+00:01:27,745 --> 00:01:30,100
+khususnya apabila Anda membandingkannya dengan perhatian.
+
+27
+00:01:30,560 --> 00:01:33,000
+Pada dasarnya, ini adalah sepasang perkalian matriks 
+
+28
+00:01:33,000 --> 00:01:34,980
+dengan sesuatu yang sederhana di antaranya.
+
+29
+00:01:35,720 --> 00:01:40,460
+Namun, menafsirkan apa yang dilakukan oleh komputasi ini sangat menantang.
+
+30
+00:01:41,560 --> 00:01:45,441
+Tujuan utama kita di sini adalah untuk melangkah melalui perhitungan dan membuatnya mudah 
+
+31
+00:01:45,441 --> 00:01:49,322
+diingat, tetapi saya ingin melakukannya dalam konteks menunjukkan contoh spesifik tentang 
+
+32
+00:01:49,322 --> 00:01:53,160
+bagaimana salah satu blok ini dapat, setidaknya pada prinsipnya, menyimpan fakta konkret.
+
+33
+00:01:53,580 --> 00:01:57,080
+Secara khusus, ini akan menyimpan fakta bahwa Michael Jordan bermain bola basket.
+
+34
+00:01:58,080 --> 00:02:00,679
+Saya harus menyebutkan bahwa tata letak di sini terinspirasi dari 
+
+35
+00:02:00,679 --> 00:02:03,200
+percakapan saya dengan salah satu peneliti DeepMind, Neil Nanda.
+
+36
+00:02:04,060 --> 00:02:07,526
+Untuk sebagian besar, saya akan berasumsi bahwa Anda telah menonton dua bab terakhir, 
+
+37
+00:02:07,526 --> 00:02:10,669
+atau jika tidak, Anda memiliki pemahaman dasar tentang apa itu transformator, 
+
+38
+00:02:10,669 --> 00:02:14,216
+tetapi penyegaran tidak pernah ada salahnya, jadi inilah pengingat singkat tentang alur 
+
+39
+00:02:14,216 --> 00:02:14,700
+keseluruhan.
+
+40
+00:02:15,340 --> 00:02:18,133
+Anda dan saya telah mempelajari sebuah model yang dilatih untuk 
+
+41
+00:02:18,133 --> 00:02:21,320
+menerima sepotong teks dan memprediksi apa yang akan terjadi selanjutnya.
+
+42
+00:02:21,720 --> 00:02:25,109
+Teks input tersebut pertama-tama dipecah menjadi sekumpulan token, 
+
+43
+00:02:25,109 --> 00:02:29,461
+yang berarti potongan-potongan kecil yang biasanya berupa kata atau potongan-potongan 
+
+44
+00:02:29,461 --> 00:02:33,306
+kecil kata, dan setiap token diasosiasikan dengan vektor berdimensi tinggi, 
+
+45
+00:02:33,306 --> 00:02:35,280
+yang berarti daftar angka yang panjang.
+
+46
+00:02:35,840 --> 00:02:40,000
+Urutan vektor ini kemudian berulang kali melewati dua jenis operasi, 
+
+47
+00:02:40,000 --> 00:02:45,306
+perhatian, yang memungkinkan vektor untuk menyampaikan informasi antara satu sama lain, 
+
+48
+00:02:45,306 --> 00:02:49,526
+dan kemudian perceptron multilayer, hal yang akan kita gali hari ini, 
+
+49
+00:02:49,526 --> 00:02:52,300
+dan juga ada langkah normalisasi di antaranya.
+
+50
+00:02:53,300 --> 00:02:58,298
+Setelah urutan vektor mengalir melalui banyak iterasi yang berbeda dari kedua blok ini, 
+
+51
+00:02:58,298 --> 00:03:03,069
+pada akhirnya, harapannya adalah setiap vektor telah menyerap informasi yang cukup, 
+
+52
+00:03:03,069 --> 00:03:05,796
+baik dari konteks, semua kata lain dalam input, 
+
+53
+00:03:05,796 --> 00:03:10,453
+dan juga dari pengetahuan umum yang telah dimasukkan ke dalam bobot model melalui 
+
+54
+00:03:10,453 --> 00:03:14,940
+pelatihan, sehingga dapat digunakan untuk membuat prediksi token apa yang akan 
+
+55
+00:03:14,940 --> 00:03:16,020
+muncul selanjutnya.
+
+56
+00:03:16,860 --> 00:03:20,721
+Salah satu ide kunci yang saya ingin Anda miliki dalam pikiran Anda adalah bahwa semua 
+
+57
+00:03:20,721 --> 00:03:23,739
+vektor ini hidup dalam ruang yang sangat, sangat berdimensi tinggi, 
+
+58
+00:03:23,739 --> 00:03:27,690
+dan ketika Anda berpikir tentang ruang itu, arah yang berbeda dapat mengkodekan berbagai 
+
+59
+00:03:27,690 --> 00:03:28,800
+jenis makna yang berbeda.
+
+60
+00:03:30,120 --> 00:03:34,020
+Jadi contoh yang sangat klasik yang ingin saya rujuk kembali adalah bagaimana jika 
+
+61
+00:03:34,020 --> 00:03:36,887
+Anda melihat penyematan woman dan mengurangi penyematan man, 
+
+62
+00:03:36,887 --> 00:03:40,882
+dan Anda mengambil langkah kecil itu dan menambahkannya ke kata benda maskulin lain, 
+
+63
+00:03:40,882 --> 00:03:43,843
+seperti paman, Anda akan mendarat di suatu tempat yang sangat, 
+
+64
+00:03:43,843 --> 00:03:46,240
+sangat dekat dengan kata benda feminin yang sesuai.
+
+65
+00:03:46,440 --> 00:03:50,880
+Dalam hal ini, arah khusus ini mengkodekan informasi gender.
+
+66
+00:03:51,640 --> 00:03:55,591
+Idenya adalah bahwa banyak arah yang berbeda dalam ruang dimensi super tinggi ini 
+
+67
+00:03:55,591 --> 00:03:59,640
+dapat berhubungan dengan fitur lain yang mungkin ingin direpresentasikan oleh model.
+
+68
+00:04:01,400 --> 00:04:06,180
+Dalam transformator, vektor-vektor ini tidak hanya mengkodekan arti dari satu kata saja.
+
+69
+00:04:06,680 --> 00:04:10,930
+Ketika mereka mengalir melalui jaringan, mereka menyerap makna yang jauh lebih kaya 
+
+70
+00:04:10,930 --> 00:04:15,180
+berdasarkan semua konteks di sekitar mereka, dan juga berdasarkan pengetahuan model.
+
+71
+00:04:15,880 --> 00:04:18,957
+Pada akhirnya, masing-masing perlu menyandikan sesuatu yang jauh, 
+
+72
+00:04:18,957 --> 00:04:22,827
+jauh melampaui makna satu kata, karena harus cukup untuk memprediksi apa yang akan 
+
+73
+00:04:22,827 --> 00:04:23,760
+terjadi selanjutnya.
+
+74
+00:04:24,560 --> 00:04:28,453
+Kita telah melihat bagaimana blok perhatian memungkinkan Anda memasukkan konteks, 
+
+75
+00:04:28,453 --> 00:04:32,014
+tetapi sebagian besar parameter model sebenarnya berada di dalam blok MLP, 
+
+76
+00:04:32,014 --> 00:04:35,433
+dan satu pemikiran tentang apa yang mungkin mereka lakukan adalah bahwa 
+
+77
+00:04:35,433 --> 00:04:38,140
+mereka menawarkan kapasitas ekstra untuk menyimpan fakta.
+
+78
+00:04:38,720 --> 00:04:41,105
+Seperti yang saya katakan, pelajaran di sini akan berpusat 
+
+79
+00:04:41,105 --> 00:04:43,572
+pada contoh mainan konkret tentang bagaimana mainan tersebut 
+
+80
+00:04:43,572 --> 00:04:46,120
+dapat menyimpan fakta bahwa Michael Jordan bermain bola basket.
+
+81
+00:04:47,120 --> 00:04:49,446
+Sekarang, contoh mainan ini akan mengharuskan Anda dan 
+
+82
+00:04:49,446 --> 00:04:51,900
+saya membuat beberapa asumsi tentang ruang dimensi tinggi.
+
+83
+00:04:52,360 --> 00:04:57,433
+Pertama, kita anggap salah satu arah mewakili ide nama depan Michael, 
+
+84
+00:04:57,433 --> 00:05:02,796
+lalu arah lain yang hampir tegak lurus mewakili ide nama belakang Jordan, 
+
+85
+00:05:02,796 --> 00:05:06,420
+dan kemudian arah ketiga mewakili ide bola basket.
+
+86
+00:05:07,400 --> 00:05:11,173
+Jadi secara khusus, yang saya maksud dengan ini adalah jika Anda melihat 
+
+87
+00:05:11,173 --> 00:05:14,844
+di jaringan dan Anda mengambil salah satu vektor yang sedang diproses, 
+
+88
+00:05:14,844 --> 00:05:18,359
+jika hasil kali titiknya dengan nama depan Michael ini adalah satu, 
+
+89
+00:05:18,359 --> 00:05:22,340
+itu berarti vektor tersebut mengkodekan ide orang dengan nama depan tersebut.
+
+90
+00:05:23,800 --> 00:05:26,212
+Jika tidak, dot product tersebut akan bernilai nol atau negatif, 
+
+91
+00:05:26,212 --> 00:05:28,700
+yang berarti vektor tidak benar-benar sejajar dengan arah tersebut.
+
+92
+00:05:29,420 --> 00:05:32,785
+Dan untuk mempermudah, mari kita abaikan saja pertanyaan yang sangat masuk akal, 
+
+93
+00:05:32,785 --> 00:05:35,320
+yaitu apa artinya jika dot product itu lebih besar dari satu.
+
+94
+00:05:36,200 --> 00:05:39,980
+Demikian pula, hasil kali titiknya dengan arah lainnya akan memberi 
+
+95
+00:05:39,980 --> 00:05:43,760
+tahu Anda apakah itu mewakili nama belakang Jordan atau bola basket.
+
+96
+00:05:44,740 --> 00:05:48,759
+Jadi, katakanlah sebuah vektor dimaksudkan untuk merepresentasikan nama lengkap, 
+
+97
+00:05:48,759 --> 00:05:52,680
+Michael Jordan, maka hasil perkalian titik dengan kedua arah ini haruslah satu.
+
+98
+00:05:53,480 --> 00:05:56,475
+Karena teks Michael Jordan mencakup dua token yang berbeda, 
+
+99
+00:05:56,475 --> 00:06:00,918
+ini juga berarti kita harus mengasumsikan bahwa blok perhatian sebelumnya telah berhasil 
+
+100
+00:06:00,918 --> 00:06:05,362
+meneruskan informasi ke yang kedua dari kedua vektor ini untuk memastikan bahwa ia dapat 
+
+101
+00:06:05,362 --> 00:06:06,960
+menyandikan kedua nama tersebut.
+
+102
+00:06:07,940 --> 00:06:11,480
+Dengan semua itu sebagai asumsi, sekarang mari kita masuk ke inti pelajaran.
+
+103
+00:06:11,880 --> 00:06:14,980
+Apa yang terjadi di dalam perceptron multilayer?
+
+104
+00:06:17,100 --> 00:06:20,646
+Anda mungkin membayangkan urutan vektor yang mengalir ke dalam blok, 
+
+105
+00:06:20,646 --> 00:06:24,757
+dan ingatlah bahwa setiap vektor pada awalnya dikaitkan dengan salah satu token 
+
+106
+00:06:24,757 --> 00:06:25,580
+dari teks input.
+
+107
+00:06:26,080 --> 00:06:29,317
+Yang akan terjadi adalah setiap vektor individu dari urutan tersebut akan 
+
+108
+00:06:29,317 --> 00:06:32,947
+melalui serangkaian operasi singkat, kita akan menguraikannya dalam beberapa saat, 
+
+109
+00:06:32,947 --> 00:06:36,360
+dan pada akhirnya, kita akan mendapatkan vektor lain dengan dimensi yang sama.
+
+110
+00:06:36,880 --> 00:06:40,533
+Vektor lain tersebut akan ditambahkan ke vektor asli yang mengalir masuk, 
+
+111
+00:06:40,533 --> 00:06:43,200
+dan jumlah tersebut adalah hasil yang mengalir keluar.
+
+112
+00:06:43,720 --> 00:06:47,513
+Urutan operasi ini adalah sesuatu yang Anda terapkan pada setiap vektor dalam urutan 
+
+113
+00:06:47,513 --> 00:06:50,013
+tersebut, yang terkait dengan setiap token dalam input, 
+
+114
+00:06:50,013 --> 00:06:51,620
+dan semuanya terjadi secara paralel.
+
+115
+00:06:52,100 --> 00:06:54,545
+Khususnya, vektor tidak berbicara satu sama lain dalam langkah ini, 
+
+116
+00:06:54,545 --> 00:06:56,200
+mereka semua melakukan tugasnya masing-masing.
+
+117
+00:06:56,720 --> 00:06:59,727
+Dan bagi Anda dan saya, hal ini sebenarnya membuatnya jauh lebih sederhana, 
+
+118
+00:06:59,727 --> 00:07:02,814
+karena ini berarti jika kita memahami apa yang terjadi pada salah satu vektor 
+
+119
+00:07:02,814 --> 00:07:06,060
+melalui blok ini, kita secara efektif memahami apa yang terjadi pada semua vektor.
+
+120
+00:07:07,100 --> 00:07:10,511
+Ketika saya mengatakan bahwa blok ini akan mengkodekan fakta bahwa Michael 
+
+121
+00:07:10,511 --> 00:07:14,013
+Jordan bermain bola basket, yang saya maksud adalah bahwa jika sebuah vektor 
+
+122
+00:07:14,013 --> 00:07:17,242
+mengalir yang mengkodekan nama depan Michael dan nama belakang Jordan, 
+
+123
+00:07:17,242 --> 00:07:20,472
+maka urutan komputasi ini akan menghasilkan sesuatu yang mencakup bola 
+
+124
+00:07:20,472 --> 00:07:24,020
+basket ke arah tersebut, yang akan ditambahkan ke vektor pada posisi tersebut.
+
+125
+00:07:25,600 --> 00:07:27,443
+Langkah pertama dari proses ini terlihat seperti 
+
+126
+00:07:27,443 --> 00:07:29,700
+mengalikan vektor tersebut dengan matriks yang sangat besar.
+
+127
+00:07:30,040 --> 00:07:31,980
+Tidak ada kejutan di sana, ini adalah pembelajaran yang mendalam.
+
+128
+00:07:32,680 --> 00:07:35,625
+Dan matriks ini, seperti semua matriks lain yang telah kita lihat, 
+
+129
+00:07:35,625 --> 00:07:38,088
+diisi dengan parameter model yang dipelajari dari data, 
+
+130
+00:07:38,088 --> 00:07:41,605
+yang dapat Anda bayangkan sebagai sekumpulan kenop dan tombol yang dapat diubah 
+
+131
+00:07:41,605 --> 00:07:43,540
+dan disetel untuk menentukan perilaku model.
+
+132
+00:07:44,500 --> 00:07:47,585
+Sekarang, salah satu cara yang baik untuk memikirkan perkalian matriks adalah 
+
+133
+00:07:47,585 --> 00:07:50,828
+dengan membayangkan setiap baris dari matriks tersebut sebagai vektornya sendiri, 
+
+134
+00:07:50,828 --> 00:07:53,953
+dan mengambil sekumpulan dot product antara baris-baris tersebut dengan vektor 
+
+135
+00:07:53,953 --> 00:07:56,880
+yang sedang diproses, yang akan saya beri label sebagai E untuk embedding.
+
+136
+00:07:57,280 --> 00:08:00,499
+Sebagai contoh, anggaplah baris pertama kebetulan 
+
+137
+00:08:00,499 --> 00:08:04,040
+sama dengan arah nama depan Michael yang kita duga ada.
+
+138
+00:08:04,320 --> 00:08:08,701
+Itu berarti bahwa komponen pertama dalam output ini, dot product di sini, 
+
+139
+00:08:08,701 --> 00:08:12,905
+akan menjadi satu jika vektor tersebut mengkodekan nama depan Michael, 
+
+140
+00:08:12,905 --> 00:08:14,800
+dan nol atau negatif jika tidak.
+
+141
+00:08:15,880 --> 00:08:19,593
+Yang lebih menyenangkan lagi, luangkan waktu sejenak untuk memikirkan apa artinya 
+
+142
+00:08:19,593 --> 00:08:23,080
+jika barisan pertama adalah nama depan Michael ditambah nama belakang Jordan.
+
+143
+00:08:23,700 --> 00:08:27,420
+Dan untuk mempermudah, saya akan menuliskannya sebagai M ditambah J.
+
+144
+00:08:28,080 --> 00:08:30,874
+Kemudian, dengan mengambil dot product dengan penyematan E ini, 
+
+145
+00:08:30,874 --> 00:08:34,237
+semuanya terdistribusi dengan sangat baik, sehingga terlihat seperti M dot E 
+
+146
+00:08:34,237 --> 00:08:34,980
+ditambah J dot E.
+
+147
+00:08:34,980 --> 00:08:38,110
+Dan perhatikan bagaimana hal itu berarti nilai akhirnya adalah dua 
+
+148
+00:08:38,110 --> 00:08:41,335
+jika vektor mengkodekan nama lengkap Michael Jordan, dan jika tidak, 
+
+149
+00:08:41,335 --> 00:08:44,700
+maka nilai akhirnya adalah satu atau sesuatu yang lebih kecil dari satu.
+
+150
+00:08:45,340 --> 00:08:47,260
+Dan itu hanya satu baris dalam matriks ini.
+
+151
+00:08:47,600 --> 00:08:51,867
+Anda dapat memikirkan semua baris lainnya secara paralel dengan mengajukan beberapa jenis 
+
+152
+00:08:51,867 --> 00:08:56,040
+pertanyaan lain, menyelidiki beberapa jenis fitur lain dari vektor yang sedang diproses.
+
+153
+00:08:56,700 --> 00:08:59,795
+Sering kali langkah ini juga melibatkan penambahan vektor lain pada output, 
+
+154
+00:08:59,795 --> 00:09:02,240
+yang penuh dengan parameter model yang dipelajari dari data.
+
+155
+00:09:02,240 --> 00:09:04,560
+Vektor lain ini dikenal sebagai bias.
+
+156
+00:09:05,180 --> 00:09:08,741
+Untuk contoh kita, saya ingin Anda membayangkan bahwa nilai bias pada 
+
+157
+00:09:08,741 --> 00:09:12,201
+komponen pertama adalah negatif satu, yang berarti hasil akhir kita 
+
+158
+00:09:12,201 --> 00:09:15,560
+akan terlihat seperti dot product yang relevan, tetapi minus satu.
+
+159
+00:09:16,120 --> 00:09:20,070
+Anda mungkin akan bertanya mengapa saya ingin Anda mengasumsikan bahwa model telah 
+
+160
+00:09:20,070 --> 00:09:24,021
+mempelajari hal ini, dan sebentar lagi Anda akan melihat mengapa sangat bersih dan 
+
+161
+00:09:24,021 --> 00:09:27,876
+bagus jika kita memiliki nilai di sini yang bernilai positif jika dan hanya jika 
+
+162
+00:09:27,876 --> 00:09:32,160
+vektor mengkodekan nama lengkap Michael Jordan, dan jika tidak, nilainya nol atau negatif.
+
+163
+00:09:33,040 --> 00:09:37,965
+Jumlah total baris dalam matriks ini, yang kira-kira sama dengan jumlah pertanyaan yang 
+
+164
+00:09:37,965 --> 00:09:42,780
+diajukan, dalam kasus GPT-3, yang angkanya telah kita ikuti, hanya kurang dari 50.000.
+
+165
+00:09:43,100 --> 00:09:46,640
+Malahan, persis empat kali lipat jumlah dimensi dalam ruang penyematan ini.
+
+166
+00:09:46,920 --> 00:09:47,900
+Itu adalah pilihan desain.
+
+167
+00:09:47,940 --> 00:09:49,851
+Anda bisa membuatnya lebih banyak, bisa juga lebih sedikit, 
+
+168
+00:09:49,851 --> 00:09:52,240
+tetapi memiliki multiple yang bersih cenderung ramah untuk perangkat keras.
+
+169
+00:09:52,740 --> 00:09:55,724
+Karena matriks yang penuh dengan bobot ini memetakan kita ke dalam 
+
+170
+00:09:55,724 --> 00:09:59,020
+ruang dimensi yang lebih tinggi, saya akan memberikan singkatan W ke atas.
+
+171
+00:09:59,020 --> 00:10:02,601
+Saya akan terus memberi label pada vektor yang sedang kita proses sebagai E, 
+
+172
+00:10:02,601 --> 00:10:06,555
+dan mari kita beri label pada vektor bias ini sebagai B ke atas dan letakkan kembali 
+
+173
+00:10:06,555 --> 00:10:07,160
+pada diagram.
+
+174
+00:10:09,180 --> 00:10:12,666
+Pada titik ini, masalahnya adalah bahwa operasi ini murni linier, 
+
+175
+00:10:12,666 --> 00:10:15,360
+tetapi bahasa adalah proses yang sangat non-linier.
+
+176
+00:10:15,880 --> 00:10:19,886
+Jika entri yang kita ukur tinggi untuk Michael plus Jordan, 
+
+177
+00:10:19,886 --> 00:10:24,894
+itu juga akan dipicu oleh Michael plus Phelps dan juga Alexis plus Jordan, 
+
+178
+00:10:24,894 --> 00:10:28,100
+meskipun mereka tidak terkait secara konseptual.
+
+179
+00:10:28,540 --> 00:10:32,000
+Yang Anda inginkan adalah jawaban ya atau tidak untuk nama lengkap.
+
+180
+00:10:32,900 --> 00:10:35,330
+Jadi, langkah selanjutnya adalah melewatkan vektor perantara 
+
+181
+00:10:35,330 --> 00:10:37,840
+yang besar ini melalui fungsi non-linear yang sangat sederhana.
+
+182
+00:10:38,360 --> 00:10:41,706
+Pilihan yang umum adalah pilihan yang mengambil semua nilai negatif 
+
+183
+00:10:41,706 --> 00:10:45,300
+dan memetakannya ke nol dan membiarkan semua nilai positif tidak berubah.
+
+184
+00:10:46,440 --> 00:10:50,999
+Dan melanjutkan tradisi pembelajaran yang mendalam tentang nama-nama yang terlalu mewah, 
+
+185
+00:10:50,999 --> 00:10:54,995
+fungsi yang sangat sederhana ini sering disebut dengan rectified linear unit, 
+
+186
+00:10:54,995 --> 00:10:56,020
+atau disingkat ReLU.
+
+187
+00:10:56,020 --> 00:10:57,880
+Berikut ini adalah tampilan grafiknya.
+
+188
+00:10:58,300 --> 00:11:02,485
+Jadi, dengan mengambil contoh yang kita bayangkan di mana entri pertama dari vektor 
+
+189
+00:11:02,485 --> 00:11:06,721
+perantara ini adalah satu, jika dan hanya jika nama lengkapnya adalah Michael Jordan 
+
+190
+00:11:06,721 --> 00:11:10,308
+dan nol atau negatif jika tidak, setelah Anda melewatinya melalui ReLU, 
+
+191
+00:11:10,308 --> 00:11:14,693
+Anda akan mendapatkan nilai yang sangat bersih di mana semua nilai nol dan negatif akan 
+
+192
+00:11:14,693 --> 00:11:15,740
+dipotong menjadi nol.
+
+193
+00:11:16,100 --> 00:11:19,780
+Jadi, keluaran ini akan menjadi satu untuk nama lengkap Michael Jordan dan nol jika tidak.
+
+194
+00:11:20,560 --> 00:11:24,120
+Dengan kata lain, ini secara langsung meniru perilaku gerbang AND.
+
+195
+00:11:25,660 --> 00:11:29,170
+Seringkali model akan menggunakan fungsi yang sedikit dimodifikasi yang disebut JLU, 
+
+196
+00:11:29,170 --> 00:11:32,020
+yang memiliki bentuk dasar yang sama, hanya saja sedikit lebih halus.
+
+197
+00:11:32,500 --> 00:11:35,720
+Tetapi untuk tujuan kita, akan sedikit lebih bersih jika kita hanya memikirkan ReLU.
+
+198
+00:11:36,740 --> 00:11:40,308
+Selain itu, ketika Anda mendengar orang menyebut neuron transformator, 
+
+199
+00:11:40,308 --> 00:11:42,520
+mereka membicarakan nilai-nilai ini di sini.
+
+200
+00:11:42,900 --> 00:11:46,561
+Setiap kali Anda melihat gambar jaringan saraf yang umum dengan lapisan 
+
+201
+00:11:46,561 --> 00:11:50,376
+titik-titik dan sekumpulan garis yang menghubungkan ke lapisan sebelumnya, 
+
+202
+00:11:50,376 --> 00:11:54,139
+yang kita bahas sebelumnya dalam seri ini, itu biasanya dimaksudkan untuk 
+
+203
+00:11:54,139 --> 00:11:57,343
+menyampaikan kombinasi dari langkah linier, perkalian matriks, 
+
+204
+00:11:57,343 --> 00:12:01,260
+diikuti oleh beberapa fungsi nonlinier sederhana yang bijaksana seperti ReLU.
+
+205
+00:12:02,500 --> 00:12:05,560
+Anda akan mengatakan bahwa neuron ini aktif setiap 
+
+206
+00:12:05,560 --> 00:12:08,920
+kali nilainya positif dan tidak aktif jika nilainya nol.
+
+207
+00:12:10,120 --> 00:12:12,380
+Langkah berikutnya terlihat sangat mirip dengan langkah pertama.
+
+208
+00:12:12,560 --> 00:12:16,580
+Anda mengalikannya dengan matriks yang sangat besar dan menambahkan istilah bias tertentu.
+
+209
+00:12:16,980 --> 00:12:21,799
+Dalam hal ini, jumlah dimensi dalam output kembali ke ukuran ruang penyematan, 
+
+210
+00:12:21,799 --> 00:12:25,520
+jadi saya akan menyebutnya sebagai matriks proyeksi ke bawah.
+
+211
+00:12:26,220 --> 00:12:29,071
+Dan kali ini, alih-alih memikirkan segala sesuatunya baris demi baris, 
+
+212
+00:12:29,071 --> 00:12:31,360
+akan lebih baik jika kita memikirkannya kolom demi kolom.
+
+213
+00:12:31,860 --> 00:12:36,206
+Cara lain yang dapat Anda lakukan untuk mengingat perkalian matriks adalah dengan 
+
+214
+00:12:36,206 --> 00:12:40,763
+membayangkan mengambil setiap kolom matriks dan mengalikannya dengan suku yang sesuai 
+
+215
+00:12:40,763 --> 00:12:45,110
+dalam vektor yang sedang diproses, lalu menambahkan semua kolom yang telah diubah 
+
+216
+00:12:45,110 --> 00:12:45,640
+ukurannya.
+
+217
+00:12:46,840 --> 00:12:49,380
+Alasan mengapa cara ini lebih bagus untuk dipikirkan, 
+
+218
+00:12:49,380 --> 00:12:52,815
+karena di sini kolom memiliki dimensi yang sama dengan ruang penyematan, 
+
+219
+00:12:52,815 --> 00:12:55,780
+jadi kita bisa menganggapnya sebagai arah dalam ruang tersebut.
+
+220
+00:12:56,140 --> 00:12:59,506
+Sebagai contoh, kita akan membayangkan bahwa model telah belajar 
+
+221
+00:12:59,506 --> 00:13:03,080
+untuk membuat kolom pertama ke arah bola basket yang kita anggap ada.
+
+222
+00:13:04,180 --> 00:13:08,105
+Maksudnya adalah ketika neuron yang relevan di posisi pertama aktif, 
+
+223
+00:13:08,105 --> 00:13:10,780
+kita akan menambahkan kolom ini ke hasil akhir.
+
+224
+00:13:11,140 --> 00:13:14,040
+Tetapi jika neuron tersebut tidak aktif, jika angkanya nol, 
+
+225
+00:13:14,040 --> 00:13:15,780
+maka hal ini tidak akan berpengaruh.
+
+226
+00:13:16,500 --> 00:13:18,060
+Dan itu tidak hanya harus bola basket.
+
+227
+00:13:18,220 --> 00:13:21,798
+Model ini juga dapat memanggang ke dalam kolom ini dan banyak fitur lainnya yang 
+
+228
+00:13:21,798 --> 00:13:25,200
+ingin diasosiasikan dengan sesuatu yang memiliki nama lengkap Michael Jordan.
+
+229
+00:13:26,980 --> 00:13:31,851
+Dan pada saat yang sama, semua kolom lain dalam matriks ini memberi tahu Anda 
+
+230
+00:13:31,851 --> 00:13:36,660
+apa yang akan ditambahkan ke hasil akhir jika neuron yang bersangkutan aktif.
+
+231
+00:13:37,360 --> 00:13:40,454
+Dan jika Anda memiliki bias dalam kasus ini, itu adalah sesuatu 
+
+232
+00:13:40,454 --> 00:13:43,500
+yang Anda tambahkan setiap saat, terlepas dari nilai neuronnya.
+
+233
+00:13:44,060 --> 00:13:45,280
+Anda mungkin bertanya-tanya apa yang dilakukannya.
+
+234
+00:13:45,540 --> 00:13:47,550
+Seperti semua objek yang diisi parameter di sini, 
+
+235
+00:13:47,550 --> 00:13:49,320
+agak sulit untuk mengatakannya secara tepat.
+
+236
+00:13:49,320 --> 00:13:52,293
+Mungkin ada beberapa pembukuan yang perlu dilakukan oleh jaringan, 
+
+237
+00:13:52,293 --> 00:13:54,380
+tetapi Anda bisa mengabaikannya untuk saat ini.
+
+238
+00:13:54,860 --> 00:13:57,277
+Untuk membuat notasi kita sedikit lebih ringkas lagi, 
+
+239
+00:13:57,277 --> 00:14:00,410
+saya akan menyebut matriks besar W ini sebagai W dan dengan cara yang 
+
+240
+00:14:00,410 --> 00:14:04,260
+sama menyebut vektor bias B sebagai B dan memasukkannya kembali ke dalam diagram kita.
+
+241
+00:14:04,740 --> 00:14:07,559
+Seperti yang saya tunjukkan sebelumnya, apa yang Anda lakukan dengan 
+
+242
+00:14:07,559 --> 00:14:10,461
+hasil akhir ini adalah menambahkannya ke vektor yang mengalir ke dalam 
+
+243
+00:14:10,461 --> 00:14:13,240
+blok pada posisi tersebut dan Anda akan mendapatkan hasil akhir ini.
+
+244
+00:14:13,820 --> 00:14:18,960
+Jadi misalnya, jika vektor yang mengalir mengkodekan nama depan Michael dan nama belakang 
+
+245
+00:14:18,960 --> 00:14:23,129
+Jordan, maka karena urutan operasi ini akan memicu gerbang AND tersebut, 
+
+246
+00:14:23,129 --> 00:14:26,327
+maka vektor tersebut akan menambahkan arah bola basket, 
+
+247
+00:14:26,327 --> 00:14:29,240
+sehingga apa yang muncul akan mengkodekan semuanya.
+
+248
+00:14:29,820 --> 00:14:34,200
+Dan ingat, ini adalah proses yang terjadi pada setiap vektor secara paralel.
+
+249
+00:14:34,800 --> 00:14:38,244
+Secara khusus, dengan mengambil angka GPT-3, ini berarti bahwa 
+
+250
+00:14:38,244 --> 00:14:41,360
+blok ini tidak hanya memiliki 50.000 neuron di dalamnya, 
+
+251
+00:14:41,360 --> 00:14:44,860
+tetapi juga memiliki 50.000 kali lipat jumlah token dalam input.
+
+252
+00:14:48,180 --> 00:14:50,899
+Jadi, itulah keseluruhan operasi, dua produk matriks, 
+
+253
+00:14:50,899 --> 00:14:55,180
+masing-masing dengan bias yang ditambahkan dan fungsi kliping sederhana di antaranya.
+
+254
+00:14:56,080 --> 00:14:59,509
+Anda yang telah menonton video-video sebelumnya dari seri ini akan mengenali struktur 
+
+255
+00:14:59,509 --> 00:15:02,620
+ini sebagai jenis jaringan saraf yang paling dasar yang kami pelajari di sana.
+
+256
+00:15:03,080 --> 00:15:06,100
+Dalam contoh tersebut, kamera dilatih untuk mengenali angka yang ditulis tangan.
+
+257
+00:15:06,580 --> 00:15:10,342
+Di sini, dalam konteks transformator untuk model bahasa yang besar, 
+
+258
+00:15:10,342 --> 00:15:14,382
+ini adalah salah satu bagian dari arsitektur yang lebih besar dan setiap 
+
+259
+00:15:14,382 --> 00:15:18,366
+upaya untuk menafsirkan apa yang sebenarnya dilakukannya sangat terkait 
+
+260
+00:15:18,366 --> 00:15:23,180
+dengan gagasan pengkodean informasi ke dalam vektor ruang penyematan berdimensi tinggi.
+
+261
+00:15:24,260 --> 00:15:27,979
+Itu adalah pelajaran intinya, tetapi saya ingin mundur sejenak dan merefleksikan 
+
+262
+00:15:27,979 --> 00:15:30,779
+dua hal yang berbeda, yang pertama adalah semacam pembukuan, 
+
+263
+00:15:30,779 --> 00:15:34,223
+dan yang kedua melibatkan fakta yang sangat menggugah tentang dimensi yang 
+
+264
+00:15:34,223 --> 00:15:38,080
+lebih tinggi yang sebenarnya tidak saya ketahui hingga saya mempelajari transformer.
+
+265
+00:15:41,080 --> 00:15:46,002
+Dalam dua bab terakhir, Anda dan saya mulai menghitung jumlah total parameter dalam GPT-3 
+
+266
+00:15:46,002 --> 00:15:50,760
+dan melihat dengan tepat di mana letaknya, jadi mari kita selesaikan permainan di sini.
+
+267
+00:15:51,400 --> 00:15:54,936
+Saya telah menyebutkan bagaimana matriks proyeksi ke atas ini 
+
+268
+00:15:54,936 --> 00:15:58,586
+hanya memiliki kurang dari 50.000 baris dan setiap baris sesuai 
+
+269
+00:15:58,586 --> 00:16:02,180
+dengan ukuran ruang penyematan, yang untuk GPT-3 adalah 12.288.
+
+270
+00:16:03,240 --> 00:16:06,874
+Dengan mengalikan keduanya, akan menghasilkan 604 juta parameter 
+
+271
+00:16:06,874 --> 00:16:11,851
+hanya untuk matriks tersebut, dan proyeksi ke bawah memiliki jumlah parameter yang sama, 
+
+272
+00:16:11,851 --> 00:16:13,920
+hanya saja dengan bentuk yang diubah.
+
+273
+00:16:14,500 --> 00:16:17,400
+Jadi, secara keseluruhan, mereka memberikan sekitar 1,2 miliar parameter.
+
+274
+00:16:18,280 --> 00:16:20,382
+Vektor bias juga menyumbang beberapa parameter lainnya, 
+
+275
+00:16:20,382 --> 00:16:22,748
+tetapi ini adalah proporsi yang sepele dari total keseluruhan, 
+
+276
+00:16:22,748 --> 00:16:24,100
+jadi saya tidak akan menunjukkannya.
+
+277
+00:16:24,660 --> 00:16:29,717
+Dalam GPT-3, urutan vektor penyisipan ini mengalir melalui bukan hanya satu, 
+
+278
+00:16:29,717 --> 00:16:33,987
+tetapi 96 MLP yang berbeda, sehingga jumlah total parameter yang 
+
+279
+00:16:33,987 --> 00:16:38,060
+dikhususkan untuk semua blok ini berjumlah sekitar 116 miliar.
+
+280
+00:16:38,820 --> 00:16:42,185
+Ini adalah sekitar 2 pertiga dari total parameter dalam jaringan, 
+
+281
+00:16:42,185 --> 00:16:45,704
+dan ketika Anda menambahkannya ke semua yang kami miliki sebelumnya, 
+
+282
+00:16:45,704 --> 00:16:48,305
+untuk blok perhatian, penyematan, dan pengurungan, 
+
+283
+00:16:48,305 --> 00:16:51,620
+Anda memang mendapatkan total 175 miliar seperti yang diiklankan.
+
+284
+00:16:53,060 --> 00:16:56,480
+Mungkin perlu disebutkan bahwa ada satu set parameter lain yang terkait dengan 
+
+285
+00:16:56,480 --> 00:16:59,597
+langkah-langkah normalisasi yang telah dilewatkan dalam penjelasan ini, 
+
+286
+00:16:59,597 --> 00:17:03,190
+tetapi seperti vektor bias, parameter ini merupakan bagian yang sangat sepele dari 
+
+287
+00:17:03,190 --> 00:17:03,840
+keseluruhannya.
+
+288
+00:17:05,900 --> 00:17:09,175
+Mengenai poin refleksi kedua, Anda mungkin bertanya-tanya apakah contoh 
+
+289
+00:17:09,175 --> 00:17:12,404
+mainan utama yang telah kita habiskan begitu banyak waktu mencerminkan 
+
+290
+00:17:12,404 --> 00:17:15,680
+bagaimana fakta sebenarnya disimpan dalam model bahasa besar yang nyata.
+
+291
+00:17:16,319 --> 00:17:19,858
+Memang benar bahwa baris-baris dari matriks pertama tersebut dapat dianggap 
+
+292
+00:17:19,858 --> 00:17:23,582
+sebagai arah dalam ruang penyisipan ini, dan itu berarti aktivasi setiap neuron 
+
+293
+00:17:23,582 --> 00:17:27,540
+memberi tahu Anda seberapa banyak vektor yang diberikan sejajar dengan arah tertentu.
+
+294
+00:17:27,760 --> 00:17:30,911
+Kolom-kolom pada matriks kedua tersebut juga menunjukkan 
+
+295
+00:17:30,911 --> 00:17:34,340
+apa yang akan ditambahkan ke hasil jika neuron tersebut aktif.
+
+296
+00:17:34,640 --> 00:17:36,800
+Kedua hal tersebut hanyalah fakta matematis.
+
+297
+00:17:37,740 --> 00:17:41,798
+Namun, bukti-bukti yang ada menunjukkan bahwa neuron-neuron individu sangat jarang 
+
+298
+00:17:41,798 --> 00:17:44,976
+merepresentasikan satu fitur yang bersih seperti Michael Jordan, 
+
+299
+00:17:44,976 --> 00:17:48,203
+dan mungkin ada alasan yang sangat bagus mengapa hal ini terjadi, 
+
+300
+00:17:48,203 --> 00:17:52,506
+terkait dengan ide yang beredar di kalangan para peneliti interpretasi akhir-akhir ini, 
+
+301
+00:17:52,506 --> 00:17:54,120
+yang dikenal sebagai superposisi.
+
+302
+00:17:54,640 --> 00:17:58,409
+Ini adalah hipotesis yang dapat membantu menjelaskan mengapa model ini sangat 
+
+303
+00:17:58,409 --> 00:18:02,420
+sulit untuk ditafsirkan dan juga mengapa model ini memiliki skala yang sangat baik.
+
+304
+00:18:03,500 --> 00:18:07,420
+Ide dasarnya adalah jika Anda memiliki ruang berdimensi n dan Anda ingin 
+
+305
+00:18:07,420 --> 00:18:11,447
+merepresentasikan banyak fitur yang berbeda menggunakan arah yang semuanya 
+
+306
+00:18:11,447 --> 00:18:14,669
+tegak lurus satu sama lain dalam ruang tersebut, Anda tahu, 
+
+307
+00:18:14,669 --> 00:18:18,106
+dengan cara itu jika Anda menambahkan komponen dalam satu arah, 
+
+308
+00:18:18,106 --> 00:18:22,134
+itu tidak memengaruhi arah lainnya, maka jumlah maksimum vektor yang dapat 
+
+309
+00:18:22,134 --> 00:18:23,960
+Anda muat hanya n, jumlah dimensi.
+
+310
+00:18:24,600 --> 00:18:27,620
+Bagi seorang matematikawan, sebenarnya, ini adalah definisi dimensi.
+
+311
+00:18:28,220 --> 00:18:31,072
+Tetapi yang menjadi menarik adalah jika Anda sedikit melonggarkan 
+
+312
+00:18:31,072 --> 00:18:33,580
+batasan tersebut dan Anda menoleransi beberapa kebisingan.
+
+313
+00:18:34,180 --> 00:18:38,941
+Katakanlah Anda mengizinkan fitur-fitur tersebut diwakili oleh vektor yang tidak 
+
+314
+00:18:38,941 --> 00:18:43,820
+sepenuhnya tegak lurus, hanya hampir tegak lurus, mungkin antara 89 dan 91 derajat.
+
+315
+00:18:44,820 --> 00:18:48,020
+Jika kita berada dalam dua atau tiga dimensi, hal ini tidak ada bedanya.
+
+316
+00:18:48,260 --> 00:18:51,820
+Hal ini hampir tidak memberikan ruang gerak ekstra untuk memasukkan lebih banyak vektor, 
+
+317
+00:18:51,820 --> 00:18:55,379
+yang membuatnya semakin berlawanan dengan intuisi bahwa untuk dimensi yang lebih tinggi, 
+
+318
+00:18:55,379 --> 00:18:56,780
+jawabannya berubah secara dramatis.
+
+319
+00:18:57,660 --> 00:19:01,858
+Saya dapat memberikan ilustrasi yang sangat cepat dan kotor tentang hal ini 
+
+320
+00:19:01,858 --> 00:19:06,278
+dengan menggunakan beberapa Python yang akan membuat daftar vektor 100 dimensi, 
+
+321
+00:19:06,278 --> 00:19:10,477
+masing-masing diinisialisasi secara acak, dan daftar ini akan berisi 10.000 
+
+322
+00:19:10,477 --> 00:19:14,400
+vektor yang berbeda, jadi 100 kali lebih banyak dari jumlah dimensinya.
+
+323
+00:19:15,320 --> 00:19:19,900
+Plot di sini menunjukkan distribusi sudut di antara pasangan vektor ini.
+
+324
+00:19:20,680 --> 00:19:23,997
+Jadi, karena dimulai secara acak, sudut-sudut itu bisa apa saja, 
+
+325
+00:19:23,997 --> 00:19:27,009
+dari 0 hingga 180 derajat, tetapi Anda akan melihat bahwa, 
+
+326
+00:19:27,009 --> 00:19:30,632
+bahkan hanya untuk vektor acak, ada bias yang besar untuk hal-hal yang 
+
+327
+00:19:30,632 --> 00:19:31,960
+lebih dekat ke 90 derajat.
+
+328
+00:19:32,500 --> 00:19:35,310
+Kemudian apa yang akan saya lakukan adalah menjalankan proses 
+
+329
+00:19:35,310 --> 00:19:38,301
+optimasi tertentu yang secara iteratif mendorong semua vektor ini 
+
+330
+00:19:38,301 --> 00:19:41,520
+sehingga mereka mencoba untuk menjadi lebih tegak lurus satu sama lain.
+
+331
+00:19:42,060 --> 00:19:46,660
+Setelah mengulanginya berkali-kali, berikut ini adalah distribusi sudut yang terlihat.
+
+332
+00:19:47,120 --> 00:19:49,839
+Kita harus benar-benar memperbesarnya di sini, 
+
+333
+00:19:49,839 --> 00:19:54,585
+karena semua sudut yang mungkin terjadi di antara pasangan vektor berada di dalam 
+
+334
+00:19:54,585 --> 00:19:56,900
+kisaran sempit antara 89 dan 91 derajat.
+
+335
+00:19:58,020 --> 00:20:02,806
+Secara umum, konsekuensi dari sesuatu yang dikenal sebagai lemma Johnson-Lindenstrauss 
+
+336
+00:20:02,806 --> 00:20:07,153
+adalah jumlah vektor yang dapat Anda jejalkan ke dalam ruang yang hampir tegak 
+
+337
+00:20:07,153 --> 00:20:10,840
+lurus seperti ini tumbuh secara eksponensial dengan jumlah dimensi.
+
+338
+00:20:11,960 --> 00:20:14,633
+Hal ini sangat penting untuk model bahasa yang besar, 
+
+339
+00:20:14,633 --> 00:20:18,692
+yang mungkin mendapat manfaat dari mengasosiasikan ide-ide independen dengan arah 
+
+340
+00:20:18,692 --> 00:20:19,880
+yang hampir tegak lurus.
+
+341
+00:20:20,000 --> 00:20:23,463
+Ini berarti, bahwa kamera ini dapat menyimpan lebih banyak ide, 
+
+342
+00:20:23,463 --> 00:20:26,440
+lebih banyak lagi daripada dimensi ruang yang tersedia.
+
+343
+00:20:27,320 --> 00:20:29,683
+Hal ini mungkin menjelaskan sebagian mengapa performa 
+
+344
+00:20:29,683 --> 00:20:31,740
+model tampaknya sangat sesuai dengan ukurannya.
+
+345
+00:20:32,540 --> 00:20:35,908
+Ruang yang memiliki 10 kali lebih banyak dimensi dapat 
+
+346
+00:20:35,908 --> 00:20:39,400
+menyimpan lebih dari 10 kali lebih banyak ide independen.
+
+347
+00:20:40,420 --> 00:20:43,699
+Dan ini tidak hanya relevan dengan ruang embedding tempat vektor-vektor 
+
+348
+00:20:43,699 --> 00:20:47,024
+yang mengalir melalui model, tetapi juga dengan vektor yang penuh dengan 
+
+349
+00:20:47,024 --> 00:20:50,440
+neuron di tengah-tengah perceptron multilayer yang baru saja kita pelajari.
+
+350
+00:20:50,960 --> 00:20:55,684
+Dengan kata lain, pada ukuran GPT-3, mungkin tidak hanya menyelidiki 50.000 fitur, 
+
+351
+00:20:55,684 --> 00:20:59,783
+tetapi jika GPT-3 memanfaatkan kapasitas tambahan yang sangat besar ini 
+
+352
+00:20:59,783 --> 00:21:02,913
+dengan menggunakan arah ruang yang hampir tegak lurus, 
+
+353
+00:21:02,913 --> 00:21:07,240
+GPT-3 dapat menyelidiki lebih banyak lagi fitur vektor yang sedang diproses.
+
+354
+00:21:07,780 --> 00:21:10,811
+Tetapi jika ia melakukan hal itu, artinya, fitur-fitur 
+
+355
+00:21:10,811 --> 00:21:14,340
+individual tidak akan terlihat sebagai satu neuron yang menyala.
+
+356
+00:21:14,660 --> 00:21:17,460
+Ini harus terlihat seperti kombinasi neuron tertentu, 
+
+357
+00:21:17,460 --> 00:21:19,380
+sebagai gantinya, sebuah superposisi.
+
+358
+00:21:20,400 --> 00:21:22,204
+Bagi Anda yang ingin mempelajari lebih lanjut, 
+
+359
+00:21:22,204 --> 00:21:24,969
+istilah pencarian utama yang relevan di sini adalah sparse autoencoder, 
+
+360
+00:21:24,969 --> 00:21:28,003
+yang merupakan alat yang digunakan oleh beberapa orang yang memiliki kemampuan 
+
+361
+00:21:28,003 --> 00:21:30,384
+interpretasi untuk mencoba mengekstrak fitur yang sebenarnya, 
+
+362
+00:21:30,384 --> 00:21:32,880
+meskipun fitur-fitur tersebut sangat bertumpuk pada semua neuron.
+
+363
+00:21:33,540 --> 00:21:36,800
+Saya akan menautkan ke beberapa artikel antropologi yang sangat bagus tentang hal ini.
+
+364
+00:21:37,880 --> 00:21:40,696
+Pada titik ini, kita belum menyentuh setiap detail transformator, 
+
+365
+00:21:40,696 --> 00:21:43,300
+tetapi Anda dan saya telah mencapai poin yang paling penting.
+
+366
+00:21:43,520 --> 00:21:47,640
+Hal utama yang ingin saya bahas dalam bab berikutnya adalah proses pelatihan.
+
+367
+00:21:48,460 --> 00:21:51,246
+Di satu sisi, jawaban singkat untuk cara kerja pelatihan adalah bahwa 
+
+368
+00:21:51,246 --> 00:21:54,192
+semua itu adalah backpropagation, dan kami telah membahas backpropagation 
+
+369
+00:21:54,192 --> 00:21:56,900
+dalam konteks yang terpisah dalam bab-bab sebelumnya dalam seri ini.
+
+370
+00:21:57,220 --> 00:22:00,593
+Namun masih banyak yang perlu didiskusikan, seperti fungsi biaya khusus yang 
+
+371
+00:22:00,593 --> 00:22:04,274
+digunakan untuk model bahasa, gagasan untuk menyempurnakan menggunakan pembelajaran 
+
+372
+00:22:04,274 --> 00:22:07,780
+penguatan dengan umpan balik dari manusia, dan gagasan tentang hukum penskalaan.
+
+373
+00:22:08,960 --> 00:22:11,288
+Catatan singkat untuk para pengikut aktif di antara Anda, 
+
+374
+00:22:11,288 --> 00:22:14,018
+ada sejumlah video yang tidak berhubungan dengan pembelajaran mesin 
+
+375
+00:22:14,018 --> 00:22:16,386
+yang ingin saya bahas sebelum saya membuat bab berikutnya, 
+
+376
+00:22:16,386 --> 00:22:20,000
+jadi mungkin akan memakan waktu cukup lama, tetapi saya berjanji akan hadir pada waktunya.
+
+377
+00:22:35,640 --> 00:22:37,920
+Terima kasih.
+

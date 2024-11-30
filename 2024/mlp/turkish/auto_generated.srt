@@ -1,0 +1,1320 @@
+1
+00:00:00,000 --> 00:00:04,356
+Eğer büyük bir dil modeline "Michael Jordan boş sporu yapıyor" cümlesini 
+
+2
+00:00:04,356 --> 00:00:08,831
+verip ardından ne geleceğini tahmin etmesini isterseniz ve o da basketbolu 
+
+3
+00:00:08,831 --> 00:00:13,605
+doğru tahmin ederse, bu onun yüz milyarlarca parametresinin içinde bir yerlerde 
+
+4
+00:00:13,605 --> 00:00:18,320
+belirli bir kişi ve onun belirli sporu hakkında bilgi sahibi olduğunu gösterir.
+
+5
+00:00:18,940 --> 00:00:22,196
+Ve bence genel olarak, bu modellerden biriyle oynayan herkes, 
+
+6
+00:00:22,196 --> 00:00:25,400
+tonlarca ve tonlarca gerçeği ezberlediğini açıkça hissediyor.
+
+7
+00:00:25,700 --> 00:00:29,160
+Bu yüzden sorabileceğiniz makul bir soru, bunun tam olarak nasıl çalıştığıdır?
+
+8
+00:00:29,160 --> 00:00:31,040
+Peki bu gerçekler nerede yaşıyor?
+
+9
+00:00:35,720 --> 00:00:39,851
+Geçtiğimiz Aralık ayında, Google DeepMind'dan birkaç araştırmacı bu soruyla ilgili 
+
+10
+00:00:39,851 --> 00:00:43,882
+çalışmalarını paylaştı ve sporcuları sporlarıyla eşleştirmek gibi özel bir örnek 
+
+11
+00:00:43,882 --> 00:00:44,480
+kullandılar.
+
+12
+00:00:44,900 --> 00:00:49,622
+Gerçeklerin nasıl depolandığına dair tam bir mekanistik anlayış henüz çözülememiş 
+
+13
+00:00:49,622 --> 00:00:54,173
+olsa da, gerçeklerin bu ağların çok katmanlı algılayıcılar veya kısaca MLP'ler 
+
+14
+00:00:54,173 --> 00:00:58,435
+olarak bilinen belirli bir bölümünde yaşıyor gibi göründüğü çok genel üst 
+
+15
+00:00:58,435 --> 00:01:02,640
+düzey sonuç da dahil olmak üzere bazı ilginç kısmi sonuçlar elde ettiler.
+
+16
+00:01:03,120 --> 00:01:05,967
+Son birkaç bölümde, siz ve ben transformatörlerin, 
+
+17
+00:01:05,967 --> 00:01:10,657
+büyük dil modellerinin altında yatan mimarinin ve diğer birçok modern yapay zekanın 
+
+18
+00:01:10,657 --> 00:01:12,500
+altında yatan ayrıntılara girdik.
+
+19
+00:01:13,060 --> 00:01:16,200
+En son bölümde, Attention (Dikkat) adlı bir parçaya odaklanıyorduk.
+
+20
+00:01:16,840 --> 00:01:20,836
+Sizin ve benim için bir sonraki adım, ağın diğer büyük bölümünü oluşturan bu 
+
+21
+00:01:20,836 --> 00:01:25,040
+çok katmanlı algılayıcıların içinde neler olup bittiğinin ayrıntılarına inmektir.
+
+22
+00:01:25,680 --> 00:01:27,914
+Buradaki hesaplama aslında nispeten basittir, 
+
+23
+00:01:27,914 --> 00:01:30,100
+özellikle de dikkat ile karşılaştırdığınızda.
+
+24
+00:01:30,560 --> 00:01:34,980
+Temelde, arada basit bir şey olan bir çift matris çarpımına indirgenir.
+
+25
+00:01:35,720 --> 00:01:40,460
+Ancak, bu hesaplamaların ne yaptığını yorumlamak son derece zordur.
+
+26
+00:01:41,560 --> 00:01:45,255
+Buradaki temel amacımız hesaplamaları adım adım inceleyerek akılda kalıcı hale 
+
+27
+00:01:45,255 --> 00:01:49,230
+getirmektir, ancak bunu bu bloklardan birinin en azından prensipte somut bir gerçeği 
+
+28
+00:01:49,230 --> 00:01:53,160
+nasıl saklayabileceğine dair belirli bir örnek gösterme bağlamında yapmak istiyorum.
+
+29
+00:01:53,580 --> 00:01:57,080
+Özellikle de Michael Jordan'ın basketbol oynadığı gerçeğini vurguluyor olacak.
+
+30
+00:01:58,080 --> 00:02:00,640
+Buradaki planın DeepMind araştırmacılarından Neil Nanda 
+
+31
+00:02:00,640 --> 00:02:03,200
+ile yaptığım bir konuşmadan esinlendiğini belirtmeliyim.
+
+32
+00:02:04,060 --> 00:02:07,730
+Çoğunlukla, ya son iki bölümü izlediğinizi ya da bir transformatörün ne olduğu 
+
+33
+00:02:07,730 --> 00:02:11,912
+hakkında temel bir fikriniz olduğunu varsayacağım, ancak tazelemelerin asla zararı olmaz, 
+
+34
+00:02:11,912 --> 00:02:14,700
+bu yüzden işte genel akışı hızlı bir şekilde hatırlatıyorum.
+
+35
+00:02:15,340 --> 00:02:18,329
+Siz ve ben, bir metin parçasını alıp ardından ne geleceğini 
+
+36
+00:02:18,329 --> 00:02:21,320
+tahmin etmek üzere eğitilmiş bir model üzerinde çalışıyoruz.
+
+37
+00:02:21,720 --> 00:02:26,159
+Bu girdi metni önce bir grup jetona ayrılır, bu da tipik olarak kelimeler 
+
+38
+00:02:26,159 --> 00:02:30,720
+veya küçük kelime parçaları olan küçük parçalar anlamına gelir ve her jeton 
+
+39
+00:02:30,720 --> 00:02:35,280
+yüksek boyutlu bir vektörle, yani uzun bir sayı listesiyle ilişkilendirilir.
+
+40
+00:02:35,840 --> 00:02:40,018
+Bu vektör dizisi daha sonra tekrar tekrar iki tür işlemden geçer; 
+
+41
+00:02:40,018 --> 00:02:45,462
+vektörlerin birbirleri arasında bilgi aktarmasını sağlayan dikkat ve daha sonra bugün 
+
+42
+00:02:45,462 --> 00:02:50,527
+inceleyeceğimiz şey olan çok katmanlı algılayıcılar ve ayrıca arada belirli bir 
+
+43
+00:02:50,527 --> 00:02:52,300
+normalleştirme adımı vardır.
+
+44
+00:02:53,300 --> 00:02:59,282
+Vektör dizisi bu blokların her ikisinin de birçok farklı yinelemesinden geçtikten sonra, 
+
+45
+00:02:59,282 --> 00:03:04,928
+sonunda, her vektörün hem bağlamdan, girdideki diğer tüm kelimelerden hem de eğitim 
+
+46
+00:03:04,928 --> 00:03:08,424
+yoluyla model ağırlıklarına eklenen genel bilgiden, 
+
+47
+00:03:08,424 --> 00:03:13,868
+bir sonraki belirtecin ne olacağına dair bir tahmin yapmak için kullanılabilecek 
+
+48
+00:03:13,868 --> 00:03:16,020
+kadar bilgi emmiş olması umulur.
+
+49
+00:03:16,860 --> 00:03:20,013
+Aklınızda bulunmasını istediğim temel fikirlerden biri, 
+
+50
+00:03:20,013 --> 00:03:23,843
+tüm bu vektörlerin çok çok yüksek boyutlu bir uzayda yaşadığı ve bu 
+
+51
+00:03:23,843 --> 00:03:28,800
+uzay hakkında düşündüğünüzde, farklı yönlerin farklı anlam türlerini kodlayabileceğidir.
+
+52
+00:03:30,120 --> 00:03:33,266
+Tekrar başvurmayı sevdiğim çok klasik bir örnek, 
+
+53
+00:03:33,266 --> 00:03:38,725
+kadının gömülmesine bakarsanız ve erkeğin gömülmesini çıkarırsanız ve bu küçük adımı 
+
+54
+00:03:38,725 --> 00:03:42,386
+atıp başka bir eril isme, amca gibi bir şeye eklerseniz, 
+
+55
+00:03:42,386 --> 00:03:46,240
+karşılık gelen dişil isme çok çok yakın bir yere varırsınız.
+
+56
+00:03:46,440 --> 00:03:50,880
+Bu anlamda, bu özel yön cinsiyet bilgisini kodlamaktadır.
+
+57
+00:03:51,640 --> 00:03:55,562
+Buradaki fikir, bu süper yüksek boyutlu uzaydaki diğer birçok farklı yönün, 
+
+58
+00:03:55,562 --> 00:03:59,640
+modelin temsil etmek isteyebileceği diğer özelliklere karşılık gelebileceğidir.
+
+59
+00:04:01,400 --> 00:04:06,180
+Bir dönüştürücüde, bu vektörler yalnızca tek bir kelimenin anlamını kodlamaz.
+
+60
+00:04:06,680 --> 00:04:10,822
+Ağ boyunca aktıkça, etraflarındaki tüm bağlama ve modelin 
+
+61
+00:04:10,822 --> 00:04:15,180
+bilgisine dayalı olarak çok daha zengin bir anlam kazanırlar.
+
+62
+00:04:15,880 --> 00:04:19,842
+Nihayetinde, her birinin tek bir kelimenin anlamının çok çok ötesinde bir şeyi kodlaması 
+
+63
+00:04:19,842 --> 00:04:23,760
+gerekir, çünkü bir sonraki adımın ne olacağını tahmin etmek için yeterli olması gerekir.
+
+64
+00:04:24,560 --> 00:04:28,676
+Dikkat bloklarının bağlamı dahil etmenize nasıl izin verdiğini zaten gördük, 
+
+65
+00:04:28,676 --> 00:04:33,328
+ancak model parametrelerinin çoğu aslında MLP bloklarının içinde yaşıyor ve ne yapıyor 
+
+66
+00:04:33,328 --> 00:04:38,140
+olabileceklerine dair bir düşünce, gerçekleri depolamak için ekstra kapasite sunmalarıdır.
+
+67
+00:04:38,720 --> 00:04:42,328
+Dediğim gibi, buradaki ders Michael Jordan'ın basketbol oynadığı gerçeğini tam 
+
+68
+00:04:42,328 --> 00:04:46,120
+olarak nasıl saklayabileceğine dair somut bir oyuncak örneği üzerinde yoğunlaşacak.
+
+69
+00:04:47,120 --> 00:04:49,596
+Şimdi, bu oyuncak örnek sizin ve benim bu yüksek boyutlu 
+
+70
+00:04:49,596 --> 00:04:51,900
+uzay hakkında birkaç varsayım yapmamızı gerektirecek.
+
+71
+00:04:52,360 --> 00:04:57,084
+İlk olarak, yönlerden birinin Michael adındaki bir ilk isim fikrini temsil ettiğini 
+
+72
+00:04:57,084 --> 00:05:01,977
+ve daha sonra neredeyse dik olan başka bir yönün Jordan soyadı fikrini temsil ettiğini 
+
+73
+00:05:01,977 --> 00:05:06,420
+ve daha sonra üçüncü bir yönün basketbol fikrini temsil edeceğini varsayacağız.
+
+74
+00:05:07,400 --> 00:05:13,625
+Bununla kastettiğim şey, eğer ağa bakarsanız ve işlenen vektörlerden birini koparırsanız, 
+
+75
+00:05:13,625 --> 00:05:17,221
+bu ilk isim Michael yönü ile nokta çarpımı bir ise, 
+
+76
+00:05:17,221 --> 00:05:22,340
+vektörün bu ilk isme sahip bir kişi fikrini kodladığı anlamına gelecektir.
+
+77
+00:05:23,800 --> 00:05:26,650
+Aksi takdirde, bu nokta çarpımı sıfır veya negatif olur, 
+
+78
+00:05:26,650 --> 00:05:28,700
+yani vektör gerçekten o yönle hizalanmaz.
+
+79
+00:05:29,420 --> 00:05:32,237
+Ve basitlik açısından, nokta çarpımın birden büyük olmasının ne 
+
+80
+00:05:32,237 --> 00:05:35,320
+anlama gelebileceği gibi çok makul bir soruyu tamamen göz ardı edelim.
+
+81
+00:05:36,200 --> 00:05:39,821
+Benzer şekilde, diğer yönlerle nokta çarpımı size Jordan 
+
+82
+00:05:39,821 --> 00:05:43,760
+soyadını mı yoksa basketbolu mu temsil ettiğini söyleyecektir.
+
+83
+00:05:44,740 --> 00:05:48,740
+Diyelim ki bir vektör Michael Jordan'ın tam adını temsil ediyor, 
+
+84
+00:05:48,740 --> 00:05:52,680
+o zaman bu yönlerin her ikisiyle de nokta çarpımı bir olmalıdır.
+
+85
+00:05:53,480 --> 00:05:56,398
+Michael Jordan metni iki farklı simgeyi kapsadığından, 
+
+86
+00:05:56,398 --> 00:06:00,697
+bu aynı zamanda daha önceki bir dikkat bloğunun her iki ismi de kodlayabilmesini 
+
+87
+00:06:00,697 --> 00:06:04,996
+sağlamak için bu iki vektörden ikincisine başarılı bir şekilde bilgi aktardığını 
+
+88
+00:06:04,996 --> 00:06:06,960
+varsaymamız gerektiği anlamına gelir.
+
+89
+00:06:07,940 --> 00:06:11,480
+Tüm bunlar varsayım olarak kabul edildiğinde, şimdi dersin etine dalalım.
+
+90
+00:06:11,880 --> 00:06:14,980
+Çok katmanlı bir algılayıcının içinde ne olur?
+
+91
+00:06:17,100 --> 00:06:21,313
+Bu vektör dizisinin bloğa aktığını düşünebilirsiniz ve her vektörün başlangıçta 
+
+92
+00:06:21,313 --> 00:06:25,580
+giriş metnindeki belirteçlerden biriyle ilişkilendirildiğini hatırlayabilirsiniz.
+
+93
+00:06:26,080 --> 00:06:31,220
+Olacak olan şey, bu dizideki her bir vektörün kısa bir dizi işlemden geçmesidir, 
+
+94
+00:06:31,220 --> 00:06:36,360
+bunları birazdan açacağız ve sonunda aynı boyutta başka bir vektör elde edeceğiz.
+
+95
+00:06:36,880 --> 00:06:40,500
+Bu diğer vektör, içeri akan orijinal vektöre eklenecek 
+
+96
+00:06:40,500 --> 00:06:43,200
+ve bu toplam dışarı akan sonuç olacaktır.
+
+97
+00:06:43,720 --> 00:06:47,587
+Bu işlemler dizisi, girdideki her belirteçle ilişkili olarak dizideki 
+
+98
+00:06:47,587 --> 00:06:51,620
+her vektöre uyguladığınız bir şeydir ve hepsi paralel olarak gerçekleşir.
+
+99
+00:06:52,100 --> 00:06:56,200
+Özellikle, vektörler bu adımda birbirleriyle konuşmazlar, hepsi kendi işlerini yaparlar.
+
+100
+00:06:56,720 --> 00:06:59,947
+Sizin ve benim için bu aslında işi çok daha basit hale getiriyor, 
+
+101
+00:06:59,947 --> 00:07:03,419
+çünkü bu blok boyunca vektörlerden sadece birine ne olduğunu anlarsak, 
+
+102
+00:07:03,419 --> 00:07:06,060
+hepsine ne olduğunu etkili bir şekilde anlamış oluruz.
+
+103
+00:07:07,100 --> 00:07:12,329
+Bu bloğun Michael Jordan'ın basketbol oynadığı gerçeğini kodlayacağını söylediğimde, 
+
+104
+00:07:12,329 --> 00:07:17,067
+demek istediğim, adı Michael ve soyadı Jordan'ı kodlayan bir vektör gelirse, 
+
+105
+00:07:17,067 --> 00:07:21,066
+bu hesaplama dizisi basketbol yönünü içeren bir şey üretecektir, 
+
+106
+00:07:21,066 --> 00:07:24,020
+bu da o konumdaki vektöre eklenecek olan şeydir.
+
+107
+00:07:25,600 --> 00:07:29,700
+Bu sürecin ilk adımı, bu vektörü çok büyük bir matrisle çarpmaya benziyor.
+
+108
+00:07:30,040 --> 00:07:31,980
+Sürpriz yok, bu derin öğrenme.
+
+109
+00:07:32,680 --> 00:07:35,130
+Ve bu matris, gördüğümüz diğer tüm matrisler gibi, 
+
+110
+00:07:35,130 --> 00:07:38,686
+model davranışının ne olduğunu belirlemek için ayarlanan ve ayarlanan bir 
+
+111
+00:07:38,686 --> 00:07:42,194
+grup düğme ve kadran olarak düşünebileceğiniz verilerden öğrenilen model 
+
+112
+00:07:42,194 --> 00:07:43,540
+parametreleriyle doldurulur.
+
+113
+00:07:44,500 --> 00:07:47,293
+Şimdi, matris çarpımını düşünmenin güzel bir yolu, 
+
+114
+00:07:47,293 --> 00:07:51,292
+bu matrisin her satırını kendi vektörü olarak hayal etmek ve bu satırlar 
+
+115
+00:07:51,292 --> 00:07:54,634
+ile işlenen vektör arasında bir grup nokta çarpımı almaktır, 
+
+116
+00:07:54,634 --> 00:07:56,880
+bunu gömme için E olarak etiketleyeceğim.
+
+117
+00:07:57,280 --> 00:08:00,591
+Örneğin, ilk satırın var olduğunu varsaydığımız 
+
+118
+00:08:00,591 --> 00:08:04,040
+Michael direction ismine eşit olduğunu varsayalım.
+
+119
+00:08:04,320 --> 00:08:08,208
+Bu, bu çıktıdaki ilk bileşenin, buradaki nokta çarpımının, 
+
+120
+00:08:08,208 --> 00:08:13,284
+bu vektör ilk adı Michael'ı kodluyorsa bir, aksi takdirde sıfır veya negatif 
+
+121
+00:08:13,284 --> 00:08:14,800
+olacağı anlamına gelir.
+
+122
+00:08:15,880 --> 00:08:19,363
+Daha da eğlencelisi, bir an için bu ilk sıranın adı Michael 
+
+123
+00:08:19,363 --> 00:08:23,080
+artı soyadı Jordan yönünde olsaydı ne anlama geleceğini düşünün.
+
+124
+00:08:23,700 --> 00:08:27,420
+Basit olması için bunu M artı J olarak yazmama izin verin.
+
+125
+00:08:28,080 --> 00:08:30,744
+Sonra, bu E gömülmesiyle bir nokta çarpımı aldığımızda, 
+
+126
+00:08:30,744 --> 00:08:34,980
+işler gerçekten güzel bir şekilde dağılır, böylece M nokta E artı J nokta E gibi görünür.
+
+127
+00:08:34,980 --> 00:08:39,782
+Ve bunun, vektör Michael Jordan adını tam olarak kodlarsa nihai değerin iki olacağı 
+
+128
+00:08:39,782 --> 00:08:44,700
+ve aksi takdirde bir veya birden küçük bir şey olacağı anlamına geldiğine dikkat edin.
+
+129
+00:08:45,340 --> 00:08:47,260
+Ve bu matriste sadece bir satır.
+
+130
+00:08:47,600 --> 00:08:51,383
+Diğer tüm satırların paralel olarak başka tür sorular sorduğunu, 
+
+131
+00:08:51,383 --> 00:08:56,040
+işlenmekte olan vektörün başka tür özelliklerini araştırdığını düşünebilirsiniz.
+
+132
+00:08:56,700 --> 00:08:59,282
+Çoğu zaman bu adım, çıktıya verilerden öğrenilen model 
+
+133
+00:08:59,282 --> 00:09:02,240
+parametreleriyle dolu başka bir vektörün eklenmesini de içerir.
+
+134
+00:09:02,240 --> 00:09:04,560
+Bu diğer vektör önyargı olarak bilinir.
+
+135
+00:09:05,180 --> 00:09:10,155
+Örneğimiz için, ilk bileşendeki bu sapmanın değerinin negatif bir olduğunu hayal 
+
+136
+00:09:10,155 --> 00:09:15,560
+etmenizi istiyorum, yani nihai çıktımız ilgili nokta çarpımına benziyor, ancak eksi bir.
+
+137
+00:09:16,120 --> 00:09:20,278
+Modelin bunu öğrendiğini varsaymanızı neden istediğimi çok makul bir şekilde 
+
+138
+00:09:20,278 --> 00:09:24,167
+sorabilirsiniz ve birazdan burada bir vektörün Michael Jordan adını tam 
+
+139
+00:09:24,167 --> 00:09:28,163
+olarak kodlaması durumunda pozitif, aksi takdirde sıfır veya negatif olan 
+
+140
+00:09:28,163 --> 00:09:32,160
+bir değere sahip olmamızın neden çok temiz ve güzel olduğunu göreceksiniz.
+
+141
+00:09:33,040 --> 00:09:37,739
+Sayılarını takip ettiğimiz GPT-3 örneğinde, sorulan soru sayısı gibi 
+
+142
+00:09:37,739 --> 00:09:42,780
+bir şey olan bu matristeki toplam satır sayısı 50.000'in biraz altındadır.
+
+143
+00:09:43,100 --> 00:09:46,640
+Aslında, bu gömme uzayındaki boyut sayısının tam dört katıdır.
+
+144
+00:09:46,920 --> 00:09:47,900
+Bu bir tasarım tercihi.
+
+145
+00:09:47,940 --> 00:09:49,680
+Daha fazla yapabilirsiniz, daha az yapabilirsiniz, 
+
+146
+00:09:49,680 --> 00:09:52,240
+ancak temiz bir çokluğa sahip olmak donanım için dostça olma eğilimindedir.
+
+147
+00:09:52,740 --> 00:09:57,136
+Ağırlıklarla dolu bu matris bizi daha yüksek boyutlu bir uzaya eşlediğinden, 
+
+148
+00:09:57,136 --> 00:09:59,020
+buna W up kısaltmasını vereceğim.
+
+149
+00:09:59,020 --> 00:10:03,207
+İşlediğimiz vektörü E olarak etiketlemeye devam edeceğim ve bu önyargı 
+
+150
+00:10:03,207 --> 00:10:07,160
+vektörünü B olarak etiketleyelim ve hepsini diyagrama geri koyalım.
+
+151
+00:10:09,180 --> 00:10:12,409
+Bu noktada bir sorun, bu işlemin tamamen doğrusal olması, 
+
+152
+00:10:12,409 --> 00:10:15,360
+ancak dilin çok doğrusal olmayan bir süreç olmasıdır.
+
+153
+00:10:15,880 --> 00:10:19,429
+Ölçtüğümüz giriş Michael artı Jordan için yüksekse, 
+
+154
+00:10:19,429 --> 00:10:25,232
+kavramsal olarak ilgisiz olmalarına rağmen Michael artı Phelps ve Alexis artı Jordan 
+
+155
+00:10:25,232 --> 00:10:28,100
+tarafından da bir şekilde tetiklenecektir.
+
+156
+00:10:28,540 --> 00:10:32,000
+Gerçekten istediğiniz şey, tam ad için basit bir evet veya hayır cevabıdır.
+
+157
+00:10:32,900 --> 00:10:35,254
+Dolayısıyla bir sonraki adım, bu büyük ara vektörü 
+
+158
+00:10:35,254 --> 00:10:37,840
+çok basit bir doğrusal olmayan fonksiyondan geçirmektir.
+
+159
+00:10:38,360 --> 00:10:41,829
+Yaygın bir seçim, tüm negatif değerleri alıp sıfıra eşleyen 
+
+160
+00:10:41,829 --> 00:10:45,300
+ve tüm pozitif değerleri değiştirmeden bırakan bir seçimdir.
+
+161
+00:10:46,440 --> 00:10:50,152
+Ve aşırı süslü isimlerin derin öğrenme geleneğini sürdürerek, 
+
+162
+00:10:50,152 --> 00:10:54,822
+bu çok basit fonksiyon genellikle düzeltilmiş doğrusal birim veya kısaca ReLU 
+
+163
+00:10:54,822 --> 00:10:56,020
+olarak adlandırılır.
+
+164
+00:10:56,020 --> 00:10:57,880
+İşte grafik böyle görünüyor.
+
+165
+00:10:58,300 --> 00:11:03,252
+Ara vektörün bu ilk girişinin bir olduğu hayal örneğimizi ele alırsak, 
+
+166
+00:11:03,252 --> 00:11:07,857
+tam adı Michael Jordan ise bir, aksi takdirde sıfır veya negatif, 
+
+167
+00:11:07,857 --> 00:11:13,577
+ReLU'dan geçirdikten sonra, tüm sıfır ve negatif değerlerin sıfıra kırpıldığı çok 
+
+168
+00:11:13,577 --> 00:11:15,740
+temiz bir değer elde edersiniz.
+
+169
+00:11:16,100 --> 00:11:19,780
+Dolayısıyla, bu çıktı Michael Jordan tam adı için bir, aksi takdirde sıfır olacaktır.
+
+170
+00:11:20,560 --> 00:11:24,120
+Başka bir deyişle, bir AND kapısının davranışını çok doğrudan taklit eder.
+
+171
+00:11:25,660 --> 00:11:28,697
+Genellikle modeller, JLU adı verilen ve aynı temel şekle sahip, 
+
+172
+00:11:28,697 --> 00:11:32,020
+sadece biraz daha yumuşak olan biraz değiştirilmiş bir işlev kullanır.
+
+173
+00:11:32,500 --> 00:11:34,059
+Ancak bizim amaçlarımız doğrultusunda, sadece 
+
+174
+00:11:34,059 --> 00:11:35,720
+ReLU'yu düşünürsek bu biraz daha temiz olacaktır.
+
+175
+00:11:36,740 --> 00:11:40,593
+Ayrıca, insanların bir transformatörün nöronlarından bahsettiğini duyduğunuzda, 
+
+176
+00:11:40,593 --> 00:11:42,520
+tam burada bu değerlerden bahsediyorlar.
+
+177
+00:11:42,900 --> 00:11:47,262
+Bu seride daha önce gördüğümüz, bir nokta katmanı ve bir önceki katmana 
+
+178
+00:11:47,262 --> 00:11:51,504
+bağlanan bir grup çizgi içeren yaygın sinir ağı resmini gördüğünüzde, 
+
+179
+00:11:51,504 --> 00:11:55,988
+bu genellikle doğrusal bir adımın, bir matris çarpımının ve ardından ReLU 
+
+180
+00:11:55,988 --> 00:12:01,260
+gibi basit bir terimsel doğrusal olmayan işlevin bu kombinasyonunu ifade etmek içindir.
+
+181
+00:12:02,500 --> 00:12:05,627
+Bu nöronun, bu değer pozitif olduğunda aktif olduğunu ve 
+
+182
+00:12:05,627 --> 00:12:08,920
+bu değer sıfır olduğunda inaktif olduğunu söyleyebilirsiniz.
+
+183
+00:12:10,120 --> 00:12:12,380
+Bir sonraki adım ilk adıma çok benziyor.
+
+184
+00:12:12,560 --> 00:12:16,580
+Çok büyük bir matrisle çarparsınız ve belirli bir yanlılık terimi eklersiniz.
+
+185
+00:12:16,980 --> 00:12:21,399
+Bu durumda, çıktıdaki boyut sayısı bu gömme uzayının boyutuna geri döner, 
+
+186
+00:12:21,399 --> 00:12:25,520
+bu yüzden devam edeceğim ve buna aşağı projeksiyon matrisi diyeceğim.
+
+187
+00:12:26,220 --> 00:12:29,100
+Ve bu sefer, her şeyi satır satır düşünmek yerine, 
+
+188
+00:12:29,100 --> 00:12:31,360
+sütun sütun düşünmek aslında daha güzel.
+
+189
+00:12:31,860 --> 00:12:36,320
+Matris çarpımını kafanızda tutmanın bir başka yolu da matrisin her 
+
+190
+00:12:36,320 --> 00:12:40,913
+bir sütununu alıp işlediği vektördeki ilgili terimle çarptığınızı ve 
+
+191
+00:12:40,913 --> 00:12:45,640
+tüm bu yeniden ölçeklendirilmiş sütunları topladığınızı hayal etmektir.
+
+192
+00:12:46,840 --> 00:12:49,490
+Bu şekilde düşünmenin daha güzel olmasının nedeni, 
+
+193
+00:12:49,490 --> 00:12:52,765
+burada sütunların gömme uzayı ile aynı boyuta sahip olmasıdır, 
+
+194
+00:12:52,765 --> 00:12:55,780
+bu nedenle onları bu uzaydaki yönler olarak düşünebiliriz.
+
+195
+00:12:56,140 --> 00:12:59,610
+Örneğin, modelin ilk sütunu var olduğunu varsaydığımız bu 
+
+196
+00:12:59,610 --> 00:13:03,080
+basketbol yönüne doğru yapmayı öğrendiğini hayal edeceğiz.
+
+197
+00:13:04,180 --> 00:13:08,166
+Bunun anlamı, ilk pozisyondaki ilgili nöron aktif olduğunda, 
+
+198
+00:13:08,166 --> 00:13:10,780
+bu sütunu nihai sonuca ekleyeceğimizdir.
+
+199
+00:13:11,140 --> 00:13:15,780
+Ancak bu nöron etkin değilse, bu sayı sıfırsa, o zaman bunun hiçbir etkisi olmayacaktır.
+
+200
+00:13:16,500 --> 00:13:18,060
+Ve bu sadece basketbol olmak zorunda değil.
+
+201
+00:13:18,220 --> 00:13:21,765
+Model ayrıca bu sütuna ve tam adı Michael Jordan olan bir şeyle 
+
+202
+00:13:21,765 --> 00:13:25,200
+ilişkilendirmek istediği diğer birçok özelliği de ekleyebilir.
+
+203
+00:13:26,980 --> 00:13:30,691
+Ve aynı zamanda, bu matristeki diğer tüm sütunlar, 
+
+204
+00:13:30,691 --> 00:13:36,660
+ilgili nöronun aktif olması durumunda nihai sonuca neyin ekleneceğini size söyler.
+
+205
+00:13:37,360 --> 00:13:40,514
+Ve bu durumda bir önyargınız varsa, nöron değerlerinden 
+
+206
+00:13:40,514 --> 00:13:43,500
+bağımsız olarak her seferinde eklediğiniz bir şeydir.
+
+207
+00:13:44,060 --> 00:13:45,280
+Bunun ne işe yaradığını merak edebilirsiniz.
+
+208
+00:13:45,540 --> 00:13:49,320
+Buradaki tüm parametre dolu nesnelerde olduğu gibi, tam olarak söylemek biraz zor.
+
+209
+00:13:49,320 --> 00:13:52,190
+Belki ağın yapması gereken bazı muhasebe işlemleri vardır, 
+
+210
+00:13:52,190 --> 00:13:54,380
+ancak şimdilik bunu görmezden gelebilirsiniz.
+
+211
+00:13:54,860 --> 00:13:57,634
+Notasyonumuzu biraz daha kompakt hale getirerek, 
+
+212
+00:13:57,634 --> 00:14:02,334
+bu büyük matrise W diyeceğim ve benzer şekilde bu önyargı vektörüne B diyeceğim ve 
+
+213
+00:14:02,334 --> 00:14:04,260
+bunu diyagramımıza geri koyacağım.
+
+214
+00:14:04,740 --> 00:14:08,736
+Daha önce önizlemesini yaptığım gibi, bu nihai sonuçla yaptığınız şey, 
+
+215
+00:14:08,736 --> 00:14:13,240
+onu o konumda bloğa akan vektöre eklemektir ve bu da size bu nihai sonucu verir.
+
+216
+00:14:13,820 --> 00:14:19,327
+Örneğin, içeri akan vektör hem Michael adını hem de Jordan soyadını kodladıysa, 
+
+217
+00:14:19,327 --> 00:14:24,765
+bu işlem dizisi AND kapısını tetikleyeceğinden, basketbol yönünü ekleyecektir, 
+
+218
+00:14:24,765 --> 00:14:29,240
+böylece ortaya çıkan şey bunların hepsini birlikte kodlayacaktır.
+
+219
+00:14:29,820 --> 00:14:34,200
+Ve unutmayın, bu vektörlerin her biri için paralel olarak gerçekleşen bir süreçtir.
+
+220
+00:14:34,800 --> 00:14:40,713
+Özellikle GPT-3 sayılarını ele alırsak, bu blokta sadece 50.000 nöron değil, 
+
+221
+00:14:40,713 --> 00:14:44,860
+girdideki belirteç sayısının 50.000 katı var demektir.
+
+222
+00:14:48,180 --> 00:14:51,714
+İşte tüm işlem bu, her birine bir önyargı eklenmiş 
+
+223
+00:14:51,714 --> 00:14:55,180
+iki matris ürünü ve arada basit bir kırpma işlevi.
+
+224
+00:14:56,080 --> 00:14:59,263
+Serinin önceki videolarını izleyenler, bu yapıyı orada 
+
+225
+00:14:59,263 --> 00:15:02,620
+incelediğimiz en temel sinir ağı türü olarak tanıyacaktır.
+
+226
+00:15:03,080 --> 00:15:06,100
+Bu örnekte, el yazısı rakamları tanımak üzere eğitilmiştir.
+
+227
+00:15:06,580 --> 00:15:10,308
+Burada, büyük bir dil modeli için bir dönüştürücü bağlamında, 
+
+228
+00:15:10,308 --> 00:15:14,519
+bu daha büyük bir mimarinin bir parçasıdır ve tam olarak ne yaptığını 
+
+229
+00:15:14,519 --> 00:15:18,669
+yorumlamaya yönelik herhangi bir girişim, bilgiyi yüksek boyutlu bir 
+
+230
+00:15:18,669 --> 00:15:23,180
+gömme uzayının vektörlerine kodlama fikriyle büyük ölçüde iç içe geçmiştir.
+
+231
+00:15:24,260 --> 00:15:29,248
+Temel ders bu, ancak bir adım geri çekilip iki farklı şey üzerinde düşünmek istiyorum; 
+
+232
+00:15:29,248 --> 00:15:33,893
+bunlardan ilki bir tür muhasebe, ikincisi ise transformatörleri araştırana kadar 
+
+233
+00:15:33,893 --> 00:15:38,080
+bilmediğim yüksek boyutlarla ilgili çok düşündürücü bir gerçeği içeriyor.
+
+234
+00:15:41,080 --> 00:15:46,092
+Son iki bölümde, siz ve ben GPT-3'teki toplam parametre sayısını saymaya ve tam olarak 
+
+235
+00:15:46,092 --> 00:15:50,760
+nerede bulunduklarını görmeye başladık, bu yüzden oyunu burada hızlıca bitirelim.
+
+236
+00:15:51,400 --> 00:15:56,790
+Bu yukarı izdüşüm matrisinin 50.000 satırdan biraz daha az olduğunu ve her satırın 
+
+237
+00:15:56,790 --> 00:16:02,180
+GPT-3 için 12.288 olan gömme uzayının boyutuyla eşleştiğini daha önce belirtmiştim.
+
+238
+00:16:03,240 --> 00:16:08,511
+Bunları çarparsak, sadece bu matris için 604 milyon parametre elde ederiz ve 
+
+239
+00:16:08,511 --> 00:16:13,920
+aşağı izdüşüm de aynı sayıda parametreye sahiptir, sadece şekil değiştirmiştir.
+
+240
+00:16:14,500 --> 00:16:17,400
+Yani birlikte yaklaşık 1,2 milyar parametre verirler.
+
+241
+00:16:18,280 --> 00:16:20,925
+Eğilim vektörü ayrıca birkaç parametreyi daha hesaba katar, 
+
+242
+00:16:20,925 --> 00:16:24,100
+ancak toplamın önemsiz bir oranıdır, bu yüzden onu göstermeyeceğim bile.
+
+243
+00:16:24,660 --> 00:16:30,693
+GPT-3'te bu gömme vektörleri dizisi bir değil 96 farklı MLP'den geçmektedir, 
+
+244
+00:16:30,693 --> 00:16:37,041
+dolayısıyla tüm bu bloklara ayrılan toplam parametre sayısı yaklaşık 116 milyara 
+
+245
+00:16:37,041 --> 00:16:38,060
+ulaşmaktadır.
+
+246
+00:16:38,820 --> 00:16:43,086
+Bu, ağdaki toplam parametrelerin yaklaşık üçte ikisidir ve bunu daha önce sahip 
+
+247
+00:16:43,086 --> 00:16:47,620
+olduğumuz her şeye eklediğinizde, dikkat blokları, gömme ve gömülmeyi kaldırma için, 
+
+248
+00:16:47,620 --> 00:16:51,620
+gerçekten de ilan edildiği gibi 175 milyarlık büyük toplamı elde edersiniz.
+
+249
+00:16:53,060 --> 00:16:56,867
+Muhtemelen bu açıklamanın atladığı normalleştirme adımlarıyla ilişkili 
+
+250
+00:16:56,867 --> 00:17:00,890
+başka bir parametre setinden bahsetmeye değer, ancak önyargı vektörü gibi, 
+
+251
+00:17:00,890 --> 00:17:03,840
+bunlar da toplamın çok önemsiz bir oranını oluşturuyor.
+
+252
+00:17:05,900 --> 00:17:09,280
+İkinci düşünce noktasına gelince, üzerinde bu kadar çok zaman harcadığımız 
+
+253
+00:17:09,280 --> 00:17:12,480
+bu merkezi oyuncak örneğinin gerçek büyük dil modellerinde gerçeklerin 
+
+254
+00:17:12,480 --> 00:17:15,680
+nasıl depolandığını yansıtıp yansıtmadığını merak ediyor olabilirsiniz.
+
+255
+00:17:16,319 --> 00:17:20,428
+Bu ilk matrisin satırlarının bu gömme uzayında yönler olarak düşünülebileceği 
+
+256
+00:17:20,428 --> 00:17:24,063
+doğrudur ve bu, her nöronun aktivasyonunun size belirli bir vektörün 
+
+257
+00:17:24,063 --> 00:17:27,540
+belirli bir yönle ne kadar hizalandığını söylediği anlamına gelir.
+
+258
+00:17:27,760 --> 00:17:30,940
+Bu ikinci matrisin sütunlarının, söz konusu nöronun aktif 
+
+259
+00:17:30,940 --> 00:17:34,340
+olması durumunda sonuca ne ekleneceğini söylediği de doğrudur.
+
+260
+00:17:34,640 --> 00:17:36,800
+Bunların her ikisi de sadece matematiksel gerçeklerdir.
+
+261
+00:17:37,740 --> 00:17:41,697
+Bununla birlikte, kanıtlar, bireysel nöronların Michael Jordan gibi tek 
+
+262
+00:17:41,697 --> 00:17:46,369
+bir temiz özelliği çok nadiren temsil ettiğini göstermektedir ve aslında bu durumun, 
+
+263
+00:17:46,369 --> 00:17:50,712
+bugünlerde yorumlanabilirlik araştırmacıları arasında dolaşan ve süperpozisyon 
+
+264
+00:17:50,712 --> 00:17:54,120
+olarak bilinen bir fikirle ilgili çok iyi bir nedeni olabilir.
+
+265
+00:17:54,640 --> 00:17:58,645
+Bu, hem modellerin yorumlanmasının neden özellikle zor olduğunu hem de neden şaşırtıcı 
+
+266
+00:17:58,645 --> 00:18:02,420
+derecede iyi ölçeklendirildiklerini açıklamaya yardımcı olabilecek bir hipotezdir.
+
+267
+00:18:03,500 --> 00:18:08,436
+Temel fikir, n boyutlu bir uzaya sahipseniz ve bu uzayda birbirine dik olan 
+
+268
+00:18:08,436 --> 00:18:13,827
+yönleri kullanarak bir dizi farklı özelliği temsil etmek istiyorsanız, bilirsiniz, 
+
+269
+00:18:13,827 --> 00:18:19,023
+bu şekilde bir yöne bir bileşen eklerseniz, diğer yönlerin hiçbirini etkilemez, 
+
+270
+00:18:19,023 --> 00:18:23,960
+o zaman sığdırabileceğiniz maksimum vektör sayısı sadece n, boyut sayısıdır.
+
+271
+00:18:24,600 --> 00:18:27,620
+Aslında bir matematikçi için bu, boyutun tanımıdır.
+
+272
+00:18:28,220 --> 00:18:31,060
+Ancak işin ilginçleştiği nokta, bu kısıtlamayı biraz gevşetir 
+
+273
+00:18:31,060 --> 00:18:33,580
+ve biraz gürültüye tolerans gösterirseniz ortaya çıkar.
+
+274
+00:18:34,180 --> 00:18:38,666
+Bu özelliklerin tam olarak dik olmayan vektörlerle temsil edilmesine izin 
+
+275
+00:18:38,666 --> 00:18:43,820
+verdiğinizi varsayalım, bunlar sadece neredeyse dik, belki 89 ila 91 derece arasında.
+
+276
+00:18:44,820 --> 00:18:48,020
+Eğer iki ya da üç boyutlu olsaydık, bu hiçbir fark yaratmazdı.
+
+277
+00:18:48,260 --> 00:18:51,042
+Bu da size daha fazla vektör sığdırmak için neredeyse hiç ekstra 
+
+278
+00:18:51,042 --> 00:18:53,954
+kıpırdama alanı bırakmıyor, bu da daha yüksek boyutlar için cevabın 
+
+279
+00:18:53,954 --> 00:18:56,780
+dramatik bir şekilde değişmesini daha da mantıksız hale getiriyor.
+
+280
+00:18:57,660 --> 00:19:03,174
+Her biri rastgele başlatılmış 100 boyutlu vektörlerden oluşan bir liste oluşturacak 
+
+281
+00:19:03,174 --> 00:19:08,951
+ve bu liste 10.000 farklı vektör içerecek, yani boyutların 100 katı kadar vektör olacak 
+
+282
+00:19:08,951 --> 00:19:14,400
+olan bir Python kullanarak bunun gerçekten hızlı ve kirli bir örneğini verebilirim.
+
+283
+00:19:15,320 --> 00:19:19,900
+Buradaki çizim, bu vektörlerin çiftleri arasındaki açıların dağılımını göstermektedir.
+
+284
+00:19:20,680 --> 00:19:24,492
+Rastgele başladıkları için, bu açılar 0 ila 180 derece arasında herhangi 
+
+285
+00:19:24,492 --> 00:19:27,677
+bir şey olabilir, ancak sadece rastgele vektörler için bile, 
+
+286
+00:19:27,677 --> 00:19:31,960
+şeylerin 90 dereceye yakın olması için ağır bir önyargı olduğunu fark edeceksiniz.
+
+287
+00:19:32,500 --> 00:19:37,194
+Daha sonra yapacağım şey, tüm bu vektörleri birbirlerine daha dik hale gelmeye çalışacak 
+
+288
+00:19:37,194 --> 00:19:41,520
+şekilde iteratif olarak dürtecek belirli bir optimizasyon sürecini çalıştırmaktır.
+
+289
+00:19:42,060 --> 00:19:46,660
+Bunu birçok kez tekrarladıktan sonra, işte açıların dağılımı nasıl görünüyor.
+
+290
+00:19:47,120 --> 00:19:51,882
+Aslında burada yakınlaştırmamız gerekiyor çünkü vektör çiftleri arasındaki 
+
+291
+00:19:51,882 --> 00:19:56,900
+tüm olası açılar 89 ile 91 derece arasındaki bu dar aralığın içinde yer alıyor.
+
+292
+00:19:58,020 --> 00:20:02,955
+Genel olarak, Johnson-Lindenstrauss lemması olarak bilinen bir şeyin sonucu, 
+
+293
+00:20:02,955 --> 00:20:06,865
+bu şekilde neredeyse dik olan bir uzaya tıkıştırabileceğiniz 
+
+294
+00:20:06,865 --> 00:20:10,840
+vektörlerin sayısının boyut sayısıyla üstel olarak artmasıdır.
+
+295
+00:20:11,960 --> 00:20:16,485
+Bu, bağımsız fikirlerin neredeyse birbirine dik yönlerle ilişkilendirilmesinden 
+
+296
+00:20:16,485 --> 00:20:19,880
+fayda sağlayabilecek büyük dil modelleri için çok önemlidir.
+
+297
+00:20:20,000 --> 00:20:23,129
+Bu, kendisine ayrılan alandaki boyutlardan çok daha 
+
+298
+00:20:23,129 --> 00:20:26,440
+fazla fikri depolamasının mümkün olduğu anlamına gelir.
+
+299
+00:20:27,320 --> 00:20:31,740
+Bu, model performansının boyutla neden bu kadar iyi ölçeklendiğini kısmen açıklayabilir.
+
+300
+00:20:32,540 --> 00:20:36,035
+Boyutları 10 kat daha fazla olan bir alan, 10 kattan 
+
+301
+00:20:36,035 --> 00:20:39,400
+çok daha fazla sayıda bağımsız fikri depolayabilir.
+
+302
+00:20:40,420 --> 00:20:44,257
+Ve bu sadece modelden akan vektörlerin yaşadığı gömme uzayı için değil, 
+
+303
+00:20:44,257 --> 00:20:47,561
+aynı zamanda az önce incelediğimiz çok katmanlı algılayıcının 
+
+304
+00:20:47,561 --> 00:20:50,440
+ortasındaki nöronlarla dolu vektör için de geçerlidir.
+
+305
+00:20:50,960 --> 00:20:56,341
+Yani, GPT-3'ün boyutlarında, sadece 50.000 özelliği araştırmakla kalmayabilir, 
+
+306
+00:20:56,341 --> 00:21:01,858
+bunun yerine uzayın neredeyse dik yönlerini kullanarak bu muazzam ek kapasiteden 
+
+307
+00:21:01,858 --> 00:21:07,240
+yararlanırsa, işlenmekte olan vektörün çok daha fazla özelliğini araştırabilir.
+
+308
+00:21:07,780 --> 00:21:11,341
+Ancak bunu yapıyorsa, bunun anlamı bireysel özelliklerin 
+
+309
+00:21:11,341 --> 00:21:14,340
+tek bir nöronun yanması olarak görünmeyeceğidir.
+
+310
+00:21:14,660 --> 00:21:17,197
+Bunun yerine nöronların belirli bir kombinasyonu, 
+
+311
+00:21:17,197 --> 00:21:19,380
+bir süperpozisyon gibi görünmesi gerekirdi.
+
+312
+00:21:20,400 --> 00:21:23,365
+Daha fazla bilgi edinmek isteyenler için buradaki önemli bir arama 
+
+313
+00:21:23,365 --> 00:21:26,551
+terimi seyrek oto kodlayıcıdır; bu, bazı yorumlanabilirlik uzmanlarının 
+
+314
+00:21:26,551 --> 00:21:29,560
+tüm bu nöronların üzerine çok fazla bindirilmiş olsalar bile gerçek 
+
+315
+00:21:29,560 --> 00:21:32,880
+özelliklerin ne olduğunu çıkarmaya çalışmak için kullandıkları bir araçtır.
+
+316
+00:21:33,540 --> 00:21:36,800
+Bununla ilgili gerçekten harika birkaç antropik yazıya bağlantı vereceğim.
+
+317
+00:21:37,880 --> 00:21:40,947
+Bu noktada, bir transformatörün her ayrıntısına değinmedik, 
+
+318
+00:21:40,947 --> 00:21:43,300
+ancak siz ve ben en önemli noktalara değindik.
+
+319
+00:21:43,520 --> 00:21:47,640
+Bir sonraki bölümde ele almak istediğim ana konu eğitim sürecidir.
+
+320
+00:21:48,460 --> 00:21:51,377
+Bir yandan, eğitimin nasıl çalıştığına dair kısa cevap, 
+
+321
+00:21:51,377 --> 00:21:55,701
+her şeyin geri yayılım olduğudur ve serinin önceki bölümlerinde geri yayılımı ayrı 
+
+322
+00:21:55,701 --> 00:21:56,900
+bir bağlamda ele aldık.
+
+323
+00:21:57,220 --> 00:22:00,382
+Ancak, dil modelleri için kullanılan özel maliyet fonksiyonu, 
+
+324
+00:22:00,382 --> 00:22:03,953
+insan geri bildirimi ile takviyeli öğrenme kullanarak ince ayar yapma 
+
+325
+00:22:03,953 --> 00:22:07,780
+fikri ve ölçeklendirme yasaları kavramı gibi tartışılacak daha çok şey var.
+
+326
+00:22:08,960 --> 00:22:11,088
+Aranızdaki aktif takipçiler için hızlı bir not, 
+
+327
+00:22:11,088 --> 00:22:14,635
+bir sonraki bölümü yapmadan önce dişlerimi batırmak için heyecanlandığım makine 
+
+328
+00:22:14,635 --> 00:22:18,182
+öğrenimi ile ilgili olmayan bir dizi video var, bu yüzden biraz zaman alabilir, 
+
+329
+00:22:18,182 --> 00:22:20,000
+ancak zamanında geleceğine söz veriyorum.
+
+330
+00:22:35,640 --> 00:22:37,920
+Teşekkür ederim.
+
